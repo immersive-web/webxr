@@ -63,30 +63,53 @@
       Goals
     </h2>
 
-    <p><span class="remove">{TBD: describe the mission and goals of the Community Group.
-    This should be a brief description describing the reason the group has been formed.}
-    </span></p>
+    <p>The Goal of the W3C WebVR Community Group is to help bring high-performance Virtual Reality to the open Web. 
+      Currently, access to VR devices is limited to specific native platforms. For example, Oculus Rift 
+      supports Windows and HTC Vive supports SteamVR platform only. With WebVR specs, VR experiences 
+      could be available on the Web across platforms
+    </p>
 
     <h2 id="scope-of-work">
       Scope of Work
     </h2>
 
-    <p class="remove">
-      {TBD: Describe topics that are in scope. For specifications that the CLA 
-      patent section applies to, it is helpful to describe the scope in a way 
-      that it is clear what types of technologies will be defined in specifications, 
-      as opposed to adoption by reference or underlying technology not defined in the 
-      proposed spec. Key use cases are often helpful in describing scope. If no 
-      specifications will be defined in the group that the CLA patent section applies 
-      to, the charter should clearly state that. A clear scope is particularly important 
-      where patent licensing obligations may apply.} 
+    <p>
+       One initial specification the group will work on is the WebVR API that defines an API 
+       for accessing Virtual Reality (VR) devices, including sensors and head-mounted displays 
+       on the Web. Experimental implementations are available for Firefox and Chrome browsers.
     </p>
-  
+    
+    <p>
+       Hardware that enables Virtual Reality applications requires high-precision, low-latency interfaces 
+       to deliver an acceptable experience. Other interfaces, such as device orientation events, can be 
+       repurposed to surface VR input but doing so dilutes the interface’s original intent and often does 
+       not provide the precision necessary for high-quality VR. The WebVR API provides purpose-built 
+       interfaces to VR hardware to allow developers to build compelling, comfortable VR experiences. 
+    </p>
+    <p>
+     The new generation of VR headsets benefit from increased external environmental awareness. 
+     Depth cameras when integrated into a VR headset or a mobile device enable environment awareness 
+     that improves the VR experience significantly. A new generation of VR headsets are emerging that 
+     integrate depth sensing into their products (e.g. see the Intel product announced at CES 2016). 
+     Another spec in the CG will produce an experimental Web Hand API to allow users to see their hands 
+     in the virtual environment. 
+    </p>
+    <p>
+      Security Considerations The APIs use the web’s security model based on origins, 
+      and as such target products are web browsers. Specific security and privacy considerations 
+      constrain the scope of the specification to make the API implementable in web browsers without 
+      compromising the user’s security or privacy. Specific security considerations for the WebVR API 
+      are enumerated in the specification. 
+    </p>
       <h3 id="out-of-scope">
         Out of Scope
       </h3>
     
-      <p class="remove">{TBD: Identify topics known in advance to be out of scope}</p>
+      <p>
+        The group will not define the underlying VR system that the Web APIs use. 
+        These APIs give access to capabilities already provided on systems. 
+        The group will not define media codecs.
+      </p>
 
     <h2 id="deliverables">
       Deliverables
@@ -96,12 +119,12 @@
         Specifications
       </h3>
     
-      <p class="remove">
-        {TBD: Provide a brief description of each specification the group plans 
-        to produce. Where an estimate is possible, it can be useful to provide
-        an estimated schedule for key deliverables. As described below, 
-        the group may later modify the charter deliverables. if no specifications, 
-        include: "No Specifications will be produced under the current charter."} 
+      <p>
+        <a href="http://mozvr.github.io/webvr-spec/">WebVR API</a>: API for accessing Virtual Reality (VR) devices, starting 
+        from Web pages Incubator Draft spec
+      </p>
+      <p>
+         Web Hand API -- TBD neeeds description if this is going to be included
       </p>
 
       <h3 id="non-normative-reports">
