@@ -28,292 +28,278 @@
     </style>
   </head>
   <body>
-    <p class="remove">{TBD: This is a draft template that Community or Business Groups MAY choose
-    to use for their Group Charter. You may edit your charter to remove or change
-    the text provided here. Community Groups SHOULD have charters as a way to build
-    shared understanding within a group about activities, and to attract new 
-    participants who appreciate a clear description of the group's scope and 
-    deliverables.}</p>
-    
-    <p class="remove">{TBD: The charter sections below include notes (marked with “{TBD”) 
-    on what to include and recommended text. Please remember to remove 
-    the notes in your specific charter.}</p> 
-  
+    <p class="remove">
+      {TBD: This is a draft template that Community or Business Groups MAY
+      choose to use for their Group Charter. You may edit your charter to
+      remove or change the text provided here. Community Groups SHOULD have
+      charters as a way to build shared understanding within a group about
+      activities, and to attract new participants who appreciate a clear
+      description of the group's scope and deliverables.}
+    </p>
+    <p class="remove">
+      {TBD: The charter sections below include notes (marked with “{TBD”) on
+      what to include and recommended text. Please remember to remove the notes
+      in your specific charter.}
+    </p>
     <h1>
       [DRAFT] WebVR Community Group Charter
     </h1>
-
-    <p><span class="remove">{TBD: remove next sentence before submitting for approval} </span>
-    This Charter is work in progress. To submit feedback, please use 
-    <span class="remove">{TBD:GitHub repository URL}</span> Issues where Charter is being developed.</p>
-    
+    <p>
+      <span class="remove">{TBD: remove next sentence before submitting for
+      approval}</span> This Charter is work in progress. To submit feedback,
+      please use <span class="remove">{TBD:GitHub repository URL}</span> Issues
+      where Charter is being developed.
+    </p>
     <ul>
-      <li>This Charter: <a href="https://w3c.github.io/webvr/charter/">https://w3c.github.io/webvr/charter/</a></li>
+      <li>This Charter: <a href=
+      "https://w3c.github.io/webvr/charter/">https://w3c.github.io/webvr/charter/</a>
+      </li>
       <li>Previous Charter: N/A
-      <li>Start Date: <span class="remove">{TBD: date the charter takes effect, estimate if not
-      known. Update this if the charter is revised and include a link to the
-      previous version of the charter.}</span></li>
-      <li>Last Modifed: <span class="remove">{TBD: If the system does not 
-      automatically provide information about
-      the date of the last modification, it can be useful to include that in
-      the charter.}</span></li>
+      </li>
+      <li>Start Date: <span class="remove">{TBD: date the charter takes effect,
+      estimate if not known. Update this if the charter is revised and include
+      a link to the previous version of the charter.}</span>
+      </li>
+      <li>Last Modifed: <span class="remove">{TBD: If the system does not
+      automatically provide information about the date of the last
+      modification, it can be useful to include that in the charter.}</span>
+      </li>
     </ul>
-
     <h2 id="goals">
       Goals
     </h2>
-
-    <p>The Goal of the W3C WebVR Community Group is to help bring high-performance Virtual Reality to the open Web. 
-      Currently, access to VR devices is limited to specific native platforms. For example, Oculus Rift 
-      supports Windows and HTC Vive supports SteamVR platform only. With WebVR specs, VR experiences 
-      could be available on the Web across platforms
+    <p>
+      The Goal of the W3C WebVR Community Group is to help bring
+      high-performance Virtual Reality to the open Web. Currently, access to VR
+      devices is limited to specific native platforms. For example, Oculus Rift
+      supports Windows and HTC Vive supports SteamVR platform only. With WebVR
+      specs, VR experiences could be available on the Web across platforms
     </p>
-
     <h2 id="scope-of-work">
       Scope of Work
     </h2>
-
     <p>
-       One initial specification the group will work on is the WebVR API that defines an API 
-       for accessing Virtual Reality (VR) devices, including sensors and head-mounted displays 
-       on the Web. Experimental implementations are available for Firefox and Chrome browsers.
-    </p>
-    
-    <p>
-       Hardware that enables Virtual Reality applications requires high-precision, low-latency interfaces 
-       to deliver an acceptable experience. Other interfaces, such as device orientation events, can be 
-       repurposed to surface VR input but doing so dilutes the interface’s original intent and often does 
-       not provide the precision necessary for high-quality VR. The WebVR API provides purpose-built 
-       interfaces to VR hardware to allow developers to build compelling, comfortable VR experiences. 
+      One initial specification the group will work on is the WebVR API that
+      defines an API for accessing Virtual Reality (VR) devices, including
+      sensors and head-mounted displays on the Web. Experimental
+      implementations are available for Firefox and Chrome browsers.
     </p>
     <p>
-     The new generation of VR headsets benefit from increased external environmental awareness. 
-     Depth cameras when integrated into a VR headset or a mobile device enable environment awareness 
-     that improves the VR experience significantly. A new generation of VR headsets are emerging that 
-     integrate depth sensing into their products (e.g. see the Intel product announced at CES 2016). 
-     Another spec in the CG will produce an experimental Web Hand API to allow users to see their hands 
-     in the virtual environment. 
+      Hardware that enables Virtual Reality applications requires
+      high-precision, low-latency interfaces to deliver an acceptable
+      experience. Other interfaces, such as device orientation events, can be
+      repurposed to surface VR input but doing so dilutes the interface’s
+      original intent and often does not provide the precision necessary for
+      high-quality VR. The WebVR API provides purpose-built interfaces to VR
+      hardware to allow developers to build compelling, comfortable VR
+      experiences.
     </p>
     <p>
-      Security Considerations The APIs use the web’s security model based on origins, 
-      and as such target products are web browsers. Specific security and privacy considerations 
-      constrain the scope of the specification to make the API implementable in web browsers without 
-      compromising the user’s security or privacy. Specific security considerations for the WebVR API 
-      are enumerated in the specification. 
+      The new generation of VR headsets benefit from increased external
+      environmental awareness. Depth cameras when integrated into a VR headset
+      or a mobile device enable environment awareness that improves the VR
+      experience significantly. A new generation of VR headsets are emerging
+      that integrate depth sensing into their products (e.g. see the Intel
+      product announced at CES 2016). Another spec in the CG will produce an
+      experimental Web Hand API to allow users to see their hands in the
+      virtual environment.
     </p>
-      <h3 id="out-of-scope">
-        Out of Scope
-      </h3>
-    
-      <p>
-        The group will not define the underlying VR system that the Web APIs use. 
-        These APIs give access to capabilities already provided on systems. 
-        The group will not define media codecs.
-      </p>
-
+    <p>
+      Security Considerations The APIs use the web’s security model based on
+      origins, and as such target products are web browsers. Specific security
+      and privacy considerations constrain the scope of the specification to
+      make the API implementable in web browsers without compromising the
+      user’s security or privacy. Specific security considerations for the
+      WebVR API are enumerated in the specification.
+    </p>
+    <h3 id="out-of-scope">
+      Out of Scope
+    </h3>
+    <p>
+      The group will not define the underlying VR system that the Web APIs use.
+      These APIs give access to capabilities already provided on systems. The
+      group will not define media codecs.
+    </p>
     <h2 id="deliverables">
       Deliverables
     </h2>
-    
-      <h3 id="specifications">
-        Specifications
-      </h3>
-    
-      <p>
-        <a href="http://mozvr.github.io/webvr-spec/">WebVR API</a>: API for accessing Virtual Reality (VR) devices, starting 
-        from Web pages Incubator Draft spec
-      </p>
-      <p>
-         Web Hand API -- TBD neeeds description if this is going to be included
-      </p>
-
-      <h3 id="non-normative-reports">
-        Non-Normative Reports
-      </h3>
-    
-      <p>The group may produce other Community Group Reports within
-      the scope of this charter but that are not Specifications, for instance use cases, 
-      requirements, or white papers.</p>   
-
-      <h3 id="test-suites">
-        Test Suites and Other Software
-      </h3>
-    
-      <p class="remove">{TBD: State whether test suites or any other software 
-       will be created for any Specifications and list the relevant licenses. 
-       For information about contributions to W3C test suites, please see 
-       <a href="http://testthewebforward.org/">Test the Web Forward</a>,
-       and take note of the <a href="http://www.w3.org/2004/10/27-testcases">W3C's
-       test suite contribution policy</a> and 
-       <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-copyright.html">licenses
-       for W3C test suites></a>. If there are no plans to create a test suite 
-       or other software, please state that.}</p> 
-    
+    <h3 id="specifications">
+      Specifications
+    </h3>
+    <p>
+      <a href="http://mozvr.github.io/webvr-spec/">WebVR API</a>: API for
+      accessing Virtual Reality (VR) devices, starting from Web pages Incubator
+      Draft spec
+    </p>
+    <p>
+      Web Hand API -- TBD neeeds description if this is going to be included
+    </p>
+    <h3 id="non-normative-reports">
+      Non-Normative Reports
+    </h3>
+    <p>
+      The group may produce other Community Group Reports within the scope of
+      this charter but that are not Specifications, for instance use cases,
+      requirements, or white papers.
+    </p>
+    <h3 id="test-suites">
+      Test Suites and Other Software
+    </h3>
+    <p class="remove">
+      {TBD: State whether test suites or any other software will be created for
+      any Specifications and list the relevant licenses. For information about
+      contributions to W3C test suites, please see <a href=
+      "http://testthewebforward.org/">Test the Web Forward</a>, and take note
+      of the <a href="http://www.w3.org/2004/10/27-testcases">W3C's test suite
+      contribution policy</a> and <a href=
+      "http://www.w3.org/Consortium/Legal/2008/04-testsuite-copyright.html">licenses
+      for W3C test suites&gt;</a>. If there are no plans to create a test suite
+      or other software, please state that.}
+    </p>
     <h2 id="liaisons">
       Dependencies or Liaisons
     </h2>
-    
-    <p class="remove">{TBD: List any significant dependencies on other groups 
-      (inside or outside W3C) or materials. }
-    </p>    
-    
+    <p class="remove">
+      {TBD: List any significant dependencies on other groups (inside or
+      outside W3C) or materials. }
+    </p>
     <h2 id="process">
       Community and Business Group Process
     </h2>
-
-    <p>The group operates under the <a href=
+    <p>
+      The group operates under the <a href=
       "https://www.w3.org/community/about/agreements/">Community and Business
       Group Process</a>. Terms in this Charter that conflict with those of the
       Community and Business Group Process are void.
     </p>
-
-    <p>As with other Community Groups, W3C seeks organizational licensing
+    <p>
+      As with other Community Groups, W3C seeks organizational licensing
       commitments under the <a href=
       'http://www.w3.org/community/about/agreements/cla/'>W3C Community
-      Contributor License Agreement (CLA)</a>. When people
-      request to participate without representing their organization's legal
-      interests, W3C will in general approve those requests for this group with
-      the following understanding: W3C will seek and expect an organizational
+      Contributor License Agreement (CLA)</a>. When people request to
+      participate without representing their organization's legal interests,
+      W3C will in general approve those requests for this group with the
+      following understanding: W3C will seek and expect an organizational
       commitment under the CLA starting with the individual's first request to
-      make a contribution to a group <a href="#deliverables">Deliverable</a>. The
-      section on <a href="#contrib">Contribution Mechanics</a> describes how
-      W3C expects to monitor these contribution requests.
+      make a contribution to a group <a href="#deliverables">Deliverable</a>.
+      The section on <a href="#contrib">Contribution Mechanics</a> describes
+      how W3C expects to monitor these contribution requests.
     </p>
-
     <h2 id="worklimit">
       Work Limited to Charter Scope
     </h2>
-    
-    <p>The group will not publish Specifications on topics other than those 
-    listed under <a href="#specifications">Specifications</a> above. 
-    See below for <a href="#charter-change">how to modify the charter</a>. 
+    <p>
+      The group will not publish Specifications on topics other than those
+      listed under <a href="#specifications">Specifications</a> above. See
+      below for <a href="#charter-change">how to modify the charter</a>.
     </p>
-    
     <h2 id="contrib">
       Contribution Mechanics
     </h2>
-    
     <p>
-    Substantive Contributions to Specifications can only be made by Community 
-    Group Participants who have agreed to the 
-    <a href="http://www.w3.org/community/about/agreements/cla/">W3C Community
-      Contributor License Agreement (CLA)</a>. 
+      Substantive Contributions to Specifications can only be made by Community
+      Group Participants who have agreed to the <a href=
+      "http://www.w3.org/community/about/agreements/cla/">W3C Community
+      Contributor License Agreement (CLA)</a>.
     </p>
-    
     <p>
-      Specifications created in the Community Group must use the
-      <a href=
+      Specifications created in the Community Group must use the <a href=
       "http://www.w3.org/Consortium/Legal/2015/copyright-software-and-document">
-      W3C Software and Document License</a>.  All other documents produced 
-      by the group should use that License where possible. 
+      W3C Software and Document License</a>. All other documents produced by
+      the group should use that License where possible.
     </p>
-
     <p class="remove">
-      {TBD: if CG doesn't use GitHub replace the remaining paragraphs in this 
+      {TBD: if CG doesn't use GitHub replace the remaining paragraphs in this
       section with: "All Contributions are made on the groups public mail list
-      or public contrib list"} 
+      or public contrib list"}
     </p>
-    
     <p>
-      Community Group participants agree to make all contributions 
-      in the GitHub repo the group is using for the particular document. 
-      This may be in the form of a pull request (preferred), by raising an issue, 
-      or by adding a comment to an existing issue.
+      Community Group participants agree to make all contributions in the
+      GitHub repo the group is using for the particular document. This may be
+      in the form of a pull request (preferred), by raising an issue, or by
+      adding a comment to an existing issue.
     </p>
-
     <p>
       All Github repositories attached to the Community Group must contain a
-      copy of the 
-      <a href="https://github.com/w3c/licenses/blob/master/CG-CONTRIBUTING.md">CONTRIBUTING</a>
+      copy of the <a href=
+      "https://github.com/w3c/licenses/blob/master/CG-CONTRIBUTING.md">CONTRIBUTING</a>
       and <a href=
-      "https://github.com/w3c/licenses/blob/master/CG-LICENSE.md">LICENSE</a> files.
+      "https://github.com/w3c/licenses/blob/master/CG-LICENSE.md">LICENSE</a>
+      files.
     </p>
-
     <p>
-      Note: this Community Group will not use a contrib mailing list for contributions 
-      since all contributions will be tracked via Github mechanisms 
-      (e.g. pull requests). For the same reason, the Community Group 
-      mailing list must not be used for making or discussing substantive contributions
-      to Specifications.
+      Note: this Community Group will not use a contrib mailing list for
+      contributions since all contributions will be tracked via Github
+      mechanisms (e.g. pull requests). For the same reason, the Community Group
+      mailing list must not be used for making or discussing substantive
+      contributions to Specifications.
     </p>
-    
     <h2 id="transparency">
       Transparency
     </h2>
-    
     <p>
-      The group will conduct all of its technical work in public. If the group 
-      uses GitHub, all technical work will occur in its GitHub repositories 
-      (and not in mailing list discussions). This is to ensure contributions 
+      The group will conduct all of its technical work in public. If the group
+      uses GitHub, all technical work will occur in its GitHub repositories
+      (and not in mailing list discussions). This is to ensure contributions
       can be tracked through a software tool.
     </p>
-    
     <p>
-      Meetings may be restricted to Community Group participants, but a 
-      public summary or minutes must be posted to the group's public mailing 
-      list, or to a GitHub issue if the group uses GitHub.
+      Meetings may be restricted to Community Group participants, but a public
+      summary or minutes must be posted to the group's public mailing list, or
+      to a GitHub issue if the group uses GitHub.
     </p>
-
     <h2 id="decision">
       Decision Process
     </h2>
-    
-    <p>This group will seek to make decisions where there is consensus. 
-    Groups are free to decide how to make decisions (e.g. Participants 
-    who have earned Committer status for a history of useful contributions 
-    assess consensus, or the Chair assesses consensus, or where consensus 
-    isn't clear there is a Call for Consensus [CfC] to allow multi-day online 
-    feedback for a proposed course of action). It is expected that participants 
-    can earn Committer status through a history of valuable contributions as is 
-    common in open source projects. After discussion and due consideration of 
-    different opinions, a decision should be publicly recorded (where GitHub is 
-    used as the resolution of an Issue).
-    </p>
-    
     <p>
-      If substantial disagreement remains (e.g. the group is divided) 
-      and the group needs to decide an Issue in order to continue to make progress, 
-      the Committers will choose an alternative that had substantial support 
-      (with a vote of Committers if necessary). Individuals who disagree 
-      with the choice are strongly encouraged to take ownership 
-      of their objection by taking ownership of an alternative fork. 
-      This is explicitly allowed (and preferred to blocking progress) 
-      with a goal of letting implementation experience inform which 
-      spec is ultimately chosen by the group to move ahead with.
+      This group will seek to make decisions where there is consensus. Groups
+      are free to decide how to make decisions (e.g. Participants who have
+      earned Committer status for a history of useful contributions assess
+      consensus, or the Chair assesses consensus, or where consensus isn't
+      clear there is a Call for Consensus [CfC] to allow multi-day online
+      feedback for a proposed course of action). It is expected that
+      participants can earn Committer status through a history of valuable
+      contributions as is common in open source projects. After discussion and
+      due consideration of different opinions, a decision should be publicly
+      recorded (where GitHub is used as the resolution of an Issue).
     </p>
-    
     <p>
-      Any decisions reached at any meeting are tentative and should be 
-      recorded in a GitHub Issue for groups that use GitHub and otherwise 
-      on the group's public mail list. Any group participant may object to 
-      a decision reached at an online or in-person meeting within 7 days of 
-      publication of the decision provided that they include clear technical 
-      reasons for their objection. The Chairs will facilitate discussion to try 
-      to resolve the objection according to the <a href="#decision">decision 
-      process</a>.
+      If substantial disagreement remains (e.g. the group is divided) and the
+      group needs to decide an Issue in order to continue to make progress, the
+      Committers will choose an alternative that had substantial support (with
+      a vote of Committers if necessary). Individuals who disagree with the
+      choice are strongly encouraged to take ownership of their objection by
+      taking ownership of an alternative fork. This is explicitly allowed (and
+      preferred to blocking progress) with a goal of letting implementation
+      experience inform which spec is ultimately chosen by the group to move
+      ahead with.
     </p>
-    
     <p>
-      It is the Chairs' responsibility to ensure that the decision process is fair,
-      respects the consensus of the CG, and does not unreasonably favour or 
-      discriminate against any group participant or their employer.
+      Any decisions reached at any meeting are tentative and should be recorded
+      in a GitHub Issue for groups that use GitHub and otherwise on the group's
+      public mail list. Any group participant may object to a decision reached
+      at an online or in-person meeting within 7 days of publication of the
+      decision provided that they include clear technical reasons for their
+      objection. The Chairs will facilitate discussion to try to resolve the
+      objection according to the <a href="#decision">decision process</a>.
     </p>
-
-    
+    <p>
+      It is the Chairs' responsibility to ensure that the decision process is
+      fair, respects the consensus of the CG, and does not unreasonably favour
+      or discriminate against any group participant or their employer.
+    </p>
     <h2 id="chairs">
       Chair Selection
     </h2>
-
     <p>
       Participants in this group choose their Chair(s) and can replace their
       Chair(s) at any time using whatever means they prefer. However, if 5
       participants, no two from the same organisation, call for an election,
       the group must use the following process to replace any current Chair(s)
       with a new Chair, consulting the Community Development Lead on election
-      operations (e.g., voting infrastructure and using 
-      <a href="https://tools.ietf.org/html/rfc2777">RFC 2777</a>).
+      operations (e.g., voting infrastructure and using <a href=
+      "https://tools.ietf.org/html/rfc2777">RFC 2777</a>).
     </p>
-
     <ol>
       <li>Participants announce their candidacies. Participants have 14 days to
       announce their candidacies, but this period ends as soon as all
@@ -328,17 +314,14 @@
       break the tie. An elected Chair may appoint co-Chairs.
       </li>
     </ol>
-
     <p>
       Participants dissatisfied with the outcome of an election may ask the
       Community Development Lead to intervene. The Community Development Lead,
       after evaluating the election, may take any action including no action.
     </p>
-
     <h2 id="charter-change">
       Amendments to this Charter
     </h2>
-    
     <p>
       The group can decide to work on a proposed amended charter, editing the
       text using the <a href="#decision">Decision Process</a> described above.
@@ -353,6 +336,5 @@
       for any substantive changes to the goals, scope, deliverables, decision
       process or rules for amending the charter.
     </p>
-
   </body>
 </html>
