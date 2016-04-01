@@ -87,18 +87,32 @@
     <h3>
       Hand Position API
     </h3>
-    <p class="remove">{TBD: haven't decided yet if the following will be
-    included.}</p>
+
     <p>
-      The new generation of VR headsets benefit from increased external
-      environmental awareness. Depth cameras when integrated into a VR headset
-      or a mobile device enable environment awareness that improves the VR
-      experience significantly. A new generation of VR headsets are emerging
-      that integrate depth sensing into their products (e.g., see the Intel
-      product announced at CES 2016). Another spec in the CG will produce an
-      experimental Web Hand API to allow users to see their hands in the
-      virtual environment.
+      Information about a user’s hand positions in 3 dimensional space 
+      would be useful in VR and in other uses.  This would be like commonly 
+      used pointer events, but for the positions of points on the
+      hands in a 3D frame of reference.  For instance, the hand could be described 
+      in 3D space by points at the fingertip and 3 joints of each finger and 
+      1 point at the base of the palm and 1 on the wrist.  The origin of the
+      space could be a point of view in the device (e.g. from the headset 
+      or from a sensor on another type of device.).
     </p>
+    
+    <p>
+      This API is independent of how hand position is determined.  The VR system
+      could use a 3D camera or motion detection technologies on the hand, or 
+      any other method.  Methods for determining hand position are out of 
+      scope for this group.  In scope is providing hand and finger positions 
+      in space from a reference position. 
+    </p>
+    
+    <p>
+      A related API would draw a wireframe hand in the VR display based on the 
+      hand position data, so the Web page would not have to receive and draw it.  
+      This could be more performant than the page receiving data and drawing itself.
+    </p>
+
     
     <h3>
       Web Security Model for all APIs
@@ -131,8 +145,12 @@
       accessing VR devices from Web pages (Incubator Draft spec).
     </p>
     <p>
-      Web Hand API: <span class="remove">{TBD: needs description if this is
-      going to be included.}</span>
+      Web Hand Position API: API to receive events describing the 3D position 
+      of both hands, with points providing information on each finger segment, 
+      the palm, and wrist.  This information could be used to draw the hands
+      or interpretted to allow hands to provide information to the VR app.
+      A related API could draw the hands in the display without fetching 
+      the data and drawing in the Web page.
     </p>
     <h3 id="non-normative-reports">
       Non-Normative Reports
