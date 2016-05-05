@@ -1,0 +1,588 @@
+<pre class="metadata">
+Title: WebVR
+Status: ED
+ED: https://github.com/mozvr/webvr-spec/
+Shortname: webvr
+Level: 1
+Editor: Vladimir Vukicevic, Mozilla https://mozilla.org/, vladimir@mozilla.com
+Editor: Brandon Jones, Google http://google.com/, bajones@google.com
+Editor: Kearwood Gilbert, Mozilla https://mozilla.org/, kgilbert@mozilla.com
+Editor: Chris Van Wiemeersch, Mozilla https://mozilla.org/, cvan@mozilla.com
+Abstract: This specification describes support for accessing virtual reality devices, including sensors and head-mounted displays on the Web.
+Repository: mozvr/webvr-spec
+Mailing List: web-vr-discuss@mozilla.org
+Mailing List Archives: https://mail.mozilla.org/pipermail/web-vr-discuss/
+</pre>
+
+<pre class="anchors">
+urlPrefix: http://www.w3.org/TR/hr-time/
+    type: typedef; text: DOMHighResTimeStamp
+    type: dfn; text: timestamp origin
+urlPrefix: https://wiki.whatwg.org/wiki/OffscreenCanvas
+    type: typedef; text: OffscreenCanvas
+    type: dfn; text: offscreen canvas
+urlPrefix: https://www.w3.org/TR/gamepad/
+    type: interface; text: Gamepad
+urlPrefix: https://www.w3.org/TR/html51/webappapis.html
+    type: dfn; text: window.requestAnimationFrame
+</pre>
+
+
+# Introduction # {#intro}
+
+Hardware that enables Virtual Reality applications requires high-precision, low-latency interfaces to deliver an acceptable experience.
+Other interfaces, such as device orientation events, can be repurposed to surface VR input but doing so dilutes the interface's original
+intent and often does not provide the precision necessary for high-quality VR. The WebVR API provides purpose-built interfaces
+to VR hardware to allow developers to build compelling, comfortable VR experiences.
+
+
+# DOM Interfaces # {#interfaces}
+
+This section describes the interfaces and functionality added to the DOM to support runtime access to the functionality described above.
+
+
+## VRDisplay ## {#interface-vrdisplay}
+
+The {{VRDisplay}} interface forms the base of all VR devices supported by this API. It includes generic information such as device IDs and descriptions.
+
+<pre class="idl">
+interface VRDisplay : EventTarget {
+  readonly attribute boolean isConnected;
+  readonly attribute boolean isPresenting;
+
+  /**
+   * Dictionary of capabilities describing the VRDisplay.
+   */
+  [Constant] readonly attribute VRDisplayCapabilities capabilities;
+
+  /**
+   * If this VRDisplay supports room-scale experiences, the optional
+   * stage attribute contains details on the room-scale parameters.
+   */
+  readonly attribute VRStageParameters? stageParameters;
+
+  /* Return the current VREyeParameters for the given eye. */
+  VREyeParameters getEyeParameters(VREye whichEye);
+
+  /**
+   * An identifier for this distinct VRDisplay. Used as an
+   * association point in the Gamepad API.
+   */
+  [Constant] readonly attribute unsigned long displayId;
+
+  /**
+   * A display name, a user-readable name identifying it.
+   */
+  [Constant] readonly attribute DOMString displayName;
+
+  /**
+   * Return a VRPose containing the future predicted pose of the VRDisplay
+   * when the current frame will be presented. The value returned will not
+   * change until JavaScript has returned control to the browser.
+   *
+   * The VRPose will contain the position, orientation, velocity,
+   * and acceleration of each of these properties.
+   */
+  [NewObject] VRPose getPose();
+
+  /**
+   * Return the current instantaneous pose of the VRDisplay, with no
+   * prediction applied.
+   */
+  [NewObject] VRPose getImmediatePose();
+
+  /**
+   * Reset the pose for this display, treating its current position and
+   * orientation as the "origin/zero" values. VRPose.position,
+   * VRPose.orientation, and VRStageParameters.sittingToStandingTransform may be
+   * updated when calling resetPose(). This should be called in only
+   * sitting-space experiences.
+   */
+  void resetPose();
+
+  /**
+   * z-depth defining the near plane of the eye view frustum
+   * enables mapping of values in the render target depth
+   * attachment to scene coordinates. Initially set to 0.01.
+   */
+  attribute double depthNear;
+
+  /**
+   * z-depth defining the far plane of the eye view frustum
+   * enables mapping of values in the render target depth
+   * attachment to scene coordinates. Initially set to 10000.0.
+   */
+  attribute double depthFar;
+
+  /**
+   * The callback passed to `requestAnimationFrame` will be called
+   * any time a new frame should be rendered. When the VRDisplay is
+   * presenting the callback will be called at the native refresh
+   * rate of the HMD. When not presenting this function acts
+   * identically to how window.requestAnimationFrame acts. Content should
+   * make no assumptions of frame rate or vsync behavior as the HMD runs
+   * asynchronously from other displays and at differing refresh rates.
+   */
+  [Throws] long requestAnimationFrame(FrameRequestCallback callback);
+
+  /**
+   * Passing the value returned by `requestAnimationFrame` to
+   * `cancelAnimationFrame` will unregister the callback.
+   */
+  [Throws] void cancelAnimationFrame(long handle);
+
+  /**
+   * Begin presenting to the VRDisplay. Must be called in response to a user gesture.
+   * Repeat calls while already presenting will update the VRLayers being displayed.
+   */
+  Promise&lt;void&gt; requestPresent(sequence&lt;VRLayer&gt; layers);
+
+  /**
+   * Stops presenting to the VRDisplay.
+   */
+  Promise&lt;void&gt; exitPresent();
+
+  /**
+   * Get the layers currently being presented.
+   */
+  sequence&lt;VRLayer&gt; getLayers();
+
+  /**
+   * The VRLayer provided to the VRDisplay will be captured and presented
+   * in the HMD. Calling this function has the same effect on the source
+   * canvas as any other operation that uses its source image, and canvases
+   * created without preserveDrawingBuffer set to true will be cleared.
+   */
+  void submitFrame(optional VRPose pose);
+};
+</pre>
+
+### Attributes ### {#vrdisplay-attributes}
+
+<dfn attribute for="VRDisplay">isConnected</dfn>
+The {{isConnected}} attribute MUST return the {{VRDisplay}}'s connected state.
+
+<dfn attribute for="VRDisplay">isPresenting</dfn>
+The {{isPresenting}} attribute MUST return the {{VRDisplay}}'s presentation state.
+
+<dfn attribute for="VRDisplay">capabilities</dfn>
+The {{capabilities}} attribute MUST return the {{VRDisplay}}'s {{VRDisplayCapabilities}} object, a dictionary of capabilities describing the {{VRDisplay}}.
+
+<dfn method for="VRDisplay">getEyeParameters()</dfn>
+Returns the current {{VREyeParameters}} for the given eye. The eye parameters MAY change at any time due to external factors, such as the user changing the IPD with hardware controls. As a result, it is recommended that these values be queried for each frame rather than cached.
+
+<dfn method for="VRDisplay">getPose()</dfn>
+Returns a {{VRPose}} describing the position, orientation, and acceleration of the {{VRDisplay}} that should be used when rendering the next frame of a scene. The User Agent MAY optionally use predictive techniques to estimate what the pose will be at the time that the next frame will be displayed to the user. The pose returned MUST NOT change until JavaScript has returned control to the browser.
+
+<dfn method for="VRDisplay">getImmediatePose()</dfn>
+Returns a {{VRPose}} describing the position, orientation, and acceleration of the {{VRDisplay}} at the time when the call was made. The User Agent SHOULD NOT use predictive techniques when constructing the pose.
+
+<dfn method for="VRDisplay">resetPose()</dfn>
+Reset the pose for the {{VRDisplay}}, treating its current position and orientation as the "origin/zero" values. Future poses returned from {{getPose()}} and {{getImmediatePose()}} will describe positions relative to the {{VRDisplay}}'s position when {{resetPose()}} was last called and will treat the display's yaw when {{resetPose()}} was last called as the forward orientation. The {{VRDisplay}}'s reported roll and pitch do not change when {{resetPose()}} is called as they are relative to gravity. Calling {{resetPose()}} may change the {{sittingToStandingTransform}} matrix of the {{VRStageParameters}}.
+
+<dfn method for="VRDisplay">requestAnimationFrame()</dfn>
+Functionally equivalent to <a href="https://www.w3.org/TR/html51/webappapis.html#animation-frames">window.requestAnimationFrame</a> when the {{VRDisplay}} is not presenting. When the {{VRDisplay}} is presenting the callback is called at the native refresh rate of the {{VRDisplay}}.
+
+<dfn method for="VRDisplay">cancelAnimationFrame()</dfn>
+Passing the value returned by {{requestAnimationFrame()}} to will unregister the callback.
+
+<dfn method for="VRDisplay">requestPresent()</dfn>
+Begins presenting the contents of the specified {{VRLayer}} array on the {{VRDisplay}} and fulfills the returned promise when presentation has begun. If {{canPresent}} is false the promise MUST be rejected. If the {{VRLayer}} array contains more than {{maxLayers}} elements the promise MUST be rejected. The user agent MAY reject the promise for any other reason. If the {{VRDisplay}} is already presenting when {{requestPresent()}} is called the {{VRDisplay}} SHOULD update the {{VRLayer}} list being presented. If a call to {{requestPresent()}} is rejected while the {{VRDisplay}} is already presenting the {{VRDisplay}} MUST end presentation.
+
+<dfn method for="VRDisplay">exitPresent()</dfn>
+Ends presentation to the {{VRDisplay}} and fulfills the returned promise when fully exited. If the {{VRDisplay}} is not presenting the promise MUST be rejected.
+
+<dfn method for="VRDisplay">getLayers()</dfn>
+Returns an array with the {{VRLayer}} currently being presented. MUST return an empty array if the {{VRDisplay}} is not currently presenting. If the {{VRDisplay}} is presenting MUST return an array containing the {{VRLayer}}s last passed to {{requestPresent()}}.
+
+<dfn method for="VRDisplay">submitFrame()</dfn>
+Captures the current state of the {{VRLayer}} currently being presented and displays it on the {{VRDisplay}}. Optionally a {{VRPose}} can be provided to describe the pose used to render the {{VRLayer}} contents, which MAY be used by the user agent to manipulate the layer contents to improve percived latency. If no {{VRPose}} is provided the last pose returned by {{getPose()}} will be used.
+
+## VRLayer ## {#interface-vrlayer}
+
+The {{VRLayer}} interface is provided to a {{VRDisplay}} and presented in the HMD.
+
+<pre class="idl" id="vrlayer-dictionary">
+typedef (HTMLCanvasElement or
+         OffscreenCanvas) VRSource;
+
+dictionary VRLayer {
+  VRSource? source = null;
+
+  sequence&lt;float&gt;? leftBounds = null;
+  sequence&lt;float&gt;? rightBounds = null;
+};
+</pre>
+
+### Attributes ### {#vrlayer-attributes}
+
+<dfn attribute for="VRLayer">source</dfn>
+The {{source}} attribute defines the canvas whose contents will be presented by the {{VRDisplay}} when {{VRDisplay}}.{{submitFrame()}} is called.
+
+<dfn attribute for="VRLayer">leftBounds</dfn>
+The {{leftBounds}} attribute contains four values defining the texture bounds within the {{source}} canvas to present to the eye in UV space: <code>[0]</code> left offset of the bounds (0.0 - 1.0); <code>[1]</code> top offset of the bounds (0.0 - 1.0); <code>[2]</code> width of the bounds (0.0 - 1.0); <code>[3]</code> height of the bounds (0.0 - 1.0). The {{leftBounds}} MUST default to <code>[0.0, 0.0, 0.5, 1.0]</code>.
+
+<dfn attribute for="VRLayer">rightBounds</dfn>
+The {{rightBounds}} attribute contains four values defining the texture bounds rectangle within the {{source}} canvas to present to the eye in UV space: <code>[0]</code> left offset of the bounds (0.0 - 1.0); <code>[1]</code> top offset of the bounds (0.0 - 1.0); <code>[2]</code> width of the bounds (0.0 - 1.0); <code>[3]</code> height of the bounds (0.0 - 1.0). The {{rightBounds}} MUST default to <code>[0.5, 0.0, 0.5, 1.0]</code>.
+
+
+## VRDisplayCapabilities ## {#interface-vrdisplaycapabilities}
+
+The {{VRDisplayCapabilities}} interface describes the capabilities of a {{VRDisplay}}. These are expected to be static per-device/per-user.
+
+<pre class="idl">
+interface VRDisplayCapabilities {
+  readonly attribute boolean hasPosition;
+  readonly attribute boolean hasOrientation;
+  readonly attribute boolean hasExternalDisplay;
+  readonly attribute boolean canPresent;
+  readonly attribute unsigned long maxLayers;
+};
+</pre>
+
+### Attributes ### {#vrdisplaycapabilities-attributes}
+
+<dfn attribute for="VRLayer">hasPosition</dfn>
+The {{hasPosition}} attribute MUST return whether the {{VRDisplay}} is capable of tracking its position.
+
+<dfn attribute for="VRLayer">hasOrientation</dfn>
+The {{hasOrientation}} attribute MUST return whether the {{VRDisplay}} is capable of tracking its orientation.
+
+<dfn attribute for="VRLayer">hasExternalDisplay</dfn>
+The {{hasExternalDisplay}} attribute MUST return whether the {{VRDisplay}} is separate from the device's primary display. If presenting VR content will obscure other content on the device, this should be false. When false, the application should not attempt to mirror VR content or update non-VR UI because that content will not be visible.
+
+<dfn attribute for="VRLayer">canPresent</dfn>
+The {{canPresent}} attribute MUST return whether the {{VRDisplay}} is capable of presenting content to an HMD or similar device. Can be used to indicate "magic window" devices that are capable of 6DoF tracking but for which {{VRDisplay}}.{{requestPresent()}} is not meaningful. If false then calls to {{VRDisplay}}.{{requestPresent()}} should always fail, and {{VRDisplay}}.{{getEyeParameters()}} should return NULL.
+
+<dfn attribute for="VRLayer">maxLayers</dfn>
+Indicates the maximum length of the array that {{requestPresent()}} will accept. MUST be 1 if {{canPresent}} is true, 0 otherwise.
+
+Note: Future revisions of this spec may allow multiple layers to enable more complex rendering effects such as compositing WebGL and DOM elements together. That functionality is not allowed by this revision of the spec.
+
+
+## VREye ## {#interface-vreye}
+
+<pre class="idl">
+enum VREye {
+  "left",
+  "right"
+};
+</pre>
+
+## VRFieldOfView ## {#interface-interface-vrfieldofview}
+
+The {{VRFieldOfView}} interface represents a field of view, as given by 4 degrees describing the view from a center point.
+
+<pre class="idl">
+interface VRFieldOfView {
+  readonly attribute double upDegrees;
+  readonly attribute double rightDegrees;
+  readonly attribute double downDegrees;
+  readonly attribute double leftDegrees;
+};
+</pre>
+
+<div class="example">
+The following code snippet creates a WebGL-compatible projection matrix from a
+{{VRFieldOfView}}.
+
+<pre class="lang-js">
+function fieldOfViewToProjectionMatrix (fov, zNear, zFar) {
+  var upTan = Math.tan(fov.upDegrees * Math.PI / 180.0);
+  var downTan = Math.tan(fov.downDegrees * Math.PI / 180.0);
+  var leftTan = Math.tan(fov.leftDegrees * Math.PI / 180.0);
+  var rightTan = Math.tan(fov.rightDegrees * Math.PI / 180.0);
+  var xScale = 2.0 / (leftTan + rightTan);
+  var yScale = 2.0 / (upTan + downTan);
+
+  var out = new Float32Array(16);
+  out[0] = xScale;
+  out[1] = 0.0;
+  out[2] = 0.0;
+  out[3] = 0.0;
+  out[4] = 0.0;
+  out[5] = yScale;
+  out[6] = 0.0;
+  out[7] = 0.0;
+  out[8] = -((leftTan - rightTan) * xScale * 0.5);
+  out[9] = ((upTan - downTan) * yScale * 0.5);
+  out[10] = -(zNear + zFar) / (zFar - zNear);
+  out[11] = -1.0;
+  out[12] = 0.0;
+  out[13] = 0.0;
+  out[14] = -(2.0 * zFar * zNear) / (zFar - zNear);
+  out[15] = 0.0;
+
+  return out;
+}
+</pre>
+</div>
+
+
+## VRPose ## {#interface-vrpose}
+
+The VRPose interface represents a sensor's state at a given timestamp.
+
+<pre class="idl">
+interface VRPose {
+  readonly attribute DOMHighResTimeStamp timestamp;
+
+  readonly attribute Float32Array? position;
+  readonly attribute Float32Array? linearVelocity;
+  readonly attribute Float32Array? linearAcceleration;
+
+  readonly attribute Float32Array? orientation;
+  readonly attribute Float32Array? angularVelocity;
+  readonly attribute Float32Array? angularAcceleration;
+};
+</pre>
+
+### Attributes ### {#vrpose-state-attributes}
+
+<dfn attribute for="VRPose">timestamp</dfn>
+Monotonically increasing value that allows the author to determine if position
+state data been updated from the hardware. Since values are monotonically
+increasing, they can be compared to determine the ordering of updates, as newer
+values will always be greater than or equal to older values.
+
+<dfn attribute for="VRPose">position</dfn>
+Position of the {{VRDisplay}} at {{timestamp}} as a 3D vector. Position is given
+in meters from an origin point, which is either the position the sensor was
+first read at or the position of the sensor at the point that {{resetPose()}}
+was last called. The coordinate system uses these axis definitions:
+
+* Positive X is to the user's right.
+* Positive Y is up.
+* Positive Z is behind the user.
+
+All positions are given relative to the identity orientation in sitting space.
+Transforming this point with {{VRStageParameters}}.{{sittingToStandingTransform}}</code>
+converts this to standing space. MAY be NULL if the sensor is incapable of
+providing positional data. User agents MAY provide emulated position values
+through techniques such as neck modeling, but when doing so SHOULD report
+{{VRDisplayCapabilities}}.{{hasPosition}} as false. When not NULL MUST be a
+three-element array.
+
+<dfn attribute for="VRPose">linearVelocity</dfn>
+Linear velocity of the sensor at {{timestamp}} meters per second. MAY be NULL if
+the sensor is incapable of providing linear velocity. When not NULL MUST be a
+three-element array.
+
+<dfn attribute for="VRPose">linearAcceleration</dfn>
+Linear acceleration of the sensor at {{timestamp}} given in meters per second.
+MAY be NULL if the sensor is incapable of providing linear acceleration. When
+not NULL MUST be a three-element array.
+
+<dfn attribute for="VRPose">orientation</dfn>
+Orientation of the sensor at {{timestamp}} as a quaternion. The orientation yaw
+(rotation around the Y axis) is relative to the initial yaw of the sensor when
+it was first read or the yaw of the sensor at the point that {{resetPose()}} was
+last called. An orientation of {x: 0, y: 0, z: 0, w: 1} is considered to be
+"forward." MAY be NULL if the sensor is incapable of providing orientation data.
+When not NULL MUST be a four-element array.
+
+<dfn attribute for="VRPose">angularVelocity</dfn>
+Angular velocity of the sensor at {{timestamp}} given in radians per second. MAY
+be NULL if the sensor is incapable of providing angular velocity. When not NULL
+MUST be a three-element array.
+
+<dfn attribute for="VRPose">angularAcceleration</dfn>
+Angular acceleration of the sensor at {{timestamp}} given in radians per second.
+MAY be NULL if the sensor is incapable of providing angular acceleration. When
+not NULL MUST be a three-element array.
+
+<div class="example">
+The following code snippet creates a WebGL-compatible matrix from a
+{{VRPose}}:
+
+<pre class="lang-js">
+function poseToMatrix (pose) {
+    var out = new Float32Array(16);
+
+    // If the orientation or position are NULL, provide defaults.
+    var q = pose.orientation ? pose.orientation : [0, 0, 0, 1];
+    var v = pose.position ? pose.position : [0, 0, 0];
+
+    // Compute some values for the quaternion math.
+    var x2 = q[0] + q[0];
+    var y2 = q[1] + q[1];
+    var z2 = q[2] + q[2];
+
+    var xx = q[0] * x2;
+    var xy = q[0] * y2;
+    var xz = q[0] * z2;
+    var yy = q[1] * y2;
+    var yz = q[1] * z2;
+    var zz = q[2] * z2;
+    var wx = q[3] * x2;
+    var wy = q[3] * y2;
+    var wz = q[3] * z2;
+
+    out[0] = 1 - (yy + zz);
+    out[1] = xy + wz;
+    out[2] = xz - wy;
+    out[3] = 0;
+    out[4] = xy - wz;
+    out[5] = 1 - (xx + zz);
+    out[6] = yz + wx;
+    out[7] = 0;
+    out[8] = xz + wy;
+    out[9] = yz - wx;
+    out[10] = 1 - (xx + yy);
+    out[11] = 0;
+    out[12] = v[0];
+    out[13] = v[1];
+    out[14] = v[2];
+    out[15] = 1;
+
+    return out;
+}
+</pre>
+</div>
+
+
+## VREyeParameters ## {#interface-vreyeparameters}
+
+The {{VREyeParameters}} interface represents all the information required to correctly render a scene for a given eye.
+
+<pre class="idl">
+interface VREyeParameters {
+  [Constant, Cached] readonly attribute Float32Array offset;
+
+  [Constant, Cached] readonly attribute VRFieldOfView fieldOfView;
+
+  [Constant, Cached] readonly attribute unsigned long renderWidth;
+  [Constant, Cached] readonly attribute unsigned long renderHeight;
+};
+</pre>
+
+### Attributes ### {#vreyeparameters-attributes}
+
+<dfn attribute for="VREyeParameters">offset</dfn>
+Offset from the center point between the users eyes to the center of the eye in meters. This value SHOULD represent half of the user's interpupillary distance (IPD), but MAY also represent the distance from the center point of the headset to the center point of the lens for the given eye. Values for the left eye MUST be negative; values for the right eye MUST be positive.
+
+<dfn attribute for="VREyeParameters">fieldOfView</dfn>
+The current field of view for the eye, as the user adjusts her headset IPD.
+
+<dfn attribute for="VREyeParameters">renderWidth</dfn>
+Describes the recommended render target width of each eye viewport, in pixels. If multiple eyes are rendered in a single render target, then the render target should be made large enough to fit both viewports. The {{renderWidth}} for the left eye and right eye MUST NOT overlap, and the {{renderWidth}} for the right eye MUST be to the right of the {{renderWidth}} for the left eye.
+
+<dfn attribute for="VREyeParameters">renderHeight</dfn>
+Describes the recommended render target height of each eye viewport, in pixels. If multiple eyes are rendered in a single render target, then the render target should be made large enough to fit both viewports. The {{renderWidth}} for the left eye and right eye MUST NOT overlap, and the {{renderWidth}} for the right eye MUST be to the right of the {{renderWidth}} for the left eye.
+
+<div class="example">
+Many HMDs will distort the rendered image to counteract undesired effects introduced by the headset optics. Because of this the optimal resolution of the canvas will often be larger than the HMD's physical resolution to ensure that the final image presented to the user has a 1:1 pixel ratio at the center of the user's view. The optimal canvas resolution can be calculated from the {{renderWidth}} and {{renderHeight}} for both eyes as follows:
+
+<pre class="lang-js">
+var leftEye = vrDisplay.getEyeParameters("left");
+var rightEye = vrDisplay.getEyeParameters("right");
+
+canvas.width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
+canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
+</pre>
+</div>
+
+
+## VRStageParameters ## {#interface-vrstageparameters}
+
+The {{VRStageParameters}} interface represents the values describing the the stage/play area for devices that support room-scale experiences.
+
+<pre class="idl">
+interface VRStageParameters {
+  readonly attribute Float32Array sittingToStandingTransform;
+
+  readonly attribute float sizeX;
+  readonly attribute float sizeZ;
+};
+</pre>
+
+### Attributes ### {#vrstageparameters-attributes}
+
+<dfn attribute for="VREyeParameters">sittingToStandingTransform</dfn>
+The {{sittingToStandingTransform}} attribute is a 16-element array containing the components of a 4×4 transform matrix. This matrix transforms the sitting-space position returned by {{getPose()}}/{{getImmediatePose()}} to a standing-space position.
+
+<dfn attribute for="VREyeParameters">sizeX</dfn>
+Width of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.
+
+<dfn attribute for="VREyeParameters">sizeZ</dfn>
+Depth of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.
+
+
+## Navigator Interface extension ## {#interface-navigator}
+
+<pre class="idl">
+partial interface Navigator {
+  Promise&lt;sequence&lt;VRDisplay&gt;&gt; getVRDisplays();
+  readonly attribute sequence&lt;VRDisplay&gt; activeVRDisplays;
+};
+</pre>
+
+### Attributes ### {#navigator-attributes}
+
+<dfn method for="Navigator" id="navigator-getvrdisplays-attribute">getVRDisplays()</dfn>
+Return a Promise which resolves to a list of available {{VRDisplay}}s. Applications should iterate over the list and correlate devices that share {{displayId}}s to access the full capabilities of a device.
+
+<dfn attribute for="Navigator" id="navigator-activevrdisplays-attribute">activeVRDisplays</dfn>
+{{activeVRDisplays}} includes every {{VRDisplay}} that is currently presenting.
+
+<div class="example">
+The following code finds the first available {{VRDisplay}}.
+
+<pre class="lang-js">
+var vrDisplay;
+
+navigator.getVRDisplays().then(function (displays) {
+  // Use the first display in the array if one is available. If multiple
+  // displays are present, you may want to present the user with a way to
+  // select which display to use.
+  if (displays.length > 0) {
+    vrDisplay = displays[0];
+  }
+});
+</pre>
+</div>
+
+
+## Window Interface extension ## {#interface-window}
+
+<pre class="idl">
+partial interface Window {
+  attribute EventHandler onvrdisplayconnected;
+  attribute EventHandler onvrdisplaydisconnected;
+  attribute EventHandler onvrdisplaypresentchange;
+};
+</pre>
+
+
+## Gamepad Interface extension ## {#interface-gamepad}
+
+<pre class="idl">
+partial interface Gamepad {
+  [Constant] readonly attribute unsigned long displayId;
+};
+</pre>
+
+### Attributes ### {#gamepad-attributes}
+
+<dfn attribute for="Gamepad" id="gamepad-getvrdisplays-attribute">displayId</dfn>
+Return the {{displayId}} for the associated {{VRDisplay}}.
+
+
+# Security Considerations # {#security}
+
+While not directly affecting the API interface and Web IDL, the security model should maintains the user's expectations of privacy on the Web:
+
+* The Gamepad API will be updated such that the gamepad inputs and HMD pose are available to only the focused tab.
+  * Non-focused tabs are allowed to enumerate {{Gamepad}}s and {{VRDisplay}}s but will see last received state or default values.
+  * All gamepads are assumed to be owned by the focused tabs, so can use them for secure inputs such as password fields.
+* Trusted UI elements presented by the browser would not be accessible by the GL context associated to the {{VRDisplay}} exposed to untrusted content.
+* Trusted UI would be rendered by chrome-only JavaScript code that has an independent GL context.
+* A "VR Compositor" runs asynchronously from content, responsible for compositing the trusted and untrusted content. If content is not performant or does not submit frames, the browser should be able to continue presenting a responsive front-end.
+* In the event that the content process terminates unexpectedly, the browser will not exit VR mode. The VR compositor will destroy the content layer while continuing to present the trusted UI elements of the browser.
+* The HMD pose and other VR inputs are only updated for the focused WebVR page. This can be implemented in the same manner as keyboard and mouse input.
+* Content does not need to request user permission to present to the VR HMD; however, any UI presented normally by the browser for 2D page content while loading a page or following links will be presented within the HMD to ensure that the user wishes to trust and visit the VR site.
+* If the user is uncomfortable in a VR world, she cannot look away from the display as it occupies her entire field of view. Instead the user is instructed to close her eyes and perform an action that does not require her vision to escape to a default page (such as pressing a reserved button or performing a gesture with motion controls).
+* To prevent CORS-related vulnerabilities, each page will see an independent instance of objects returned by the WebVR API, such as {{VRDisplay}}. Care must be taken to ensure that attributes such as {{VRLayer}}.{{source}} set by one page can not be read by another.
+
+
+# Acknowledgements # {#ack}

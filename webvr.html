@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>WebVR</title>
+    <meta charset="utf-8">
+    <script>
+      // This redirects to the root while preserving the query string and hash.
+      window.location.pathname = window.location.pathname.replace(
+        '/webvr.html',
+        window.location.protocol === 'file:' ? '/index.html' : '/'
+      );
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

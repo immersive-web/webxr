@@ -1,0 +1,2433 @@
+<!doctype html><html lang="en">
+ <head>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+  <title>WebVR</title>
+  <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+<style data-fill-with="stylesheet">/******************************************************************************
+ *                   Style sheet for the W3C specifications                   *
+ *
+ * Special classes handled by this style sheet include:
+ *
+ * Indices
+ *   - .toc for the Table of Contents (<ol class="toc">)
+ *     + <span class="secno"> for the section numbers
+ *   - #toc for the Table of Contents (<nav id="toc">)
+ *   - ul.index for Indices (<a href="#ref">term</a><span>, in §N.M</span>)
+ *   - table.index for Index Tables (e.g. for properties or elements)
+ *
+ * Structural Markup
+ *   - table.data for general data tables
+ *     -> use 'scope' attribute, <colgroup>, <thead>, and <tbody> for best results !
+ *     -> use <table class='complex data'> for extra-complex tables
+ *     -> use <td class='long'> for paragraph-length cell content
+ *     -> use <td class='pre'> when manual line breaks/indentation would help readability
+ *   - dl.switch for switch statements
+ *   - ol.algorithm for algorithms (helps to visualize nesting)
+ *   - .figure and .caption (HTML4) and figure and figcaption (HTML5)
+ *     -> .sidefigure for right-floated figures
+ *   - ins/del
+ *
+ * Code
+ *   - pre and code
+ *
+ * Special Sections
+ *   - .note       for informative notes             (div, p, span, aside, details)
+ *   - .example    for informative examples          (div, p, pre, span)
+ *   - .issue      for issues                        (div, p, span)
+ *   - .advisement for loud normative statements     (div, p, strong)
+ *   - .annoying-warning for spec obsoletion notices (div, aside, details)
+ *
+ * Definition Boxes
+ *   - pre.def   for WebIDL definitions
+ *   - table.def for tables that define other entities (e.g. CSS properties)
+ *   - dl.def    for definition lists that define other entitles (e.g. HTML elements)
+ *
+ * Numbering
+ *   - .secno for section numbers in .toc and headings (<span class='secno'>3.2</span>)
+ *   - .marker for source-inserted example/figure/issue numbers (<span class='marker'>Issue 4</span>)
+ *   - ::before styled for CSS-generated issue/example/figure numbers:
+ *     -> Documents wishing to use this only need to add
+ *        figcaption::before,
+ *        .caption::before { content: "Figure "  counter(figure);  }
+ *        .example::before { content: "Example " counter(example); }
+ *        .issue::before   { content: "Issue "   counter(issue);   }
+ *
+ * Header Stuff (ignore, just don't conflict with these classes)
+ *   - .head for the header
+ *   - .copyright for the copyright
+ *
+ * Miscellaneous
+ *   - .overlarge for things that should be as wide as possible, even if
+ *     that overflows the body text area. This can be used on an item or
+ *     on its container, depending on the effect desired.
+ *     Note that this styling basically doesn't help at all when printing,
+ *     since A4 paper isn't much wider than the max-width here.
+ *     It's better to design things to fit into a narrower measure if possible.
+ *   - js-added ToC jump links (see fixup.js)
+ *
+ ******************************************************************************/
+
+/******************************************************************************/
+/*                                   Body                                     */
+/******************************************************************************/
+
+	body {
+		counter-reset: example figure issue;
+
+		/* Layout */
+		max-width: 50em;               /* limit line length to 50em for readability   */
+		margin: 0 auto;                /* center text within page                     */
+		padding: 1.6em 1.5em 2em 50px; /* assume 16px font size for downlevel clients */
+		padding: 1.6em 1.5em 2em calc(26px + 1.5em); /* leave space for status flag     */
+
+		/* Typography */
+		line-height: 1.5;
+		font-family: sans-serif;
+		widows: 2;
+		orphans: 2;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+		hyphens: auto;
+
+		/* Colors */
+		color: black;
+		background: white top left fixed no-repeat;
+		background-size: 25px auto;
+	}
+
+
+/******************************************************************************/
+/*                         Front Matter & Navigation                          */
+/******************************************************************************/
+
+/** Header ********************************************************************/
+
+	div.head { margin-bottom: 1em }
+	div.head hr { border-style: solid; }
+
+	div.head h1 {
+		font-weight: bold;
+		margin: 0 0 .1em;
+		font-size: 220%;
+	}
+
+	div.head h2 { margin-bottom: 1.5em;}
+
+/** W3C Logo ******************************************************************/
+
+	.head .logo {
+		float: right;
+		margin: 0.4rem 0 0.2rem .4rem;
+	}
+
+	.head img[src*="logos/W3C"] {
+		display: block;
+		border: solid #1a5e9a;
+		border-width: .65rem .7rem .6rem;
+		border-radius: .4rem;
+		background: #1a5e9a;
+		color: white;
+		font-weight: bold;
+	}
+
+	.head a:hover > img[src*="logos/W3C"],
+	.head a:focus > img[src*="logos/W3C"] {
+		opacity: .8;
+	}
+
+	.head a:active > img[src*="logos/W3C"] {
+		background: #c00;
+		border-color: #c00;
+	}
+
+	/* see also additional rules in Link Styling section */
+
+/** Copyright *****************************************************************/
+
+	p.copyright,
+	p.copyright small { font-size: small }
+
+/** Back to Top / ToC Toggle **************************************************/
+
+	@media print {
+		#toc-nav {
+			display: none;
+		}
+	}
+	@media not print {
+		#toc-nav {
+			position: fixed;
+			z-index: 2;
+			bottom: 0; left: 0;
+			margin: 0;
+			min-width: 1.33em;
+			border-top-right-radius: 2rem;
+			box-shadow: 0 0 2px;
+			font-size: 1.5em;
+			color: black;
+		}
+		#toc-nav > a {
+			display: block;
+			white-space: nowrap;
+
+			height: 1.33em;
+			padding: .1em 0.3em;
+			margin: 0;
+
+			background: white;
+			box-shadow: 0 0 2px;
+			border: none;
+			border-top-right-radius: 1.33em;
+			background: white;
+		}
+		#toc-nav > #toc-jump {
+			padding-bottom: 2em;
+			margin-bottom: -1.9em;
+		}
+
+		#toc-nav > a:hover,
+		#toc-nav > a:focus {
+			background: #f8f8f8;
+		}
+		#toc-nav > a:not(:hover):not(:focus) {
+			color: #707070;
+		}
+
+		/* statusbar gets in the way on keyboard focus; remove once browsers fix */
+		#toc-nav > a[href="#toc"]:not(:hover):focus:last-child {
+			padding-bottom: 1.5rem;
+		}
+
+		#toc-nav:not(:hover) > a:not(:focus) > span + span {
+			/* Ideally this uses :focus-within on #toc-nav */
+			display: none;
+		}
+		#toc-nav > a > span + span {
+			padding-right: 0.2em;
+		}
+
+		#toc-toggle-inline {
+			vertical-align: 0.05em;
+			font-size: 80%;
+			color: gray;
+			color: hsla(203,20%,40%,.7);
+			border-style: none;
+			background: transparent;
+			position: relative;
+		}
+		#toc-toggle-inline:hover:not(:active),
+		#toc-toggle-inline:focus:not(:active) {
+			text-shadow: 1px 1px silver;
+			top: -1px;
+			left: -1px;
+		}
+
+		#toc-nav :active {
+			color: #C00;
+		}
+	}
+
+/** ToC Sidebar ***************************************************************/
+
+	/* Floating sidebar */
+	@media screen {
+		body.toc-sidebar #toc {
+			position: fixed;
+			top: 0; bottom: 0;
+			left: 0;
+			width: 23.5em;
+			max-width: 80%;
+			max-width: calc(100% - 2em - 26px);
+			overflow: auto;
+			padding: 0 1em;
+			padding-left: 42px;
+			padding-left: calc(1em + 26px);
+			background: inherit;
+			background-color: #f7f8f9;
+			z-index: 1;
+			box-shadow: -.1em 0 .25em rgba(0,0,0,.1) inset;
+		}
+		body.toc-sidebar #toc h2 {
+			margin-top: .8rem;
+			font-variant: small-caps;
+			font-variant: all-small-caps;
+			text-transform: lowercase;
+			font-weight: bold;
+			color: gray;
+			color: hsla(203,20%,40%,.7);
+		}
+		body.toc-sidebar #toc-jump:not(:focus) {
+			width: 0;
+			height: 0;
+			padding: 0;
+			position: absolute;
+			overflow: hidden;
+		}
+	}
+	/* Hide main scroller when only the ToC is visible anyway */
+	@media screen and (max-width: 28em) {
+		body.toc-sidebar {
+			overflow: hidden;
+		}
+	}
+
+	/* Sidebar with its own space */
+	@media screen and (min-width: 78em) {
+		body:not(.toc-inline) #toc {
+			position: fixed;
+			top: 0; bottom: 0;
+			left: 0;
+			width: 23.5em;
+			overflow: auto;
+			padding: 0 1em;
+			padding-left: 42px;
+			padding-left: calc(1em + 26px);
+			background: inherit;
+			background-color: #f7f8f9;
+			z-index: 1;
+			box-shadow: -.1em 0 .25em rgba(0,0,0,.1) inset;
+		}
+		body:not(.toc-inline) #toc h2 {
+			margin-top: .8rem;
+			font-variant: small-caps;
+			font-variant: all-small-caps;
+			text-transform: lowercase;
+			font-weight: bold;
+			color: gray;
+			color: hsla(203,20%,40%,.7);
+		}
+
+		body:not(.toc-inline) {
+			padding-left: 29em;
+		}
+		/* See also Overflow section at the bottom */
+
+		body:not(.toc-inline) #toc-jump:not(:focus) {
+			width: 0;
+			height: 0;
+			padding: 0;
+			position: absolute;
+			overflow: hidden;
+		}
+	}
+	@media screen and (min-width: 90em) {
+		body:not(.toc-inline) {
+			margin: 0 4em;
+		}
+	}
+
+/******************************************************************************/
+/*                                Sectioning                                  */
+/******************************************************************************/
+
+/** Headings ******************************************************************/
+
+	h1, h2, h3, h4, h5, h6, dt {
+		page-break-after: avoid;
+		page-break-inside: avoid;
+		font: 100% sans-serif;   /* Reset all font styling to clear out UA styles */
+		font-family: inherit;    /* Inherit the font family. */
+		line-height: 1.2;        /* Keep wrapped headings compact */
+		hyphens: manual;         /* Hyphenated headings look weird */
+	}
+
+	h2, h3, h4, h5, h6 {
+		margin-top: 3rem;
+	}
+
+	h1, h2, h3 {
+		color: #005A9C;
+		background: transparent;
+	}
+
+	h1 { font-size: 170%; }
+	h2 { font-size: 140%; }
+	h3 { font-size: 120%; }
+	h4 { font-weight: bold; }
+	h5 { font-style: italic; }
+	h6 { font-variant: small-caps; }
+	dt { font-weight: bold; }
+
+/** Subheadings ***************************************************************/
+
+	h1 + h2,
+	#subtitle {
+		/* #subtitle is a subtitle in an H2 under the H1 */
+		margin-top: 0;
+	}
+	h2 + h3,
+	h3 + h4,
+	h4 + h5,
+	h5 + h6 {
+		margin-top: 1.2em; /* = 1 x line-height */
+	}
+
+/** Section divider ***********************************************************/
+
+	:not(.head) > hr {
+		font-size: 1.5em;
+		text-align: center;
+		margin: 1em auto;
+		height: auto;
+		border: transparent solid 0;
+		background: transparent;
+	}
+	:not(.head) > hr::before {
+		content: "\2727\2003\2003\2727\2003\2003\2727";
+	}
+
+/******************************************************************************/
+/*                            Paragraphs and Lists                            */
+/******************************************************************************/
+
+	p {
+		margin: 1em 0;
+	}
+
+	dd > p:first-child,
+	li > p:first-child {
+		margin-top: 0;
+	}
+
+	ul, ol {
+		margin-left: 0;
+		padding-left: 2em;
+	}
+
+	li {
+		margin: 0.25em 0 0.5em;
+		padding: 0;
+	}
+
+	dl dd {
+		margin: 0 0 .5em 2em;
+	}
+
+	.head dd + dd { /* compact for header */
+		margin-top: -.5em;
+	}
+
+	/* Style for algorithms */
+	ol.algorithm ol:not(.algorithm) {
+	 border-left: 0.5em solid #DEF;
+	}
+
+	/* Style for switch/case <dl>s */
+	dl.switch > dd > ol.only {
+	 margin-left: 0;
+	}
+	dl.switch > dd > ol.algorithm {
+	 margin-left: -2em;
+	}
+	dl.switch {
+	 padding-left: 2em;
+	}
+	dl.switch > dt {
+	 text-indent: -1.5em;
+	 margin-top: 1em;
+	}
+	dl.switch > dt + dt {
+	 margin-top: 0;
+	}
+	dl.switch > dt::before {
+	 content: '\21AA';
+	 padding: 0 0.5em 0 0;
+	 display: inline-block;
+	 width: 1em;
+	 text-align: right;
+	 line-height: 0.5em;
+	}
+
+/** Terminology Markup ********************************************************/
+
+
+/******************************************************************************/
+/*                                 Inline Markup                              */
+/******************************************************************************/
+
+/** Terminology Markup ********************************************************/
+	dfn   { /* Defining instance */
+		font-weight: bolder;
+	}
+	a > i { /* Instance of term */
+		font-style: normal;
+	}
+	dt dfn code, code.idl {
+		font-size: inherit;
+	}
+	dfn var {
+		font-style: normal;
+	}
+
+/** Change Marking ************************************************************/
+
+	del { color: red;  text-decoration: line-through; }
+	ins { color: #080; text-decoration: underline;    }
+
+/** Miscellaneous improvements to inline formatting ***************************/
+
+	sup {
+		vertical-align: super;
+		font-size: 80%
+	}
+
+/******************************************************************************/
+/*                                    Code                                    */
+/******************************************************************************/
+
+/** General monospace/pre rules ***********************************************/
+
+	pre, code, samp {
+		font-family: Menlo, Consolas, "DejaVu Sans Mono", Monaco, monospace;
+		font-size: .9em;
+		page-break-inside: avoid;
+		hyphens: none;
+		text-transform: none;
+	}
+	pre code,
+	code code {
+		font-size: 100%;
+	}
+
+	pre {
+		margin-top: 1em;
+		margin-bottom: 1em;
+		overflow: auto;
+	}
+
+/** Inline Code fragments *****************************************************/
+
+  /* Do something nice. */
+
+/******************************************************************************/
+/*                                    Links                                   */
+/******************************************************************************/
+
+/** General Hyperlinks ********************************************************/
+
+	/* We hyperlink a lot, so make it less intrusive */
+	a[href] {
+		color: #034575;
+		text-decoration: none;
+		border-bottom: 1px solid #707070;
+		/* Need a bit of extending for it to look okay */
+		padding: 0 1px 0;
+		margin: 0 -1px 0;
+	}
+	a:visited {
+		border-bottom-color: #BBB;
+	}
+
+	/* Use distinguishing colors when user is interacting with the link */
+	a[href]:focus,
+	a[href]:hover {
+		background: #f8f8f8;
+		background: rgba(75%, 75%, 75%, .25);
+		border-bottom-width: 3px;
+		margin-bottom: -2px;
+	}
+	a[href]:active {
+		color: #C00;
+		border-color: #C00;
+	}
+
+	/* Backout above styling for W3C logo */
+	.head .logo,
+	.head .logo a {
+		border: none;
+		text-decoration: none;
+		background: transparent;
+	}
+
+/******************************************************************************/
+/*                                    Images                                  */
+/******************************************************************************/
+
+	img {
+		border-style: none;
+	}
+
+	/* For autogen numbers, add
+	   .caption::before, figcaption::before { content: "Figure " counter(figure) ". "; }
+	*/
+
+	figure, .figure, .sidefigure {
+		page-break-inside: avoid;
+		text-align: center;
+		margin: 2.5em 0;
+	}
+	.figure img,    .sidefigure img,    figure img,
+	.figure object, .sidefigure object, figure object {
+		max-width: 100%;
+		margin: auto;
+	}
+	.figure pre, .sidefigure pre, figure pre {
+		text-align: left;
+		display: table;
+		margin: 1em auto;
+	}
+	.figure table, figure table {
+		margin: auto;
+	}
+	@media screen and (min-width: 20em) {
+		.sidefigure {
+			float: right;
+			width: 50%;
+			margin: 0 0 0.5em 0.5em
+		}
+	}
+	.caption, figcaption, caption {
+		font-style: italic;
+		font-size: 90%;
+	}
+	.caption::before, figcaption::before, figcaption > .marker {
+		font-weight: bold;
+	}
+	.caption, figcaption {
+		counter-increment: figure;
+	}
+
+	/* DL list is indented 2em, but figure inside it is not */
+	dd > .figure, dd > figure { margin-left: -2em }
+
+/******************************************************************************/
+/*                             Colored Boxes                                  */
+/******************************************************************************/
+
+	.issue, .note, .example, .advisement, blockquote {
+		padding: .5em;
+		border: .5em;
+		border-left-style: solid;
+		page-break-inside: avoid;
+	}
+	span.issue, span.note {
+		padding: .1em .5em .15em;
+		border-right-style: solid;
+	}
+
+	.issue,
+	.note,
+	.example,
+	.advisement,
+	blockquote {
+		margin: 1em auto;
+	}
+	.note  > p:first-child,
+	.issue > p:first-child,
+	blockquote > :first-child {
+		margin-top: 0;
+	}
+	blockquote > :last-child {
+		margin-bottom: 0;
+	}
+
+/** Blockquotes ***************************************************************/
+
+	blockquote {
+		border-color: silver;
+	}
+
+/** Open issue ****************************************************************/
+
+	.issue {
+		border-color: #E05252;
+		background: #FBE9E9;
+		counter-increment: issue;
+		overflow: auto;
+	}
+	.issue::before, .issue > .marker {
+		text-transform: uppercase;
+		color: #AE1E1E;
+		padding-right: 1em;
+		text-transform: uppercase;
+	}
+	/* Add .issue::before { content: "Issue " counter(issue); } for autogen numbers,
+	   or use class="marker" to mark up the issue number in source. */
+
+/** Example *******************************************************************/
+
+	.example {
+		border-color: #E0CB52;
+		background: #FCFAEE;
+		counter-increment: example;
+		overflow: auto;
+		clear: both;
+	}
+	.example::before, .example > .marker {
+		text-transform: uppercase;
+		color: #827017;
+		min-width: 7.5em;
+		display: block;
+	}
+	/* Add .example::before { content: "Example " counter(example); } for autogen numbers,
+	   or use class="marker" to mark up the example number in source. */
+
+/** Non-normative Note ********************************************************/
+
+	.note {
+		border-color: #52E052;
+		background: #E9FBE9;
+		overflow: auto;
+	}
+
+	.note::before, .note > .marker,
+	details.note > summary::before,
+	details.note > summary > .marker {
+		text-transform: uppercase;
+		display: block;
+		color: hsl(120, 70%, 30%);
+	}
+	/* Add .note::before { content: "Note"; } for autogen label,
+	   or use class="marker" to mark up the label in source. */
+
+	details.note > summary {
+		display: block;
+		color: hsl(120, 70%, 30%);
+	}
+	details.note[open] > summary {
+		border-bottom: 1px silver solid;
+	}
+
+/** Advisement Box ************************************************************/
+	/*  for attention-grabbing normative statements */
+
+	.advisement {
+		border-color: orange;
+		border-style: none solid;
+		background: #FFEECC;
+	}
+	strong.advisement {
+		display: block;
+		text-align: center;
+	}
+	.advisement > .marker {
+		color: #B35F00;
+	}
+
+/** Spec Obsoletion Notice ****************************************************/
+	/* obnoxious obsoletion notice for older/abandoned specs. */
+
+	details {
+		display: block;
+	}
+	summary {
+		font-weight: bolder;
+	}
+
+	.annoying-warning:not(details),
+	details.annoying-warning:not([open]) > summary,
+	details.annoying-warning[open] {
+		background: #fdd;
+		color: red;
+		font-weight: bold;
+		padding: .75em 1em;
+		border: thick red;
+		border-style: solid;
+		border-radius: 1em;
+	}
+	.annoying-warning :last-child {
+		margin-bottom: 0;
+	}
+
+@media not print {
+	details.annoying-warning[open] {
+		position: fixed;
+		left: 1em;
+		right: 1em;
+		bottom: 1em;
+		z-index: 1000;
+	}
+}
+
+	details.annoying-warning:not([open]) > summary {
+		text-align: center;
+	}
+
+/** Entity Definition Boxes ***************************************************/
+
+	.def {
+		padding: .5em 1em;
+		background: #DEF;
+		margin: 1.2em 0;
+		border-left: 0.5em solid #8CCBF2;
+	}
+
+/******************************************************************************/
+/*                                    Tables                                  */
+/******************************************************************************/
+
+	th, td {
+		text-align: left;
+		text-align: start;
+	}
+
+/** Property/Descriptor Definition Tables *************************************/
+
+	table.def {
+		/* inherits .def box styling, see above */
+		width: 100%;
+		border-spacing: 0;
+	}
+
+	table.def td,
+	table.def th {
+		padding: 0.5em;
+		vertical-align: baseline;
+		border-bottom: 1px solid #bbd7e9;
+	}
+
+	table.def > tbody > tr:last-child th,
+	table.def > tbody > tr:last-child td {
+		border-bottom: 0;
+	}
+
+	table.def th {
+		font-style: italic;
+		font-weight: normal;
+		padding-left: 1em;
+		width: 3em;
+	}
+
+	/* For when values are extra-complex and need formatting for readability */
+	table td.pre {
+		white-space: pre-wrap;
+	}
+
+	/* A footnote at the bottom of a def table */
+	table.def           td.footnote {
+		padding-top: 0.6em;
+	}
+	table.def           td.footnote::before {
+		content: " ";
+		display: block;
+		height: 0.6em;
+		width: 4em;
+		border-top: thin solid;
+	}
+
+/** Data tables (and properly marked-up index tables) *************************/
+	/*
+		 <table class="data"> highlights structural relationships in a table
+		 when correct markup is used (e.g. thead/tbody, th vs. td, scope attribute)
+
+		 Use class="complex data" for particularly complicated tables --
+		 (This will draw more lines: busier, but clearer.)
+
+		 Use class="long" on table cells with paragraph-like contents
+		 (This will adjust text alignment accordingly.)
+		 Alternately use class="longlastcol" on tables, to have the last column assume "long".
+	*/
+
+	table {
+		word-wrap: normal;
+		overflow-wrap: normal;
+		hyphens: manual;
+	}
+
+	table.data,
+	table.index {
+		margin: 1em auto;
+		border-collapse: collapse;
+		border: hidden;
+		width: 100%;
+	}
+	table.data caption,
+	table.index caption {
+		max-width: 50em;
+		margin: 0 auto 1em;
+	}
+
+	table.data td,  table.data th,
+	table.index td, table.index th {
+		padding: 0.5em 1em;
+		border-width: 1px;
+		border-color: silver;
+		border-top-style: solid;
+	}
+
+	table.data thead td:empty {
+		padding: 0;
+		border: 0;
+	}
+
+	table.data  thead,
+	table.index thead,
+	table.data  tbody,
+	table.index tbody {
+		border-bottom: 2px solid;
+	}
+
+	table.data colgroup,
+	table.index colgroup {
+		border-left: 2px solid;
+	}
+
+	table.data  tbody th:first-child,
+	table.index tbody th:first-child  {
+		border-right: 2px solid;
+		border-top: 1px solid silver;
+		padding-right: 1em;
+	}
+
+	table.data th[colspan],
+	table.data td[colspan] {
+		text-align: center;
+	}
+
+	table.complex.data th,
+	table.complex.data td {
+		border: 1px solid silver;
+		text-align: center;
+	}
+
+	table.data.longlastcol td:last-child,
+	table.data td.long {
+	 vertical-align: baseline;
+	 text-align: left;
+	}
+
+	table.data img {
+		vertical-align: middle;
+	}
+
+
+/*
+Alternate table alignment rules
+
+	table.data,
+	table.index {
+		text-align: center;
+	}
+
+	table.data  thead th[scope="row"],
+	table.index thead th[scope="row"] {
+		text-align: right;
+	}
+
+	table.data  tbody th:first-child,
+	table.index tbody th:first-child  {
+		text-align: right;
+	}
+
+Possible extra rowspan handling
+
+	table.data  tbody th[rowspan]:not([rowspan='1']),
+	table.index tbody th[rowspan]:not([rowspan='1']),
+	table.data  tbody td[rowspan]:not([rowspan='1']),
+	table.index tbody td[rowspan]:not([rowspan='1']) {
+		border-left: 1px solid silver;
+	}
+
+	table.data  tbody th[rowspan]:first-child,
+	table.index tbody th[rowspan]:first-child,
+	table.data  tbody td[rowspan]:first-child,
+	table.index tbody td[rowspan]:first-child{
+		border-left: 0;
+		border-right: 1px solid silver;
+	}
+*/
+
+/******************************************************************************/
+/*                                  Indices                                   */
+/******************************************************************************/
+
+
+/** Table of Contents *********************************************************/
+
+	.toc a {
+		/* More spacing; use padding to make it part of the click target. */
+		padding-top: 0.1rem;
+		/* Larger, more consistently-sized click target */
+		display: block;
+		/* Reverse color scheme */
+		color: black;
+		border-color: #3980B5;
+	}
+	.toc a:visited {
+		border-color: #054572;
+	}
+	.toc a:not(:focus):not(:hover) {
+		/* Allow colors to cascade through from link styling */
+		border-bottom-color: transparent;
+	}
+
+	.toc, .toc ol, .toc ul, .toc li {
+		list-style: none; /* Numbers must be inlined into source */
+		/* because generated content isn't search/selectable and markers can't do multilevel yet */
+		margin:  0;
+		padding: 0;
+		line-height: 1.1rem; /* consistent spacing */
+	}
+
+	/* ToC not indented until third level, but font style & margins show hierarchy */
+	.toc > li             { font-weight: bold;   }
+	.toc > li li          { font-weight: normal; }
+	.toc > li li li       { font-style:  italic; }
+	.toc > li li li li    { font-style:  normal; }
+	.toc > li li li li li { font-style:  italic;
+	                        font-size:   85%;    }
+
+	.toc > li             { margin: 1.5rem 0;    }
+	.toc > li li          { margin: 0.3rem 0;    }
+	.toc > li li li       { margin-left: 2rem;   }
+
+	/* Section numbers in a column of their own */
+	.toc .secno {
+		float: left;
+		width: 4rem;
+		white-space: nowrap;
+	}
+	.toc > li li li li .secno {
+		font-size: 85%;
+	}
+	.toc > li li li li li .secno {
+		font-size: 100%;
+	}
+
+	:not(li) > .toc              { margin-left:  5rem; }
+	.toc .secno                  { margin-left: -5rem; }
+	.toc > li li li .secno       { margin-left: -7rem; }
+	.toc > li li li li .secno    { margin-left: -9rem; }
+	.toc > li li li li li .secno { margin-left: -11rem; }
+
+	/* Tighten up indentation in narrow ToCs */
+	@media (max-width: 30em) {
+		:not(li) > .toc              { margin-left:  4rem; }
+		.toc .secno                  { margin-left: -4rem; }
+		.toc > li li li              { margin-left:  1rem; }
+		.toc > li li li .secno       { margin-left: -5rem; }
+		.toc > li li li li .secno    { margin-left: -6rem; }
+		.toc > li li li li li .secno { margin-left: -7rem; }
+	}
+	@media screen and (min-width: 78em) {
+		body:not(.toc-inline) :not(li) > .toc              { margin-left:  4rem; }
+		body:not(.toc-inline) .toc .secno                  { margin-left: -4rem; }
+		body:not(.toc-inline) .toc > li li li              { margin-left:  1rem; }
+		body:not(.toc-inline) .toc > li li li .secno       { margin-left: -5rem; }
+		body:not(.toc-inline) .toc > li li li li .secno    { margin-left: -6rem; }
+		body:not(.toc-inline) .toc > li li li li li .secno { margin-left: -7rem; }
+	}
+	body.toc-sidebar #toc :not(li) > .toc              { margin-left:  4rem; }
+	body.toc-sidebar #toc .toc .secno                  { margin-left: -4rem; }
+	body.toc-sidebar #toc .toc > li li li              { margin-left:  1rem; }
+	body.toc-sidebar #toc .toc > li li li .secno       { margin-left: -5rem; }
+	body.toc-sidebar #toc .toc > li li li li .secno    { margin-left: -6rem; }
+	body.toc-sidebar #toc .toc > li li li li li .secno { margin-left: -7rem; }
+
+	.toc li {
+		clear: both;
+	}
+
+
+/** Index *********************************************************************/
+
+	/* Index Lists: Layout */
+	ul.index       { margin-left: 0; columns: 15em; text-indent: 1em hanging; }
+	ul.index li    { margin-left: 0; list-style: none; break-inside: avoid; }
+	ul.index li li { margin-left: 1em }
+	ul.index dl    { margin-top: 0; }
+	ul.index dt    { margin: .2em 0 .2em 20px;}
+	ul.index dd    { margin: .2em 0 .2em 40px;}
+	/* Index Lists: Typography */
+	ul.index ul,
+	ul.index dl { font-size: smaller; }
+	@media not print {
+		ul.index li span {
+			white-space: nowrap;
+			color: transparent; }
+		ul.index li a:hover + span,
+		ul.index li a:focus + span {
+			color: #707070;
+		}
+	}
+
+/** Index Tables *****************************************************/
+	/* See also the data table styling section, which this effectively subclasses */
+
+	table.index {
+		font-size: small;
+		border-collapse: collapse;
+		border-spacing: 0;
+		text-align: left;
+		margin: 1em 0;
+	}
+
+	table.index td,
+	table.index th {
+		padding: 0.4em;
+	}
+
+	table.index tr:hover td:not([rowspan]),
+	table.index tr:hover th:not([rowspan]) {
+		background: #f7f8f9;
+	}
+
+	/* The link in the first column in the property table (formerly a TD) */
+	table.index th:first-child a {
+		font-weight: bold;
+	}
+
+/******************************************************************************/
+/*                                    Print                                   */
+/******************************************************************************/
+
+	@media print {
+		/* Pages have their own margins. */
+		html {
+			margin: 0;
+		}
+		/* Serif for print. */
+		body {
+			font-family: serif;
+		}
+	}
+	@page {
+		margin: 1.5cm 1.1cm;
+	}
+
+/******************************************************************************/
+/*                                    Legacy                                  */
+/******************************************************************************/
+
+	/* This rule is inherited from past style sheets. No idea what it's for. */
+	.hide { display: none }
+
+
+
+/******************************************************************************/
+/*                             Overflow Control                               */
+/******************************************************************************/
+
+	.figure .caption, .sidefigure .caption, figcaption {
+		/* in case figure is overlarge, limit caption to 50em */
+		max-width: 50rem;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.overlarge > table {
+		/* limit preferred width of table */
+		max-width: 50em;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	@media (min-width: 55em) {
+		.overlarge {
+			margin-left: calc(13px + 26.5rem - 50vw);
+			margin-right: calc(13px + 26.5rem - 50vw);
+			max-width: none;
+		}
+	}
+	@media screen and (min-width: 78em) {
+		body:not(.toc-inline) .overlarge {
+			/* 30.5em body padding 50em content area */
+			margin-left: calc(40em - 50vw) !important;
+			margin-right: calc(40em - 50vw) !important;
+		}
+	}
+	@media screen and (min-width: 90em) {
+		body:not(.toc-inline) .overlarge {
+			/* 4em html margin 30.5em body padding 50em content area */
+			margin-left: 0 !important;
+			margin-right: calc(84.5em - 100vw) !important;
+		}
+	}
+
+	@media not print {
+		.overlarge {
+			overflow-x: auto;
+			/* See Lea Verou's explanation background-attachment:
+			 * http://lea.verou.me/2012/04/background-attachment-local/
+			 *
+			background: top left  / 4em 100% linear-gradient(to right,  #ffffff, rgba(255, 255, 255, 0)) local,
+			            top right / 4em 100% linear-gradient(to left, #ffffff, rgba(255, 255, 255, 0)) local,
+			            top left  / 1em 100% linear-gradient(to right,  #c3c3c5, rgba(195, 195, 197, 0)) scroll,
+			            top right / 1em 100% linear-gradient(to left, #c3c3c5, rgba(195, 195, 197, 0)) scroll,
+			            white;
+			background-repeat: no-repeat;
+			*/
+		}
+	}
+
+/******************************************************************************/
+/*                                  Bikeshed                                  */
+/******************************************************************************/
+
+	/* Style for paragraphs I know are in MD-genned lists */
+	/* This is a weird hack for me not yet following the commonmark spec
+	   regarding paragraph and lists. */
+	[data-md] > :first-child {
+		margin-top: 0;
+	}
+	[data-md] > :last-child {
+		margin-bottom: 0;
+	}
+
+/** Inline CSS fragments ******************************************************/
+
+	.css.css, .property.property, .descriptor.descriptor {
+		color: #005a9c;
+		font-size: inherit;
+		font-family: inherit;
+	}
+	.css::before, .property::before, .descriptor::before {
+		content: "‘";
+	}
+	.css::after, .property::after, .descriptor::after {
+		content: "’";
+	}
+	.property, .descriptor {
+		/* Don't wrap property and descriptor names */
+		white-space: nowrap;
+	}
+	.type { /* CSS value <type> */
+		font-style: italic;
+	}
+	pre .property::before, pre .property::after {
+		content: "";
+	}
+
+/** Autolinks produced using Bikeshed *****************************************/
+
+	[data-link-type="property"]::before,
+	[data-link-type="propdesc"]::before,
+	[data-link-type="descriptor"]::before,
+	[data-link-type="value"]::before,
+	[data-link-type="function"]::before,
+	[data-link-type="at-rule"]::before,
+	[data-link-type="selector"]::before,
+	[data-link-type="maybe"]::before {
+		content: "‘";
+	}
+	[data-link-type="property"]::after,
+	[data-link-type="propdesc"]::after,
+	[data-link-type="descriptor"]::after,
+	[data-link-type="value"]::after,
+	[data-link-type="function"]::after,
+	[data-link-type="at-rule"]::after,
+	[data-link-type="selector"]::after,
+	[data-link-type="maybe"]::after {
+		content: "’";
+	}
+
+	[data-link-type].production::before,
+	[data-link-type].production::after,
+	.prod [data-link-type]::before,
+	.prod [data-link-type]::after {
+		content: "";
+	}
+
+	[data-link-type=element],
+	[data-link-type=element-attr] {
+		font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
+		font-size: .9em;
+	}
+	[data-link-type=element]::before { content: "<" }
+	[data-link-type=element]::after  { content: ">" }
+
+	[data-link-type=biblio] {
+		white-space: pre;
+	}
+
+/** Self-Links ****************************************************************/
+/* Auto-generated links from an element to its own anchor, for usability */
+
+	.heading, .issue, .note, .example, li, dt {
+		position: relative;
+	}
+	a.self-link {
+		position: absolute;
+		top: 0;
+		left: calc(-1 * (3.5rem - 26px));
+		width: calc(3.5rem - 26px);
+		height: 2em;
+		text-align: center;
+		border: none;
+		transition: opacity .2s;
+		opacity: .5;
+	}
+	a.self-link:hover {
+		opacity: 1;
+	}
+	.heading > a.self-link {
+		font-size: 83%;
+	}
+	li > a.self-link {
+		left: calc(-1 * (3.5rem - 26px) - 2em);
+	}
+	dfn > a.self-link {
+		top: auto;
+		left: auto;
+		opacity: 0;
+		width: 1.5em;
+		height: 1.5em;
+		background: gray;
+		color: white;
+		font-style: normal;
+		transition: opacity .2s, background-color .2s, color .2s;
+	}
+	dfn:hover > a.self-link {
+		opacity: 1;
+	}
+	dfn > a.self-link:hover {
+		color: black;
+	}
+
+	a.self-link::before            { content: "¶"; }
+	.heading > a.self-link::before { content: "§"; }
+	dfn > a.self-link::before      { content: "#"; }
+
+/** Counters ******************************************************************/
+/* Adds the auto-genned issue/example counters,
+   until Bikeshed fills in manual ones. */
+	.issue:not(.no-marker)::before {
+		content: "Issue " counter(issue);
+	}
+
+	.example:not(.no-marker)::before {
+		content: "Example";
+		content: "Example " counter(example);
+	}
+	.invalid.example:not(.no-marker)::before,
+	.illegal.example:not(.no-marker)::before {
+		content: "Invalid Example";
+		content: "Invalid Example" counter(example);
+	}
+
+
+
+/********************************************
+ Remember to fix the logo section when copypasting freshly.
+ */
+</style>
+  <meta content="Bikeshed 1.0.0" name="generator">
+<style>
+        .dfn-panel {
+            display: inline-block;
+            position: absolute;
+            z-index: 35;
+            height: auto;
+            width: -webkit-fit-content;
+            max-width: 300px;
+            max-height: 500px;
+            overflow: auto;
+            padding: 0.5em 0.75em;
+            font: small Helvetica Neue, sans-serif, Droid Sans Fallback;
+            background: #DDDDDD;
+            color: black;
+            border: outset 0.2em;
+        }
+        .dfn-panel:not(.on) { display: none; }
+        .dfn-panel * { margin: 0; padding: 0; text-indent: 0; }
+        .dfn-panel > b { display: block; }
+        .dfn-panel a { color: black; }
+        .dfn-panel a:not(:hover) { text-decoration: none !important; border-bottom: none !important; }
+        .dfn-panel > b + b { margin-top: 0.25em; }
+        .dfn-panel > span { display: list-item; list-style: inside; }
+        .dfn-panel.activated {
+            display: inline-block;
+            position: fixed;
+            left: .5em;
+            bottom: .5em;
+            margin: 0 auto;
+            max-width: calc(100vw - 1.5em - .4em - .5em);
+            max-height: 30vh;
+        }
+
+        .dfn-paneled { cursor: pointer; }
+        </style>
+<style>.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #ffffff; }
+.highlight .c { color: #708090 } /* Comment */
+.highlight .k { color: #990055 } /* Keyword */
+.highlight .l { color: #000000 } /* Literal */
+.highlight .n { color: #0077aa } /* Name */
+.highlight .o { color: #999999 } /* Operator */
+.highlight .p { color: #999999 } /* Punctuation */
+.highlight .cm { color: #708090 } /* Comment.Multiline */
+.highlight .cp { color: #708090 } /* Comment.Preproc */
+.highlight .c1 { color: #708090 } /* Comment.Single */
+.highlight .cs { color: #708090 } /* Comment.Special */
+.highlight .kc { color: #990055 } /* Keyword.Constant */
+.highlight .kd { color: #990055 } /* Keyword.Declaration */
+.highlight .kn { color: #990055 } /* Keyword.Namespace */
+.highlight .kp { color: #990055 } /* Keyword.Pseudo */
+.highlight .kr { color: #990055 } /* Keyword.Reserved */
+.highlight .kt { color: #990055 } /* Keyword.Type */
+.highlight .ld { color: #000000 } /* Literal.Date */
+.highlight .m { color: #000000 } /* Literal.Number */
+.highlight .s { color: #a67f59 } /* Literal.String */
+.highlight .na { color: #0077aa } /* Name.Attribute */
+.highlight .nc { color: #0077aa } /* Name.Class */
+.highlight .no { color: #0077aa } /* Name.Constant */
+.highlight .nd { color: #0077aa } /* Name.Decorator */
+.highlight .ni { color: #0077aa } /* Name.Entity */
+.highlight .ne { color: #0077aa } /* Name.Exception */
+.highlight .nf { color: #0077aa } /* Name.Function */
+.highlight .nl { color: #0077aa } /* Name.Label */
+.highlight .nn { color: #0077aa } /* Name.Namespace */
+.highlight .py { color: #0077aa } /* Name.Property */
+.highlight .nt { color: #669900 } /* Name.Tag */
+.highlight .nv { color: #0077aa } /* Name.Variable */
+.highlight .ow { color: #999999 } /* Operator.Word */
+.highlight .mb { color: #000000 } /* Literal.Number.Bin */
+.highlight .mf { color: #000000 } /* Literal.Number.Float */
+.highlight .mh { color: #000000 } /* Literal.Number.Hex */
+.highlight .mi { color: #000000 } /* Literal.Number.Integer */
+.highlight .mo { color: #000000 } /* Literal.Number.Oct */
+.highlight .sb { color: #a67f59 } /* Literal.String.Backtick */
+.highlight .sc { color: #a67f59 } /* Literal.String.Char */
+.highlight .sd { color: #a67f59 } /* Literal.String.Doc */
+.highlight .s2 { color: #a67f59 } /* Literal.String.Double */
+.highlight .se { color: #a67f59 } /* Literal.String.Escape */
+.highlight .sh { color: #a67f59 } /* Literal.String.Heredoc */
+.highlight .si { color: #a67f59 } /* Literal.String.Interpol */
+.highlight .sx { color: #a67f59 } /* Literal.String.Other */
+.highlight .sr { color: #a67f59 } /* Literal.String.Regex */
+.highlight .s1 { color: #a67f59 } /* Literal.String.Single */
+.highlight .ss { color: #a67f59 } /* Literal.String.Symbol */
+.highlight .vc { color: #0077aa } /* Name.Variable.Class */
+.highlight .vg { color: #0077aa } /* Name.Variable.Global */
+.highlight .vi { color: #0077aa } /* Name.Variable.Instance */
+.highlight .il { color: #000000 } /* Literal.Number.Integer.Long */
+        .highlight { background: hsl(24, 20%, 95%); }
+        code.highlight { padding: .1em; border-radius: .3em; }
+        pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em 0; overflow: auto; border-radius: 0; }
+        </style>
+ <body class="h-entry">
+  <div class="head">
+   <p data-fill-with="logo"></p>
+   <h1 class="p-name no-ref" id="title">WebVR</h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-04-01">1 April 2016</time></span></h2>
+   <div data-fill-with="spec-metadata">
+    <dl>
+     <dt>This version:
+     <dd><a class="u-url" href="https://github.com/mozvr/webvr-spec/">https://github.com/mozvr/webvr-spec/</a>
+     <dt>Feedback:
+     <dd><span><a href="mailto:web-vr-discuss@mozilla.org?subject=%5Bwebvr%5D%20YOUR%20TOPIC%20HERE">web-vr-discuss@mozilla.org</a> with subject line “<kbd>[webvr] <i data-lt="">… message topic …</i></kbd>” (<a href="https://mail.mozilla.org/pipermail/web-vr-discuss/" rel="discussion">archives</a>)</span>
+     <dt>Issue Tracking:
+     <dd><a href="https://github.com/mozvr/webvr-spec/issues/">GitHub</a>
+     <dt class="editor">Editors:
+     <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:vladimir@mozilla.com">Vladimir Vukicevic</a> (<a class="p-org org" href="https://mozilla.org/">Mozilla</a>)
+     <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:bajones@google.com">Brandon Jones</a> (<a class="p-org org" href="http://google.com/">Google</a>)
+     <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:kgilbert@mozilla.com">Kearwood Gilbert</a> (<a class="p-org org" href="https://mozilla.org/">Mozilla</a>)
+     <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:cvan@mozilla.com">Chris Van Wiemeersch</a> (<a class="p-org org" href="https://mozilla.org/">Mozilla</a>)
+    </dl>
+   </div>
+   <div data-fill-with="warning"></div>
+   <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" src="https://licensebuttons.net/p/zero/1.0/80x15.png"></a> To the extent possible under law, the editors have waived all copyright
+and related or neighboring rights to this work.
+In addition, as of 1 April 2016,
+the editors have made this specification available under the <a href="http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
+which is available at http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
+Parts of this work may be from another specification document.  If so, those parts are instead covered by the license of that specification document. </p>
+   <hr title="Separator for header">
+  </div>
+  <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
+  <div class="p-summary" data-fill-with="abstract">
+   <p>This specification describes support for accessing virtual reality devices, including sensors and head-mounted displays on the Web.</p>
+  </div>
+  <div data-fill-with="at-risk"></div>
+  <nav data-fill-with="table-of-contents" id="toc">
+   <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
+   <ol class="toc" role="directory">
+    <li><a href="#intro"><span class="secno">1</span> <span class="content">Introduction</span></a>
+    <li>
+     <a href="#interfaces"><span class="secno">2</span> <span class="content">DOM Interfaces</span></a>
+     <ol class="toc">
+      <li>
+       <a href="#interface-vrdisplay"><span class="secno">2.1</span> <span class="content">VRDisplay</span></a>
+       <ol class="toc">
+        <li><a href="#vrdisplay-attributes"><span class="secno">2.1.1</span> <span class="content">Attributes</span></a>
+       </ol>
+      <li>
+       <a href="#interface-vrlayer"><span class="secno">2.2</span> <span class="content">VRLayer</span></a>
+       <ol class="toc">
+        <li><a href="#vrlayer-attributes"><span class="secno">2.2.1</span> <span class="content">Attributes</span></a>
+       </ol>
+      <li>
+       <a href="#interface-vrdisplaycapabilities"><span class="secno">2.3</span> <span class="content">VRDisplayCapabilities</span></a>
+       <ol class="toc">
+        <li><a href="#vrdisplaycapabilities-attributes"><span class="secno">2.3.1</span> <span class="content">Attributes</span></a>
+       </ol>
+      <li><a href="#interface-vreye"><span class="secno">2.4</span> <span class="content">VREye</span></a>
+      <li><a href="#interface-interface-vrfieldofview"><span class="secno">2.5</span> <span class="content">VRFieldOfView</span></a>
+      <li>
+       <a href="#interface-vrpose"><span class="secno">2.6</span> <span class="content">VRPose</span></a>
+       <ol class="toc">
+        <li><a href="#vrpose-state-attributes"><span class="secno">2.6.1</span> <span class="content">Attributes</span></a>
+       </ol>
+      <li>
+       <a href="#interface-vreyeparameters"><span class="secno">2.7</span> <span class="content">VREyeParameters</span></a>
+       <ol class="toc">
+        <li><a href="#vreyeparameters-attributes"><span class="secno">2.7.1</span> <span class="content">Attributes</span></a>
+       </ol>
+      <li>
+       <a href="#interface-vrstageparameters"><span class="secno">2.8</span> <span class="content">VRStageParameters</span></a>
+       <ol class="toc">
+        <li><a href="#vrstageparameters-attributes"><span class="secno">2.8.1</span> <span class="content">Attributes</span></a>
+       </ol>
+      <li>
+       <a href="#interface-navigator"><span class="secno">2.9</span> <span class="content">Navigator Interface extension</span></a>
+       <ol class="toc">
+        <li><a href="#navigator-attributes"><span class="secno">2.9.1</span> <span class="content">Attributes</span></a>
+       </ol>
+      <li><a href="#interface-window"><span class="secno">2.10</span> <span class="content">Window Interface extension</span></a>
+      <li>
+       <a href="#interface-gamepad"><span class="secno">2.11</span> <span class="content">Gamepad Interface extension</span></a>
+       <ol class="toc">
+        <li><a href="#gamepad-attributes"><span class="secno">2.11.1</span> <span class="content">Attributes</span></a>
+       </ol>
+     </ol>
+    <li><a href="#security"><span class="secno">3</span> <span class="content">Security Considerations</span></a>
+    <li><a href="#ack"><span class="secno">4</span> <span class="content">Acknowledgements</span></a>
+    <li><a href="#conformance"><span class="secno"></span> <span class="content"> Conformance</span></a>
+    <li>
+     <a href="#index"><span class="secno"></span> <span class="content">Index</span></a>
+     <ol class="toc">
+      <li><a href="#index-defined-here"><span class="secno"></span> <span class="content">Terms defined by this specification</span></a>
+      <li><a href="#index-defined-elsewhere"><span class="secno"></span> <span class="content">Terms defined by reference</span></a>
+     </ol>
+    <li>
+     <a href="#references"><span class="secno"></span> <span class="content">References</span></a>
+     <ol class="toc">
+      <li><a href="#normative"><span class="secno"></span> <span class="content">Normative References</span></a>
+     </ol>
+    <li><a href="#idl-index"><span class="secno"></span> <span class="content">IDL Index</span></a>
+   </ol>
+  </nav>
+  <main>
+   <h2 class="heading settled" data-level="1" id="intro"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#intro"></a></h2>
+   <p>Hardware that enables Virtual Reality applications requires high-precision, low-latency interfaces to deliver an acceptable experience.
+Other interfaces, such as device orientation events, can be repurposed to surface VR input but doing so dilutes the interface’s original
+intent and often does not provide the precision necessary for high-quality VR. The WebVR API provides purpose-built interfaces
+to VR hardware to allow developers to build compelling, comfortable VR experiences.</p>
+   <h2 class="heading settled" data-level="2" id="interfaces"><span class="secno">2. </span><span class="content">DOM Interfaces</span><a class="self-link" href="#interfaces"></a></h2>
+   <p>This section describes the interfaces and functionality added to the DOM to support runtime access to the functionality described above.</p>
+   <h3 class="heading settled" data-level="2.1" id="interface-vrdisplay"><span class="secno">2.1. </span><span class="content">VRDisplay</span><a class="self-link" href="#interface-vrdisplay"></a></h3>
+   <p>The <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-1">VRDisplay</a></code> interface forms the base of all VR devices supported by this API. It includes generic information such as device IDs and descriptions.</p>
+<pre class="idl def">interface <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export="" data-lt="VRDisplay" id="vrdisplay">VRDisplay<span class="dfn-panel" data-deco=""><b><a href="#vrdisplay">#vrdisplay</a></b><b>Referenced in:</b><span><a href="#ref-for-vrdisplay-1">2.1. VRDisplay</a></span><span><a href="#ref-for-vrdisplay-2">2.1.1. Attributes</a> <a href="#ref-for-vrdisplay-3">(2)</a> <a href="#ref-for-vrdisplay-4">(3)</a> <a href="#ref-for-vrdisplay-5">(4)</a> <a href="#ref-for-vrdisplay-6">(5)</a> <a href="#ref-for-vrdisplay-7">(6)</a> <a href="#ref-for-vrdisplay-8">(7)</a> <a href="#ref-for-vrdisplay-9">(8)</a> <a href="#ref-for-vrdisplay-10">(9)</a> <a href="#ref-for-vrdisplay-11">(10)</a> <a href="#ref-for-vrdisplay-12">(11)</a> <a href="#ref-for-vrdisplay-13">(12)</a> <a href="#ref-for-vrdisplay-14">(13)</a> <a href="#ref-for-vrdisplay-15">(14)</a> <a href="#ref-for-vrdisplay-16">(15)</a> <a href="#ref-for-vrdisplay-17">(16)</a> <a href="#ref-for-vrdisplay-18">(17)</a> <a href="#ref-for-vrdisplay-19">(18)</a> <a href="#ref-for-vrdisplay-20">(19)</a> <a href="#ref-for-vrdisplay-21">(20)</a> <a href="#ref-for-vrdisplay-22">(21)</a> <a href="#ref-for-vrdisplay-23">(22)</a></span><span><a href="#ref-for-vrdisplay-24">2.2. VRLayer</a></span><span><a href="#ref-for-vrdisplay-25">2.2.1. Attributes</a> <a href="#ref-for-vrdisplay-26">(2)</a></span><span><a href="#ref-for-vrdisplay-27">2.3. VRDisplayCapabilities</a></span><span><a href="#ref-for-vrdisplay-28">2.3.1. Attributes</a> <a href="#ref-for-vrdisplay-29">(2)</a> <a href="#ref-for-vrdisplay-30">(3)</a> <a href="#ref-for-vrdisplay-31">(4)</a> <a href="#ref-for-vrdisplay-32">(5)</a> <a href="#ref-for-vrdisplay-33">(6)</a> <a href="#ref-for-vrdisplay-34">(7)</a></span><span><a href="#ref-for-vrdisplay-35">2.6.1. Attributes</a></span><span><a href="#ref-for-vrdisplay-36">2.9. Navigator Interface extension</a> <a href="#ref-for-vrdisplay-37">(2)</a></span><span><a href="#ref-for-vrdisplay-38">2.9.1. Attributes</a> <a href="#ref-for-vrdisplay-39">(2)</a> <a href="#ref-for-vrdisplay-40">(3)</a></span><span><a href="#ref-for-vrdisplay-41">2.11.1. Attributes</a></span><span><a href="#ref-for-vrdisplay-42">3. Security Considerations</a> <a href="#ref-for-vrdisplay-43">(2)</a> <a href="#ref-for-vrdisplay-44">(3)</a></span></span></dfn> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget">EventTarget</a> {
+  readonly attribute boolean <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="boolean " href="#dom-vrdisplay-isconnected" id="ref-for-dom-vrdisplay-isconnected-1">isConnected</a>;
+  readonly attribute boolean <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="boolean " href="#dom-vrdisplay-ispresenting" id="ref-for-dom-vrdisplay-ispresenting-1">isPresenting</a>;
+
+  /**
+   * Dictionary of capabilities describing the VRDisplay.
+   */
+  [Constant] readonly attribute <a data-link-type="idl-name" href="#vrdisplaycapabilities" id="ref-for-vrdisplaycapabilities-1">VRDisplayCapabilities</a> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="VRDisplayCapabilities " href="#dom-vrdisplay-capabilities" id="ref-for-dom-vrdisplay-capabilities-1">capabilities</a>;
+
+  /**
+   * If this VRDisplay supports room-scale experiences, the optional
+   * stage attribute contains details on the room-scale parameters.
+   */
+  readonly attribute <a data-link-type="idl-name" href="#vrstageparameters" id="ref-for-vrstageparameters-1">VRStageParameters</a>? <dfn class="idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" data-readonly="" data-type="VRStageParameters? " id="dom-vrdisplay-stageparameters">stageParameters<a class="self-link" href="#dom-vrdisplay-stageparameters"></a></dfn>;
+
+  /* Return the current VREyeParameters for the given eye. */
+  <a data-link-type="idl-name" href="#vreyeparameters" id="ref-for-vreyeparameters-1">VREyeParameters</a> <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-geteyeparameters" id="ref-for-dom-vrdisplay-geteyeparameters-1">getEyeParameters</a>(<a data-link-type="idl-name" href="#enumdef-vreye" id="ref-for-enumdef-vreye-1">VREye</a> <dfn class="idl-code" data-dfn-for="VRDisplay/getEyeParameters(whichEye)" data-dfn-type="argument" data-export="" id="dom-vrdisplay-geteyeparameters-whicheye-whicheye">whichEye<a class="self-link" href="#dom-vrdisplay-geteyeparameters-whicheye-whicheye"></a></dfn>);
+
+  /**
+   * An identifier for this distinct VRDisplay. Used as an
+   * association point in the Gamepad API.
+   */
+  [Constant] readonly attribute unsigned long <dfn class="idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" data-readonly="" data-type="unsigned long " id="dom-vrdisplay-displayid">displayId<a class="self-link" href="#dom-vrdisplay-displayid"></a></dfn>;
+
+  /**
+   * A display name, a user-readable name identifying it.
+   */
+  [Constant] readonly attribute DOMString <dfn class="idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" data-readonly="" data-type="DOMString " id="dom-vrdisplay-displayname">displayName<a class="self-link" href="#dom-vrdisplay-displayname"></a></dfn>;
+
+  /**
+   * Return a VRPose containing the future predicted pose of the VRDisplay
+   * when the current frame will be presented. The value returned will not
+   * change until JavaScript has returned control to the browser.
+   *
+   * The VRPose will contain the position, orientation, velocity,
+   * and acceleration of each of these properties.
+   */
+  [NewObject] <a data-link-type="idl-name" href="#vrpose" id="ref-for-vrpose-1">VRPose</a> <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-getpose" id="ref-for-dom-vrdisplay-getpose-1">getPose</a>();
+
+  /**
+   * Return the current instantaneous pose of the VRDisplay, with no
+   * prediction applied.
+   */
+  [NewObject] <a data-link-type="idl-name" href="#vrpose" id="ref-for-vrpose-2">VRPose</a> <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-getimmediatepose" id="ref-for-dom-vrdisplay-getimmediatepose-1">getImmediatePose</a>();
+
+  /**
+   * Reset the pose for this display, treating its current position and
+   * orientation as the "origin/zero" values. VRPose.position,
+   * VRPose.orientation, and VRStageParameters.sittingToStandingTransform may be
+   * updated when calling resetPose(). This should be called in only
+   * sitting-space experiences.
+   */
+  void <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-resetpose" id="ref-for-dom-vrdisplay-resetpose-1">resetPose</a>();
+
+  /**
+   * z-depth defining the near plane of the eye view frustum
+   * enables mapping of values in the render target depth
+   * attachment to scene coordinates. Initially set to 0.01.
+   */
+  attribute double <dfn class="idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" data-type="double " id="dom-vrdisplay-depthnear">depthNear<a class="self-link" href="#dom-vrdisplay-depthnear"></a></dfn>;
+
+  /**
+   * z-depth defining the far plane of the eye view frustum
+   * enables mapping of values in the render target depth
+   * attachment to scene coordinates. Initially set to 10000.0.
+   */
+  attribute double <dfn class="idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" data-type="double " id="dom-vrdisplay-depthfar">depthFar<a class="self-link" href="#dom-vrdisplay-depthfar"></a></dfn>;
+
+  /**
+   * The callback passed to `requestAnimationFrame` will be called
+   * any time a new frame should be rendered. When the VRDisplay is
+   * presenting the callback will be called at the native refresh
+   * rate of the HMD. When not presenting this function acts
+   * identically to how window.requestAnimationFrame acts. Content should
+   * make no assumptions of frame rate or vsync behavior as the HMD runs
+   * asynchronously from other displays and at differing refresh rates.
+   */
+  [Throws] long <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-requestanimationframe" id="ref-for-dom-vrdisplay-requestanimationframe-1">requestAnimationFrame</a>(<a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/browsers.html#framerequestcallback">FrameRequestCallback</a> callback);
+
+  /**
+   * Passing the value returned by `requestAnimationFrame` to
+   * `cancelAnimationFrame` will unregister the callback.
+   */
+  [Throws] void <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-cancelanimationframe" id="ref-for-dom-vrdisplay-cancelanimationframe-1">cancelAnimationFrame</a>(long <dfn class="idl-code" data-dfn-for="VRDisplay/cancelAnimationFrame(handle)" data-dfn-type="argument" data-export="" id="dom-vrdisplay-cancelanimationframe-handle-handle">handle<a class="self-link" href="#dom-vrdisplay-cancelanimationframe-handle-handle"></a></dfn>);
+
+  /**
+   * Begin presenting to the VRDisplay. Must be called in response to a user gesture.
+   * Repeat calls while already presenting will update the VRLayers being displayed.
+   */
+  Promise&lt;void> <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-1">requestPresent</a>(sequence&lt;<a data-link-type="idl-name" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-1">VRLayer</a>> <dfn class="idl-code" data-dfn-for="VRDisplay/requestPresent(layers)" data-dfn-type="argument" data-export="" id="dom-vrdisplay-requestpresent-layers-layers">layers<a class="self-link" href="#dom-vrdisplay-requestpresent-layers-layers"></a></dfn>);
+
+  /**
+   * Stops presenting to the VRDisplay.
+   */
+  Promise&lt;void> <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-exitpresent" id="ref-for-dom-vrdisplay-exitpresent-1">exitPresent</a>();
+
+  /**
+   * Get the layers currently being presented.
+   */
+  sequence&lt;<a data-link-type="idl-name" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-2">VRLayer</a>> <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-getlayers" id="ref-for-dom-vrdisplay-getlayers-1">getLayers</a>();
+
+  /**
+   * The VRLayer provided to the VRDisplay will be captured and presented
+   * in the HMD. Calling this function has the same effect on the source
+   * canvas as any other operation that uses its source image, and canvases
+   * created without preserveDrawingBuffer set to true will be cleared.
+   */
+  void <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-1">submitFrame</a>(optional <a data-link-type="idl-name" href="#vrpose" id="ref-for-vrpose-3">VRPose</a> <dfn class="idl-code" data-dfn-for="VRDisplay/submitFrame(pose), VRDisplay/submitFrame()" data-dfn-type="argument" data-export="" id="dom-vrdisplay-submitframe-pose-pose">pose<a class="self-link" href="#dom-vrdisplay-submitframe-pose-pose"></a></dfn>);
+};
+</pre>
+   <h4 class="heading settled" data-level="2.1.1" id="vrdisplay-attributes"><span class="secno">2.1.1. </span><span class="content">Attributes</span><a class="self-link" href="#vrdisplay-attributes"></a></h4>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" data-lt="isConnected" id="dom-vrdisplay-isconnected">isConnected<span class="dfn-panel" data-deco=""><b><a href="#dom-vrdisplay-isconnected">#dom-vrdisplay-isconnected</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrdisplay-isconnected-1">2.1. VRDisplay</a></span><span><a href="#ref-for-dom-vrdisplay-isconnected-2">2.1.1. Attributes</a></span></span></dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-isconnected" id="ref-for-dom-vrdisplay-isconnected-2">isConnected</a></code> attribute MUST return the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-2">VRDisplay</a></code>'s connected state.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" data-lt="isPresenting" id="dom-vrdisplay-ispresenting">isPresenting<span class="dfn-panel" data-deco=""><b><a href="#dom-vrdisplay-ispresenting">#dom-vrdisplay-ispresenting</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrdisplay-ispresenting-1">2.1. VRDisplay</a></span><span><a href="#ref-for-dom-vrdisplay-ispresenting-2">2.1.1. Attributes</a></span></span></dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-ispresenting" id="ref-for-dom-vrdisplay-ispresenting-2">isPresenting</a></code> attribute MUST return the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-3">VRDisplay</a></code>'s presentation state.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" data-lt="capabilities" id="dom-vrdisplay-capabilities">capabilities<span class="dfn-panel" data-deco=""><b><a href="#dom-vrdisplay-capabilities">#dom-vrdisplay-capabilities</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrdisplay-capabilities-1">2.1. VRDisplay</a></span><span><a href="#ref-for-dom-vrdisplay-capabilities-2">2.1.1. Attributes</a></span></span></dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-capabilities" id="ref-for-dom-vrdisplay-capabilities-2">capabilities</a></code> attribute MUST return the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-4">VRDisplay</a></code>'s <code class="idl"><a data-link-type="idl" href="#vrdisplaycapabilities" id="ref-for-vrdisplaycapabilities-2">VRDisplayCapabilities</a></code> object, a dictionary of capabilities describing the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-5">VRDisplay</a></code>.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" data-lt="getEyeParameters(whichEye)" id="dom-vrdisplay-geteyeparameters">getEyeParameters()<span class="dfn-panel" data-deco=""><b><a href="#dom-vrdisplay-geteyeparameters">#dom-vrdisplay-geteyeparameters</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrdisplay-geteyeparameters-1">2.1. VRDisplay</a></span><span><a href="#ref-for-dom-vrdisplay-geteyeparameters-2">2.3.1. Attributes</a></span></span></dfn> Returns the current <code class="idl"><a data-link-type="idl" href="#vreyeparameters" id="ref-for-vreyeparameters-2">VREyeParameters</a></code> for the given eye. The eye parameters MAY change at any time due to external factors, such as the user changing the IPD with hardware controls. As a result, it is recommended that these values be queried for each frame rather than cached.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" data-lt="getPose()" id="dom-vrdisplay-getpose">getPose()<span class="dfn-panel" data-deco=""><b><a href="#dom-vrdisplay-getpose">#dom-vrdisplay-getpose</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrdisplay-getpose-1">2.1. VRDisplay</a></span><span><a href="#ref-for-dom-vrdisplay-getpose-2">2.1.1. Attributes</a> <a href="#ref-for-dom-vrdisplay-getpose-3">(2)</a></span><span><a href="#ref-for-dom-vrdisplay-getpose-4">2.8.1. Attributes</a></span></span></dfn> Returns a <code class="idl"><a data-link-type="idl" href="#vrpose" id="ref-for-vrpose-4">VRPose</a></code> describing the position, orientation, and acceleration of the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-6">VRDisplay</a></code> that should be used when rendering the next frame of a scene. The User Agent MAY optionally use predictive techniques to estimate what the pose will be at the time that the next frame will be displayed to the user. The pose returned MUST NOT change until JavaScript has returned control to the browser.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" data-lt="getImmediatePose()" id="dom-vrdisplay-getimmediatepose">getImmediatePose()<span class="dfn-panel" data-deco=""><b><a href="#dom-vrdisplay-getimmediatepose">#dom-vrdisplay-getimmediatepose</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrdisplay-getimmediatepose-1">2.1. VRDisplay</a></span><span><a href="#ref-for-dom-vrdisplay-getimmediatepose-2">2.1.1. Attributes</a></span><span><a href="#ref-for-dom-vrdisplay-getimmediatepose-3">2.8.1. Attributes</a></span></span></dfn> Returns a <code class="idl"><a data-link-type="idl" href="#vrpose" id="ref-for-vrpose-5">VRPose</a></code> describing the position, orientation, and acceleration of the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-7">VRDisplay</a></code> at the time when the call was made. The User Agent SHOULD NOT use predictive techniques when constructing the pose.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" data-lt="resetPose()" id="dom-vrdisplay-resetpose">resetPose()<span class="dfn-panel" data-deco=""><b><a href="#dom-vrdisplay-resetpose">#dom-vrdisplay-resetpose</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrdisplay-resetpose-1">2.1. VRDisplay</a></span><span><a href="#ref-for-dom-vrdisplay-resetpose-2">2.1.1. Attributes</a> <a href="#ref-for-dom-vrdisplay-resetpose-3">(2)</a> <a href="#ref-for-dom-vrdisplay-resetpose-4">(3)</a> <a href="#ref-for-dom-vrdisplay-resetpose-5">(4)</a></span><span><a href="#ref-for-dom-vrdisplay-resetpose-6">2.6.1. Attributes</a> <a href="#ref-for-dom-vrdisplay-resetpose-7">(2)</a></span></span></dfn> Reset the pose for the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-8">VRDisplay</a></code>, treating its current position and orientation as the "origin/zero" values. Future poses returned from <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getpose" id="ref-for-dom-vrdisplay-getpose-2">getPose()</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getimmediatepose" id="ref-for-dom-vrdisplay-getimmediatepose-2">getImmediatePose()</a></code> will describe positions relative to the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-9">VRDisplay</a></code>'s position when <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-resetpose" id="ref-for-dom-vrdisplay-resetpose-2">resetPose()</a></code> was last called and will treat the display’s yaw when <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-resetpose" id="ref-for-dom-vrdisplay-resetpose-3">resetPose()</a></code> was last called as the forward orientation. The <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-10">VRDisplay</a></code>'s reported roll and pitch do not change when <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-resetpose" id="ref-for-dom-vrdisplay-resetpose-4">resetPose()</a></code> is called as they are relative to gravity. Calling <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-resetpose" id="ref-for-dom-vrdisplay-resetpose-5">resetPose()</a></code> may change the <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-sittingtostandingtransform" id="ref-for-dom-vreyeparameters-sittingtostandingtransform-1">sittingToStandingTransform</a></code> matrix of the <code class="idl"><a data-link-type="idl" href="#vrstageparameters" id="ref-for-vrstageparameters-2">VRStageParameters</a></code>.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" data-lt="requestAnimationFrame(callback)" id="dom-vrdisplay-requestanimationframe">requestAnimationFrame()<span class="dfn-panel" data-deco=""><b><a href="#dom-vrdisplay-requestanimationframe">#dom-vrdisplay-requestanimationframe</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrdisplay-requestanimationframe-1">2.1. VRDisplay</a></span><span><a href="#ref-for-dom-vrdisplay-requestanimationframe-2">2.1.1. Attributes</a></span></span></dfn> Functionally equivalent to <a href="https://www.w3.org/TR/html51/webappapis.html#animation-frames">window.requestAnimationFrame</a> when the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-11">VRDisplay</a></code> is not presenting. When the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-12">VRDisplay</a></code> is presenting the callback is called at the native refresh rate of the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-13">VRDisplay</a></code>.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" data-lt="cancelAnimationFrame(handle)" id="dom-vrdisplay-cancelanimationframe">cancelAnimationFrame()<span class="dfn-panel" data-deco=""><b><a href="#dom-vrdisplay-cancelanimationframe">#dom-vrdisplay-cancelanimationframe</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrdisplay-cancelanimationframe-1">2.1. VRDisplay</a></span></span></dfn> Passing the value returned by <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestanimationframe" id="ref-for-dom-vrdisplay-requestanimationframe-2">requestAnimationFrame()</a></code> to will unregister the callback.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" data-lt="requestPresent(layers)" id="dom-vrdisplay-requestpresent">requestPresent()<span class="dfn-panel" data-deco=""><b><a href="#dom-vrdisplay-requestpresent">#dom-vrdisplay-requestpresent</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrdisplay-requestpresent-1">2.1. VRDisplay</a></span><span><a href="#ref-for-dom-vrdisplay-requestpresent-2">2.1.1. Attributes</a> <a href="#ref-for-dom-vrdisplay-requestpresent-3">(2)</a> <a href="#ref-for-dom-vrdisplay-requestpresent-4">(3)</a></span><span><a href="#ref-for-dom-vrdisplay-requestpresent-5">2.3.1. Attributes</a> <a href="#ref-for-dom-vrdisplay-requestpresent-6">(2)</a> <a href="#ref-for-dom-vrdisplay-requestpresent-7">(3)</a></span></span></dfn> Begins presenting the contents of the specified <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-3">VRLayer</a></code> array on the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-14">VRDisplay</a></code> and fulfills the returned promise when presentation has begun. If <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-canpresent" id="ref-for-dom-vrlayer-canpresent-1">canPresent</a></code> is false the promise MUST be rejected. If the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-4">VRLayer</a></code> array contains more than <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-maxlayers" id="ref-for-dom-vrlayer-maxlayers-1">maxLayers</a></code> elements the promise MUST be rejected. The user agent MAY reject the promise for any other reason. If the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-15">VRDisplay</a></code> is already presenting when <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-2">requestPresent()</a></code> is called the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-16">VRDisplay</a></code> SHOULD update the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-5">VRLayer</a></code> list being presented. If a call to <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-3">requestPresent()</a></code> is rejected while the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-17">VRDisplay</a></code> is already presenting the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-18">VRDisplay</a></code> MUST end presentation.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" data-lt="exitPresent()" id="dom-vrdisplay-exitpresent">exitPresent()<span class="dfn-panel" data-deco=""><b><a href="#dom-vrdisplay-exitpresent">#dom-vrdisplay-exitpresent</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrdisplay-exitpresent-1">2.1. VRDisplay</a></span></span></dfn> Ends presentation to the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-19">VRDisplay</a></code> and fulfills the returned promise when fully exited. If the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-20">VRDisplay</a></code> is not presenting the promise MUST be rejected.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" data-lt="getLayers()" id="dom-vrdisplay-getlayers">getLayers()<span class="dfn-panel" data-deco=""><b><a href="#dom-vrdisplay-getlayers">#dom-vrdisplay-getlayers</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrdisplay-getlayers-1">2.1. VRDisplay</a></span></span></dfn> Returns an array with the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-6">VRLayer</a></code> currently being presented. MUST return an empty array if the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-21">VRDisplay</a></code> is not currently presenting. If the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-22">VRDisplay</a></code> is presenting MUST return an array containing the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-7">VRLayer</a></code>s last passed to <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-4">requestPresent()</a></code>.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" data-lt="submitFrame(pose)|submitFrame()" id="dom-vrdisplay-submitframe">submitFrame()<span class="dfn-panel" data-deco=""><b><a href="#dom-vrdisplay-submitframe">#dom-vrdisplay-submitframe</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrdisplay-submitframe-1">2.1. VRDisplay</a></span><span><a href="#ref-for-dom-vrdisplay-submitframe-2">2.2.1. Attributes</a></span></span></dfn> Captures the current state of the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-8">VRLayer</a></code> currently being presented and displays it on the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-23">VRDisplay</a></code>. Optionally a <code class="idl"><a data-link-type="idl" href="#vrpose" id="ref-for-vrpose-6">VRPose</a></code> can be provided to describe the pose used to render the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-9">VRLayer</a></code> contents, which MAY be used by the user agent to manipulate the layer contents to improve percived latency. If no <code class="idl"><a data-link-type="idl" href="#vrpose" id="ref-for-vrpose-7">VRPose</a></code> is provided the last pose returned by <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getpose" id="ref-for-dom-vrdisplay-getpose-3">getPose()</a></code> will be used.</p>
+   <h3 class="heading settled" data-level="2.2" id="interface-vrlayer"><span class="secno">2.2. </span><span class="content">VRLayer</span><a class="self-link" href="#interface-vrlayer"></a></h3>
+   <p>The <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-10">VRLayer</a></code> interface is provided to a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-24">VRDisplay</a></code> and presented in the HMD.</p>
+<pre class="idl def" id="vrlayer-dictionary">typedef (<a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/scripting.html#htmlcanvaselement">HTMLCanvasElement</a> or
+         <a data-link-type="idl-name" href="https://wiki.whatwg.org/wiki/OffscreenCanvas#offscreencanvas">OffscreenCanvas</a>) <dfn class="dfn-paneled idl-code" data-dfn-type="typedef" data-export="" data-lt="VRSource" id="typedefdef-vrsource">VRSource<span class="dfn-panel" data-deco=""><b><a href="#typedefdef-vrsource">#typedefdef-vrsource</a></b><b>Referenced in:</b><span><a href="#ref-for-typedefdef-vrsource-1">2.2. VRLayer</a></span></span></dfn>;
+
+dictionary <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export="" data-lt="VRLayer" id="dictdef-vrlayer">VRLayer<span class="dfn-panel" data-deco=""><b><a href="#dictdef-vrlayer">#dictdef-vrlayer</a></b><b>Referenced in:</b><span><a href="#ref-for-dictdef-vrlayer-1">2.1. VRDisplay</a> <a href="#ref-for-dictdef-vrlayer-2">(2)</a></span><span><a href="#ref-for-dictdef-vrlayer-3">2.1.1. Attributes</a> <a href="#ref-for-dictdef-vrlayer-4">(2)</a> <a href="#ref-for-dictdef-vrlayer-5">(3)</a> <a href="#ref-for-dictdef-vrlayer-6">(4)</a> <a href="#ref-for-dictdef-vrlayer-7">(5)</a> <a href="#ref-for-dictdef-vrlayer-8">(6)</a> <a href="#ref-for-dictdef-vrlayer-9">(7)</a></span><span><a href="#ref-for-dictdef-vrlayer-10">2.2. VRLayer</a></span><span><a href="#ref-for-dictdef-vrlayer-11">3. Security Considerations</a></span></span></dfn> {
+  <a data-link-type="idl-name" href="#typedefdef-vrsource" id="ref-for-typedefdef-vrsource-1">VRSource</a>? <dfn class="dfn-paneled idl-code" data-default="null" data-dfn-for="VRLayer" data-dfn-type="dict-member" data-export="" data-lt="source" data-type="VRSource? " id="dom-vrlayer-source">source<span class="dfn-panel" data-deco=""><b><a href="#dom-vrlayer-source">#dom-vrlayer-source</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrlayer-source-1">2.2.1. Attributes</a> <a href="#ref-for-dom-vrlayer-source-2">(2)</a> <a href="#ref-for-dom-vrlayer-source-3">(3)</a></span><span><a href="#ref-for-dom-vrlayer-source-4">3. Security Considerations</a></span></span></dfn> = null;
+
+  sequence&lt;float>? <dfn class="dfn-paneled idl-code" data-default="null" data-dfn-for="VRLayer" data-dfn-type="dict-member" data-export="" data-lt="leftBounds" data-type="sequence<float>? " id="dom-vrlayer-leftbounds">leftBounds<span class="dfn-panel" data-deco=""><b><a href="#dom-vrlayer-leftbounds">#dom-vrlayer-leftbounds</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrlayer-leftbounds-1">2.2.1. Attributes</a> <a href="#ref-for-dom-vrlayer-leftbounds-2">(2)</a></span></span></dfn> = null;
+  sequence&lt;float>? <dfn class="dfn-paneled idl-code" data-default="null" data-dfn-for="VRLayer" data-dfn-type="dict-member" data-export="" data-lt="rightBounds" data-type="sequence<float>? " id="dom-vrlayer-rightbounds">rightBounds<span class="dfn-panel" data-deco=""><b><a href="#dom-vrlayer-rightbounds">#dom-vrlayer-rightbounds</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrlayer-rightbounds-1">2.2.1. Attributes</a> <a href="#ref-for-dom-vrlayer-rightbounds-2">(2)</a></span></span></dfn> = null;
+};
+</pre>
+   <h4 class="heading settled" data-level="2.2.1" id="vrlayer-attributes"><span class="secno">2.2.1. </span><span class="content">Attributes</span><a class="self-link" href="#vrlayer-attributes"></a></h4>
+   <p><dfn class="idl-code" data-dfn-for="VRLayer" data-dfn-type="attribute" data-export="" id="dom-vrlayer-source0">source<a class="self-link" href="#dom-vrlayer-source0"></a></dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-1">source</a></code> attribute defines the canvas whose contents will be presented by the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-25">VRDisplay</a></code> when <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-26">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-2">submitFrame()</a></code> is called.</p>
+   <p><dfn class="idl-code" data-dfn-for="VRLayer" data-dfn-type="attribute" data-export="" id="dom-vrlayer-leftbounds0">leftBounds<a class="self-link" href="#dom-vrlayer-leftbounds0"></a></dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-leftbounds" id="ref-for-dom-vrlayer-leftbounds-1">leftBounds</a></code> attribute contains four values defining the texture bounds within the <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-2">source</a></code> canvas to present to the eye in UV space: <code>[0]</code> left offset of the bounds (0.0 - 1.0); <code>[1]</code> top offset of the bounds (0.0 - 1.0); <code>[2]</code> width of the bounds (0.0 - 1.0); <code>[3]</code> height of the bounds (0.0 - 1.0). The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-leftbounds" id="ref-for-dom-vrlayer-leftbounds-2">leftBounds</a></code> MUST default to <code>[0.0, 0.0, 0.5, 1.0]</code>.</p>
+   <p><dfn class="idl-code" data-dfn-for="VRLayer" data-dfn-type="attribute" data-export="" id="dom-vrlayer-rightbounds0">rightBounds<a class="self-link" href="#dom-vrlayer-rightbounds0"></a></dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-rightbounds" id="ref-for-dom-vrlayer-rightbounds-1">rightBounds</a></code> attribute contains four values defining the texture bounds rectangle within the <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-3">source</a></code> canvas to present to the eye in UV space: <code>[0]</code> left offset of the bounds (0.0 - 1.0); <code>[1]</code> top offset of the bounds (0.0 - 1.0); <code>[2]</code> width of the bounds (0.0 - 1.0); <code>[3]</code> height of the bounds (0.0 - 1.0). The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-rightbounds" id="ref-for-dom-vrlayer-rightbounds-2">rightBounds</a></code> MUST default to <code>[0.5, 0.0, 0.5, 1.0]</code>.</p>
+   <h3 class="heading settled" data-level="2.3" id="interface-vrdisplaycapabilities"><span class="secno">2.3. </span><span class="content">VRDisplayCapabilities</span><a class="self-link" href="#interface-vrdisplaycapabilities"></a></h3>
+   <p>The <code class="idl"><a data-link-type="idl" href="#vrdisplaycapabilities" id="ref-for-vrdisplaycapabilities-3">VRDisplayCapabilities</a></code> interface describes the capabilities of a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-27">VRDisplay</a></code>. These are expected to be static per-device/per-user.</p>
+<pre class="idl def">interface <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export="" data-lt="VRDisplayCapabilities" id="vrdisplaycapabilities">VRDisplayCapabilities<span class="dfn-panel" data-deco=""><b><a href="#vrdisplaycapabilities">#vrdisplaycapabilities</a></b><b>Referenced in:</b><span><a href="#ref-for-vrdisplaycapabilities-1">2.1. VRDisplay</a></span><span><a href="#ref-for-vrdisplaycapabilities-2">2.1.1. Attributes</a></span><span><a href="#ref-for-vrdisplaycapabilities-3">2.3. VRDisplayCapabilities</a></span><span><a href="#ref-for-vrdisplaycapabilities-4">2.6.1. Attributes</a></span></span></dfn> {
+  readonly attribute boolean <dfn class="idl-code" data-dfn-for="VRDisplayCapabilities" data-dfn-type="attribute" data-export="" data-readonly="" data-type="boolean " id="dom-vrdisplaycapabilities-hasposition">hasPosition<a class="self-link" href="#dom-vrdisplaycapabilities-hasposition"></a></dfn>;
+  readonly attribute boolean <dfn class="idl-code" data-dfn-for="VRDisplayCapabilities" data-dfn-type="attribute" data-export="" data-readonly="" data-type="boolean " id="dom-vrdisplaycapabilities-hasorientation">hasOrientation<a class="self-link" href="#dom-vrdisplaycapabilities-hasorientation"></a></dfn>;
+  readonly attribute boolean <dfn class="idl-code" data-dfn-for="VRDisplayCapabilities" data-dfn-type="attribute" data-export="" data-readonly="" data-type="boolean " id="dom-vrdisplaycapabilities-hasexternaldisplay">hasExternalDisplay<a class="self-link" href="#dom-vrdisplaycapabilities-hasexternaldisplay"></a></dfn>;
+  readonly attribute boolean <dfn class="idl-code" data-dfn-for="VRDisplayCapabilities" data-dfn-type="attribute" data-export="" data-readonly="" data-type="boolean " id="dom-vrdisplaycapabilities-canpresent">canPresent<a class="self-link" href="#dom-vrdisplaycapabilities-canpresent"></a></dfn>;
+  readonly attribute unsigned long <dfn class="idl-code" data-dfn-for="VRDisplayCapabilities" data-dfn-type="attribute" data-export="" data-readonly="" data-type="unsigned long " id="dom-vrdisplaycapabilities-maxlayers">maxLayers<a class="self-link" href="#dom-vrdisplaycapabilities-maxlayers"></a></dfn>;
+};
+</pre>
+   <h4 class="heading settled" data-level="2.3.1" id="vrdisplaycapabilities-attributes"><span class="secno">2.3.1. </span><span class="content">Attributes</span><a class="self-link" href="#vrdisplaycapabilities-attributes"></a></h4>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRLayer" data-dfn-type="attribute" data-export="" data-lt="hasPosition" id="dom-vrlayer-hasposition">hasPosition<span class="dfn-panel" data-deco=""><b><a href="#dom-vrlayer-hasposition">#dom-vrlayer-hasposition</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrlayer-hasposition-1">2.3.1. Attributes</a></span><span><a href="#ref-for-dom-vrlayer-hasposition-2">2.6.1. Attributes</a></span></span></dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-hasposition" id="ref-for-dom-vrlayer-hasposition-1">hasPosition</a></code> attribute MUST return whether the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-28">VRDisplay</a></code> is capable of tracking its position.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRLayer" data-dfn-type="attribute" data-export="" data-lt="hasOrientation" id="dom-vrlayer-hasorientation">hasOrientation<span class="dfn-panel" data-deco=""><b><a href="#dom-vrlayer-hasorientation">#dom-vrlayer-hasorientation</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrlayer-hasorientation-1">2.3.1. Attributes</a></span></span></dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-hasorientation" id="ref-for-dom-vrlayer-hasorientation-1">hasOrientation</a></code> attribute MUST return whether the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-29">VRDisplay</a></code> is capable of tracking its orientation.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRLayer" data-dfn-type="attribute" data-export="" data-lt="hasExternalDisplay" id="dom-vrlayer-hasexternaldisplay">hasExternalDisplay<span class="dfn-panel" data-deco=""><b><a href="#dom-vrlayer-hasexternaldisplay">#dom-vrlayer-hasexternaldisplay</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrlayer-hasexternaldisplay-1">2.3.1. Attributes</a></span></span></dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-hasexternaldisplay" id="ref-for-dom-vrlayer-hasexternaldisplay-1">hasExternalDisplay</a></code> attribute MUST return whether the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-30">VRDisplay</a></code> is separate from the device’s primary display. If presenting VR content will obscure other content on the device, this should be false. When false, the application should not attempt to mirror VR content or update non-VR UI because that content will not be visible.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRLayer" data-dfn-type="attribute" data-export="" data-lt="canPresent" id="dom-vrlayer-canpresent">canPresent<span class="dfn-panel" data-deco=""><b><a href="#dom-vrlayer-canpresent">#dom-vrlayer-canpresent</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrlayer-canpresent-1">2.1.1. Attributes</a></span><span><a href="#ref-for-dom-vrlayer-canpresent-2">2.3.1. Attributes</a> <a href="#ref-for-dom-vrlayer-canpresent-3">(2)</a></span></span></dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-canpresent" id="ref-for-dom-vrlayer-canpresent-2">canPresent</a></code> attribute MUST return whether the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-31">VRDisplay</a></code> is capable of presenting content to an HMD or similar device. Can be used to indicate "magic window" devices that are capable of 6DoF tracking but for which <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-32">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-5">requestPresent()</a></code> is not meaningful. If false then calls to <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-33">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-6">requestPresent()</a></code> should always fail, and <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-34">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-geteyeparameters" id="ref-for-dom-vrdisplay-geteyeparameters-2">getEyeParameters()</a></code> should return NULL.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRLayer" data-dfn-type="attribute" data-export="" data-lt="maxLayers" id="dom-vrlayer-maxlayers">maxLayers<span class="dfn-panel" data-deco=""><b><a href="#dom-vrlayer-maxlayers">#dom-vrlayer-maxlayers</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrlayer-maxlayers-1">2.1.1. Attributes</a></span></span></dfn> Indicates the maximum length of the array that <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-7">requestPresent()</a></code> will accept. MUST be 1 if <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-canpresent" id="ref-for-dom-vrlayer-canpresent-3">canPresent</a></code> is true, 0 otherwise.</p>
+   <p class="note" role="note">Note: Future revisions of this spec may allow multiple layers to enable more complex rendering effects such as compositing WebGL and DOM elements together. That functionality is not allowed by this revision of the spec.</p>
+   <h3 class="heading settled" data-level="2.4" id="interface-vreye"><span class="secno">2.4. </span><span class="content">VREye</span><a class="self-link" href="#interface-vreye"></a></h3>
+<pre class="idl def">enum <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export="" data-lt="VREye" id="enumdef-vreye">VREye<span class="dfn-panel" data-deco=""><b><a href="#enumdef-vreye">#enumdef-vreye</a></b><b>Referenced in:</b><span><a href="#ref-for-enumdef-vreye-1">2.1. VRDisplay</a></span></span></dfn> {
+  <dfn class="idl-code" data-dfn-for="VREye" data-dfn-type="enum-value" data-export="" id="dom-vreye-left">"left"<a class="self-link" href="#dom-vreye-left"></a></dfn>,
+  <dfn class="idl-code" data-dfn-for="VREye" data-dfn-type="enum-value" data-export="" id="dom-vreye-right">"right"<a class="self-link" href="#dom-vreye-right"></a></dfn>
+};
+</pre>
+   <h3 class="heading settled" data-level="2.5" id="interface-interface-vrfieldofview"><span class="secno">2.5. </span><span class="content">VRFieldOfView</span><a class="self-link" href="#interface-interface-vrfieldofview"></a></h3>
+   <p>The <code class="idl"><a data-link-type="idl" href="#vrfieldofview" id="ref-for-vrfieldofview-1">VRFieldOfView</a></code> interface represents a field of view, as given by 4 degrees describing the view from a center point.</p>
+<pre class="idl def">interface <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export="" data-lt="VRFieldOfView" id="vrfieldofview">VRFieldOfView<span class="dfn-panel" data-deco=""><b><a href="#vrfieldofview">#vrfieldofview</a></b><b>Referenced in:</b><span><a href="#ref-for-vrfieldofview-1">2.5. VRFieldOfView</a> <a href="#ref-for-vrfieldofview-2">(2)</a></span><span><a href="#ref-for-vrfieldofview-3">2.7. VREyeParameters</a></span></span></dfn> {
+  readonly attribute double <dfn class="idl-code" data-dfn-for="VRFieldOfView" data-dfn-type="attribute" data-export="" data-readonly="" data-type="double " id="dom-vrfieldofview-updegrees">upDegrees<a class="self-link" href="#dom-vrfieldofview-updegrees"></a></dfn>;
+  readonly attribute double <dfn class="idl-code" data-dfn-for="VRFieldOfView" data-dfn-type="attribute" data-export="" data-readonly="" data-type="double " id="dom-vrfieldofview-rightdegrees">rightDegrees<a class="self-link" href="#dom-vrfieldofview-rightdegrees"></a></dfn>;
+  readonly attribute double <dfn class="idl-code" data-dfn-for="VRFieldOfView" data-dfn-type="attribute" data-export="" data-readonly="" data-type="double " id="dom-vrfieldofview-downdegrees">downDegrees<a class="self-link" href="#dom-vrfieldofview-downdegrees"></a></dfn>;
+  readonly attribute double <dfn class="idl-code" data-dfn-for="VRFieldOfView" data-dfn-type="attribute" data-export="" data-readonly="" data-type="double " id="dom-vrfieldofview-leftdegrees">leftDegrees<a class="self-link" href="#dom-vrfieldofview-leftdegrees"></a></dfn>;
+};
+</pre>
+   <div class="example" id="example-6422db41">
+    <a class="self-link" href="#example-6422db41"></a> The following code snippet creates a WebGL-compatible projection matrix from a <code class="idl"><a data-link-type="idl" href="#vrfieldofview" id="ref-for-vrfieldofview-2">VRFieldOfView</a></code>. 
+<pre class="lang-js highlight"><span class="kd">function</span> <span class="nx">fieldOfViewToProjectionMatrix</span> <span class="p">(</span><span class="nx">fov</span><span class="p">,</span> <span class="nx">zNear</span><span class="p">,</span> <span class="nx">zFar</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">upTan</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">tan</span><span class="p">(</span><span class="nx">fov</span><span class="p">.</span><span class="nx">upDegrees</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">downTan</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">tan</span><span class="p">(</span><span class="nx">fov</span><span class="p">.</span><span class="nx">downDegrees</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">leftTan</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">tan</span><span class="p">(</span><span class="nx">fov</span><span class="p">.</span><span class="nx">leftDegrees</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">rightTan</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">tan</span><span class="p">(</span><span class="nx">fov</span><span class="p">.</span><span class="nx">rightDegrees</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">xScale</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="p">(</span><span class="nx">leftTan</span> <span class="o">+</span> <span class="nx">rightTan</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">yScale</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="p">(</span><span class="nx">upTan</span> <span class="o">+</span> <span class="nx">downTan</span><span class="p">);</span>
+
+  <span class="kd">var</span> <span class="nx">out</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Float32Array</span><span class="p">(</span><span class="mi">16</span><span class="p">);</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nx">xScale</span><span class="p">;</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="nx">yScale</span><span class="p">;</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">((</span><span class="nx">leftTan</span> <span class="o">-</span> <span class="nx">rightTan</span><span class="p">)</span> <span class="o">*</span> <span class="nx">xScale</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">);</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="nx">upTan</span> <span class="o">-</span> <span class="nx">downTan</span><span class="p">)</span> <span class="o">*</span> <span class="nx">yScale</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">);</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="nx">zNear</span> <span class="o">+</span> <span class="nx">zFar</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nx">zFar</span> <span class="o">-</span> <span class="nx">zNear</span><span class="p">);</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">;</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">13</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">14</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="nx">zFar</span> <span class="o">*</span> <span class="nx">zNear</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nx">zFar</span> <span class="o">-</span> <span class="nx">zNear</span><span class="p">);</span>
+  <span class="nx">out</span><span class="p">[</span><span class="mi">15</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="nx">out</span><span class="p">;</span>
+<span class="p">}</span></pre>
+   </div>
+   <h3 class="heading settled" data-level="2.6" id="interface-vrpose"><span class="secno">2.6. </span><span class="content">VRPose</span><a class="self-link" href="#interface-vrpose"></a></h3>
+   <p>The VRPose interface represents a sensor’s state at a given timestamp.</p>
+<pre class="idl def">interface <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export="" data-lt="VRPose" id="vrpose">VRPose<span class="dfn-panel" data-deco=""><b><a href="#vrpose">#vrpose</a></b><b>Referenced in:</b><span><a href="#ref-for-vrpose-1">2.1. VRDisplay</a> <a href="#ref-for-vrpose-2">(2)</a> <a href="#ref-for-vrpose-3">(3)</a></span><span><a href="#ref-for-vrpose-4">2.1.1. Attributes</a> <a href="#ref-for-vrpose-5">(2)</a> <a href="#ref-for-vrpose-6">(3)</a> <a href="#ref-for-vrpose-7">(4)</a></span><span><a href="#ref-for-vrpose-8">2.6.1. Attributes</a></span></span></dfn> {
+  readonly attribute <a data-link-type="idl-name" href="http://www.w3.org/TR/hr-time/#domhighrestimestamp">DOMHighResTimeStamp</a> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="DOMHighResTimeStamp " href="#dom-vrpose-timestamp" id="ref-for-dom-vrpose-timestamp-1">timestamp</a>;
+
+  readonly attribute Float32Array? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array? " href="#dom-vrpose-position" id="ref-for-dom-vrpose-position-1">position</a>;
+  readonly attribute Float32Array? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array? " href="#dom-vrpose-linearvelocity" id="ref-for-dom-vrpose-linearvelocity-1">linearVelocity</a>;
+  readonly attribute Float32Array? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array? " href="#dom-vrpose-linearacceleration" id="ref-for-dom-vrpose-linearacceleration-1">linearAcceleration</a>;
+
+  readonly attribute Float32Array? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array? " href="#dom-vrpose-orientation" id="ref-for-dom-vrpose-orientation-1">orientation</a>;
+  readonly attribute Float32Array? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array? " href="#dom-vrpose-angularvelocity" id="ref-for-dom-vrpose-angularvelocity-1">angularVelocity</a>;
+  readonly attribute Float32Array? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array? " href="#dom-vrpose-angularacceleration" id="ref-for-dom-vrpose-angularacceleration-1">angularAcceleration</a>;
+};
+</pre>
+   <h4 class="heading settled" data-level="2.6.1" id="vrpose-state-attributes"><span class="secno">2.6.1. </span><span class="content">Attributes</span><a class="self-link" href="#vrpose-state-attributes"></a></h4>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" data-lt="timestamp" id="dom-vrpose-timestamp">timestamp<span class="dfn-panel" data-deco=""><b><a href="#dom-vrpose-timestamp">#dom-vrpose-timestamp</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrpose-timestamp-1">2.6. VRPose</a></span><span><a href="#ref-for-dom-vrpose-timestamp-2">2.6.1. Attributes</a> <a href="#ref-for-dom-vrpose-timestamp-3">(2)</a> <a href="#ref-for-dom-vrpose-timestamp-4">(3)</a> <a href="#ref-for-dom-vrpose-timestamp-5">(4)</a> <a href="#ref-for-dom-vrpose-timestamp-6">(5)</a> <a href="#ref-for-dom-vrpose-timestamp-7">(6)</a></span></span></dfn> Monotonically increasing value that allows the author to determine if position
+state data been updated from the hardware. Since values are monotonically
+increasing, they can be compared to determine the ordering of updates, as newer
+values will always be greater than or equal to older values.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" data-lt="position" id="dom-vrpose-position">position<span class="dfn-panel" data-deco=""><b><a href="#dom-vrpose-position">#dom-vrpose-position</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrpose-position-1">2.6. VRPose</a></span></span></dfn> Position of the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-35">VRDisplay</a></code> at <code class="idl"><a data-link-type="idl" href="#dom-vrpose-timestamp" id="ref-for-dom-vrpose-timestamp-2">timestamp</a></code> as a 3D vector. Position is given
+in meters from an origin point, which is either the position the sensor was
+first read at or the position of the sensor at the point that <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-resetpose" id="ref-for-dom-vrdisplay-resetpose-6">resetPose()</a></code> was last called. The coordinate system uses these axis definitions:</p>
+   <ul>
+    <li data-md="">
+     <p>Positive X is to the user’s right.</p>
+    <li data-md="">
+     <p>Positive Y is up.</p>
+    <li data-md="">
+     <p>Positive Z is behind the user.</p>
+   </ul>
+   <p>All positions are given relative to the identity orientation in sitting space.
+Transforming this point with <code class="idl"><a data-link-type="idl" href="#vrstageparameters" id="ref-for-vrstageparameters-3">VRStageParameters</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-sittingtostandingtransform" id="ref-for-dom-vreyeparameters-sittingtostandingtransform-2">sittingToStandingTransform</a></code> converts this to standing space. MAY be NULL if the sensor is incapable of
+providing positional data. User agents MAY provide emulated position values
+through techniques such as neck modeling, but when doing so SHOULD report <code class="idl"><a data-link-type="idl" href="#vrdisplaycapabilities" id="ref-for-vrdisplaycapabilities-4">VRDisplayCapabilities</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrlayer-hasposition" id="ref-for-dom-vrlayer-hasposition-2">hasPosition</a></code> as false. When not NULL MUST be a
+three-element array.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" data-lt="linearVelocity" id="dom-vrpose-linearvelocity">linearVelocity<span class="dfn-panel" data-deco=""><b><a href="#dom-vrpose-linearvelocity">#dom-vrpose-linearvelocity</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrpose-linearvelocity-1">2.6. VRPose</a></span></span></dfn> Linear velocity of the sensor at <code class="idl"><a data-link-type="idl" href="#dom-vrpose-timestamp" id="ref-for-dom-vrpose-timestamp-3">timestamp</a></code> meters per second. MAY be NULL if
+the sensor is incapable of providing linear velocity. When not NULL MUST be a
+three-element array.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" data-lt="linearAcceleration" id="dom-vrpose-linearacceleration">linearAcceleration<span class="dfn-panel" data-deco=""><b><a href="#dom-vrpose-linearacceleration">#dom-vrpose-linearacceleration</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrpose-linearacceleration-1">2.6. VRPose</a></span></span></dfn> Linear acceleration of the sensor at <code class="idl"><a data-link-type="idl" href="#dom-vrpose-timestamp" id="ref-for-dom-vrpose-timestamp-4">timestamp</a></code> given in meters per second.
+MAY be NULL if the sensor is incapable of providing linear acceleration. When
+not NULL MUST be a three-element array.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" data-lt="orientation" id="dom-vrpose-orientation">orientation<span class="dfn-panel" data-deco=""><b><a href="#dom-vrpose-orientation">#dom-vrpose-orientation</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrpose-orientation-1">2.6. VRPose</a></span></span></dfn> Orientation of the sensor at <code class="idl"><a data-link-type="idl" href="#dom-vrpose-timestamp" id="ref-for-dom-vrpose-timestamp-5">timestamp</a></code> as a quaternion. The orientation yaw
+(rotation around the Y axis) is relative to the initial yaw of the sensor when
+it was first read or the yaw of the sensor at the point that <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-resetpose" id="ref-for-dom-vrdisplay-resetpose-7">resetPose()</a></code> was
+last called. An orientation of {x: 0, y: 0, z: 0, w: 1} is considered to be
+"forward." MAY be NULL if the sensor is incapable of providing orientation data.
+When not NULL MUST be a four-element array.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" data-lt="angularVelocity" id="dom-vrpose-angularvelocity">angularVelocity<span class="dfn-panel" data-deco=""><b><a href="#dom-vrpose-angularvelocity">#dom-vrpose-angularvelocity</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrpose-angularvelocity-1">2.6. VRPose</a></span></span></dfn> Angular velocity of the sensor at <code class="idl"><a data-link-type="idl" href="#dom-vrpose-timestamp" id="ref-for-dom-vrpose-timestamp-6">timestamp</a></code> given in radians per second. MAY
+be NULL if the sensor is incapable of providing angular velocity. When not NULL
+MUST be a three-element array.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" data-lt="angularAcceleration" id="dom-vrpose-angularacceleration">angularAcceleration<span class="dfn-panel" data-deco=""><b><a href="#dom-vrpose-angularacceleration">#dom-vrpose-angularacceleration</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vrpose-angularacceleration-1">2.6. VRPose</a></span></span></dfn> Angular acceleration of the sensor at <code class="idl"><a data-link-type="idl" href="#dom-vrpose-timestamp" id="ref-for-dom-vrpose-timestamp-7">timestamp</a></code> given in radians per second.
+MAY be NULL if the sensor is incapable of providing angular acceleration. When
+not NULL MUST be a three-element array.</p>
+   <div class="example" id="example-bd8bae21">
+    <a class="self-link" href="#example-bd8bae21"></a> The following code snippet creates a WebGL-compatible matrix from a <code class="idl"><a data-link-type="idl" href="#vrpose" id="ref-for-vrpose-8">VRPose</a></code>: 
+<pre class="lang-js highlight"><span class="kd">function</span> <span class="nx">poseToMatrix</span> <span class="p">(</span><span class="nx">pose</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">out</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Float32Array</span><span class="p">(</span><span class="mi">16</span><span class="p">);</span>
+
+    <span class="c1">// If the orientation or position are NULL, provide defaults.</span>
+    <span class="kd">var</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">pose</span><span class="p">.</span><span class="nx">orientation</span> <span class="o">?</span> <span class="nx">pose</span><span class="p">.</span><span class="nx">orientation</span> <span class="o">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">];</span>
+    <span class="kd">var</span> <span class="nx">v</span> <span class="o">=</span> <span class="nx">pose</span><span class="p">.</span><span class="nx">position</span> <span class="o">?</span> <span class="nx">pose</span><span class="p">.</span><span class="nx">position</span> <span class="o">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">];</span>
+
+    <span class="c1">// Compute some values for the quaternion math.</span>
+    <span class="kd">var</span> <span class="nx">x2</span> <span class="o">=</span> <span class="nx">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nx">q</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="kd">var</span> <span class="nx">y2</span> <span class="o">=</span> <span class="nx">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nx">q</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    <span class="kd">var</span> <span class="nx">z2</span> <span class="o">=</span> <span class="nx">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="nx">q</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+
+    <span class="kd">var</span> <span class="nx">xx</span> <span class="o">=</span> <span class="nx">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nx">x2</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">xy</span> <span class="o">=</span> <span class="nx">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nx">y2</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">xz</span> <span class="o">=</span> <span class="nx">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nx">z2</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">yy</span> <span class="o">=</span> <span class="nx">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nx">y2</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">yz</span> <span class="o">=</span> <span class="nx">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nx">z2</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">zz</span> <span class="o">=</span> <span class="nx">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="nx">z2</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">wx</span> <span class="o">=</span> <span class="nx">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="nx">x2</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">wy</span> <span class="o">=</span> <span class="nx">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="nx">y2</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">wz</span> <span class="o">=</span> <span class="nx">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="nx">z2</span><span class="p">;</span>
+
+    <span class="nx">out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="nx">yy</span> <span class="o">+</span> <span class="nx">zz</span><span class="p">);</span>
+    <span class="nx">out</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nx">xy</span> <span class="o">+</span> <span class="nx">wz</span><span class="p">;</span>
+    <span class="nx">out</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nx">xz</span> <span class="o">-</span> <span class="nx">wy</span><span class="p">;</span>
+    <span class="nx">out</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="nx">out</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="nx">xy</span> <span class="o">-</span> <span class="nx">wz</span><span class="p">;</span>
+    <span class="nx">out</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="nx">xx</span> <span class="o">+</span> <span class="nx">zz</span><span class="p">);</span>
+    <span class="nx">out</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="nx">yz</span> <span class="o">+</span> <span class="nx">wx</span><span class="p">;</span>
+    <span class="nx">out</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="nx">out</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="nx">xz</span> <span class="o">+</span> <span class="nx">wy</span><span class="p">;</span>
+    <span class="nx">out</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="nx">yz</span> <span class="o">-</span> <span class="nx">wx</span><span class="p">;</span>
+    <span class="nx">out</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="nx">xx</span> <span class="o">+</span> <span class="nx">yy</span><span class="p">);</span>
+    <span class="nx">out</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="nx">out</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="nx">out</span><span class="p">[</span><span class="mi">13</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    <span class="nx">out</span><span class="p">[</span><span class="mi">14</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+    <span class="nx">out</span><span class="p">[</span><span class="mi">15</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">out</span><span class="p">;</span>
+<span class="p">}</span></pre>
+   </div>
+   <h3 class="heading settled" data-level="2.7" id="interface-vreyeparameters"><span class="secno">2.7. </span><span class="content">VREyeParameters</span><a class="self-link" href="#interface-vreyeparameters"></a></h3>
+   <p>The <code class="idl"><a data-link-type="idl" href="#vreyeparameters" id="ref-for-vreyeparameters-3">VREyeParameters</a></code> interface represents all the information required to correctly render a scene for a given eye.</p>
+<pre class="idl def">interface <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export="" data-lt="VREyeParameters" id="vreyeparameters">VREyeParameters<span class="dfn-panel" data-deco=""><b><a href="#vreyeparameters">#vreyeparameters</a></b><b>Referenced in:</b><span><a href="#ref-for-vreyeparameters-1">2.1. VRDisplay</a></span><span><a href="#ref-for-vreyeparameters-2">2.1.1. Attributes</a></span><span><a href="#ref-for-vreyeparameters-3">2.7. VREyeParameters</a></span></span></dfn> {
+  [Constant, Cached] readonly attribute Float32Array <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array " href="#dom-vreyeparameters-offset" id="ref-for-dom-vreyeparameters-offset-1">offset</a>;
+
+  [Constant, Cached] readonly attribute <a data-link-type="idl-name" href="#vrfieldofview" id="ref-for-vrfieldofview-3">VRFieldOfView</a> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="VRFieldOfView " href="#dom-vreyeparameters-fieldofview" id="ref-for-dom-vreyeparameters-fieldofview-1">fieldOfView</a>;
+
+  [Constant, Cached] readonly attribute unsigned long <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="unsigned long " href="#dom-vreyeparameters-renderwidth" id="ref-for-dom-vreyeparameters-renderwidth-1">renderWidth</a>;
+  [Constant, Cached] readonly attribute unsigned long <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="unsigned long " href="#dom-vreyeparameters-renderheight" id="ref-for-dom-vreyeparameters-renderheight-1">renderHeight</a>;
+};
+</pre>
+   <h4 class="heading settled" data-level="2.7.1" id="vreyeparameters-attributes"><span class="secno">2.7.1. </span><span class="content">Attributes</span><a class="self-link" href="#vreyeparameters-attributes"></a></h4>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VREyeParameters" data-dfn-type="attribute" data-export="" data-lt="offset" id="dom-vreyeparameters-offset">offset<span class="dfn-panel" data-deco=""><b><a href="#dom-vreyeparameters-offset">#dom-vreyeparameters-offset</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vreyeparameters-offset-1">2.7. VREyeParameters</a></span></span></dfn> Offset from the center point between the users eyes to the center of the eye in meters. This value SHOULD represent half of the user’s interpupillary distance (IPD), but MAY also represent the distance from the center point of the headset to the center point of the lens for the given eye. Values for the left eye MUST be negative; values for the right eye MUST be positive.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VREyeParameters" data-dfn-type="attribute" data-export="" data-lt="fieldOfView" id="dom-vreyeparameters-fieldofview">fieldOfView<span class="dfn-panel" data-deco=""><b><a href="#dom-vreyeparameters-fieldofview">#dom-vreyeparameters-fieldofview</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vreyeparameters-fieldofview-1">2.7. VREyeParameters</a></span></span></dfn> The current field of view for the eye, as the user adjusts her headset IPD.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VREyeParameters" data-dfn-type="attribute" data-export="" data-lt="renderWidth" id="dom-vreyeparameters-renderwidth">renderWidth<span class="dfn-panel" data-deco=""><b><a href="#dom-vreyeparameters-renderwidth">#dom-vreyeparameters-renderwidth</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vreyeparameters-renderwidth-1">2.7. VREyeParameters</a></span><span><a href="#ref-for-dom-vreyeparameters-renderwidth-2">2.7.1. Attributes</a> <a href="#ref-for-dom-vreyeparameters-renderwidth-3">(2)</a> <a href="#ref-for-dom-vreyeparameters-renderwidth-4">(3)</a> <a href="#ref-for-dom-vreyeparameters-renderwidth-5">(4)</a> <a href="#ref-for-dom-vreyeparameters-renderwidth-6">(5)</a> <a href="#ref-for-dom-vreyeparameters-renderwidth-7">(6)</a> <a href="#ref-for-dom-vreyeparameters-renderwidth-8">(7)</a></span></span></dfn> Describes the recommended render target width of each eye viewport, in pixels. If multiple eyes are rendered in a single render target, then the render target should be made large enough to fit both viewports. The <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-renderwidth" id="ref-for-dom-vreyeparameters-renderwidth-2">renderWidth</a></code> for the left eye and right eye MUST NOT overlap, and the <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-renderwidth" id="ref-for-dom-vreyeparameters-renderwidth-3">renderWidth</a></code> for the right eye MUST be to the right of the <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-renderwidth" id="ref-for-dom-vreyeparameters-renderwidth-4">renderWidth</a></code> for the left eye.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VREyeParameters" data-dfn-type="attribute" data-export="" data-lt="renderHeight" id="dom-vreyeparameters-renderheight">renderHeight<span class="dfn-panel" data-deco=""><b><a href="#dom-vreyeparameters-renderheight">#dom-vreyeparameters-renderheight</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vreyeparameters-renderheight-1">2.7. VREyeParameters</a></span><span><a href="#ref-for-dom-vreyeparameters-renderheight-2">2.7.1. Attributes</a></span></span></dfn> Describes the recommended render target height of each eye viewport, in pixels. If multiple eyes are rendered in a single render target, then the render target should be made large enough to fit both viewports. The <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-renderwidth" id="ref-for-dom-vreyeparameters-renderwidth-5">renderWidth</a></code> for the left eye and right eye MUST NOT overlap, and the <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-renderwidth" id="ref-for-dom-vreyeparameters-renderwidth-6">renderWidth</a></code> for the right eye MUST be to the right of the <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-renderwidth" id="ref-for-dom-vreyeparameters-renderwidth-7">renderWidth</a></code> for the left eye.</p>
+   <div class="example" id="example-f1db69f5">
+    <a class="self-link" href="#example-f1db69f5"></a> Many HMDs will distort the rendered image to counteract undesired effects introduced by the headset optics. Because of this the optimal resolution of the canvas will often be larger than the HMD’s physical resolution to ensure that the final image presented to the user has a 1:1 pixel ratio at the center of the user’s view. The optimal canvas resolution can be calculated from the <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-renderwidth" id="ref-for-dom-vreyeparameters-renderwidth-8">renderWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-renderheight" id="ref-for-dom-vreyeparameters-renderheight-2">renderHeight</a></code> for both eyes as follows: 
+<pre class="lang-js highlight"><span class="kd">var</span> <span class="nx">leftEye</span> <span class="o">=</span> <span class="nx">vrDisplay</span><span class="p">.</span><span class="nx">getEyeParameters</span><span class="p">(</span><span class="s2">"left"</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">rightEye</span> <span class="o">=</span> <span class="nx">vrDisplay</span><span class="p">.</span><span class="nx">getEyeParameters</span><span class="p">(</span><span class="s2">"right"</span><span class="p">);</span>
+
+<span class="nx">canvas</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="nx">leftEye</span><span class="p">.</span><span class="nx">renderWidth</span><span class="p">,</span> <span class="nx">rightEye</span><span class="p">.</span><span class="nx">renderWidth</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
+<span class="nx">canvas</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="nx">leftEye</span><span class="p">.</span><span class="nx">renderHeight</span><span class="p">,</span> <span class="nx">rightEye</span><span class="p">.</span><span class="nx">renderHeight</span><span class="p">);</span></pre>
+   </div>
+   <h3 class="heading settled" data-level="2.8" id="interface-vrstageparameters"><span class="secno">2.8. </span><span class="content">VRStageParameters</span><a class="self-link" href="#interface-vrstageparameters"></a></h3>
+   <p>The <code class="idl"><a data-link-type="idl" href="#vrstageparameters" id="ref-for-vrstageparameters-4">VRStageParameters</a></code> interface represents the values describing the the stage/play area for devices that support room-scale experiences.</p>
+<pre class="idl def">interface <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export="" data-lt="VRStageParameters" id="vrstageparameters">VRStageParameters<span class="dfn-panel" data-deco=""><b><a href="#vrstageparameters">#vrstageparameters</a></b><b>Referenced in:</b><span><a href="#ref-for-vrstageparameters-1">2.1. VRDisplay</a></span><span><a href="#ref-for-vrstageparameters-2">2.1.1. Attributes</a></span><span><a href="#ref-for-vrstageparameters-3">2.6.1. Attributes</a></span><span><a href="#ref-for-vrstageparameters-4">2.8. VRStageParameters</a></span></span></dfn> {
+  readonly attribute Float32Array <dfn class="idl-code" data-dfn-for="VRStageParameters" data-dfn-type="attribute" data-export="" data-readonly="" data-type="Float32Array " id="dom-vrstageparameters-sittingtostandingtransform">sittingToStandingTransform<a class="self-link" href="#dom-vrstageparameters-sittingtostandingtransform"></a></dfn>;
+
+  readonly attribute float <dfn class="idl-code" data-dfn-for="VRStageParameters" data-dfn-type="attribute" data-export="" data-readonly="" data-type="float " id="dom-vrstageparameters-sizex">sizeX<a class="self-link" href="#dom-vrstageparameters-sizex"></a></dfn>;
+  readonly attribute float <dfn class="idl-code" data-dfn-for="VRStageParameters" data-dfn-type="attribute" data-export="" data-readonly="" data-type="float " id="dom-vrstageparameters-sizez">sizeZ<a class="self-link" href="#dom-vrstageparameters-sizez"></a></dfn>;
+};
+</pre>
+   <h4 class="heading settled" data-level="2.8.1" id="vrstageparameters-attributes"><span class="secno">2.8.1. </span><span class="content">Attributes</span><a class="self-link" href="#vrstageparameters-attributes"></a></h4>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VREyeParameters" data-dfn-type="attribute" data-export="" data-lt="sittingToStandingTransform" id="dom-vreyeparameters-sittingtostandingtransform">sittingToStandingTransform<span class="dfn-panel" data-deco=""><b><a href="#dom-vreyeparameters-sittingtostandingtransform">#dom-vreyeparameters-sittingtostandingtransform</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-vreyeparameters-sittingtostandingtransform-1">2.1.1. Attributes</a></span><span><a href="#ref-for-dom-vreyeparameters-sittingtostandingtransform-2">2.6.1. Attributes</a></span><span><a href="#ref-for-dom-vreyeparameters-sittingtostandingtransform-3">2.8.1. Attributes</a></span></span></dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-sittingtostandingtransform" id="ref-for-dom-vreyeparameters-sittingtostandingtransform-3">sittingToStandingTransform</a></code> attribute is a 16-element array containing the components of a 4×4 transform matrix. This matrix transforms the sitting-space position returned by <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getpose" id="ref-for-dom-vrdisplay-getpose-4">getPose()</a></code>/<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getimmediatepose" id="ref-for-dom-vrdisplay-getimmediatepose-3">getImmediatePose()</a></code> to a standing-space position.</p>
+   <p><dfn class="idl-code" data-dfn-for="VREyeParameters" data-dfn-type="attribute" data-export="" id="dom-vreyeparameters-sizex">sizeX<a class="self-link" href="#dom-vreyeparameters-sizex"></a></dfn> Width of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.</p>
+   <p><dfn class="idl-code" data-dfn-for="VREyeParameters" data-dfn-type="attribute" data-export="" id="dom-vreyeparameters-sizez">sizeZ<a class="self-link" href="#dom-vreyeparameters-sizez"></a></dfn> Depth of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.</p>
+   <h3 class="heading settled" data-level="2.9" id="interface-navigator"><span class="secno">2.9. </span><span class="content">Navigator Interface extension</span><a class="self-link" href="#interface-navigator"></a></h3>
+<pre class="idl def">partial interface <a class="idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/multipage/webappapis.html#navigator">Navigator</a> {
+  Promise&lt;sequence&lt;<a data-link-type="idl-name" href="#vrdisplay" id="ref-for-vrdisplay-36">VRDisplay</a>>> <a class="idl-code" data-link-type="method" href="#navigator-getvrdisplays-attribute" id="ref-for-navigator-getvrdisplays-attribute-1">getVRDisplays</a>();
+  readonly attribute sequence&lt;<a data-link-type="idl-name" href="#vrdisplay" id="ref-for-vrdisplay-37">VRDisplay</a>> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="sequence<VRDisplay> " href="#navigator-activevrdisplays-attribute" id="ref-for-navigator-activevrdisplays-attribute-1">activeVRDisplays</a>;
+};
+</pre>
+   <h4 class="heading settled" data-level="2.9.1" id="navigator-attributes"><span class="secno">2.9.1. </span><span class="content">Attributes</span><a class="self-link" href="#navigator-attributes"></a></h4>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="Navigator" data-dfn-type="method" data-export="" data-lt="getVRDisplays()" id="navigator-getvrdisplays-attribute">getVRDisplays()<span class="dfn-panel" data-deco=""><b><a href="#navigator-getvrdisplays-attribute">#navigator-getvrdisplays-attribute</a></b><b>Referenced in:</b><span><a href="#ref-for-navigator-getvrdisplays-attribute-1">2.9. Navigator Interface extension</a></span></span></dfn> Return a Promise which resolves to a list of available <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-38">VRDisplay</a></code>s. Applications should iterate over the list and correlate devices that share <code class="idl"><a data-link-type="idl" href="#gamepad-getvrdisplays-attribute" id="ref-for-gamepad-getvrdisplays-attribute-1">displayId</a></code>s to access the full capabilities of a device.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="Navigator" data-dfn-type="attribute" data-export="" data-lt="activeVRDisplays" id="navigator-activevrdisplays-attribute">activeVRDisplays<span class="dfn-panel" data-deco=""><b><a href="#navigator-activevrdisplays-attribute">#navigator-activevrdisplays-attribute</a></b><b>Referenced in:</b><span><a href="#ref-for-navigator-activevrdisplays-attribute-1">2.9. Navigator Interface extension</a></span><span><a href="#ref-for-navigator-activevrdisplays-attribute-2">2.9.1. Attributes</a></span></span></dfn> <code class="idl"><a data-link-type="idl" href="#navigator-activevrdisplays-attribute" id="ref-for-navigator-activevrdisplays-attribute-2">activeVRDisplays</a></code> includes every <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-39">VRDisplay</a></code> that is currently presenting.</p>
+   <div class="example" id="example-008f898a">
+    <a class="self-link" href="#example-008f898a"></a> The following code finds the first available <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-40">VRDisplay</a></code>. 
+<pre class="lang-js highlight"><span class="kd">var</span> <span class="nx">vrDisplay</span><span class="p">;</span>
+
+<span class="nx">navigator</span><span class="p">.</span><span class="nx">getVRDisplays</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">displays</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Use the first display in the array if one is available. If multiple</span>
+  <span class="c1">// displays are present, you may want to present the user with a way to</span>
+  <span class="c1">// select which display to use.</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">displays</span><span class="p">.</span><span class="nx">length</span> <span class="o">></span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">vrDisplay</span> <span class="o">=</span> <span class="nx">displays</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+  <span class="p">}</span>
+<span class="p">});</span></pre>
+   </div>
+   <h3 class="heading settled" data-level="2.10" id="interface-window"><span class="secno">2.10. </span><span class="content">Window Interface extension</span><a class="self-link" href="#interface-window"></a></h3>
+<pre class="idl def">partial interface <a class="idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/multipage/browsers.html#window">Window</a> {
+  attribute <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <dfn class="idl-code" data-dfn-for="Window" data-dfn-type="attribute" data-export="" data-type="EventHandler " id="dom-window-onvrdisplayconnected">onvrdisplayconnected<a class="self-link" href="#dom-window-onvrdisplayconnected"></a></dfn>;
+  attribute <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <dfn class="idl-code" data-dfn-for="Window" data-dfn-type="attribute" data-export="" data-type="EventHandler " id="dom-window-onvrdisplaydisconnected">onvrdisplaydisconnected<a class="self-link" href="#dom-window-onvrdisplaydisconnected"></a></dfn>;
+  attribute <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <dfn class="idl-code" data-dfn-for="Window" data-dfn-type="attribute" data-export="" data-type="EventHandler " id="dom-window-onvrdisplaypresentchange">onvrdisplaypresentchange<a class="self-link" href="#dom-window-onvrdisplaypresentchange"></a></dfn>;
+};
+</pre>
+   <h3 class="heading settled" data-level="2.11" id="interface-gamepad"><span class="secno">2.11. </span><span class="content">Gamepad Interface extension</span><a class="self-link" href="#interface-gamepad"></a></h3>
+<pre class="idl def">partial interface <a class="idl-code" data-link-type="interface" href="https://www.w3.org/TR/gamepad/#gamepad">Gamepad</a> {
+  [Constant] readonly attribute unsigned long <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="unsigned long " href="#gamepad-getvrdisplays-attribute" id="ref-for-gamepad-getvrdisplays-attribute-2">displayId</a>;
+};
+</pre>
+   <h4 class="heading settled" data-level="2.11.1" id="gamepad-attributes"><span class="secno">2.11.1. </span><span class="content">Attributes</span><a class="self-link" href="#gamepad-attributes"></a></h4>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="Gamepad" data-dfn-type="attribute" data-export="" data-lt="displayId" id="gamepad-getvrdisplays-attribute">displayId<span class="dfn-panel" data-deco=""><b><a href="#gamepad-getvrdisplays-attribute">#gamepad-getvrdisplays-attribute</a></b><b>Referenced in:</b><span><a href="#ref-for-gamepad-getvrdisplays-attribute-1">2.9.1. Attributes</a></span><span><a href="#ref-for-gamepad-getvrdisplays-attribute-2">2.11. Gamepad Interface extension</a></span><span><a href="#ref-for-gamepad-getvrdisplays-attribute-3">2.11.1. Attributes</a></span></span></dfn> Return the <code class="idl"><a data-link-type="idl" href="#gamepad-getvrdisplays-attribute" id="ref-for-gamepad-getvrdisplays-attribute-3">displayId</a></code> for the associated <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-41">VRDisplay</a></code>.</p>
+   <h2 class="heading settled" data-level="3" id="security"><span class="secno">3. </span><span class="content">Security Considerations</span><a class="self-link" href="#security"></a></h2>
+   <p>While not directly affecting the API interface and Web IDL, the security model should maintains the user’s expectations of privacy on the Web:</p>
+   <ul>
+    <li data-md="">
+     <p>The Gamepad API will be updated such that the gamepad inputs and HMD pose are available to only the focused tab.</p>
+    <li data-md="">
+     <p>Non-focused tabs are allowed to enumerate <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/gamepad/#gamepad">Gamepad</a></code>s and <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-42">VRDisplay</a></code>s but will see last received state or default values.</p>
+    <li data-md="">
+     <p>All gamepads are assumed to be owned by the focused tabs, so can use them for secure inputs such as password fields.</p>
+    <li data-md="">
+     <p>Trusted UI elements presented by the browser would not be accessible by the GL context associated to the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-43">VRDisplay</a></code> exposed to untrusted content.</p>
+    <li data-md="">
+     <p>Trusted UI would be rendered by chrome-only JavaScript code that has an independent GL context.</p>
+    <li data-md="">
+     <p>A "VR Compositor" runs asynchronously from content, responsible for compositing the trusted and untrusted content. If content is not performant or does not submit frames, the browser should be able to continue presenting a responsive front-end.</p>
+    <li data-md="">
+     <p>In the event that the content process terminates unexpectedly, the browser will not exit VR mode. The VR compositor will destroy the content layer while continuing to present the trusted UI elements of the browser.</p>
+    <li data-md="">
+     <p>The HMD pose and other VR inputs are only updated for the focused WebVR page. This can be implemented in the same manner as keyboard and mouse input.</p>
+    <li data-md="">
+     <p>Content does not need to request user permission to present to the VR HMD; however, any UI presented normally by the browser for 2D page content while loading a page or following links will be presented within the HMD to ensure that the user wishes to trust and visit the VR site.</p>
+    <li data-md="">
+     <p>If the user is uncomfortable in a VR world, she cannot look away from the display as it occupies her entire field of view. Instead the user is instructed to close her eyes and perform an action that does not require her vision to escape to a default page (such as pressing a reserved button or performing a gesture with motion controls).</p>
+    <li data-md="">
+     <p>To prevent CORS-related vulnerabilities, each page will see an independent instance of objects returned by the WebVR API, such as <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-44">VRDisplay</a></code>. Care must be taken to ensure that attributes such as <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-11">VRLayer</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-4">source</a></code> set by one page can not be read by another.</p>
+   </ul>
+   <h2 class="heading settled" data-level="4" id="ack"><span class="secno">4. </span><span class="content">Acknowledgements</span><a class="self-link" href="#ack"></a></h2>
+  </main>
+  <div data-fill-with="conformance">
+   <h2 class="no-ref no-num heading settled" id="conformance"><span class="content"> Conformance</span><a class="self-link" href="#conformance"></a></h2>
+   <p> Conformance requirements are expressed with a combination of descriptive assertions and RFC 2119 terminology.
+            The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL”
+            in the normative parts of this document
+            are to be interpreted as described in RFC 2119.
+            However, for readability,
+            these words do not appear in all uppercase letters in this specification. </p>
+   <p> All of the text of this specification is normative
+            except sections explicitly marked as non-normative, examples, and notes. <a data-link-type="biblio" href="#biblio-rfc2119">[RFC2119]</a> </p>
+   <p> Examples in this specification are introduced with the words “for example”
+            or are set apart from the normative text with <code>class="example"</code>, like this: </p>
+   <div class="example" id="example-ae2b6bc0"><a class="self-link" href="#example-ae2b6bc0"></a> This is an example of an informative example. </div>
+   <p> Informative notes begin with the word “Note”
+            and are set apart from the normative text with <code>class="note"</code>, like this: </p>
+   <p class="note" role="note"> Note, this is an informative note. </p>
+  </div>
+<script>
+(function() {
+  "use strict";
+  var collapseSidebarText = '<span aria-hidden="true">←</span> '
+                          + '<span>Collapse Sidebar</span>';
+  var expandSidebarText   = '<span aria-hidden="true">→</span> '
+                          + '<span>Pop Out Sidebar</span>';
+  var tocJumpText         = '<span aria-hidden="true">↑</span> '
+                          + '<span>Jump to Table of Contents</span>';
+
+  var sidebarMedia = window.matchMedia('screen and (min-width: 78em)');
+  var autoToggle   = function(e){ toggleSidebar(e.matches) };
+  if(sidebarMedia.addListener) {
+    sidebarMedia.addListener(autoToggle);
+  }
+
+  function toggleSidebar(on) {
+    if (on == undefined) {
+      on = !document.body.classList.contains('toc-sidebar');
+    }
+
+    /* Don’t scroll to compensate for the ToC if we’re above it already. */
+    var headY = 0;
+    var head = document.querySelector('.head');
+    if (head) {
+      // terrible approx of "top of ToC"
+      headY += head.offsetTop + head.offsetHeight;
+    }
+    var skipScroll = window.scrollY < headY;
+
+    var toggle = document.getElementById('toc-toggle');
+    var tocNav = document.getElementById('toc');
+    if (on) {
+      var tocHeight = tocNav.offsetHeight;
+      document.body.classList.add('toc-sidebar');
+      document.body.classList.remove('toc-inline');
+      toggle.innerHTML = collapseSidebarText;
+      if (!skipScroll) {
+        window.scrollBy(0, 0 - tocHeight);
+      }
+      tocNav.focus();
+      sidebarMedia.addListener(autoToggle); // auto-collapse when out of room
+    }
+    else {
+      document.body.classList.add('toc-inline');
+      document.body.classList.remove('toc-sidebar');
+      toggle.innerHTML = expandSidebarText;
+      if (!skipScroll) {
+        window.scrollBy(0, tocNav.offsetHeight);
+      }
+      if (toggle.matches(':hover')) {
+        /* Unfocus button when not using keyboard navigation,
+           because I don’t know where else to send the focus. */
+        toggle.blur();
+      }
+    }
+  }
+
+  function createSidebarToggle() {
+    /* Create the sidebar toggle in JS; it shouldn’t exist when JS is off. */
+    var toggle = document.createElement('a');
+      /* This should probably be a button, but appearance isn’t standards-track.*/
+    toggle.id = 'toc-toggle';
+    toggle.class = 'toc-toggle';
+    toggle.href = '#toc';
+    toggle.innerHTML = collapseSidebarText;
+
+    sidebarMedia.addListener(autoToggle);
+    var toggler = function(e) {
+      e.preventDefault();
+      sidebarMedia.removeListener(autoToggle); // persist explicit off states
+      toggleSidebar();
+      return false;
+    }
+    toggle.addEventListener('click', toggler, false);
+
+
+    /* Get <nav id=toc-nav>, or make it if we don’t have one. */
+    var tocNav = document.getElementById('toc-nav');
+    if (!tocNav) {
+      tocNav = document.createElement('p');
+      tocNav.id = 'toc-nav';
+      /* Prepend for better keyboard navigation */
+      document.body.insertBefore(tocNav, document.body.firstChild);
+    }
+    /* While we’re at it, make sure we have a Jump to Toc link. */
+    var tocJump = document.getElementById('toc-jump');
+    if (!tocJump) {
+      tocJump = document.createElement('a');
+      tocJump.id = 'toc-jump';
+      tocJump.href = '#toc';
+      tocJump.innerHTML = tocJumpText;
+      tocNav.appendChild(tocJump);
+    }
+
+    tocNav.appendChild(toggle);
+  }
+
+  var toc = document.getElementById('toc');
+  if (toc) {
+    createSidebarToggle();
+    toggleSidebar(sidebarMedia.matches);
+
+    /* If the sidebar has been manually opened and is currently overlaying the text
+       (window too small for the MQ to add the margin to body),
+       then auto-close the sidebar once you click on something in there. */
+    toc.addEventListener('click', function(e) {
+      if(e.target.tagName.toLowerCase() == "a" && document.body.classList.contains('toc-sidebar') && !sidebarMedia.matches) {
+        toggleSidebar(false);
+      }
+    }, false);
+  }
+  else {
+    console.warn("Can’t find Table of Contents. Please use <nav id='toc'> around the ToC.");
+  }
+
+  /* Wrap tables in case they overflow */
+  var tables = document.querySelectorAll(':not(.overlarge) > table.data, :not(.overlarge) > table.index');
+  var numTables = tables.length;
+  for (var i = 0; i < numTables; i++) {
+    var table = tables[i];
+    var wrapper = document.createElement('div');
+    wrapper.className = 'overlarge';
+    table.parentNode.insertBefore(wrapper, table);
+    wrapper.appendChild(table);
+  }
+
+})();
+</script>
+  <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
+  <ul class="index">
+   <li><a href="#navigator-activevrdisplays-attribute">activeVRDisplays</a><span>, in §2.9.1</span>
+   <li><a href="#dom-vrpose-angularacceleration">angularAcceleration</a><span>, in §2.6.1</span>
+   <li><a href="#dom-vrpose-angularvelocity">angularVelocity</a><span>, in §2.6.1</span>
+   <li><a href="#dom-vrdisplay-cancelanimationframe">cancelAnimationFrame(handle)</a><span>, in §2.1.1</span>
+   <li>
+    canPresent
+    <ul>
+     <li><a href="#dom-vrdisplaycapabilities-canpresent">attribute for VRDisplayCapabilities</a><span>, in §2.3</span>
+     <li><a href="#dom-vrlayer-canpresent">attribute for VRLayer</a><span>, in §2.3.1</span>
+    </ul>
+   <li><a href="#dom-vrdisplay-capabilities">capabilities</a><span>, in §2.1.1</span>
+   <li><a href="#dom-vrdisplay-depthfar">depthFar</a><span>, in §2.1</span>
+   <li><a href="#dom-vrdisplay-depthnear">depthNear</a><span>, in §2.1</span>
+   <li>
+    displayId
+    <ul>
+     <li><a href="#dom-vrdisplay-displayid">attribute for VRDisplay</a><span>, in §2.1</span>
+     <li><a href="#gamepad-getvrdisplays-attribute">attribute for Gamepad</a><span>, in §2.11.1</span>
+    </ul>
+   <li><a href="#dom-vrdisplay-displayname">displayName</a><span>, in §2.1</span>
+   <li><a href="#dom-vrfieldofview-downdegrees">downDegrees</a><span>, in §2.5</span>
+   <li><a href="#dom-vrdisplay-exitpresent">exitPresent()</a><span>, in §2.1.1</span>
+   <li><a href="#dom-vreyeparameters-fieldofview">fieldOfView</a><span>, in §2.7.1</span>
+   <li><a href="#dom-vrdisplay-geteyeparameters">getEyeParameters(whichEye)</a><span>, in §2.1.1</span>
+   <li><a href="#dom-vrdisplay-getimmediatepose">getImmediatePose()</a><span>, in §2.1.1</span>
+   <li><a href="#dom-vrdisplay-getlayers">getLayers()</a><span>, in §2.1.1</span>
+   <li><a href="#dom-vrdisplay-getpose">getPose()</a><span>, in §2.1.1</span>
+   <li><a href="#navigator-getvrdisplays-attribute">getVRDisplays()</a><span>, in §2.9.1</span>
+   <li>
+    hasExternalDisplay
+    <ul>
+     <li><a href="#dom-vrdisplaycapabilities-hasexternaldisplay">attribute for VRDisplayCapabilities</a><span>, in §2.3</span>
+     <li><a href="#dom-vrlayer-hasexternaldisplay">attribute for VRLayer</a><span>, in §2.3.1</span>
+    </ul>
+   <li>
+    hasOrientation
+    <ul>
+     <li><a href="#dom-vrdisplaycapabilities-hasorientation">attribute for VRDisplayCapabilities</a><span>, in §2.3</span>
+     <li><a href="#dom-vrlayer-hasorientation">attribute for VRLayer</a><span>, in §2.3.1</span>
+    </ul>
+   <li>
+    hasPosition
+    <ul>
+     <li><a href="#dom-vrdisplaycapabilities-hasposition">attribute for VRDisplayCapabilities</a><span>, in §2.3</span>
+     <li><a href="#dom-vrlayer-hasposition">attribute for VRLayer</a><span>, in §2.3.1</span>
+    </ul>
+   <li><a href="#dom-vrdisplay-isconnected">isConnected</a><span>, in §2.1.1</span>
+   <li><a href="#dom-vrdisplay-ispresenting">isPresenting</a><span>, in §2.1.1</span>
+   <li><a href="#dom-vreye-left">"left"</a><span>, in §2.4</span>
+   <li>
+    leftBounds
+    <ul>
+     <li><a href="#dom-vrlayer-leftbounds">dict-member for VRLayer</a><span>, in §2.2</span>
+     <li><a href="#dom-vrlayer-leftbounds0">attribute for VRLayer</a><span>, in §2.2.1</span>
+    </ul>
+   <li><a href="#dom-vrfieldofview-leftdegrees">leftDegrees</a><span>, in §2.5</span>
+   <li><a href="#dom-vrpose-linearacceleration">linearAcceleration</a><span>, in §2.6.1</span>
+   <li><a href="#dom-vrpose-linearvelocity">linearVelocity</a><span>, in §2.6.1</span>
+   <li>
+    maxLayers
+    <ul>
+     <li><a href="#dom-vrdisplaycapabilities-maxlayers">attribute for VRDisplayCapabilities</a><span>, in §2.3</span>
+     <li><a href="#dom-vrlayer-maxlayers">attribute for VRLayer</a><span>, in §2.3.1</span>
+    </ul>
+   <li><a href="#dom-vreyeparameters-offset">offset</a><span>, in §2.7.1</span>
+   <li><a href="#dom-window-onvrdisplayconnected">onvrdisplayconnected</a><span>, in §2.10</span>
+   <li><a href="#dom-window-onvrdisplaydisconnected">onvrdisplaydisconnected</a><span>, in §2.10</span>
+   <li><a href="#dom-window-onvrdisplaypresentchange">onvrdisplaypresentchange</a><span>, in §2.10</span>
+   <li><a href="#dom-vrpose-orientation">orientation</a><span>, in §2.6.1</span>
+   <li><a href="#dom-vrpose-position">position</a><span>, in §2.6.1</span>
+   <li><a href="#dom-vreyeparameters-renderheight">renderHeight</a><span>, in §2.7.1</span>
+   <li><a href="#dom-vreyeparameters-renderwidth">renderWidth</a><span>, in §2.7.1</span>
+   <li><a href="#dom-vrdisplay-requestanimationframe">requestAnimationFrame(callback)</a><span>, in §2.1.1</span>
+   <li><a href="#dom-vrdisplay-requestpresent">requestPresent(layers)</a><span>, in §2.1.1</span>
+   <li><a href="#dom-vrdisplay-resetpose">resetPose()</a><span>, in §2.1.1</span>
+   <li><a href="#dom-vreye-right">"right"</a><span>, in §2.4</span>
+   <li>
+    rightBounds
+    <ul>
+     <li><a href="#dom-vrlayer-rightbounds">dict-member for VRLayer</a><span>, in §2.2</span>
+     <li><a href="#dom-vrlayer-rightbounds0">attribute for VRLayer</a><span>, in §2.2.1</span>
+    </ul>
+   <li><a href="#dom-vrfieldofview-rightdegrees">rightDegrees</a><span>, in §2.5</span>
+   <li>
+    sittingToStandingTransform
+    <ul>
+     <li><a href="#dom-vrstageparameters-sittingtostandingtransform">attribute for VRStageParameters</a><span>, in §2.8</span>
+     <li><a href="#dom-vreyeparameters-sittingtostandingtransform">attribute for VREyeParameters</a><span>, in §2.8.1</span>
+    </ul>
+   <li>
+    sizeX
+    <ul>
+     <li><a href="#dom-vrstageparameters-sizex">attribute for VRStageParameters</a><span>, in §2.8</span>
+     <li><a href="#dom-vreyeparameters-sizex">attribute for VREyeParameters</a><span>, in §2.8.1</span>
+    </ul>
+   <li>
+    sizeZ
+    <ul>
+     <li><a href="#dom-vrstageparameters-sizez">attribute for VRStageParameters</a><span>, in §2.8</span>
+     <li><a href="#dom-vreyeparameters-sizez">attribute for VREyeParameters</a><span>, in §2.8.1</span>
+    </ul>
+   <li>
+    source
+    <ul>
+     <li><a href="#dom-vrlayer-source">dict-member for VRLayer</a><span>, in §2.2</span>
+     <li><a href="#dom-vrlayer-source0">attribute for VRLayer</a><span>, in §2.2.1</span>
+    </ul>
+   <li><a href="#dom-vrdisplay-stageparameters">stageParameters</a><span>, in §2.1</span>
+   <li><a href="#dom-vrdisplay-submitframe">submitFrame()</a><span>, in §2.1.1</span>
+   <li><a href="#dom-vrdisplay-submitframe">submitFrame(pose)</a><span>, in §2.1.1</span>
+   <li><a href="#dom-vrpose-timestamp">timestamp</a><span>, in §2.6.1</span>
+   <li><a href="#dom-vrfieldofview-updegrees">upDegrees</a><span>, in §2.5</span>
+   <li><a href="#vrdisplay">VRDisplay</a><span>, in §2.1</span>
+   <li><a href="#vrdisplaycapabilities">VRDisplayCapabilities</a><span>, in §2.3</span>
+   <li><a href="#enumdef-vreye">VREye</a><span>, in §2.4</span>
+   <li><a href="#vreyeparameters">VREyeParameters</a><span>, in §2.7</span>
+   <li><a href="#vrfieldofview">VRFieldOfView</a><span>, in §2.5</span>
+   <li><a href="#dictdef-vrlayer">VRLayer</a><span>, in §2.2</span>
+   <li><a href="#vrpose">VRPose</a><span>, in §2.6</span>
+   <li><a href="#typedefdef-vrsource">VRSource</a><span>, in §2.2</span>
+   <li><a href="#vrstageparameters">VRStageParameters</a><span>, in §2.8</span>
+  </ul>
+  <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
+  <ul class="index">
+   <li>
+    <a data-link-type="biblio">[WHATWG-DOM]</a> defines the following terms:
+    <ul>
+     <li><a href="https://dom.spec.whatwg.org/#eventtarget">EventTarget</a>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[HTML]</a> defines the following terms:
+    <ul>
+     <li><a href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a>
+     <li><a href="https://html.spec.whatwg.org/multipage/browsers.html#framerequestcallback">FrameRequestCallback</a>
+     <li><a href="https://html.spec.whatwg.org/multipage/scripting.html#htmlcanvaselement">HTMLCanvasElement</a>
+     <li><a href="https://html.spec.whatwg.org/multipage/webappapis.html#navigator">Navigator</a>
+     <li><a href="https://html.spec.whatwg.org/multipage/browsers.html#window">Window</a>
+    </ul>
+  </ul>
+  <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
+  <dl>
+   <dt id="biblio-html">[HTML]
+   <dd>Ian Hickson. <a href="https://html.spec.whatwg.org/multipage/">HTML Standard</a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
+   <dt id="biblio-rfc2119">[RFC2119]
+   <dd>S. Bradner. <a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>. March 1997. Best Current Practice. URL: <a href="https://tools.ietf.org/html/rfc2119">https://tools.ietf.org/html/rfc2119</a>
+   <dt id="biblio-whatwg-dom">[WHATWG-DOM]
+   <dd>Anne van Kesteren. <a href="https://dom.spec.whatwg.org/">DOM Standard</a>. Living Standard. URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
+  </dl>
+  <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
+<pre class="idl def">interface <a href="#vrdisplay">VRDisplay</a> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget">EventTarget</a> {
+  readonly attribute boolean <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="boolean " href="#dom-vrdisplay-isconnected">isConnected</a>;
+  readonly attribute boolean <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="boolean " href="#dom-vrdisplay-ispresenting">isPresenting</a>;
+
+  /**
+   * Dictionary of capabilities describing the VRDisplay.
+   */
+  [Constant] readonly attribute <a data-link-type="idl-name" href="#vrdisplaycapabilities">VRDisplayCapabilities</a> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="VRDisplayCapabilities " href="#dom-vrdisplay-capabilities">capabilities</a>;
+
+  /**
+   * If this VRDisplay supports room-scale experiences, the optional
+   * stage attribute contains details on the room-scale parameters.
+   */
+  readonly attribute <a data-link-type="idl-name" href="#vrstageparameters">VRStageParameters</a>? <a data-readonly="" data-type="VRStageParameters? " href="#dom-vrdisplay-stageparameters">stageParameters</a>;
+
+  /* Return the current VREyeParameters for the given eye. */
+  <a data-link-type="idl-name" href="#vreyeparameters">VREyeParameters</a> <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-geteyeparameters">getEyeParameters</a>(<a data-link-type="idl-name" href="#enumdef-vreye">VREye</a> <a href="#dom-vrdisplay-geteyeparameters-whicheye-whicheye">whichEye</a>);
+
+  /**
+   * An identifier for this distinct VRDisplay. Used as an
+   * association point in the Gamepad API.
+   */
+  [Constant] readonly attribute unsigned long <a data-readonly="" data-type="unsigned long " href="#dom-vrdisplay-displayid">displayId</a>;
+
+  /**
+   * A display name, a user-readable name identifying it.
+   */
+  [Constant] readonly attribute DOMString <a data-readonly="" data-type="DOMString " href="#dom-vrdisplay-displayname">displayName</a>;
+
+  /**
+   * Return a VRPose containing the future predicted pose of the VRDisplay
+   * when the current frame will be presented. The value returned will not
+   * change until JavaScript has returned control to the browser.
+   *
+   * The VRPose will contain the position, orientation, velocity,
+   * and acceleration of each of these properties.
+   */
+  [NewObject] <a data-link-type="idl-name" href="#vrpose">VRPose</a> <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-getpose">getPose</a>();
+
+  /**
+   * Return the current instantaneous pose of the VRDisplay, with no
+   * prediction applied.
+   */
+  [NewObject] <a data-link-type="idl-name" href="#vrpose">VRPose</a> <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-getimmediatepose">getImmediatePose</a>();
+
+  /**
+   * Reset the pose for this display, treating its current position and
+   * orientation as the "origin/zero" values. VRPose.position,
+   * VRPose.orientation, and VRStageParameters.sittingToStandingTransform may be
+   * updated when calling resetPose(). This should be called in only
+   * sitting-space experiences.
+   */
+  void <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-resetpose">resetPose</a>();
+
+  /**
+   * z-depth defining the near plane of the eye view frustum
+   * enables mapping of values in the render target depth
+   * attachment to scene coordinates. Initially set to 0.01.
+   */
+  attribute double <a data-type="double " href="#dom-vrdisplay-depthnear">depthNear</a>;
+
+  /**
+   * z-depth defining the far plane of the eye view frustum
+   * enables mapping of values in the render target depth
+   * attachment to scene coordinates. Initially set to 10000.0.
+   */
+  attribute double <a data-type="double " href="#dom-vrdisplay-depthfar">depthFar</a>;
+
+  /**
+   * The callback passed to `requestAnimationFrame` will be called
+   * any time a new frame should be rendered. When the VRDisplay is
+   * presenting the callback will be called at the native refresh
+   * rate of the HMD. When not presenting this function acts
+   * identically to how window.requestAnimationFrame acts. Content should
+   * make no assumptions of frame rate or vsync behavior as the HMD runs
+   * asynchronously from other displays and at differing refresh rates.
+   */
+  [Throws] long <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-requestanimationframe">requestAnimationFrame</a>(<a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/browsers.html#framerequestcallback">FrameRequestCallback</a> callback);
+
+  /**
+   * Passing the value returned by `requestAnimationFrame` to
+   * `cancelAnimationFrame` will unregister the callback.
+   */
+  [Throws] void <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-cancelanimationframe">cancelAnimationFrame</a>(long <a href="#dom-vrdisplay-cancelanimationframe-handle-handle">handle</a>);
+
+  /**
+   * Begin presenting to the VRDisplay. Must be called in response to a user gesture.
+   * Repeat calls while already presenting will update the VRLayers being displayed.
+   */
+  Promise&lt;void> <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-requestpresent">requestPresent</a>(sequence&lt;<a data-link-type="idl-name" href="#dictdef-vrlayer">VRLayer</a>> <a href="#dom-vrdisplay-requestpresent-layers-layers">layers</a>);
+
+  /**
+   * Stops presenting to the VRDisplay.
+   */
+  Promise&lt;void> <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-exitpresent">exitPresent</a>();
+
+  /**
+   * Get the layers currently being presented.
+   */
+  sequence&lt;<a data-link-type="idl-name" href="#dictdef-vrlayer">VRLayer</a>> <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-getlayers">getLayers</a>();
+
+  /**
+   * The VRLayer provided to the VRDisplay will be captured and presented
+   * in the HMD. Calling this function has the same effect on the source
+   * canvas as any other operation that uses its source image, and canvases
+   * created without preserveDrawingBuffer set to true will be cleared.
+   */
+  void <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-submitframe">submitFrame</a>(optional <a data-link-type="idl-name" href="#vrpose">VRPose</a> <a href="#dom-vrdisplay-submitframe-pose-pose">pose</a>);
+};
+
+typedef (<a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/scripting.html#htmlcanvaselement">HTMLCanvasElement</a> or
+         <a data-link-type="idl-name" href="https://wiki.whatwg.org/wiki/OffscreenCanvas#offscreencanvas">OffscreenCanvas</a>) <a href="#typedefdef-vrsource">VRSource</a>;
+
+dictionary <a href="#dictdef-vrlayer">VRLayer</a> {
+  <a data-link-type="idl-name" href="#typedefdef-vrsource">VRSource</a>? <a data-default="null" data-type="VRSource? " href="#dom-vrlayer-source">source</a> = null;
+
+  sequence&lt;float>? <a data-default="null" data-type="sequence<float>? " href="#dom-vrlayer-leftbounds">leftBounds</a> = null;
+  sequence&lt;float>? <a data-default="null" data-type="sequence<float>? " href="#dom-vrlayer-rightbounds">rightBounds</a> = null;
+};
+
+interface <a href="#vrdisplaycapabilities">VRDisplayCapabilities</a> {
+  readonly attribute boolean <a data-readonly="" data-type="boolean " href="#dom-vrdisplaycapabilities-hasposition">hasPosition</a>;
+  readonly attribute boolean <a data-readonly="" data-type="boolean " href="#dom-vrdisplaycapabilities-hasorientation">hasOrientation</a>;
+  readonly attribute boolean <a data-readonly="" data-type="boolean " href="#dom-vrdisplaycapabilities-hasexternaldisplay">hasExternalDisplay</a>;
+  readonly attribute boolean <a data-readonly="" data-type="boolean " href="#dom-vrdisplaycapabilities-canpresent">canPresent</a>;
+  readonly attribute unsigned long <a data-readonly="" data-type="unsigned long " href="#dom-vrdisplaycapabilities-maxlayers">maxLayers</a>;
+};
+
+enum <a href="#enumdef-vreye">VREye</a> {
+  <a href="#dom-vreye-left">"left"</a>,
+  <a href="#dom-vreye-right">"right"</a>
+};
+
+interface <a href="#vrfieldofview">VRFieldOfView</a> {
+  readonly attribute double <a data-readonly="" data-type="double " href="#dom-vrfieldofview-updegrees">upDegrees</a>;
+  readonly attribute double <a data-readonly="" data-type="double " href="#dom-vrfieldofview-rightdegrees">rightDegrees</a>;
+  readonly attribute double <a data-readonly="" data-type="double " href="#dom-vrfieldofview-downdegrees">downDegrees</a>;
+  readonly attribute double <a data-readonly="" data-type="double " href="#dom-vrfieldofview-leftdegrees">leftDegrees</a>;
+};
+
+interface <a href="#vrpose">VRPose</a> {
+  readonly attribute <a data-link-type="idl-name" href="http://www.w3.org/TR/hr-time/#domhighrestimestamp">DOMHighResTimeStamp</a> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="DOMHighResTimeStamp " href="#dom-vrpose-timestamp">timestamp</a>;
+
+  readonly attribute Float32Array? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array? " href="#dom-vrpose-position">position</a>;
+  readonly attribute Float32Array? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array? " href="#dom-vrpose-linearvelocity">linearVelocity</a>;
+  readonly attribute Float32Array? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array? " href="#dom-vrpose-linearacceleration">linearAcceleration</a>;
+
+  readonly attribute Float32Array? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array? " href="#dom-vrpose-orientation">orientation</a>;
+  readonly attribute Float32Array? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array? " href="#dom-vrpose-angularvelocity">angularVelocity</a>;
+  readonly attribute Float32Array? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array? " href="#dom-vrpose-angularacceleration">angularAcceleration</a>;
+};
+
+interface <a href="#vreyeparameters">VREyeParameters</a> {
+  [Constant, Cached] readonly attribute Float32Array <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array " href="#dom-vreyeparameters-offset">offset</a>;
+
+  [Constant, Cached] readonly attribute <a data-link-type="idl-name" href="#vrfieldofview">VRFieldOfView</a> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="VRFieldOfView " href="#dom-vreyeparameters-fieldofview">fieldOfView</a>;
+
+  [Constant, Cached] readonly attribute unsigned long <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="unsigned long " href="#dom-vreyeparameters-renderwidth">renderWidth</a>;
+  [Constant, Cached] readonly attribute unsigned long <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="unsigned long " href="#dom-vreyeparameters-renderheight">renderHeight</a>;
+};
+
+interface <a href="#vrstageparameters">VRStageParameters</a> {
+  readonly attribute Float32Array <a data-readonly="" data-type="Float32Array " href="#dom-vrstageparameters-sittingtostandingtransform">sittingToStandingTransform</a>;
+
+  readonly attribute float <a data-readonly="" data-type="float " href="#dom-vrstageparameters-sizex">sizeX</a>;
+  readonly attribute float <a data-readonly="" data-type="float " href="#dom-vrstageparameters-sizez">sizeZ</a>;
+};
+
+partial interface <a class="idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/multipage/webappapis.html#navigator">Navigator</a> {
+  Promise&lt;sequence&lt;<a data-link-type="idl-name" href="#vrdisplay">VRDisplay</a>>> <a class="idl-code" data-link-type="method" href="#navigator-getvrdisplays-attribute">getVRDisplays</a>();
+  readonly attribute sequence&lt;<a data-link-type="idl-name" href="#vrdisplay">VRDisplay</a>> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="sequence<VRDisplay> " href="#navigator-activevrdisplays-attribute">activeVRDisplays</a>;
+};
+
+partial interface <a class="idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/multipage/browsers.html#window">Window</a> {
+  attribute <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <a data-type="EventHandler " href="#dom-window-onvrdisplayconnected">onvrdisplayconnected</a>;
+  attribute <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <a data-type="EventHandler " href="#dom-window-onvrdisplaydisconnected">onvrdisplaydisconnected</a>;
+  attribute <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <a data-type="EventHandler " href="#dom-window-onvrdisplaypresentchange">onvrdisplaypresentchange</a>;
+};
+
+partial interface <a class="idl-code" data-link-type="interface" href="https://www.w3.org/TR/gamepad/#gamepad">Gamepad</a> {
+  [Constant] readonly attribute unsigned long <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="unsigned long " href="#gamepad-getvrdisplays-attribute">displayId</a>;
+};
+
+</pre>
+<script>
+        document.body.addEventListener("click", function(e) {
+            var queryAll = function(sel) { return [].slice.call(document.querySelectorAll(sel)); }
+            // Find the dfn element or panel, if any, that was clicked on.
+            var el = e.target;
+            var target;
+            while(el.parentElement) {
+                if(el.tagName == "DFN") {
+                    target = "dfn";
+                    break;
+                }
+                if(/H\d/.test(el.tagName) && el.getAttribute('data-dfn-type') != null) {
+                    target = "dfn";
+                    break;
+                }
+                if(el.classList.contains("dfn-panel")) {
+                    target = "dfn-panel";
+                    break;
+                }
+                el = el.parentElement;
+            }
+            if(target != "dfn-panel") {
+                // Turn off any currently "on" or "activated" panels.
+                queryAll(".dfn-panel.on, .dfn-panel.activated").forEach(function(el){
+                    el.classList.remove("on");
+                    el.classList.remove("activated");
+                });
+            }
+            if(target == "dfn") {
+                // open the panel
+                var dfnPanel = el.querySelector(".dfn-panel");
+                if(dfnPanel) {
+                    dfnPanel.classList.add("on");
+                }
+            } else if(target == "dfn-panel") {
+                // Switch it to "activated" state, which pins it.
+                el.classList.add("activated");
+            }
+
+        });
+        </script>

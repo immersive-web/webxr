@@ -1,6 +1,5 @@
-WebVR Community Group
-=====================
+# WebVR Specification
 
-This is the repository for the [WebVR Community Group](https://www.w3.org/community/webvr/).
+This repository houses the [WebVR specification](https://mozvr.github.io/webvr-spec/), in [Bikeshed](https://github.com/tabatkins/bikeshed) format.
 
-* [Charter](https://w3c.github.io/webvr/charter/)
+To generate the `index.html` document from the `index.bs` Bikeshed file, simply run `make`.
