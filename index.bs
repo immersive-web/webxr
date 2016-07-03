@@ -548,16 +548,79 @@ navigator.getVRDisplays().then(function (displays) {
 </pre>
 </div>
 
+## VRDisplayEventReason ## {#interface-vrdisplayeventreason}
+
+<pre class="idl">
+enum VRDisplayEventReason {
+  "navigation",
+  "mounted",
+  "unmounted",
+};
+</pre>
+
+### Reasons ### {#vrdisplayeventreason-codes}
+
+<dfn enum-value for="VRDisplayEventReason">navigation</dfn>
+The page has been navigated to from a context that allows this page to begin presenting immediately, such as from another site that was already in VR presentation mode.
+
+<dfn enum-value for="VRDisplayEventReason">mounted</dfn>
+The {{VRDisplay}} has detected that the user has put it on.
+
+<dfn enum-value for="VRDisplayEventReason">unmounted</dfn>
+The {{VRDisplay}} has detected that the user has taken it off.
+
+## VRDisplayEvent ## {#interface-vrdisplayevent}
+
+<pre class="idl">
+[Constructor(VRDisplayEventInit eventInitDict)]
+interface VRDisplayEvent : Event {
+  readonly attribute VRDisplay display;
+  readonly attribute VRDisplayEventReason? reason;
+};
+
+dictionary VRDisplayEventInit : EventInit {
+    required VRDisplay display;
+    VRDisplayEventReason reason;
+};
+</pre>
+
+### Attributes ### {#vrdisplayevent-attributes}
+
+<dfn attribute for="VRDisplayEvent">display</dfn>
+The {{VRDisplay}} associated with this event.
+
+<dfn attribute for="VRDisplayEvent">reason</dfn>
+{{VRDisplayEventReason}} describing why this event has has been fired.
+
 
 ## Window Interface extension ## {#interface-window}
 
 <pre class="idl">
 partial interface Window {
-  attribute EventHandler onvrdisplayconnected;
-  attribute EventHandler onvrdisplaydisconnected;
+  attribute EventHandler onvrdisplayconnect;
+  attribute EventHandler onvrdisplaydisconnect;
+  attribute EventHandler onvrdisplayactivate;
+  attribute EventHandler onvrdisplaydeactivate;
   attribute EventHandler onvrdisplaypresentchange;
 };
 </pre>
+
+User agents implementing this specification MUST provide the following new DOM events. The corresponding events must be of type {{VRDisplayEvent}} and must fire on the window object. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
+
+<dfn event for="Window" id="window-vrdisplayconnect-event">onvrdisplayconnect</dfn>
+A user agent MAY dispatch this event type to indicate that a {{VRDisplay}} has been connected.
+
+<dfn event for="Window" id="window-vrdisplaydisconnect-event">onvrdisplaydisconnect</dfn>
+A user agent MAY dispatch this event type to indicate that a {{VRDisplay}} has been disconnected.
+
+<dfn event for="Window" id="window-vrdisplayactivate-event">onvrdisplayactivate</dfn>
+A user agent MAY dispatch this event type to indicate that something has occured which suggests the {{VRDisplay}} should be presented to. For example, if the {{VRDisplay}} is capable of detecting when the user has put it on, this event SHOULD fire when they do so with the reason "mounted".
+
+<dfn event for="Window" id="window-vrdisplaydeactivate-event">onvrdisplaydeactivate</dfn>
+A user agent MAY dispatch this event type to indicate that something has occured which suggests the {{VRDisplay}} should exit presentation. For example, if the {{VRDisplay}} is capable of detecting when the user has taken it off, this event SHOULD fire when they do so with the reason "unmounted".
+
+<dfn event for="Window" id="window-vrdisplaypresentchange-event">onvrdisplaypresentchange</dfn>
+A user agent MUST dispatch this event type to indicate that a {{VRDisplay}} has begun or ended VR presentation. This event should not fire on subsequent calls to {{requestPresent()}} after the {{VRDisplay}} has already begun VR presentation.
 
 
 ## Gamepad Interface extension ## {#interface-gamepad}

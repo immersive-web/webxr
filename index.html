@@ -1504,11 +1504,21 @@ pre.idl.highlight { color: #708090; }
        <ol class="toc">
         <li><a href="#navigator-attributes"><span class="secno">2.9.1</span> <span class="content">Attributes</span></a>
        </ol>
-      <li><a href="#interface-window"><span class="secno">2.10</span> <span class="content">Window Interface extension</span></a>
       <li>
-       <a href="#interface-gamepad"><span class="secno">2.11</span> <span class="content">Gamepad Interface extension</span></a>
+       <a href="#interface-vrdisplayeventreason"><span class="secno">2.10</span> <span class="content">VRDisplayEventReason</span></a>
        <ol class="toc">
-        <li><a href="#gamepad-attributes"><span class="secno">2.11.1</span> <span class="content">Attributes</span></a>
+        <li><a href="#vrdisplayeventreason-codes"><span class="secno">2.10.1</span> <span class="content">Reasons</span></a>
+       </ol>
+      <li>
+       <a href="#interface-vrdisplayevent"><span class="secno">2.11</span> <span class="content">VRDisplayEvent</span></a>
+       <ol class="toc">
+        <li><a href="#vrdisplayevent-attributes"><span class="secno">2.11.1</span> <span class="content">Attributes</span></a>
+       </ol>
+      <li><a href="#interface-window"><span class="secno">2.12</span> <span class="content">Window Interface extension</span></a>
+      <li>
+       <a href="#interface-gamepad"><span class="secno">2.13</span> <span class="content">Gamepad Interface extension</span></a>
+       <ol class="toc">
+        <li><a href="#gamepad-attributes"><span class="secno">2.13.1</span> <span class="content">Attributes</span></a>
        </ol>
      </ol>
     <li><a href="#security"><span class="secno">3</span> <span class="content">Security Considerations</span></a>
@@ -1902,31 +1912,65 @@ acceleration. When not NULL MUST be a three-element array.</p>
 <span class="p">});</span>
 </pre>
    </div>
-   <h3 class="heading settled" data-level="2.10" id="interface-window"><span class="secno">2.10. </span><span class="content">Window Interface extension</span><a class="self-link" href="#interface-window"></a></h3>
+   <h3 class="heading settled" data-level="2.10" id="interface-vrdisplayeventreason"><span class="secno">2.10. </span><span class="content">VRDisplayEventReason</span><a class="self-link" href="#interface-vrdisplayeventreason"></a></h3>
+<pre class="idl highlight def"><span class="kt">enum</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="enum" data-export="" id="enumdef-vrdisplayeventreason">VRDisplayEventReason</dfn> {
+  <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-navigation" id="ref-for-dom-vrdisplayeventreason-navigation-1">"navigation"</a>,
+  <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-mounted" id="ref-for-dom-vrdisplayeventreason-mounted-1">"mounted"</a>,
+  <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-unmounted" id="ref-for-dom-vrdisplayeventreason-unmounted-1">"unmounted"</a>,
+};
+</pre>
+   <h4 class="heading settled" data-level="2.10.1" id="vrdisplayeventreason-codes"><span class="secno">2.10.1. </span><span class="content">Reasons</span><a class="self-link" href="#vrdisplayeventreason-codes"></a></h4>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayEventReason" data-dfn-type="enum-value" data-export="" id="dom-vrdisplayeventreason-navigation">navigation</dfn> The page has been navigated to from a context that allows this page to begin presenting immediately, such as from another site that was already in VR presentation mode.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayEventReason" data-dfn-type="enum-value" data-export="" id="dom-vrdisplayeventreason-mounted">mounted</dfn> The <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-41">VRDisplay</a></code> has detected that the user has put it on.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayEventReason" data-dfn-type="enum-value" data-export="" id="dom-vrdisplayeventreason-unmounted">unmounted</dfn> The <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-42">VRDisplay</a></code> has detected that the user has taken it off.</p>
+   <h3 class="heading settled" data-level="2.11" id="interface-vrdisplayevent"><span class="secno">2.11. </span><span class="content">VRDisplayEvent</span><a class="self-link" href="#interface-vrdisplayevent"></a></h3>
+<pre class="idl highlight def">[<dfn class="nv idl-code" data-dfn-for="VRDisplayEvent" data-dfn-type="constructor" data-export="" data-lt="VRDisplayEvent(eventInitDict)" id="dom-vrdisplayevent-vrdisplayevent">Constructor<a class="self-link" href="#dom-vrdisplayevent-vrdisplayevent"></a></dfn>(<a class="n" data-link-type="idl-name" href="#dictdef-vrdisplayeventinit" id="ref-for-dictdef-vrdisplayeventinit-1">VRDisplayEventInit</a> <dfn class="nv idl-code" data-dfn-for="VRDisplayEvent/VRDisplayEvent(eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrdisplayevent-vrdisplayevent-eventinitdict-eventinitdict">eventInitDict<a class="self-link" href="#dom-vrdisplayevent-vrdisplayevent-eventinitdict-eventinitdict"></a></dfn>)]
+<span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrdisplayevent">VRDisplayEvent</dfn> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#event">Event</a> {
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrdisplay" id="ref-for-vrdisplay-43">VRDisplay</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRDisplay" href="#dom-vrdisplayevent-display" id="ref-for-dom-vrdisplayevent-display-1">display</a>;
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#enumdef-vrdisplayeventreason" id="ref-for-enumdef-vrdisplayeventreason-1">VRDisplayEventReason</a>? <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRDisplayEventReason?" href="#dom-vrdisplayevent-reason" id="ref-for-dom-vrdisplayevent-reason-1">reason</a>;
+};
+
+<span class="kt">dictionary</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-vrdisplayeventinit">VRDisplayEventInit</dfn> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#dictdef-eventinit">EventInit</a> {
+    <span class="kt">required</span> <a class="n" data-link-type="idl-name" href="#vrdisplay" id="ref-for-vrdisplay-44">VRDisplay</a> <dfn class="nv idl-code" data-dfn-for="VRDisplayEventInit" data-dfn-type="dict-member" data-export="" data-type="VRDisplay " id="dom-vrdisplayeventinit-display">display<a class="self-link" href="#dom-vrdisplayeventinit-display"></a></dfn>;
+    <a class="n" data-link-type="idl-name" href="#enumdef-vrdisplayeventreason" id="ref-for-enumdef-vrdisplayeventreason-2">VRDisplayEventReason</a> <dfn class="nv idl-code" data-dfn-for="VRDisplayEventInit" data-dfn-type="dict-member" data-export="" data-type="VRDisplayEventReason " id="dom-vrdisplayeventinit-reason">reason<a class="self-link" href="#dom-vrdisplayeventinit-reason"></a></dfn>;
+};
+</pre>
+   <h4 class="heading settled" data-level="2.11.1" id="vrdisplayevent-attributes"><span class="secno">2.11.1. </span><span class="content">Attributes</span><a class="self-link" href="#vrdisplayevent-attributes"></a></h4>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayEvent" data-dfn-type="attribute" data-export="" id="dom-vrdisplayevent-display">display</dfn> The <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-45">VRDisplay</a></code> associated with this event.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayEvent" data-dfn-type="attribute" data-export="" id="dom-vrdisplayevent-reason">reason</dfn> <code class="idl"><a data-link-type="idl" href="#enumdef-vrdisplayeventreason" id="ref-for-enumdef-vrdisplayeventreason-3">VRDisplayEventReason</a></code> describing why this event has has been fired.</p>
+   <h3 class="heading settled" data-level="2.12" id="interface-window"><span class="secno">2.12. </span><span class="content">Window Interface extension</span><a class="self-link" href="#interface-window"></a></h3>
 <pre class="idl highlight def"><span class="kt">partial</span> <span class="kt">interface</span> <a class="nv idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/multipage/browsers.html#window">Window</a> {
-  <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <dfn class="nv idl-code" data-dfn-for="Window" data-dfn-type="attribute" data-export="" data-type="EventHandler" id="dom-window-onvrdisplayconnected">onvrdisplayconnected<a class="self-link" href="#dom-window-onvrdisplayconnected"></a></dfn>;
-  <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <dfn class="nv idl-code" data-dfn-for="Window" data-dfn-type="attribute" data-export="" data-type="EventHandler" id="dom-window-onvrdisplaydisconnected">onvrdisplaydisconnected<a class="self-link" href="#dom-window-onvrdisplaydisconnected"></a></dfn>;
+  <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <dfn class="nv idl-code" data-dfn-for="Window" data-dfn-type="attribute" data-export="" data-type="EventHandler" id="dom-window-onvrdisplayconnect">onvrdisplayconnect<a class="self-link" href="#dom-window-onvrdisplayconnect"></a></dfn>;
+  <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <dfn class="nv idl-code" data-dfn-for="Window" data-dfn-type="attribute" data-export="" data-type="EventHandler" id="dom-window-onvrdisplaydisconnect">onvrdisplaydisconnect<a class="self-link" href="#dom-window-onvrdisplaydisconnect"></a></dfn>;
+  <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <dfn class="nv idl-code" data-dfn-for="Window" data-dfn-type="attribute" data-export="" data-type="EventHandler" id="dom-window-onvrdisplayactivate">onvrdisplayactivate<a class="self-link" href="#dom-window-onvrdisplayactivate"></a></dfn>;
+  <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <dfn class="nv idl-code" data-dfn-for="Window" data-dfn-type="attribute" data-export="" data-type="EventHandler" id="dom-window-onvrdisplaydeactivate">onvrdisplaydeactivate<a class="self-link" href="#dom-window-onvrdisplaydeactivate"></a></dfn>;
   <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <dfn class="nv idl-code" data-dfn-for="Window" data-dfn-type="attribute" data-export="" data-type="EventHandler" id="dom-window-onvrdisplaypresentchange">onvrdisplaypresentchange<a class="self-link" href="#dom-window-onvrdisplaypresentchange"></a></dfn>;
 };
 </pre>
-   <h3 class="heading settled" data-level="2.11" id="interface-gamepad"><span class="secno">2.11. </span><span class="content">Gamepad Interface extension</span><a class="self-link" href="#interface-gamepad"></a></h3>
+   <p>User agents implementing this specification MUST provide the following new DOM events. The corresponding events must be of type <code class="idl"><a data-link-type="idl" href="#vrdisplayevent" id="ref-for-vrdisplayevent-1">VRDisplayEvent</a></code> and must fire on the window object. Registration for and firing of the events must follow the usual behavior of DOM4 Events.</p>
+   <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-vrdisplayconnect-event">onvrdisplayconnect<a class="self-link" href="#window-vrdisplayconnect-event"></a></dfn> A user agent MAY dispatch this event type to indicate that a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-46">VRDisplay</a></code> has been connected.</p>
+   <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-vrdisplaydisconnect-event">onvrdisplaydisconnect<a class="self-link" href="#window-vrdisplaydisconnect-event"></a></dfn> A user agent MAY dispatch this event type to indicate that a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-47">VRDisplay</a></code> has been disconnected.</p>
+   <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-vrdisplayactivate-event">onvrdisplayactivate<a class="self-link" href="#window-vrdisplayactivate-event"></a></dfn> A user agent MAY dispatch this event type to indicate that something has occured which suggests the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-48">VRDisplay</a></code> should be presented to. For example, if the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-49">VRDisplay</a></code> is capable of detecting when the user has put it on, this event SHOULD fire when they do so with the reason "mounted".</p>
+   <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-vrdisplaydeactivate-event">onvrdisplaydeactivate<a class="self-link" href="#window-vrdisplaydeactivate-event"></a></dfn> A user agent MAY dispatch this event type to indicate that something has occured which suggests the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-50">VRDisplay</a></code> should exit presentation. For example, if the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-51">VRDisplay</a></code> is capable of detecting when the user has taken it off, this event SHOULD fire when they do so with the reason "unmounted".</p>
+   <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-vrdisplaypresentchange-event">onvrdisplaypresentchange<a class="self-link" href="#window-vrdisplaypresentchange-event"></a></dfn> A user agent MUST dispatch this event type to indicate that a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-52">VRDisplay</a></code> has begun or ended VR presentation. This event should not fire on subsequent calls to <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-8">requestPresent()</a></code> after the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-53">VRDisplay</a></code> has already begun VR presentation.</p>
+   <h3 class="heading settled" data-level="2.13" id="interface-gamepad"><span class="secno">2.13. </span><span class="content">Gamepad Interface extension</span><a class="self-link" href="#interface-gamepad"></a></h3>
 <pre class="idl highlight def"><span class="kt">partial</span> <span class="kt">interface</span> <a class="nv idl-code" data-link-type="interface" href="https://www.w3.org/TR/gamepad/#gamepad">Gamepad</a> {
   [<a class="nv idl-code" data-link-type="extended-attribute">Constant</a>] <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">unsigned</span> <span class="kt">long</span> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="unsigned long" href="#gamepad-getvrdisplays-attribute" id="ref-for-gamepad-getvrdisplays-attribute-1">displayId</a>;
 };
 </pre>
-   <h4 class="heading settled" data-level="2.11.1" id="gamepad-attributes"><span class="secno">2.11.1. </span><span class="content">Attributes</span><a class="self-link" href="#gamepad-attributes"></a></h4>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="Gamepad" data-dfn-type="attribute" data-export="" id="gamepad-getvrdisplays-attribute">displayId</dfn> Return the <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-displayid" id="ref-for-dom-vrdisplay-displayid-1">displayId</a></code> for the associated <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-41">VRDisplay</a></code>.</p>
+   <h4 class="heading settled" data-level="2.13.1" id="gamepad-attributes"><span class="secno">2.13.1. </span><span class="content">Attributes</span><a class="self-link" href="#gamepad-attributes"></a></h4>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="Gamepad" data-dfn-type="attribute" data-export="" id="gamepad-getvrdisplays-attribute">displayId</dfn> Return the <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-displayid" id="ref-for-dom-vrdisplay-displayid-1">displayId</a></code> for the associated <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-54">VRDisplay</a></code>.</p>
    <h2 class="heading settled" data-level="3" id="security"><span class="secno">3. </span><span class="content">Security Considerations</span><a class="self-link" href="#security"></a></h2>
    <p>While not directly affecting the API interface and Web IDL, the security model should maintains the user’s expectations of privacy on the Web:</p>
    <ul>
     <li data-md="">
      <p>The Gamepad API will be updated such that the gamepad inputs and HMD pose are available to only the focused tab.</p>
     <li data-md="">
-     <p>Non-focused tabs are allowed to enumerate <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/gamepad/#gamepad">Gamepad</a></code>s and <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-42">VRDisplay</a></code>s but will see last received state or default values.</p>
+     <p>Non-focused tabs are allowed to enumerate <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/gamepad/#gamepad">Gamepad</a></code>s and <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-55">VRDisplay</a></code>s but will see last received state or default values.</p>
     <li data-md="">
      <p>All gamepads are assumed to be owned by the focused tabs, so can use them for secure inputs such as password fields.</p>
     <li data-md="">
-     <p>Trusted UI elements presented by the browser would not be accessible by the GL context associated to the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-43">VRDisplay</a></code> exposed to untrusted content.</p>
+     <p>Trusted UI elements presented by the browser would not be accessible by the GL context associated to the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-56">VRDisplay</a></code> exposed to untrusted content.</p>
     <li data-md="">
      <p>Trusted UI would be rendered by chrome-only JavaScript code that has an independent GL context.</p>
     <li data-md="">
@@ -1940,7 +1984,7 @@ acceleration. When not NULL MUST be a three-element array.</p>
     <li data-md="">
      <p>If the user is uncomfortable in a VR world, she cannot look away from the display as it occupies her entire field of view. Instead the user is instructed to close her eyes and perform an action that does not require her vision to escape to a default page (such as pressing a reserved button or performing a gesture with motion controls).</p>
     <li data-md="">
-     <p>To prevent CORS-related vulnerabilities, each page will see an independent instance of objects returned by the WebVR API, such as <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-44">VRDisplay</a></code>. Care must be taken to ensure that attributes such as <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-11">VRLayer</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-5">source</a></code> set by one page can not be read by another.</p>
+     <p>To prevent CORS-related vulnerabilities, each page will see an independent instance of objects returned by the WebVR API, such as <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-57">VRDisplay</a></code>. Care must be taken to ensure that attributes such as <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-11">VRLayer</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-5">source</a></code> set by one page can not be read by another.</p>
    </ul>
    <h2 class="heading settled" data-level="4" id="ack"><span class="secno">4. </span><span class="content">Acknowledgements</span><a class="self-link" href="#ack"></a></h2>
   </main>
@@ -1957,10 +2001,16 @@ acceleration. When not NULL MUST be a three-element array.</p>
    <li><a href="#dom-vrdisplay-depthfar">depthFar</a><span>, in §2.1</span>
    <li><a href="#dom-vrdisplay-depthnear">depthNear</a><span>, in §2.1</span>
    <li>
+    display
+    <ul>
+     <li><a href="#dom-vrdisplayeventinit-display">dict-member for VRDisplayEventInit</a><span>, in §2.11</span>
+     <li><a href="#dom-vrdisplayevent-display">attribute for VRDisplayEvent</a><span>, in §2.11.1</span>
+    </ul>
+   <li>
     displayId
     <ul>
      <li><a href="#dom-vrdisplay-displayid">attribute for VRDisplay</a><span>, in §2.1</span>
-     <li><a href="#gamepad-getvrdisplays-attribute">attribute for Gamepad</a><span>, in §2.11.1</span>
+     <li><a href="#gamepad-getvrdisplays-attribute">attribute for Gamepad</a><span>, in §2.13.1</span>
     </ul>
    <li><a href="#dom-vrdisplay-displayname">displayName</a><span>, in §2.1</span>
    <li><a href="#dom-vrfieldofview-downdegrees">downDegrees</a><span>, in §2.5</span>
@@ -1983,12 +2033,47 @@ acceleration. When not NULL MUST be a three-element array.</p>
    <li><a href="#dom-vrpose-linearacceleration">linearAcceleration</a><span>, in §2.6.1</span>
    <li><a href="#dom-vrpose-linearvelocity">linearVelocity</a><span>, in §2.6.1</span>
    <li><a href="#dom-vrdisplaycapabilities-maxlayers">maxLayers</a><span>, in §2.3.1</span>
+   <li><a href="#dom-vrdisplayeventreason-mounted">mounted</a><span>, in §2.10.1</span>
+   <li><a href="#dom-vrdisplayeventreason-navigation">navigation</a><span>, in §2.10.1</span>
    <li><a href="#dom-vreyeparameters-offset">offset</a><span>, in §2.7.1</span>
-   <li><a href="#dom-window-onvrdisplayconnected">onvrdisplayconnected</a><span>, in §2.10</span>
-   <li><a href="#dom-window-onvrdisplaydisconnected">onvrdisplaydisconnected</a><span>, in §2.10</span>
-   <li><a href="#dom-window-onvrdisplaypresentchange">onvrdisplaypresentchange</a><span>, in §2.10</span>
+   <li>
+    onvrdisplayactivate
+    <ul>
+     <li><a href="#dom-window-onvrdisplayactivate">attribute for Window</a><span>, in §2.12</span>
+     <li><a href="#window-vrdisplayactivate-event">event for Window</a><span>, in §2.12</span>
+    </ul>
+   <li>
+    onvrdisplayconnect
+    <ul>
+     <li><a href="#dom-window-onvrdisplayconnect">attribute for Window</a><span>, in §2.12</span>
+     <li><a href="#window-vrdisplayconnect-event">event for Window</a><span>, in §2.12</span>
+    </ul>
+   <li>
+    onvrdisplaydeactivate
+    <ul>
+     <li><a href="#dom-window-onvrdisplaydeactivate">attribute for Window</a><span>, in §2.12</span>
+     <li><a href="#window-vrdisplaydeactivate-event">event for Window</a><span>, in §2.12</span>
+    </ul>
+   <li>
+    onvrdisplaydisconnect
+    <ul>
+     <li><a href="#dom-window-onvrdisplaydisconnect">attribute for Window</a><span>, in §2.12</span>
+     <li><a href="#window-vrdisplaydisconnect-event">event for Window</a><span>, in §2.12</span>
+    </ul>
+   <li>
+    onvrdisplaypresentchange
+    <ul>
+     <li><a href="#dom-window-onvrdisplaypresentchange">attribute for Window</a><span>, in §2.12</span>
+     <li><a href="#window-vrdisplaypresentchange-event">event for Window</a><span>, in §2.12</span>
+    </ul>
    <li><a href="#dom-vrpose-orientation">orientation</a><span>, in §2.6.1</span>
    <li><a href="#dom-vrpose-position">position</a><span>, in §2.6.1</span>
+   <li>
+    reason
+    <ul>
+     <li><a href="#dom-vrdisplayeventinit-reason">dict-member for VRDisplayEventInit</a><span>, in §2.11</span>
+     <li><a href="#dom-vrdisplayevent-reason">attribute for VRDisplayEvent</a><span>, in §2.11.1</span>
+    </ul>
    <li><a href="#dom-vreyeparameters-renderheight">renderHeight</a><span>, in §2.7.1</span>
    <li><a href="#dom-vreyeparameters-renderwidth">renderWidth</a><span>, in §2.7.1</span>
    <li><a href="#dom-vrdisplay-requestanimationframe">requestAnimationFrame(callback)</a><span>, in §2.1.1</span>
@@ -2006,9 +2091,14 @@ acceleration. When not NULL MUST be a three-element array.</p>
    <li><a href="#dom-vrdisplay-submitframe">submitFrame()</a><span>, in §2.1.1</span>
    <li><a href="#dom-vrdisplay-submitframe">submitFrame(pose)</a><span>, in §2.1.1</span>
    <li><a href="#dom-vrpose-timestamp">timestamp</a><span>, in §2.6.1</span>
+   <li><a href="#dom-vrdisplayeventreason-unmounted">unmounted</a><span>, in §2.10.1</span>
    <li><a href="#dom-vrfieldofview-updegrees">upDegrees</a><span>, in §2.5</span>
    <li><a href="#vrdisplay">VRDisplay</a><span>, in §2.1</span>
    <li><a href="#vrdisplaycapabilities">VRDisplayCapabilities</a><span>, in §2.3</span>
+   <li><a href="#vrdisplayevent">VRDisplayEvent</a><span>, in §2.11</span>
+   <li><a href="#dom-vrdisplayevent-vrdisplayevent">VRDisplayEvent(eventInitDict)</a><span>, in §2.11</span>
+   <li><a href="#dictdef-vrdisplayeventinit">VRDisplayEventInit</a><span>, in §2.11</span>
+   <li><a href="#enumdef-vrdisplayeventreason">VRDisplayEventReason</a><span>, in §2.10</span>
    <li><a href="#enumdef-vreye">VREye</a><span>, in §2.4</span>
    <li><a href="#vreyeparameters">VREyeParameters</a><span>, in §2.7</span>
    <li><a href="#vrfieldofview">VRFieldOfView</a><span>, in §2.5</span>
@@ -2022,6 +2112,8 @@ acceleration. When not NULL MUST be a three-element array.</p>
    <li>
     <a data-link-type="biblio">[WHATWG-DOM]</a> defines the following terms:
     <ul>
+     <li><a href="https://dom.spec.whatwg.org/#event">Event</a>
+     <li><a href="https://dom.spec.whatwg.org/#dictdef-eventinit">EventInit</a>
      <li><a href="https://dom.spec.whatwg.org/#eventtarget">EventTarget</a>
     </ul>
    <li>
@@ -2218,9 +2310,28 @@ acceleration. When not NULL MUST be a three-element array.</p>
   <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">FrozenArray</span>&lt;<a class="n" data-link-type="idl-name" href="#vrdisplay">VRDisplay</a>> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="FrozenArray<VRDisplay>" href="#navigator-activevrdisplays-attribute">activeVRDisplays</a>;
 };
 
+<span class="kt">enum</span> <a class="nv" href="#enumdef-vrdisplayeventreason">VRDisplayEventReason</a> {
+  <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-navigation">"navigation"</a>,
+  <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-mounted">"mounted"</a>,
+  <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-unmounted">"unmounted"</a>,
+};
+
+[<a class="nv" href="#dom-vrdisplayevent-vrdisplayevent">Constructor</a>(<a class="n" data-link-type="idl-name" href="#dictdef-vrdisplayeventinit">VRDisplayEventInit</a> <a class="nv" href="#dom-vrdisplayevent-vrdisplayevent-eventinitdict-eventinitdict">eventInitDict</a>)]
+<span class="kt">interface</span> <a class="nv" href="#vrdisplayevent">VRDisplayEvent</a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#event">Event</a> {
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrdisplay">VRDisplay</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRDisplay" href="#dom-vrdisplayevent-display">display</a>;
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#enumdef-vrdisplayeventreason">VRDisplayEventReason</a>? <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRDisplayEventReason?" href="#dom-vrdisplayevent-reason">reason</a>;
+};
+
+<span class="kt">dictionary</span> <a class="nv" href="#dictdef-vrdisplayeventinit">VRDisplayEventInit</a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#dictdef-eventinit">EventInit</a> {
+    <span class="kt">required</span> <a class="n" data-link-type="idl-name" href="#vrdisplay">VRDisplay</a> <a class="nv" data-type="VRDisplay " href="#dom-vrdisplayeventinit-display">display</a>;
+    <a class="n" data-link-type="idl-name" href="#enumdef-vrdisplayeventreason">VRDisplayEventReason</a> <a class="nv" data-type="VRDisplayEventReason " href="#dom-vrdisplayeventinit-reason">reason</a>;
+};
+
 <span class="kt">partial</span> <span class="kt">interface</span> <a class="nv idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/multipage/browsers.html#window">Window</a> {
-  <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <a class="nv" data-type="EventHandler" href="#dom-window-onvrdisplayconnected">onvrdisplayconnected</a>;
-  <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <a class="nv" data-type="EventHandler" href="#dom-window-onvrdisplaydisconnected">onvrdisplaydisconnected</a>;
+  <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <a class="nv" data-type="EventHandler" href="#dom-window-onvrdisplayconnect">onvrdisplayconnect</a>;
+  <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <a class="nv" data-type="EventHandler" href="#dom-window-onvrdisplaydisconnect">onvrdisplaydisconnect</a>;
+  <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <a class="nv" data-type="EventHandler" href="#dom-window-onvrdisplayactivate">onvrdisplayactivate</a>;
+  <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <a class="nv" data-type="EventHandler" href="#dom-window-onvrdisplaydeactivate">onvrdisplaydeactivate</a>;
   <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a> <a class="nv" data-type="EventHandler" href="#dom-window-onvrdisplaypresentchange">onvrdisplaypresentchange</a>;
 };
 
@@ -2241,14 +2352,18 @@ acceleration. When not NULL MUST be a three-element array.</p>
     <li><a href="#ref-for-vrdisplay-35">2.6.1. Attributes</a>
     <li><a href="#ref-for-vrdisplay-36">2.9. Navigator Interface extension</a> <a href="#ref-for-vrdisplay-37">(2)</a>
     <li><a href="#ref-for-vrdisplay-38">2.9.1. Attributes</a> <a href="#ref-for-vrdisplay-39">(2)</a> <a href="#ref-for-vrdisplay-40">(3)</a>
-    <li><a href="#ref-for-vrdisplay-41">2.11.1. Attributes</a>
-    <li><a href="#ref-for-vrdisplay-42">3. Security Considerations</a> <a href="#ref-for-vrdisplay-43">(2)</a> <a href="#ref-for-vrdisplay-44">(3)</a>
+    <li><a href="#ref-for-vrdisplay-41">2.10.1. Reasons</a> <a href="#ref-for-vrdisplay-42">(2)</a>
+    <li><a href="#ref-for-vrdisplay-43">2.11. VRDisplayEvent</a> <a href="#ref-for-vrdisplay-44">(2)</a>
+    <li><a href="#ref-for-vrdisplay-45">2.11.1. Attributes</a>
+    <li><a href="#ref-for-vrdisplay-46">2.12. Window Interface extension</a> <a href="#ref-for-vrdisplay-47">(2)</a> <a href="#ref-for-vrdisplay-48">(3)</a> <a href="#ref-for-vrdisplay-49">(4)</a> <a href="#ref-for-vrdisplay-50">(5)</a> <a href="#ref-for-vrdisplay-51">(6)</a> <a href="#ref-for-vrdisplay-52">(7)</a> <a href="#ref-for-vrdisplay-53">(8)</a>
+    <li><a href="#ref-for-vrdisplay-54">2.13.1. Attributes</a>
+    <li><a href="#ref-for-vrdisplay-55">3. Security Considerations</a> <a href="#ref-for-vrdisplay-56">(2)</a> <a href="#ref-for-vrdisplay-57">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrdisplay-displayid">
    <b><a href="#dom-vrdisplay-displayid">#dom-vrdisplay-displayid</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-vrdisplay-displayid-1">2.11.1. Attributes</a>
+    <li><a href="#ref-for-dom-vrdisplay-displayid-1">2.13.1. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrdisplay-isconnected">
@@ -2322,6 +2437,7 @@ acceleration. When not NULL MUST be a three-element array.</p>
     <li><a href="#ref-for-dom-vrdisplay-requestpresent-1">2.1. VRDisplay</a>
     <li><a href="#ref-for-dom-vrdisplay-requestpresent-2">2.1.1. Attributes</a> <a href="#ref-for-dom-vrdisplay-requestpresent-3">(2)</a> <a href="#ref-for-dom-vrdisplay-requestpresent-4">(3)</a>
     <li><a href="#ref-for-dom-vrdisplay-requestpresent-5">2.3.1. Attributes</a> <a href="#ref-for-dom-vrdisplay-requestpresent-6">(2)</a> <a href="#ref-for-dom-vrdisplay-requestpresent-7">(3)</a>
+    <li><a href="#ref-for-dom-vrdisplay-requestpresent-8">2.12. Window Interface extension</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrdisplay-exitpresent">
@@ -2567,10 +2683,59 @@ acceleration. When not NULL MUST be a three-element array.</p>
     <li><a href="#ref-for-navigator-activevrdisplays-attribute-2">2.9.1. Attributes</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="enumdef-vrdisplayeventreason">
+   <b><a href="#enumdef-vrdisplayeventreason">#enumdef-vrdisplayeventreason</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-enumdef-vrdisplayeventreason-1">2.11. VRDisplayEvent</a> <a href="#ref-for-enumdef-vrdisplayeventreason-2">(2)</a>
+    <li><a href="#ref-for-enumdef-vrdisplayeventreason-3">2.11.1. Attributes</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-vrdisplayeventreason-navigation">
+   <b><a href="#dom-vrdisplayeventreason-navigation">#dom-vrdisplayeventreason-navigation</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-vrdisplayeventreason-navigation-1">2.10. VRDisplayEventReason</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-vrdisplayeventreason-mounted">
+   <b><a href="#dom-vrdisplayeventreason-mounted">#dom-vrdisplayeventreason-mounted</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-vrdisplayeventreason-mounted-1">2.10. VRDisplayEventReason</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-vrdisplayeventreason-unmounted">
+   <b><a href="#dom-vrdisplayeventreason-unmounted">#dom-vrdisplayeventreason-unmounted</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-vrdisplayeventreason-unmounted-1">2.10. VRDisplayEventReason</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="vrdisplayevent">
+   <b><a href="#vrdisplayevent">#vrdisplayevent</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-vrdisplayevent-1">2.12. Window Interface extension</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dictdef-vrdisplayeventinit">
+   <b><a href="#dictdef-vrdisplayeventinit">#dictdef-vrdisplayeventinit</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dictdef-vrdisplayeventinit-1">2.11. VRDisplayEvent</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-vrdisplayevent-display">
+   <b><a href="#dom-vrdisplayevent-display">#dom-vrdisplayevent-display</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-vrdisplayevent-display-1">2.11. VRDisplayEvent</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-vrdisplayevent-reason">
+   <b><a href="#dom-vrdisplayevent-reason">#dom-vrdisplayevent-reason</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-vrdisplayevent-reason-1">2.11. VRDisplayEvent</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="gamepad-getvrdisplays-attribute">
    <b><a href="#gamepad-getvrdisplays-attribute">#gamepad-getvrdisplays-attribute</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-gamepad-getvrdisplays-attribute-1">2.11. Gamepad Interface extension</a>
+    <li><a href="#ref-for-gamepad-getvrdisplays-attribute-1">2.13. Gamepad Interface extension</a>
    </ul>
   </aside>
 <script>/* script-dfn-panel */
