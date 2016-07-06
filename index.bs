@@ -579,8 +579,8 @@ interface VRDisplayEvent : Event {
 };
 
 dictionary VRDisplayEventInit : EventInit {
-    required VRDisplay display;
-    VRDisplayEventReason reason;
+  required VRDisplay display;
+  VRDisplayEventReason reason;
 };
 </pre>
 
