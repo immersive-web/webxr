@@ -1,6 +1,7 @@
 <pre class="metadata">
 Shortname: webvr
 Title: WebVR
+Group: html
 Status: ED
 ED: https://w3c.github.io/webvr/
 Repository: w3c/webvr
@@ -221,13 +222,13 @@ dictionary VRLayer {
 
 ### Attributes ### {#vrlayer-attributes}
 
-<dfn attribute for="VRLayer">source</dfn>
+<dfn dict-member for="VRLayer">source</dfn>
 The {{source}} attribute defines the canvas whose contents will be presented by the {{VRDisplay}} when {{VRDisplay}}.{{submitFrame()}} is called.
 
-<dfn attribute for="VRLayer">leftBounds</dfn>
+<dfn dict-member for="VRLayer">leftBounds</dfn>
 The {{leftBounds}} attribute contains four values defining the texture bounds within the {{source}} canvas to present to the eye in UV space: <code>[0]</code> left offset of the bounds (0.0 - 1.0); <code>[1]</code> top offset of the bounds (0.0 - 1.0); <code>[2]</code> width of the bounds (0.0 - 1.0); <code>[3]</code> height of the bounds (0.0 - 1.0). The {{leftBounds}} MUST default to <code>[0.0, 0.0, 0.5, 1.0]</code>.
 
-<dfn attribute for="VRLayer">rightBounds</dfn>
+<dfn dict-member for="VRLayer">rightBounds</dfn>
 The {{rightBounds}} attribute contains four values defining the texture bounds rectangle within the {{source}} canvas to present to the eye in UV space: <code>[0]</code> left offset of the bounds (0.0 - 1.0); <code>[1]</code> top offset of the bounds (0.0 - 1.0); <code>[2]</code> width of the bounds (0.0 - 1.0); <code>[3]</code> height of the bounds (0.0 - 1.0). The {{rightBounds}} MUST default to <code>[0.5, 0.0, 0.5, 1.0]</code>.
 
 
@@ -247,19 +248,19 @@ interface VRDisplayCapabilities {
 
 ### Attributes ### {#vrdisplaycapabilities-attributes}
 
-<dfn attribute for="VRLayer">hasPosition</dfn>
+<dfn attribute for="VRDisplayCapabilities">hasPosition</dfn>
 The {{hasPosition}} attribute MUST return whether the {{VRDisplay}} is capable of tracking its position.
 
-<dfn attribute for="VRLayer">hasOrientation</dfn>
+<dfn attribute for="VRDisplayCapabilities">hasOrientation</dfn>
 The {{hasOrientation}} attribute MUST return whether the {{VRDisplay}} is capable of tracking its orientation.
 
-<dfn attribute for="VRLayer">hasExternalDisplay</dfn>
+<dfn attribute for="VRDisplayCapabilities">hasExternalDisplay</dfn>
 The {{hasExternalDisplay}} attribute MUST return whether the {{VRDisplay}} is separate from the device's primary display. If presenting VR content will obscure other content on the device, this should be false. When false, the application should not attempt to mirror VR content or update non-VR UI because that content will not be visible.
 
-<dfn attribute for="VRLayer">canPresent</dfn>
+<dfn attribute for="VRDisplayCapabilities">canPresent</dfn>
 The {{canPresent}} attribute MUST return whether the {{VRDisplay}} is capable of presenting content to an HMD or similar device. Can be used to indicate "magic window" devices that are capable of 6DoF tracking but for which {{VRDisplay}}.{{requestPresent()}} is not meaningful. If false then calls to {{VRDisplay}}.{{requestPresent()}} should always fail, and {{VRDisplay}}.{{getEyeParameters()}} should return NULL.
 
-<dfn attribute for="VRLayer">maxLayers</dfn>
+<dfn attribute for="VRDisplayCapabilities">maxLayers</dfn>
 Indicates the maximum length of the array that {{requestPresent()}} will accept. MUST be 1 if {{canPresent}} is true, 0 otherwise.
 
 Note: Future revisions of this spec may allow multiple layers to enable more complex rendering effects such as compositing WebGL and DOM elements together. That functionality is not allowed by this revision of the spec.
@@ -503,13 +504,13 @@ interface VRStageParameters {
 
 ### Attributes ### {#vrstageparameters-attributes}
 
-<dfn attribute for="VREyeParameters">sittingToStandingTransform</dfn>
+<dfn attribute for="VRStageParameters">sittingToStandingTransform</dfn>
 The {{sittingToStandingTransform}} attribute is a 16-element array containing the components of a 4×4 transform matrix. This matrix transforms the sitting-space position returned by {{getPose()}}/{{getImmediatePose()}} to a standing-space position.
 
-<dfn attribute for="VREyeParameters">sizeX</dfn>
+<dfn attribute for="VRStageParameters">sizeX</dfn>
 Width of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.
 
-<dfn attribute for="VREyeParameters">sizeZ</dfn>
+<dfn attribute for="VRStageParameters">sizeZ</dfn>
 Depth of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.
 
 
@@ -525,7 +526,7 @@ partial interface Navigator {
 ### Attributes ### {#navigator-attributes}
 
 <dfn method for="Navigator" id="navigator-getvrdisplays-attribute">getVRDisplays()</dfn>
-Return a Promise which resolves to a list of available {{VRDisplay}}s. Applications should iterate over the list and correlate devices that share {{displayId}}s to access the full capabilities of a device.
+Return a Promise which resolves to a list of available {{VRDisplay}}s.
 
 <dfn attribute for="Navigator" id="navigator-activevrdisplays-attribute">activeVRDisplays</dfn>
 {{activeVRDisplays}} includes every {{VRDisplay}} that is currently presenting.
@@ -570,7 +571,7 @@ partial interface Gamepad {
 ### Attributes ### {#gamepad-attributes}
 
 <dfn attribute for="Gamepad" id="gamepad-getvrdisplays-attribute">displayId</dfn>
-Return the {{displayId}} for the associated {{VRDisplay}}.
+Return the {{VRDisplay/displayId}} for the associated {{VRDisplay}}.
 
 
 # Security Considerations # {#security}
