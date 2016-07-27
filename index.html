@@ -1401,7 +1401,7 @@ Possible extra rowspan handling
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebVR</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-06-01">1 June 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-06-10">10 June 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1421,7 +1421,7 @@ Possible extra rowspan handling
    <div data-fill-with="warning"></div>
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" src="https://licensebuttons.net/p/zero/1.0/80x15.png"></a> To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 1 June 2016,
+In addition, as of 10 June 2016,
 the editors have made this specification available under the <a href="http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 Parts of this work may be from another specification document.  If so, those parts are instead covered by the license of that specification document. </p>
@@ -1525,7 +1525,9 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
    */
   readonly attribute <a data-link-type="idl-name" href="#vrstageparameters" id="ref-for-vrstageparameters-1">VRStageParameters</a>? <dfn class="idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" data-readonly="" data-type="VRStageParameters?" id="dom-vrdisplay-stageparameters">stageParameters<a class="self-link" href="#dom-vrdisplay-stageparameters"></a></dfn>;
 
-  /* Return the current VREyeParameters for the given eye. */
+  /**
+   * Return the current VREyeParameters for the given eye.
+   */
   <a data-link-type="idl-name" href="#vreyeparameters" id="ref-for-vreyeparameters-1">VREyeParameters</a> <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-geteyeparameters" id="ref-for-dom-vrdisplay-geteyeparameters-1">getEyeParameters</a>(<a data-link-type="idl-name" href="#enumdef-vreye" id="ref-for-enumdef-vreye-1">VREye</a> <dfn class="idl-code" data-dfn-for="VRDisplay/getEyeParameters(whichEye)" data-dfn-type="argument" data-export="" id="dom-vrdisplay-geteyeparameters-whicheye-whicheye">whichEye<a class="self-link" href="#dom-vrdisplay-geteyeparameters-whicheye-whicheye"></a></dfn>);
 
   /**
@@ -1751,21 +1753,21 @@ three-element array.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-linearvelocity">linearVelocity</dfn> Linear velocity of the sensor at <code class="idl"><a data-link-type="idl" href="#dom-vrpose-timestamp" id="ref-for-dom-vrpose-timestamp-3">timestamp</a></code> meters per second. MAY be NULL if
 the sensor is incapable of providing linear velocity. When not NULL MUST be a
 three-element array.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-linearacceleration">linearAcceleration</dfn> Linear acceleration of the sensor at <code class="idl"><a data-link-type="idl" href="#dom-vrpose-timestamp" id="ref-for-dom-vrpose-timestamp-4">timestamp</a></code> given in meters per second.
-MAY be NULL if the sensor is incapable of providing linear acceleration. When
-not NULL MUST be a three-element array.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-linearacceleration">linearAcceleration</dfn> Linear acceleration of the sensor at <code class="idl"><a data-link-type="idl" href="#dom-vrpose-timestamp" id="ref-for-dom-vrpose-timestamp-4">timestamp</a></code> given in meters per second
+squared. MAY be NULL if the sensor is incapable of providing linear
+acceleration. When not NULL MUST be a three-element array.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-orientation">orientation</dfn> Orientation of the sensor at <code class="idl"><a data-link-type="idl" href="#dom-vrpose-timestamp" id="ref-for-dom-vrpose-timestamp-5">timestamp</a></code> as a quaternion. The orientation yaw
 (rotation around the Y axis) is relative to the initial yaw of the sensor when
 it was first read or the yaw of the sensor at the point that <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-resetpose" id="ref-for-dom-vrdisplay-resetpose-7">resetPose()</a></code> was
-last called. An orientation of {x: 0, y: 0, z: 0, w: 1} is considered to be
-"forward." MAY be NULL if the sensor is incapable of providing orientation data.
-When not NULL MUST be a four-element array.</p>
+last called. An orientation of [0, 0, 0, 1] is considered to be "forward". MAY
+be NULL if the sensor is incapable of providing orientation data. When not NULL
+MUST be a four-element array.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-angularvelocity">angularVelocity</dfn> Angular velocity of the sensor at <code class="idl"><a data-link-type="idl" href="#dom-vrpose-timestamp" id="ref-for-dom-vrpose-timestamp-6">timestamp</a></code> given in radians per second. MAY
 be NULL if the sensor is incapable of providing angular velocity. When not NULL
 MUST be a three-element array.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-angularacceleration">angularAcceleration</dfn> Angular acceleration of the sensor at <code class="idl"><a data-link-type="idl" href="#dom-vrpose-timestamp" id="ref-for-dom-vrpose-timestamp-7">timestamp</a></code> given in radians per second.
-MAY be NULL if the sensor is incapable of providing angular acceleration. When
-not NULL MUST be a three-element array.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-angularacceleration">angularAcceleration</dfn> Angular acceleration of the sensor at <code class="idl"><a data-link-type="idl" href="#dom-vrpose-timestamp" id="ref-for-dom-vrpose-timestamp-7">timestamp</a></code> given in radians per second
+squared. MAY be NULL if the sensor is incapable of providing angular
+acceleration. When not NULL MUST be a three-element array.</p>
    <div class="example" id="example-bd8bae21">
     <a class="self-link" href="#example-bd8bae21"></a> The following code snippet creates a WebGL-compatible matrix from a <code class="idl"><a data-link-type="idl" href="#vrpose" id="ref-for-vrpose-8">VRPose</a></code>: 
 <pre class="lang-js highlight"><span></span><span class="kd">function</span> <span class="nx">poseToMatrix</span> <span class="p">(</span><span class="nx">pose</span><span class="p">)</span> <span class="p">{</span>
@@ -1850,7 +1852,7 @@ not NULL MUST be a three-element array.</p>
    <h3 class="heading settled" data-level="2.9" id="interface-navigator"><span class="secno">2.9. </span><span class="content">Navigator Interface extension</span><a class="self-link" href="#interface-navigator"></a></h3>
 <pre class="idl def">partial interface <a class="idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/multipage/webappapis.html#navigator">Navigator</a> {
   Promise&lt;sequence&lt;<a data-link-type="idl-name" href="#vrdisplay" id="ref-for-vrdisplay-36">VRDisplay</a>>> <a class="idl-code" data-link-type="method" href="#navigator-getvrdisplays-attribute" id="ref-for-navigator-getvrdisplays-attribute-1">getVRDisplays</a>();
-  readonly attribute sequence&lt;<a data-link-type="idl-name" href="#vrdisplay" id="ref-for-vrdisplay-37">VRDisplay</a>> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="sequence<VRDisplay>" href="#navigator-activevrdisplays-attribute" id="ref-for-navigator-activevrdisplays-attribute-1">activeVRDisplays</a>;
+  readonly attribute FrozenArray&lt;<a data-link-type="idl-name" href="#vrdisplay" id="ref-for-vrdisplay-37">VRDisplay</a>> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="FrozenArray<VRDisplay>" href="#navigator-activevrdisplays-attribute" id="ref-for-navigator-activevrdisplays-attribute-1">activeVRDisplays</a>;
 };
 </pre>
    <h4 class="heading settled" data-level="2.9.1" id="navigator-attributes"><span class="secno">2.9.1. </span><span class="content">Attributes</span><a class="self-link" href="#navigator-attributes"></a></h4>
@@ -2227,7 +2229,9 @@ not NULL MUST be a three-element array.</p>
    */
   readonly attribute <a data-link-type="idl-name" href="#vrstageparameters">VRStageParameters</a>? <a data-readonly="" data-type="VRStageParameters?" href="#dom-vrdisplay-stageparameters">stageParameters</a>;
 
-  /* Return the current VREyeParameters for the given eye. */
+  /**
+   * Return the current VREyeParameters for the given eye.
+   */
   <a data-link-type="idl-name" href="#vreyeparameters">VREyeParameters</a> <a class="idl-code" data-link-type="method" href="#dom-vrdisplay-geteyeparameters">getEyeParameters</a>(<a data-link-type="idl-name" href="#enumdef-vreye">VREye</a> <a href="#dom-vrdisplay-geteyeparameters-whicheye-whicheye">whichEye</a>);
 
   /**
@@ -2382,7 +2386,7 @@ interface <a href="#vrstageparameters">VRStageParameters</a> {
 
 partial interface <a class="idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/multipage/webappapis.html#navigator">Navigator</a> {
   Promise&lt;sequence&lt;<a data-link-type="idl-name" href="#vrdisplay">VRDisplay</a>>> <a class="idl-code" data-link-type="method" href="#navigator-getvrdisplays-attribute">getVRDisplays</a>();
-  readonly attribute sequence&lt;<a data-link-type="idl-name" href="#vrdisplay">VRDisplay</a>> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="sequence<VRDisplay>" href="#navigator-activevrdisplays-attribute">activeVRDisplays</a>;
+  readonly attribute FrozenArray&lt;<a data-link-type="idl-name" href="#vrdisplay">VRDisplay</a>> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="FrozenArray<VRDisplay>" href="#navigator-activevrdisplays-attribute">activeVRDisplays</a>;
 };
 
 partial interface <a class="idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/multipage/browsers.html#window">Window</a> {

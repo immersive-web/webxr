@@ -518,7 +518,7 @@ Depth of the play-area bounds in meters. The bounds are defined as an axis-align
 <pre class="idl">
 partial interface Navigator {
   Promise&lt;sequence&lt;VRDisplay&gt;&gt; getVRDisplays();
-  readonly attribute sequence&lt;VRDisplay&gt; activeVRDisplays;
+  readonly attribute FrozenArray&lt;VRDisplay&gt; activeVRDisplays;
 };
 </pre>
 
