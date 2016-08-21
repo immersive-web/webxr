@@ -457,7 +457,7 @@
 		font-style: normal;
 	}
 	dt dfn code, code.idl {
-		font-size: inherit;
+		font-size: normal;
 	}
 	dfn var {
 		font-style: normal;
@@ -1408,7 +1408,7 @@ pre.idl.highlight { color: #708090; }
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebVR</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-08-02">2 August 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-08-25">25 August 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1625,6 +1625,8 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
   /**
    * Begin presenting to the VRDisplay. Must be called in response to a user gesture.
    * Repeat calls while already presenting will update the VRLayers being displayed.
+   * If the number of values in the leftBounds/rightBounds arrays is not 0 or 4 for any of the passed layers the promise is rejected
+   * If the source of any of the layers is not present (null), the promise is rejected.
    */
   <span class="kt">Promise</span>&lt;<span class="kt">void</span>> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-1">requestPresent</a>(<span class="kt">sequence</span>&lt;<a class="n" data-link-type="idl-name" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-1">VRLayer</a>> <dfn class="nv idl-code" data-dfn-for="VRDisplay/requestPresent(layers)" data-dfn-type="argument" data-export="" id="dom-vrdisplay-requestpresent-layers-layers">layers<a class="self-link" href="#dom-vrdisplay-requestpresent-layers-layers"></a></dfn>);
 
@@ -1669,8 +1671,8 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
 <span class="kt">dictionary</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-vrlayer">VRLayer</dfn> {
   <a class="n" data-link-type="idl-name" href="#typedefdef-vrsource" id="ref-for-typedefdef-vrsource-1">VRSource</a>? <a class="nv idl-code" data-default="null" data-link-type="dict-member" data-type="VRSource? " href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-1">source</a> = <span class="kt">null</span>;
 
-  <span class="kt">sequence</span>&lt;<span class="kt">float</span>>? <a class="nv idl-code" data-default="null" data-link-type="dict-member" data-type="sequence<float>? " href="#dom-vrlayer-leftbounds" id="ref-for-dom-vrlayer-leftbounds-1">leftBounds</a> = <span class="kt">null</span>;
-  <span class="kt">sequence</span>&lt;<span class="kt">float</span>>? <a class="nv idl-code" data-default="null" data-link-type="dict-member" data-type="sequence<float>? " href="#dom-vrlayer-rightbounds" id="ref-for-dom-vrlayer-rightbounds-1">rightBounds</a> = <span class="kt">null</span>;
+  <span class="kt">sequence</span>&lt;<span class="kt">float</span>>? <a class="nv idl-code" data-default="None" data-link-type="dict-member" data-type="sequence<float>? " href="#dom-vrlayer-leftbounds" id="ref-for-dom-vrlayer-leftbounds-1">leftBounds</a> = [ ];
+  <span class="kt">sequence</span>&lt;<span class="kt">float</span>>? <a class="nv idl-code" data-default="None" data-link-type="dict-member" data-type="sequence<float>? " href="#dom-vrlayer-rightbounds" id="ref-for-dom-vrlayer-rightbounds-1">rightBounds</a> = [ ];
 };
 </pre>
    <h4 class="heading settled" data-level="2.2.1" id="vrlayer-attributes"><span class="secno">2.2.1. </span><span class="content">Attributes</span><a class="self-link" href="#vrlayer-attributes"></a></h4>
@@ -1874,7 +1876,7 @@ acceleration. When not NULL MUST be a three-element array.</p>
 };
 </pre>
    <h4 class="heading settled" data-level="2.8.1" id="vrstageparameters-attributes"><span class="secno">2.8.1. </span><span class="content">Attributes</span><a class="self-link" href="#vrstageparameters-attributes"></a></h4>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRStageParameters" data-dfn-type="attribute" data-export="" id="dom-vrstageparameters-sittingtostandingtransform">sittingToStandingTransform</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrstageparameters-sittingtostandingtransform" id="ref-for-dom-vrstageparameters-sittingtostandingtransform-4">sittingToStandingTransform</a></code> attribute is a 16-element array containing the components of a 4×4 transform matrix. This matrix transforms the sitting-space position returned by <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getpose" id="ref-for-dom-vrdisplay-getpose-4">getPose()</a></code>/<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getimmediatepose" id="ref-for-dom-vrdisplay-getimmediatepose-3">getImmediatePose()</a></code> to a standing-space position.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRStageParameters" data-dfn-type="attribute" data-export="" id="dom-vrstageparameters-sittingtostandingtransform">sittingToStandingTransform</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrstageparameters-sittingtostandingtransform" id="ref-for-dom-vrstageparameters-sittingtostandingtransform-4">sittingToStandingTransform</a></code> attribute is a 16-element array containing the components of a 4x4 affine transformation matrix in column-major order. This matrix transforms the sitting-space position returned by <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getpose" id="ref-for-dom-vrdisplay-getpose-4">getPose()</a></code>/<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getimmediatepose" id="ref-for-dom-vrdisplay-getimmediatepose-3">getImmediatePose()</a></code> to a standing-space position.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRStageParameters" data-dfn-type="attribute" data-export="" id="dom-vrstageparameters-sizex">sizeX</dfn> Width of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRStageParameters" data-dfn-type="attribute" data-export="" id="dom-vrstageparameters-sizez">sizeZ</dfn> Depth of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.</p>
    <h3 class="heading settled" data-level="2.9" id="interface-navigator"><span class="secno">2.9. </span><span class="content">Navigator Interface extension</span><a class="self-link" href="#interface-navigator"></a></h3>
@@ -2360,6 +2362,8 @@ acceleration. When not NULL MUST be a three-element array.</p>
   /**
    * Begin presenting to the VRDisplay. Must be called in response to a user gesture.
    * Repeat calls while already presenting will update the VRLayers being displayed.
+   * If the number of values in the leftBounds/rightBounds arrays is not 0 or 4 for any of the passed layers the promise is rejected
+   * If the source of any of the layers is not present (null), the promise is rejected.
    */
   <span class="kt">Promise</span>&lt;<span class="kt">void</span>> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-requestpresent">requestPresent</a>(<span class="kt">sequence</span>&lt;<a class="n" data-link-type="idl-name" href="#dictdef-vrlayer">VRLayer</a>> <a class="nv" href="#dom-vrdisplay-requestpresent-layers-layers">layers</a>);
 
@@ -2388,8 +2392,8 @@ acceleration. When not NULL MUST be a three-element array.</p>
 <span class="kt">dictionary</span> <a class="nv" href="#dictdef-vrlayer">VRLayer</a> {
   <a class="n" data-link-type="idl-name" href="#typedefdef-vrsource">VRSource</a>? <a class="nv idl-code" data-default="null" data-link-type="dict-member" data-type="VRSource? " href="#dom-vrlayer-source">source</a> = <span class="kt">null</span>;
 
-  <span class="kt">sequence</span>&lt;<span class="kt">float</span>>? <a class="nv idl-code" data-default="null" data-link-type="dict-member" data-type="sequence<float>? " href="#dom-vrlayer-leftbounds">leftBounds</a> = <span class="kt">null</span>;
-  <span class="kt">sequence</span>&lt;<span class="kt">float</span>>? <a class="nv idl-code" data-default="null" data-link-type="dict-member" data-type="sequence<float>? " href="#dom-vrlayer-rightbounds">rightBounds</a> = <span class="kt">null</span>;
+  <span class="kt">sequence</span>&lt;<span class="kt">float</span>>? <a class="nv idl-code" data-default="None" data-link-type="dict-member" data-type="sequence<float>? " href="#dom-vrlayer-leftbounds">leftBounds</a> = [ ];
+  <span class="kt">sequence</span>&lt;<span class="kt">float</span>>? <a class="nv idl-code" data-default="None" data-link-type="dict-member" data-type="sequence<float>? " href="#dom-vrlayer-rightbounds">rightBounds</a> = [ ];
 };
 
 <span class="kt">interface</span> <a class="nv" href="#vrdisplaycapabilities">VRDisplayCapabilities</a> {
