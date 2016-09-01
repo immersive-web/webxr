@@ -1408,7 +1408,7 @@ pre.idl.highlight { color: #708090; }
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebVR</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-08-30">30 August 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-09-01">1 September 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1766,7 +1766,7 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-timestamp">timestamp</dfn> Monotonically increasing value that allows the author to determine if position
 state data been updated from the hardware. Since values are monotonically
 increasing, they can be compared to determine the ordering of updates, as newer
-values will always be greater than or equal to older values.</p>
+values will always be greater than or equal to older values. The timestamp starts at 0 the first time getPose is invoked for a given display.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-position">position</dfn> Position of the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-35">VRDisplay</a></code> at <code class="idl"><a data-link-type="idl" href="#dom-vrpose-timestamp" id="ref-for-dom-vrpose-timestamp-2">timestamp</a></code> as a 3D vector. Position is given
 in meters from an origin point, which is either the position the sensor was
 first read at or the position of the sensor at the point that <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-resetpose" id="ref-for-dom-vrdisplay-resetpose-6">resetPose()</a></code> was last called. The coordinate system uses these axis definitions:</p>

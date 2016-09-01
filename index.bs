@@ -356,7 +356,7 @@ interface VRPose {
 Monotonically increasing value that allows the author to determine if position
 state data been updated from the hardware. Since values are monotonically
 increasing, they can be compared to determine the ordering of updates, as newer
-values will always be greater than or equal to older values.
+values will always be greater than or equal to older values. The timestamp starts at 0 the first time getPose is invoked for a given display.
 
 <dfn attribute for="VRPose">position</dfn>
 Position of the {{VRDisplay}} at {{timestamp}} as a 3D vector. Position is given
