@@ -1421,7 +1421,11 @@ pre.idl.highlight { color: #708090; }
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebVR</h1>
+<<<<<<< HEAD
    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-09-21">21 September 2016</time></span></h2>
+=======
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-09-15">15 September 2016</time></span></h2>
+>>>>>>> 7116126... Describe when submitFrame is not called on every frame (fix #69)
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1527,8 +1531,13 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
         <li><a href="#gamepad-attributes"><span class="secno">2.15.1</span> <span class="content">Attributes</span></a>
        </ol>
      </ol>
-    <li><a href="#security"><span class="secno">3</span> <span class="content">Security Considerations</span></a>
-    <li><a href="#ack"><span class="secno">4</span> <span class="content">Acknowledgements</span></a>
+    <li>
+     <a href="#proc"><span class="secno">3</span> <span class="content">Processing Model</span></a>
+     <ol class="toc">
+      <li><a href="#submitframe-proc"><span class="secno">3.1</span> <span class="content">submitFrame</span></a>
+     </ol>
+    <li><a href="#security"><span class="secno">4</span> <span class="content">Security Considerations</span></a>
+    <li><a href="#ack"><span class="secno">5</span> <span class="content">Acknowledgements</span></a>
     <li><a href="#conformance"><span class="secno"></span> <span class="content"> Conformance</span></a>
     <li>
      <a href="#index"><span class="secno"></span> <span class="content">Index</span></a>
@@ -1994,7 +2003,7 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    <p>User agents implementing this specification MUST provide the following new DOM events. The corresponding events must be of type <code class="idl"><a data-link-type="idl" href="#vrdisplayevent" id="ref-for-vrdisplayevent-1">VRDisplayEvent</a></code> and must fire on the window object. Registration for and firing of the events must follow the usual behavior of DOM4 Events.</p>
    <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-vrdisplayconnect-event">onvrdisplayconnect<a class="self-link" href="#window-vrdisplayconnect-event"></a></dfn> A user agent MAY dispatch this event type to indicate that a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-50">VRDisplay</a></code> has been connected.</p>
    <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-vrdisplaydisconnect-event">onvrdisplaydisconnect<a class="self-link" href="#window-vrdisplaydisconnect-event"></a></dfn> A user agent MAY dispatch this event type to indicate that a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-51">VRDisplay</a></code> has been disconnected.</p>
-   <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-vrdisplayactivate-event">onvrdisplayactivate<a class="self-link" href="#window-vrdisplayactivate-event"></a></dfn> A user agent MAY dispatch this event type to indicate that something has occured which suggests the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-52">VRDisplay</a></code> should be presented to. For example, if the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-53">VRDisplay</a></code> is capable of detecting when the user has put it on, this event SHOULD fire when they do so with the reason "mounted".</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-vrdisplayactivate-event">onvrdisplayactivate</dfn> A user agent MAY dispatch this event type to indicate that something has occured which suggests the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-52">VRDisplay</a></code> should be presented to. For example, if the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-53">VRDisplay</a></code> is capable of detecting when the user has put it on, this event SHOULD fire when they do so with the reason "mounted".</p>
    <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-vrdisplaydeactivate-event">onvrdisplaydeactivate<a class="self-link" href="#window-vrdisplaydeactivate-event"></a></dfn> A user agent MAY dispatch this event type to indicate that something has occured which suggests the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-54">VRDisplay</a></code> should exit presentation. For example, if the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-55">VRDisplay</a></code> is capable of detecting when the user has taken it off, this event SHOULD fire when they do so with the reason "unmounted".</p>
    <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-onvrdisplayblur-event">onvrdisplayblur<a class="self-link" href="#window-onvrdisplayblur-event"></a></dfn> A user agent MAY dispatch this event type to indicate that presentation to the display by the page is paused by the user agent, OS, or VR hardware. While a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-56">VRDisplay</a></code> is blurred it does not lose it’s presenting status (<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-ispresenting" id="ref-for-dom-vrdisplay-ispresenting-3">isPresenting</a></code> continues to report true) but <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getframedata" id="ref-for-dom-vrdisplay-getframedata-8">getFrameData()</a></code> returns false without updating the provided <code class="idl"><a data-link-type="idl" href="#vrframedata" id="ref-for-vrframedata-7">VRFrameData</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getpose" id="ref-for-dom-vrdisplay-getpose-4">getPose()</a></code> returns null. This is to prevent tracking while the user interacts with potentially sensitive UI. For example: A user agent SHOULD blur the presenting application when the user is typing a URL into the browser with a virtual keyboard, otherwise the presenting page may be able to guess the URL the user is entering by tracking their head motions.</p>
    <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-onvrdisplayblur-event0">onvrdisplayfocus<a class="self-link" href="#window-onvrdisplayblur-event0"></a></dfn> A user agent MAY dispatch this event type to indicate that presentation to the display by the page has resumed after being blurred.</p>
@@ -2019,12 +2028,40 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
 };
 </pre>
    <h4 class="heading settled" data-level="2.15.1" id="gamepad-attributes"><span class="secno">2.15.1. </span><span class="content">Attributes</span><a class="self-link" href="#gamepad-attributes"></a></h4>
+<<<<<<< HEAD
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="Gamepad" data-dfn-type="attribute" data-export="" id="gamepad-getvrdisplays-attribute">displayId</dfn> Return the <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-displayid" id="ref-for-dom-vrdisplay-displayid-1">displayId</a></code> of the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-59">VRDisplay</a></code> this <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/gamepad/#gamepad">Gamepad</a></code> is associated with. A <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/gamepad/#gamepad">Gamepad</a></code> is considered to be associated with a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-60">VRDisplay</a></code> if it reports a pose that is in the same space as the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-61">VRDisplay</a></code> pose. If the <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/gamepad/#gamepad">Gamepad</a></code> is not associated with a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-62">VRDisplay</a></code> should return 0.</p>
    <h2 class="heading settled" data-level="3" id="security"><span class="secno">3. </span><span class="content">Security Considerations</span><a class="self-link" href="#security"></a></h2>
    <p>While not directly affecting the API interface and Web IDL, WebVR implementations should maintain the user’s expectations of privacy, security, and comfort on the Web by adhering to the following guidelines:</p>
    <ul>
     <li data-md="">
      <p>Trusted UI must be drawn by an independent rendering context who’s state is isolated from that of the WebGL contexts provided as a <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-10">VRLayer</a></code> source to a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-63">VRDisplay</a></code>.</p>
+=======
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="Gamepad" data-dfn-type="attribute" data-export="" id="gamepad-getvrdisplays-attribute">displayId</dfn> Return the <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-displayid" id="ref-for-dom-vrdisplay-displayid-1">displayId</a></code> for the associated <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-59">VRDisplay</a></code>.</p>
+   <h2 class="heading settled" data-level="3" id="proc"><span class="secno">3. </span><span class="content">Processing Model</span><a class="self-link" href="#proc"></a></h2>
+   <h3 class="heading settled" data-level="3.1" id="submitframe-proc"><span class="secno">3.1. </span><span class="content">submitFrame</span><a class="self-link" href="#submitframe-proc"></a></h3>
+   <p>The are multiple situations where applications won’t invoke <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-60">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-6">submitFrame()</a></code> at the expected rate (the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-61">VRDisplay</a></code> native framerate). The User Agent MUST intervene to protect the user from motion sickness or consistently inform her about different situations such as errors or navigation between pages. This is the breakdown of the different scenarios:</p>
+   <ul>
+    <li data-md="">
+     <p>The application calls <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-62">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-7">submitFrame()</a></code> at the expected rate, but only a few frames are dropped. The User Agent MUST re-project the last submitted frame.</p>
+    <li data-md="">
+     <p>The application calls <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-63">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-8">submitFrame()</a></code> consistently below the expected framerate to a degree that could make the user feel umconfortable. The User agent SHOULD render a trusted interstitial on top of the application until the application improves performance. If the low framerate persists for a long time the User Agent MUST show a message indicating that the application is too slow to be presented.</p>
+    <li data-md="">
+     <p>An application can stop calling <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-64">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-9">submitFrame()</a></code> all toghether under several circumstances:</p>
+     <ul>
+      <li data-md="">
+       <p>A content exception or error has ocurred. In this case the User Agent SHOULD notify the user of the error with a trusted UI.</p>
+      <li data-md="">
+       <p>The User Agent transitions to a different site that can eventually present content on the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-65">VRDisplay</a></code>. The User Agent SHOULD produce a UI that the user can trust while navigating between content. The UI SHOULD indicate to the user they are about to load new content and give her some indication of progress. The UI MAY provide a period where the user can cancel or reverse the navigation. Once the new site starts calling <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-66">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-10">submitFrame()</a></code> the UI MAY temporarly display the new URL to notify the user of the site transition. If after a period of time <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-67">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-11">submitFrame()</a></code> is not invoked the User Agent SHOULD display a message indicating that there’s no VR content available in the current URL. The time the User Agent will wait for <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-68">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-12">submitFrame()</a></code> to be invoked will be determined by different factors that express intent of presenting VR like the presence of a metatag that statically declares the presence of VR content or an application attaching an event listener to <code class="idl"><a data-link-type="idl" href="#window-vrdisplayactivate-event" id="ref-for-window-vrdisplayactivate-event-1">onvrdisplayactivate</a></code>.</p>
+      <li data-md="">
+       <p>The User Agent transitions to a new URL that returns an HTTP error. The User Agent will SHOULD display a trusted UI informing the user about the error.</p>
+     </ul>
+   </ul>
+   <h2 class="heading settled" data-level="4" id="security"><span class="secno">4. </span><span class="content">Security Considerations</span><a class="self-link" href="#security"></a></h2>
+   <p>While not directly affecting the API interface and Web IDL, WebVR implementations should maintains the user’s expectations of privacy, security, and comfort on the Web by adhering to the following guidelines:</p>
+   <ul>
+    <li data-md="">
+     <p>Trusted UI must be drawn by an independent rendering context who’s state is isolated from that of the WebGL contexts provided as a <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-10">VRLayer</a></code> source to a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-69">VRDisplay</a></code>.</p>
+>>>>>>> 7116126... Describe when submitFrame is not called on every frame (fix #69)
     <li data-md="">
      <p>A "VR Compositor" runs asynchronously from content, responsible for compositing the trusted and untrusted content. If content is not performant or does not submit frames, or terminates unexpectedly the browser should be able to continue presenting a responsive front-end.</p>
     <li data-md="">
@@ -2032,6 +2069,7 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
     <li data-md="">
      <p>When navigating between pages in VR the browser should display trusted UI elements informing the user of the security information of the site they are navigating to which is normally presented by the 2D UI, such as the URL and encryption status.</p>
     <li data-md="">
+<<<<<<< HEAD
      <p>The <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-64">VRDisplay</a></code> pose and other VR inputs are only updated for the focused page.</p>
     <li data-md="">
      <p>The Gamepad API will be updated such that the gamepad inputs are only updated for the focused page.</p>
@@ -2039,8 +2077,17 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
      <p>Non-focused tabs are allowed to enumerate <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/gamepad/#gamepad">Gamepad</a></code>s and <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-65">VRDisplay</a></code>s but will see last received state or default values.</p>
     <li data-md="">
      <p>To prevent CORS-related vulnerabilities, each page will see a new instance of objects returned by the WebVR API, such as <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-66">VRDisplay</a></code>. Attributes such as the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-11">VRLayer</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-5">source</a></code> set by one page must not be able to be read by another.</p>
+=======
+     <p>The <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-70">VRDisplay</a></code> pose and other VR inputs are only updated for the focused page.</p>
+    <li data-md="">
+     <p>The Gamepad API will be updated such that the gamepad inputs are only updated for the focused page.</p>
+    <li data-md="">
+     <p>Non-focused tabs are allowed to enumerate <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/gamepad/#gamepad">Gamepad</a></code>s and <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-71">VRDisplay</a></code>s but will see last received state or default values.</p>
+    <li data-md="">
+     <p>To prevent CORS-related vulnerabilities, each page will see a new instance of objects returned by the WebVR API, such as <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-72">VRDisplay</a></code>. Attributes such as the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-11">VRLayer</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-5">source</a></code> set by one page must not be able to be read by another.</p>
+>>>>>>> 7116126... Describe when submitFrame is not called on every frame (fix #69)
    </ul>
-   <h2 class="heading settled" data-level="4" id="ack"><span class="secno">4. </span><span class="content">Acknowledgements</span><a class="self-link" href="#ack"></a></h2>
+   <h2 class="heading settled" data-level="5" id="ack"><span class="secno">5. </span><span class="content">Acknowledgements</span><a class="self-link" href="#ack"></a></h2>
   </main>
   <div data-fill-with="conformance">
    <h2 class="no-ref no-num heading settled" id="conformance"><span class="content"> Conformance</span><a class="self-link" href="#conformance"></a></h2>
@@ -2614,8 +2661,14 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
     <li><a href="#ref-for-vrdisplay-47">2.12. VRDisplayEvent</a> <a href="#ref-for-vrdisplay-48">(2)</a>
     <li><a href="#ref-for-vrdisplay-49">2.12.1. Attributes</a>
     <li><a href="#ref-for-vrdisplay-50">2.13. Window Interface extension</a> <a href="#ref-for-vrdisplay-51">(2)</a> <a href="#ref-for-vrdisplay-52">(3)</a> <a href="#ref-for-vrdisplay-53">(4)</a> <a href="#ref-for-vrdisplay-54">(5)</a> <a href="#ref-for-vrdisplay-55">(6)</a> <a href="#ref-for-vrdisplay-56">(7)</a> <a href="#ref-for-vrdisplay-57">(8)</a> <a href="#ref-for-vrdisplay-58">(9)</a>
+<<<<<<< HEAD
     <li><a href="#ref-for-vrdisplay-59">2.15.1. Attributes</a> <a href="#ref-for-vrdisplay-60">(2)</a> <a href="#ref-for-vrdisplay-61">(3)</a> <a href="#ref-for-vrdisplay-62">(4)</a>
     <li><a href="#ref-for-vrdisplay-63">3. Security Considerations</a> <a href="#ref-for-vrdisplay-64">(2)</a> <a href="#ref-for-vrdisplay-65">(3)</a> <a href="#ref-for-vrdisplay-66">(4)</a>
+=======
+    <li><a href="#ref-for-vrdisplay-59">2.15.1. Attributes</a>
+    <li><a href="#ref-for-vrdisplay-60">3.1. submitFrame</a> <a href="#ref-for-vrdisplay-61">(2)</a> <a href="#ref-for-vrdisplay-62">(3)</a> <a href="#ref-for-vrdisplay-63">(4)</a> <a href="#ref-for-vrdisplay-64">(5)</a> <a href="#ref-for-vrdisplay-65">(6)</a> <a href="#ref-for-vrdisplay-66">(7)</a> <a href="#ref-for-vrdisplay-67">(8)</a> <a href="#ref-for-vrdisplay-68">(9)</a>
+    <li><a href="#ref-for-vrdisplay-69">4. Security Considerations</a> <a href="#ref-for-vrdisplay-70">(2)</a> <a href="#ref-for-vrdisplay-71">(3)</a> <a href="#ref-for-vrdisplay-72">(4)</a>
+>>>>>>> 7116126... Describe when submitFrame is not called on every frame (fix #69)
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrdisplay-displayid">
@@ -2718,6 +2771,7 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
     <li><a href="#ref-for-dom-vrdisplay-submitframe-1">2.1. VRDisplay</a>
     <li><a href="#ref-for-dom-vrdisplay-submitframe-2">2.1.1. Attributes</a> <a href="#ref-for-dom-vrdisplay-submitframe-3">(2)</a> <a href="#ref-for-dom-vrdisplay-submitframe-4">(3)</a>
     <li><a href="#ref-for-dom-vrdisplay-submitframe-5">2.2.1. Attributes</a>
+    <li><a href="#ref-for-dom-vrdisplay-submitframe-6">3.1. submitFrame</a> <a href="#ref-for-dom-vrdisplay-submitframe-7">(2)</a> <a href="#ref-for-dom-vrdisplay-submitframe-8">(3)</a> <a href="#ref-for-dom-vrdisplay-submitframe-9">(4)</a> <a href="#ref-for-dom-vrdisplay-submitframe-10">(5)</a> <a href="#ref-for-dom-vrdisplay-submitframe-11">(6)</a> <a href="#ref-for-dom-vrdisplay-submitframe-12">(7)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="typedefdef-vrsource">
@@ -2732,7 +2786,7 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
     <li><a href="#ref-for-dictdef-vrlayer-1">2.1. VRDisplay</a> <a href="#ref-for-dictdef-vrlayer-2">(2)</a>
     <li><a href="#ref-for-dictdef-vrlayer-3">2.1.1. Attributes</a> <a href="#ref-for-dictdef-vrlayer-4">(2)</a> <a href="#ref-for-dictdef-vrlayer-5">(3)</a> <a href="#ref-for-dictdef-vrlayer-6">(4)</a> <a href="#ref-for-dictdef-vrlayer-7">(5)</a> <a href="#ref-for-dictdef-vrlayer-8">(6)</a>
     <li><a href="#ref-for-dictdef-vrlayer-9">2.2. VRLayer</a>
-    <li><a href="#ref-for-dictdef-vrlayer-10">3. Security Considerations</a> <a href="#ref-for-dictdef-vrlayer-11">(2)</a>
+    <li><a href="#ref-for-dictdef-vrlayer-10">4. Security Considerations</a> <a href="#ref-for-dictdef-vrlayer-11">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrlayer-source">
@@ -2740,7 +2794,7 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    <ul>
     <li><a href="#ref-for-dom-vrlayer-source-1">2.2. VRLayer</a>
     <li><a href="#ref-for-dom-vrlayer-source-2">2.2.1. Attributes</a> <a href="#ref-for-dom-vrlayer-source-3">(2)</a> <a href="#ref-for-dom-vrlayer-source-4">(3)</a>
-    <li><a href="#ref-for-dom-vrlayer-source-5">3. Security Considerations</a>
+    <li><a href="#ref-for-dom-vrlayer-source-5">4. Security Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrlayer-leftbounds">
@@ -3042,6 +3096,12 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    <b><a href="#dom-vrdisplayevent-reason">#dom-vrdisplayevent-reason</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-vrdisplayevent-reason-1">2.12. VRDisplayEvent</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="window-vrdisplayactivate-event">
+   <b><a href="#window-vrdisplayactivate-event">#window-vrdisplayactivate-event</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-window-vrdisplayactivate-event-1">3.1. submitFrame</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-htmliframeelement-allowvr">
