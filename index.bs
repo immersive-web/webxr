@@ -185,15 +185,15 @@ The {{capabilities}} attribute MUST return the {{VRDisplay}}'s {{VRDisplayCapabi
 Returns the current {{VREyeParameters}} for the given eye. The eye parameters MAY change at any time due to external factors, such as the user changing the IPD with hardware controls.
 
 <dfn method for="VRDisplay">getCurrentFrameData()</dfn>
-Populates the provided {{VRFrameData}} object with the {{VRPose}} and view and projection matricies for the current frame. These values describe the position, orientation, accelerationm, and velocity of the {{VRDisplay}} that should be used when rendering the next frame of a scene. The User Agent MAY optionally use predictive techniques to estimate what these values will be at the time that the next frame will be displayed to the user. Subsequent calls to {{getCurrentFrameData()}} MUST provide the same values until the next call to {{submitFrame()}}.
+Populates the provided {{VRFrameData}} object with the {{VRPose}} and view and projection matricies for the current frame. These values describe the position, orientation, acceleration, and velocity of the {{VRDisplay}} that should be used when rendering the next frame of a scene. The User Agent MAY optionally use predictive techniques to estimate what these values will be at the time that the next frame will be displayed to the user. Subsequent calls to {{getCurrentFrameData()}} MUST provide the same values until the next call to {{submitFrame()}}.
 
 <dfn method for="VRDisplay">getPose()</dfn>
-<i>(Deprecated)</i> Returns a {{VRPose}} describing the position, orientation, accelerationm, and velocity of the {{VRDisplay}} that should be used when rendering the next frame of a scene. The User Agent MAY optionally use predictive techniques to estimate what the pose will be at the time that the next frame will be displayed to the user. Subsequent calls to {{getPose()}} MUST return a {{VRPose}} with the same values until the next call to {{submitFrame()}}.
+<i>(Deprecated)</i> Returns a {{VRPose}} describing the position, orientation, acceleration, and velocity of the {{VRDisplay}} that should be used when rendering the next frame of a scene. The User Agent MAY optionally use predictive techniques to estimate what the pose will be at the time that the next frame will be displayed to the user. Subsequent calls to {{getPose()}} MUST return a {{VRPose}} with the same values until the next call to {{submitFrame()}}.
 
 This function is deprecated but is preserved for backwards compatibility. Using it MAY incur warnings from the User Agent. Prefer using {{getCurrentFrameData()}}, which also provides a {{VRPose}}, instead.
 
 <dfn method for="VRDisplay">resetPose()</dfn>
-Reset the pose for the {{VRDisplay}}, treating its current position and orientation as the "origin/zero" values. Future poses returned from {{getPose()}} will describe positions relative to the {{VRDisplay}}'s position when {{resetPose()}} was last called and will treat the display's yaw when {{resetPose()}} was last called as the forward orientation. The {{VRDisplay}}'s reported roll and pitch do not change when {{resetPose()}} is called as they are relative to gravity. Calling {{resetPose()}} may change the {{sittingToStandingTransform}} matrix of the {{VRStageParameters}}.
+Reset the pose for the {{VRDisplay}}, treating its current position and orientation as the "origin/zero" values. Future values returned from {{getCurrentFrameData()}} or {{getPose()}} will describe positions relative to the {{VRDisplay}}'s position when {{resetPose()}} was last called and will treat the display's yaw when {{resetPose()}} was last called as the forward orientation. The {{VRDisplay}}'s reported roll and pitch do not change when {{resetPose()}} is called as they are relative to gravity. Calling {{resetPose()}} may change the {{sittingToStandingTransform}} matrix of the {{VRStageParameters}}.
 
 <dfn method for="VRDisplay">requestAnimationFrame()</dfn>
 Functionally equivalent to <a href="https://www.w3.org/TR/html51/webappapis.html#animation-frames">window.requestAnimationFrame</a> when the {{VRDisplay}} is not presenting. When the {{VRDisplay}} is presenting the callback is called at the native refresh rate of the {{VRDisplay}}.
@@ -330,6 +330,7 @@ enum VREye {
 The {{VRFieldOfView}} interface represents a field of view, as given by 4 degrees describing the view from a center point.
 
 <pre class="idl">
+[Deprecated]
 interface VRFieldOfView {
   readonly attribute double upDegrees;
   readonly attribute double rightDegrees;
@@ -521,7 +522,7 @@ The {{VREyeParameters}} interface represents all the information required to cor
 interface VREyeParameters {
   readonly attribute Float32Array offset;
 
-  [SameObject] readonly attribute VRFieldOfView fieldOfView;
+  [Deprecated, SameObject] readonly attribute VRFieldOfView fieldOfView;
 
   readonly attribute unsigned long renderWidth;
   readonly attribute unsigned long renderHeight;
@@ -534,7 +535,7 @@ interface VREyeParameters {
 Offset from the center point between the users eyes to the center of the eye in meters. This value SHOULD represent half of the user's interpupillary distance (IPD), but MAY also represent the distance from the center point of the headset to the center point of the lens for the given eye. Values for the left eye MUST be negative; values for the right eye MUST be positive. This information should not be used to construct a view matrix, prefer using the view matricies provided in {{VRFrameData}} instead.
 
 <dfn attribute for="VREyeParameters">fieldOfView</dfn>
-The current field of view for the eye. SHOULD conservatively cover the entire viewable frustum of the eye, making it useful for geometry culling and visibility detection. The application should not use these values to construct a projection matrix, as it may not take into account all aspects of the {{VRDisplay}} optics. Prefer using the projection matrices provided in {{VRFrameData}} instead.
+<i>(Deprecated)</i> The current field of view for the eye. SHOULD conservatively cover the entire viewable frustum of the eye. The application should not use these values to construct a projection matrix, as it may not take into account all aspects of the {{VRDisplay}} optics. Prefer using the projection matrices provided in {{VRFrameData}} instead.
 
 <dfn attribute for="VREyeParameters">renderWidth</dfn>
 Describes the recommended render target width of each eye viewport, in pixels. If multiple eyes are rendered in a single render target, then the render target should be made large enough to fit both viewports. The {{renderWidth}} for the left eye and right eye MUST NOT overlap, and the {{renderWidth}} for the right eye MUST be to the right of the {{renderWidth}} for the left eye.
@@ -571,7 +572,7 @@ interface VRStageParameters {
 ### Attributes ### {#vrstageparameters-attributes}
 
 <dfn attribute for="VRStageParameters">sittingToStandingTransform</dfn>
-The {{sittingToStandingTransform}} attribute is a 16-element array containing the components of a 4x4 affine transformation matrix in column-major order. This matrix transforms the sitting-space position returned by {{getPose()}} to a standing-space position.
+The {{sittingToStandingTransform}} attribute is a 16-element array containing the components of a 4x4 affine transformation matrix in column-major order. This matrix transforms the sitting-space view matrices of {{VRFRameData}} to standing-space.
 
 <dfn attribute for="VRStageParameters">sizeX</dfn>
 Width of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.
