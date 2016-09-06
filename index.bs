@@ -308,7 +308,7 @@ The {{hasOrientation}} attribute MUST return whether the {{VRDisplay}} is capabl
 The {{hasExternalDisplay}} attribute MUST return whether the {{VRDisplay}} is separate from the device's primary display. If presenting VR content will obscure other content on the device, this should be false. When false, the application should not attempt to mirror VR content or update non-VR UI because that content will not be visible.
 
 <dfn attribute for="VRDisplayCapabilities">canPresent</dfn>
-The {{canPresent}} attribute MUST return whether the {{VRDisplay}} is capable of presenting content to an HMD or similar device. Can be used to indicate "magic window" devices that are capable of 6DoF tracking but for which {{VRDisplay}}.{{requestPresent()}} is not meaningful. If false then calls to {{VRDisplay}}.{{requestPresent()}} should always fail, and {{VRDisplay}}.{{getEyeParameters()}} should return NULL.
+The {{canPresent}} attribute MUST return whether the {{VRDisplay}} is capable of presenting content to an HMD or similar device. Can be used to indicate "magic window" devices that are capable of 6DoF tracking but for which {{VRDisplay}}.{{requestPresent()}} is not meaningful. If false then calls to {{VRDisplay}}.{{requestPresent()}} should always fail, and {{VRDisplay}}.{{getEyeParameters()}} should return null.
 
 <dfn attribute for="VRDisplayCapabilities">maxLayers</dfn>
 Indicates the maximum length of the array that {{requestPresent()}} will accept. MUST be 1 if {{canPresent}} is true, 0 otherwise.
@@ -368,37 +368,37 @@ The coordinate system uses these axis definitions:
 * Positive Z is behind the user.
 
 All positions are given relative to the identity orientation in sitting space.
-MAY be NULL if the sensor is incapable of providing positional data. User agents
+MAY be null if the sensor is incapable of providing positional data. User agents
 MAY provide emulated position values through techniques such as neck modeling,
 but when doing so SHOULD report {{VRDisplayCapabilities}}.{{hasPosition}} as
-false. When not NULL MUST be a three-element array.
+false. When not null MUST be a three-element array.
 
 <dfn attribute for="VRPose">linearVelocity</dfn>
-Linear velocity of the sensor given in meters per second. MAY be NULL if the
-sensor is incapable of providing linear velocity. When not NULL MUST be a
+Linear velocity of the sensor given in meters per second. MAY be null if the
+sensor is incapable of providing linear velocity. When not null MUST be a
 three-element array.
 
 <dfn attribute for="VRPose">linearAcceleration</dfn>
 Linear acceleration of the sensor given in meters per second squared. MAY be
-NULL if the sensor is incapable of providing linear acceleration. When not NULL
+null if the sensor is incapable of providing linear acceleration. When not null
 MUST be a three-element array.
 
 <dfn attribute for="VRPose">orientation</dfn>
 Orientation of the sensor as a quaternion. The orientation yaw (rotation around
 the Y axis) is relative to the initial yaw of the sensor when it was first read
 or the yaw of the sensor at the point that {{resetPose()}} was last called. An
-orientation of [0, 0, 0, 1] is considered to be "forward". MAY be NULL if the
-sensor is incapable of providing orientation data. When not NULL MUST be a
+orientation of [0, 0, 0, 1] is considered to be "forward". MAY be null if the
+sensor is incapable of providing orientation data. When not null MUST be a
 four-element array.
 
 <dfn attribute for="VRPose">angularVelocity</dfn>
-Angular velocity of the sensor given in radians per second. MAY be NULL if the
-sensor is incapable of providing angular velocity. When not NULL MUST be a
+Angular velocity of the sensor given in radians per second. MAY be null if the
+sensor is incapable of providing angular velocity. When not null MUST be a
 three-element array.
 
 <dfn attribute for="VRPose">angularAcceleration</dfn>
 Angular acceleration of the sensor given in radians per second squared. MAY be
-NULL if the sensor is incapable of providing angular acceleration. When not NULL
+null if the sensor is incapable of providing angular acceleration. When not null
 MUST be a three-element array.
 
 <div class="example">
@@ -409,7 +409,7 @@ The following code snippet creates a WebGL-compatible matrix from a
 function poseToMatrix (pose) {
     var out = new Float32Array(16);
 
-    // If the orientation or position are NULL, provide defaults.
+    // If the orientation or position are null, provide defaults.
     var q = pose.orientation ? pose.orientation : [0, 0, 0, 1];
     var v = pose.position ? pose.position : [0, 0, 0];
 
