@@ -572,7 +572,7 @@ interface VRStageParameters {
 ### Attributes ### {#vrstageparameters-attributes}
 
 <dfn attribute for="VRStageParameters">sittingToStandingTransform</dfn>
-The {{sittingToStandingTransform}} attribute is a 16-element array containing the components of a 4x4 affine transformation matrix in column-major order. This matrix transforms the sitting-space view matrices of {{VRFRameData}} to standing-space.
+The {{sittingToStandingTransform}} attribute is a 16-element array containing the components of a 4x4 affine transformation matrix in column-major order. This matrix transforms the sitting-space view matrices of {{VRFrameData}} to standing-space.
 
 <dfn attribute for="VRStageParameters">sizeX</dfn>
 Width of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.
@@ -706,19 +706,15 @@ Return the {{VRDisplay/displayId}} for the associated {{VRDisplay}}.
 
 # Security Considerations # {#security}
 
-While not directly affecting the API interface and Web IDL, the security model should maintains the user's expectations of privacy on the Web:
+While not directly affecting the API interface and Web IDL, WebVR implementations should maintains the user's expectations of privacy, security, and comfort on the Web by adhering to the following guidelines:
 
-* The Gamepad API will be updated such that the gamepad inputs and HMD pose are available to only the focused tab.
-  * Non-focused tabs are allowed to enumerate {{Gamepad}}s and {{VRDisplay}}s but will see last received state or default values.
-  * All gamepads are assumed to be owned by the focused tabs, so can use them for secure inputs such as password fields.
-* Trusted UI elements presented by the browser would not be accessible by the GL context associated to the {{VRDisplay}} exposed to untrusted content.
-* Trusted UI would be drawn by an independent rendering context.
-* A "VR Compositor" runs asynchronously from content, responsible for compositing the trusted and untrusted content. If content is not performant or does not submit frames, the browser should be able to continue presenting a responsive front-end.
-* In the event that the content process terminates unexpectedly, the user is not forced to remove the HMD. The VR compositor will destroy the content layer while continuing to present the trusted UI elements of the browser.
-* The HMD pose and other VR inputs are only updated for the focused WebVR page. This can be implemented in the same manner as keyboard and mouse input.
-* Content does not need to request user permission to present to the VR HMD; however, any UI presented normally by the browser for 2D page content while loading a page or following links will be presented within the HMD to ensure that the user wishes to trust and visit the VR site.
-* If the user is uncomfortable in a VR world, she cannot look away from the display as it occupies her entire field of view. Instead the user can perform an action that does not require her vision to escape to a default page (such as pressing a reserved button or performing a gesture with motion controls).
-* To prevent CORS-related vulnerabilities, each page will see an independent instance of objects returned by the WebVR API, such as {{VRDisplay}}. Care must be taken to ensure that attributes such as {{VRLayer}}.{{source}} set by one page can not be read by another.
-
+* Trusted UI must be drawn by an independent rendering context who's state is isolated from that of the WebGL contexts provided as a {{VRLayer}} source to a {{VRDisplay}}.
+* A "VR Compositor" runs asynchronously from content, responsible for compositing the trusted and untrusted content. If content is not performant or does not submit frames, or terminates unexpectedly the browser should be able to continue presenting a responsive front-end.
+* Users should always be provided an action, such as pressing a reserved hardware button or performing a gesture, that escapes out of WebVR content and displays the browsers trusted UI.
+* When navigating between pages in VR the browser should display trusted UI elements informing the user of the security information of the site they are navigating to which is normally presented by the 2D UI, such as the URL and encryption status.
+* The {{VRDisplay}} pose and other VR inputs are only updated for the focused page.
+* The Gamepad API will be updated such that the gamepad inputs are only updated for the focused page.
+* Non-focused tabs are allowed to enumerate {{Gamepad}}s and {{VRDisplay}}s but will see last received state or default values.
+* To prevent CORS-related vulnerabilities, each page will see a new instance of objects returned by the WebVR API, such as {{VRDisplay}}. Attributes such as the {{VRLayer}}.{{source}} set by one page must not be able to be read by another.
 
 # Acknowledgements # {#ack}

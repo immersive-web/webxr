@@ -1408,7 +1408,7 @@ pre.idl.highlight { color: #708090; }
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebVR</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-09-02">2 September 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-09-06">6 September 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1928,7 +1928,7 @@ matrix with the inverse of <code class="idl"><a data-link-type="idl" href="#vrst
 };
 </pre>
    <h4 class="heading settled" data-level="2.9.1" id="vrstageparameters-attributes"><span class="secno">2.9.1. </span><span class="content">Attributes</span><a class="self-link" href="#vrstageparameters-attributes"></a></h4>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRStageParameters" data-dfn-type="attribute" data-export="" id="dom-vrstageparameters-sittingtostandingtransform">sittingToStandingTransform</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrstageparameters-sittingtostandingtransform" id="ref-for-dom-vrstageparameters-sittingtostandingtransform-5">sittingToStandingTransform</a></code> attribute is a 16-element array containing the components of a 4x4 affine transformation matrix in column-major order. This matrix transforms the sitting-space view matrices of <code class="idl"><a data-link-type="idl">VRFRameData</a></code> to standing-space.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRStageParameters" data-dfn-type="attribute" data-export="" id="dom-vrstageparameters-sittingtostandingtransform">sittingToStandingTransform</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrstageparameters-sittingtostandingtransform" id="ref-for-dom-vrstageparameters-sittingtostandingtransform-5">sittingToStandingTransform</a></code> attribute is a 16-element array containing the components of a 4x4 affine transformation matrix in column-major order. This matrix transforms the sitting-space view matrices of <code class="idl"><a data-link-type="idl" href="#vrframedata" id="ref-for-vrframedata-5">VRFrameData</a></code> to standing-space.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRStageParameters" data-dfn-type="attribute" data-export="" id="dom-vrstageparameters-sizex">sizeX</dfn> Width of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRStageParameters" data-dfn-type="attribute" data-export="" id="dom-vrstageparameters-sizez">sizeZ</dfn> Depth of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.</p>
    <h3 class="heading settled" data-level="2.10" id="interface-navigator"><span class="secno">2.10. </span><span class="content">Navigator Interface extension</span><a class="self-link" href="#interface-navigator"></a></h3>
@@ -2002,30 +2002,24 @@ matrix with the inverse of <code class="idl"><a data-link-type="idl" href="#vrst
    <h4 class="heading settled" data-level="2.14.1" id="gamepad-attributes"><span class="secno">2.14.1. </span><span class="content">Attributes</span><a class="self-link" href="#gamepad-attributes"></a></h4>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="Gamepad" data-dfn-type="attribute" data-export="" id="gamepad-getvrdisplays-attribute">displayId</dfn> Return the <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-displayid" id="ref-for-dom-vrdisplay-displayid-1">displayId</a></code> for the associated <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-58">VRDisplay</a></code>.</p>
    <h2 class="heading settled" data-level="3" id="security"><span class="secno">3. </span><span class="content">Security Considerations</span><a class="self-link" href="#security"></a></h2>
-   <p>While not directly affecting the API interface and Web IDL, the security model should maintains the user’s expectations of privacy on the Web:</p>
+   <p>While not directly affecting the API interface and Web IDL, WebVR implementations should maintains the user’s expectations of privacy, security, and comfort on the Web by adhering to the following guidelines:</p>
    <ul>
     <li data-md="">
-     <p>The Gamepad API will be updated such that the gamepad inputs and HMD pose are available to only the focused tab.</p>
+     <p>Trusted UI must be drawn by an independent rendering context who’s state is isolated from that of the WebGL contexts provided as a <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-10">VRLayer</a></code> source to a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-59">VRDisplay</a></code>.</p>
     <li data-md="">
-     <p>Non-focused tabs are allowed to enumerate <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/gamepad/#gamepad">Gamepad</a></code>s and <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-59">VRDisplay</a></code>s but will see last received state or default values.</p>
+     <p>A "VR Compositor" runs asynchronously from content, responsible for compositing the trusted and untrusted content. If content is not performant or does not submit frames, or terminates unexpectedly the browser should be able to continue presenting a responsive front-end.</p>
     <li data-md="">
-     <p>All gamepads are assumed to be owned by the focused tabs, so can use them for secure inputs such as password fields.</p>
+     <p>Users should always be provided an action, such as pressing a reserved hardware button or performing a gesture, that escapes out of WebVR content and displays the browsers trusted UI.</p>
     <li data-md="">
-     <p>Trusted UI elements presented by the browser would not be accessible by the GL context associated to the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-60">VRDisplay</a></code> exposed to untrusted content.</p>
+     <p>When navigating between pages in VR the browser should display trusted UI elements informing the user of the security information of the site they are navigating to which is normally presented by the 2D UI, such as the URL and encryption status.</p>
     <li data-md="">
-     <p>Trusted UI would be drawn by an independent rendering context.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-60">VRDisplay</a></code> pose and other VR inputs are only updated for the focused page.</p>
     <li data-md="">
-     <p>A "VR Compositor" runs asynchronously from content, responsible for compositing the trusted and untrusted content. If content is not performant or does not submit frames, the browser should be able to continue presenting a responsive front-end.</p>
+     <p>The Gamepad API will be updated such that the gamepad inputs are only updated for the focused page.</p>
     <li data-md="">
-     <p>In the event that the content process terminates unexpectedly, the user is not forced to remove the HMD. The VR compositor will destroy the content layer while continuing to present the trusted UI elements of the browser.</p>
+     <p>Non-focused tabs are allowed to enumerate <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/gamepad/#gamepad">Gamepad</a></code>s and <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-61">VRDisplay</a></code>s but will see last received state or default values.</p>
     <li data-md="">
-     <p>The HMD pose and other VR inputs are only updated for the focused WebVR page. This can be implemented in the same manner as keyboard and mouse input.</p>
-    <li data-md="">
-     <p>Content does not need to request user permission to present to the VR HMD; however, any UI presented normally by the browser for 2D page content while loading a page or following links will be presented within the HMD to ensure that the user wishes to trust and visit the VR site.</p>
-    <li data-md="">
-     <p>If the user is uncomfortable in a VR world, she cannot look away from the display as it occupies her entire field of view. Instead the user can perform an action that does not require her vision to escape to a default page (such as pressing a reserved button or performing a gesture with motion controls).</p>
-    <li data-md="">
-     <p>To prevent CORS-related vulnerabilities, each page will see an independent instance of objects returned by the WebVR API, such as <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-61">VRDisplay</a></code>. Care must be taken to ensure that attributes such as <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-10">VRLayer</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-5">source</a></code> set by one page can not be read by another.</p>
+     <p>To prevent CORS-related vulnerabilities, each page will see a new instance of objects returned by the WebVR API, such as <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-62">VRDisplay</a></code>. Attributes such as the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-11">VRLayer</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-5">source</a></code> set by one page must not be able to be read by another.</p>
    </ul>
    <h2 class="heading settled" data-level="4" id="ack"><span class="secno">4. </span><span class="content">Acknowledgements</span><a class="self-link" href="#ack"></a></h2>
   </main>
@@ -2572,7 +2566,7 @@ matrix with the inverse of <code class="idl"><a data-link-type="idl" href="#vrst
     <li><a href="#ref-for-vrdisplay-49">2.12.1. Attributes</a>
     <li><a href="#ref-for-vrdisplay-50">2.13. Window Interface extension</a> <a href="#ref-for-vrdisplay-51">(2)</a> <a href="#ref-for-vrdisplay-52">(3)</a> <a href="#ref-for-vrdisplay-53">(4)</a> <a href="#ref-for-vrdisplay-54">(5)</a> <a href="#ref-for-vrdisplay-55">(6)</a> <a href="#ref-for-vrdisplay-56">(7)</a> <a href="#ref-for-vrdisplay-57">(8)</a>
     <li><a href="#ref-for-vrdisplay-58">2.14.1. Attributes</a>
-    <li><a href="#ref-for-vrdisplay-59">3. Security Considerations</a> <a href="#ref-for-vrdisplay-60">(2)</a> <a href="#ref-for-vrdisplay-61">(3)</a>
+    <li><a href="#ref-for-vrdisplay-59">3. Security Considerations</a> <a href="#ref-for-vrdisplay-60">(2)</a> <a href="#ref-for-vrdisplay-61">(3)</a> <a href="#ref-for-vrdisplay-62">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrdisplay-displayid">
@@ -2686,7 +2680,7 @@ matrix with the inverse of <code class="idl"><a data-link-type="idl" href="#vrst
     <li><a href="#ref-for-dictdef-vrlayer-1">2.1. VRDisplay</a> <a href="#ref-for-dictdef-vrlayer-2">(2)</a>
     <li><a href="#ref-for-dictdef-vrlayer-3">2.1.1. Attributes</a> <a href="#ref-for-dictdef-vrlayer-4">(2)</a> <a href="#ref-for-dictdef-vrlayer-5">(3)</a> <a href="#ref-for-dictdef-vrlayer-6">(4)</a> <a href="#ref-for-dictdef-vrlayer-7">(5)</a> <a href="#ref-for-dictdef-vrlayer-8">(6)</a>
     <li><a href="#ref-for-dictdef-vrlayer-9">2.2. VRLayer</a>
-    <li><a href="#ref-for-dictdef-vrlayer-10">3. Security Considerations</a>
+    <li><a href="#ref-for-dictdef-vrlayer-10">3. Security Considerations</a> <a href="#ref-for-dictdef-vrlayer-11">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrlayer-source">
@@ -2822,6 +2816,7 @@ matrix with the inverse of <code class="idl"><a data-link-type="idl" href="#vrst
     <li><a href="#ref-for-vrframedata-1">2.1. VRDisplay</a>
     <li><a href="#ref-for-vrframedata-2">2.1.1. Attributes</a>
     <li><a href="#ref-for-vrframedata-3">2.8.1. Attributes</a> <a href="#ref-for-vrframedata-4">(2)</a>
+    <li><a href="#ref-for-vrframedata-5">2.9.1. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrframedata-timestamp">
