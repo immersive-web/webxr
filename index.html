@@ -1739,7 +1739,7 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayCapabilities" data-dfn-type="attribute" data-export="" id="dom-vrdisplaycapabilities-hasposition">hasPosition</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrdisplaycapabilities-hasposition" id="ref-for-dom-vrdisplaycapabilities-hasposition-2">hasPosition</a></code> attribute MUST return whether the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-29">VRDisplay</a></code> is capable of tracking its position.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayCapabilities" data-dfn-type="attribute" data-export="" id="dom-vrdisplaycapabilities-hasorientation">hasOrientation</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrdisplaycapabilities-hasorientation" id="ref-for-dom-vrdisplaycapabilities-hasorientation-2">hasOrientation</a></code> attribute MUST return whether the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-30">VRDisplay</a></code> is capable of tracking its orientation.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayCapabilities" data-dfn-type="attribute" data-export="" id="dom-vrdisplaycapabilities-hasexternaldisplay">hasExternalDisplay</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrdisplaycapabilities-hasexternaldisplay" id="ref-for-dom-vrdisplaycapabilities-hasexternaldisplay-2">hasExternalDisplay</a></code> attribute MUST return whether the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-31">VRDisplay</a></code> is separate from the device’s primary display. If presenting VR content will obscure other content on the device, this should be false. When false, the application should not attempt to mirror VR content or update non-VR UI because that content will not be visible.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayCapabilities" data-dfn-type="attribute" data-export="" id="dom-vrdisplaycapabilities-canpresent">canPresent</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrdisplaycapabilities-canpresent" id="ref-for-dom-vrdisplaycapabilities-canpresent-3">canPresent</a></code> attribute MUST return whether the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-32">VRDisplay</a></code> is capable of presenting content to an HMD or similar device. Can be used to indicate "magic window" devices that are capable of 6DoF tracking but for which <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-33">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-6">requestPresent()</a></code> is not meaningful. If false then calls to <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-34">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-7">requestPresent()</a></code> should always fail, and <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-35">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-geteyeparameters" id="ref-for-dom-vrdisplay-geteyeparameters-2">getEyeParameters()</a></code> should return NULL.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayCapabilities" data-dfn-type="attribute" data-export="" id="dom-vrdisplaycapabilities-canpresent">canPresent</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrdisplaycapabilities-canpresent" id="ref-for-dom-vrdisplaycapabilities-canpresent-3">canPresent</a></code> attribute MUST return whether the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-32">VRDisplay</a></code> is capable of presenting content to an HMD or similar device. Can be used to indicate "magic window" devices that are capable of 6DoF tracking but for which <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-33">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-6">requestPresent()</a></code> is not meaningful. If false then calls to <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-34">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-7">requestPresent()</a></code> should always fail, and <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-35">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-geteyeparameters" id="ref-for-dom-vrdisplay-geteyeparameters-2">getEyeParameters()</a></code> should return null.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayCapabilities" data-dfn-type="attribute" data-export="" id="dom-vrdisplaycapabilities-maxlayers">maxLayers</dfn> Indicates the maximum length of the array that <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-8">requestPresent()</a></code> will accept. MUST be 1 if <code class="idl"><a data-link-type="idl" href="#dom-vrdisplaycapabilities-canpresent" id="ref-for-dom-vrdisplaycapabilities-canpresent-4">canPresent</a></code> is true, 0 otherwise.</p>
    <p class="note" role="note">Note: Future revisions of this spec may allow multiple layers to enable more complex rendering effects such as compositing WebGL and DOM elements together. That functionality is not allowed by this revision of the spec.</p>
    <h3 class="heading settled" data-level="2.4" id="interface-vreye"><span class="secno">2.4. </span><span class="content">VREye</span><a class="self-link" href="#interface-vreye"></a></h3>
@@ -1784,34 +1784,34 @@ The coordinate system uses these axis definitions:</p>
      <p>Positive Z is behind the user.</p>
    </ul>
    <p>All positions are given relative to the identity orientation in sitting space.
-MAY be NULL if the sensor is incapable of providing positional data. User agents
+MAY be null if the sensor is incapable of providing positional data. User agents
 MAY provide emulated position values through techniques such as neck modeling,
 but when doing so SHOULD report <code class="idl"><a data-link-type="idl" href="#vrdisplaycapabilities" id="ref-for-vrdisplaycapabilities-4">VRDisplayCapabilities</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplaycapabilities-hasposition" id="ref-for-dom-vrdisplaycapabilities-hasposition-3">hasPosition</a></code> as
-false. When not NULL MUST be a three-element array.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-linearvelocity">linearVelocity</dfn> Linear velocity of the sensor given in meters per second. MAY be NULL if the
-sensor is incapable of providing linear velocity. When not NULL MUST be a
+false. When not null MUST be a three-element array.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-linearvelocity">linearVelocity</dfn> Linear velocity of the sensor given in meters per second. MAY be null if the
+sensor is incapable of providing linear velocity. When not null MUST be a
 three-element array.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-linearacceleration">linearAcceleration</dfn> Linear acceleration of the sensor given in meters per second squared. MAY be
-NULL if the sensor is incapable of providing linear acceleration. When not NULL
+null if the sensor is incapable of providing linear acceleration. When not null
 MUST be a three-element array.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-orientation">orientation</dfn> Orientation of the sensor as a quaternion. The orientation yaw (rotation around
 the Y axis) is relative to the initial yaw of the sensor when it was first read
 or the yaw of the sensor at the point that <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-resetpose" id="ref-for-dom-vrdisplay-resetpose-7">resetPose()</a></code> was last called. An
-orientation of [0, 0, 0, 1] is considered to be "forward". MAY be NULL if the
-sensor is incapable of providing orientation data. When not NULL MUST be a
+orientation of [0, 0, 0, 1] is considered to be "forward". MAY be null if the
+sensor is incapable of providing orientation data. When not null MUST be a
 four-element array.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-angularvelocity">angularVelocity</dfn> Angular velocity of the sensor given in radians per second. MAY be NULL if the
-sensor is incapable of providing angular velocity. When not NULL MUST be a
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-angularvelocity">angularVelocity</dfn> Angular velocity of the sensor given in radians per second. MAY be null if the
+sensor is incapable of providing angular velocity. When not null MUST be a
 three-element array.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRPose" data-dfn-type="attribute" data-export="" id="dom-vrpose-angularacceleration">angularAcceleration</dfn> Angular acceleration of the sensor given in radians per second squared. MAY be
-NULL if the sensor is incapable of providing angular acceleration. When not NULL
+null if the sensor is incapable of providing angular acceleration. When not null
 MUST be a three-element array.</p>
-   <div class="example" id="example-bd8bae21">
-    <a class="self-link" href="#example-bd8bae21"></a> The following code snippet creates a WebGL-compatible matrix from a <code class="idl"><a data-link-type="idl" href="#vrpose" id="ref-for-vrpose-7">VRPose</a></code>: 
+   <div class="example" id="example-eea85aeb">
+    <a class="self-link" href="#example-eea85aeb"></a> The following code snippet creates a WebGL-compatible matrix from a <code class="idl"><a data-link-type="idl" href="#vrpose" id="ref-for-vrpose-7">VRPose</a></code>: 
 <pre class="lang-js highlight"><span></span><span class="kd">function</span> <span class="nx">poseToMatrix</span> <span class="p">(</span><span class="nx">pose</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">out</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Float32Array</span><span class="p">(</span><span class="mi">16</span><span class="p">);</span>
 
-    <span class="c1">// If the orientation or position are NULL, provide defaults.</span>
+    <span class="c1">// If the orientation or position are null, provide defaults.</span>
     <span class="kd">var</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">pose</span><span class="p">.</span><span class="nx">orientation</span> <span class="o">?</span> <span class="nx">pose</span><span class="p">.</span><span class="nx">orientation</span> <span class="o">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">];</span>
     <span class="kd">var</span> <span class="nx">v</span> <span class="o">=</span> <span class="nx">pose</span><span class="p">.</span><span class="nx">position</span> <span class="o">?</span> <span class="nx">pose</span><span class="p">.</span><span class="nx">position</span> <span class="o">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">];</span>
 
@@ -1871,28 +1871,10 @@ state data been updated from the hardware. Since values are monotonically
 increasing, they can be compared to determine the ordering of updates, as newer
 values will always be greater than or equal to older values. The timestamp
 starts at 0 the first time <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getcurrentframedata" id="ref-for-dom-vrdisplay-getcurrentframedata-7">getCurrentFrameData()</a></code> is invoked for a given <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-37">VRDisplay</a></code>.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRFrameData" data-dfn-type="attribute" data-export="" id="dom-vrframedata-leftprojectionmatrix">leftProjectionMatrix</dfn> A 4x4 matrix describing the projection to be used for the left eye’s rendering,
-represented as a 16 element array in column major order. This value may be
-passed directly to WebGL’s uniformMatrix4fv function. It is highly recommended
-that applications use this matrix without modification. Failure to use this
-projection matrix when rendering may cause the presented frame to be distorted
-or badly aligned, resulting in varying degrees of user discomfort.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRFrameData" data-dfn-type="attribute" data-export="" id="dom-vrframedata-leftviewmatrix">leftViewMatrix</dfn> A 4x4 matrix describing the view transform to be used for the left eye’s
-rendering, represented as a 16 element array in column major order. This value
-may be passed directly to WebGL’s uniformMatrix4fv function. It is highly
-recommended that applications use this matrix when rendering. Multiplying this
-matrix with the inverse of <code class="idl"><a data-link-type="idl" href="#vrstageparameters" id="ref-for-vrstageparameters-3">VRStageParameters</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrstageparameters-sittingtostandingtransform" id="ref-for-dom-vrstageparameters-sittingtostandingtransform-2">sittingToStandingTransform</a></code> will result in a standing space view matrix.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRFrameData" data-dfn-type="attribute" data-export="" id="dom-vrframedata-rightprojectionmatrix">rightProjectionMatrix</dfn> A 4x4 matrix describing the projection to be used for the right eye’s rendering,
-represented as a 16 element array in column major order. This value may be
-passed directly to WebGL’s uniformMatrix4fv function. It is highly recommended
-that applications use this matrix without modification. Failure to use this
-projection matrix when rendering may cause the presented frame to be distorted
-or badly aligned, resulting in varying degrees of user discomfort.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRFrameData" data-dfn-type="attribute" data-export="" id="dom-vrframedata-rightviewmatrix">rightViewMatrix</dfn> A 4x4 matrix describing the view transform to be used for the right eye’s
-rendering, represented as a 16 element array in column major order. This value
-may be passed directly to WebGL’s uniformMatrix4fv function. It is highly
-recommended that applications use this matrix when rendering.  Multiplying this
-matrix with the inverse of <code class="idl"><a data-link-type="idl" href="#vrstageparameters" id="ref-for-vrstageparameters-4">VRStageParameters</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrstageparameters-sittingtostandingtransform" id="ref-for-dom-vrstageparameters-sittingtostandingtransform-3">sittingToStandingTransform</a></code> will result in a standing space view matrix.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRFrameData" data-dfn-type="attribute" data-export="" id="dom-vrframedata-leftprojectionmatrix">leftProjectionMatrix</dfn> A 4x4 matrix describing the projection to be used for the left eye’s rendering, given as a 16 element array in column major order. This value may be passed directly to WebGL’s uniformMatrix4fv function. It is highly recommended that applications use this matrix without modification. Failure to use this projection matrix when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRFrameData" data-dfn-type="attribute" data-export="" id="dom-vrframedata-leftviewmatrix">leftViewMatrix</dfn> A 4x4 matrix describing the view transform to be used for the left eye’s rendering, given as a 16 element array in column major order. Represents the inverse of the model matrix of the left eye in sitting space. This value may be passed directly to WebGL’s uniformMatrix4fv function. It is highly recommended that applications use this matrix when rendering.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRFrameData" data-dfn-type="attribute" data-export="" id="dom-vrframedata-rightprojectionmatrix">rightProjectionMatrix</dfn> A 4x4 matrix describing the projection to be used for the right eye’s rendering, given as a 16 element array in column major order. This value may be passed directly to WebGL’s uniformMatrix4fv function. It is highly recommended that applications use this matrix without modification. Failure to use this projection matrix when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRFrameData" data-dfn-type="attribute" data-export="" id="dom-vrframedata-rightviewmatrix">rightViewMatrix</dfn> A 4x4 matrix describing the view transform to be used for the right eye’s rendering, given as a 16 element array in column major order. Represents the inverse of the model matrix of the right eye in sitting space. This value may be passed directly to WebGL’s uniformMatrix4fv function. It is highly recommended that applications use this matrix when rendering.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRFrameData" data-dfn-type="attribute" data-export="" id="dom-vrframedata-pose">pose</dfn> The <code class="idl"><a data-link-type="idl" href="#vrpose" id="ref-for-vrpose-9">VRPose</a></code> of the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-38">VRDisplay</a></code> at <code class="idl"><a data-link-type="idl" href="#dom-vrframedata-timestamp" id="ref-for-dom-vrframedata-timestamp-2">timestamp</a></code>.</p>
    <h3 class="heading settled" data-level="2.8" id="interface-vreyeparameters"><span class="secno">2.8. </span><span class="content">VREyeParameters</span><a class="self-link" href="#interface-vreyeparameters"></a></h3>
    <p>The <code class="idl"><a data-link-type="idl" href="#vreyeparameters" id="ref-for-vreyeparameters-3">VREyeParameters</a></code> interface represents all the information required to correctly render a scene for a given eye.</p>
@@ -1919,16 +1901,16 @@ matrix with the inverse of <code class="idl"><a data-link-type="idl" href="#vrst
 <span class="nx">canvas</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="nx">leftEye</span><span class="p">.</span><span class="nx">renderHeight</span><span class="p">,</span> <span class="nx">rightEye</span><span class="p">.</span><span class="nx">renderHeight</span><span class="p">);</span></pre>
    </div>
    <h3 class="heading settled" data-level="2.9" id="interface-vrstageparameters"><span class="secno">2.9. </span><span class="content">VRStageParameters</span><a class="self-link" href="#interface-vrstageparameters"></a></h3>
-   <p>The <code class="idl"><a data-link-type="idl" href="#vrstageparameters" id="ref-for-vrstageparameters-5">VRStageParameters</a></code> interface represents the values describing the the stage/play area for devices that support room-scale experiences.</p>
+   <p>The <code class="idl"><a data-link-type="idl" href="#vrstageparameters" id="ref-for-vrstageparameters-3">VRStageParameters</a></code> interface represents the values describing the the stage/play area for devices that support room-scale experiences.</p>
 <pre class="idl highlight def"><span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrstageparameters">VRStageParameters</dfn> {
-  <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">Float32Array</span> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array" href="#dom-vrstageparameters-sittingtostandingtransform" id="ref-for-dom-vrstageparameters-sittingtostandingtransform-4">sittingToStandingTransform</a>;
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">Float32Array</span> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array" href="#dom-vrstageparameters-sittingtostandingtransform" id="ref-for-dom-vrstageparameters-sittingtostandingtransform-2">sittingToStandingTransform</a>;
 
   <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">float</span> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="float" href="#dom-vrstageparameters-sizex" id="ref-for-dom-vrstageparameters-sizex-1">sizeX</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">float</span> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="float" href="#dom-vrstageparameters-sizez" id="ref-for-dom-vrstageparameters-sizez-1">sizeZ</a>;
 };
 </pre>
    <h4 class="heading settled" data-level="2.9.1" id="vrstageparameters-attributes"><span class="secno">2.9.1. </span><span class="content">Attributes</span><a class="self-link" href="#vrstageparameters-attributes"></a></h4>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRStageParameters" data-dfn-type="attribute" data-export="" id="dom-vrstageparameters-sittingtostandingtransform">sittingToStandingTransform</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrstageparameters-sittingtostandingtransform" id="ref-for-dom-vrstageparameters-sittingtostandingtransform-5">sittingToStandingTransform</a></code> attribute is a 16-element array containing the components of a 4x4 affine transformation matrix in column-major order. This matrix transforms the sitting-space view matrices of <code class="idl"><a data-link-type="idl" href="#vrframedata" id="ref-for-vrframedata-5">VRFrameData</a></code> to standing-space.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRStageParameters" data-dfn-type="attribute" data-export="" id="dom-vrstageparameters-sittingtostandingtransform">sittingToStandingTransform</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrstageparameters-sittingtostandingtransform" id="ref-for-dom-vrstageparameters-sittingtostandingtransform-3">sittingToStandingTransform</a></code> attribute is a 16-element array containing the components of a 4x4 affine transformation matrix in column-major order. This matrix transforms the sitting-space view matrices of <code class="idl"><a data-link-type="idl" href="#vrframedata" id="ref-for-vrframedata-5">VRFrameData</a></code> to standing-space. Multiplying the inverse of this matrix with the <code class="idl"><a data-link-type="idl" href="#dom-vrframedata-leftviewmatrix" id="ref-for-dom-vrframedata-leftviewmatrix-2">leftViewMatrix</a></code> or <code class="idl"><a data-link-type="idl" href="#dom-vrframedata-rightviewmatrix" id="ref-for-dom-vrframedata-rightviewmatrix-2">rightViewMatrix</a></code> will result in a standing space view matrix for the respective eye.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRStageParameters" data-dfn-type="attribute" data-export="" id="dom-vrstageparameters-sizex">sizeX</dfn> Width of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRStageParameters" data-dfn-type="attribute" data-export="" id="dom-vrstageparameters-sizez">sizeZ</dfn> Depth of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.</p>
    <h3 class="heading settled" data-level="2.10" id="interface-navigator"><span class="secno">2.10. </span><span class="content">Navigator Interface extension</span><a class="self-link" href="#interface-navigator"></a></h3>
@@ -2836,6 +2818,7 @@ matrix with the inverse of <code class="idl"><a data-link-type="idl" href="#vrst
    <b><a href="#dom-vrframedata-leftviewmatrix">#dom-vrframedata-leftviewmatrix</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-vrframedata-leftviewmatrix-1">2.7. VRFrameData</a>
+    <li><a href="#ref-for-dom-vrframedata-leftviewmatrix-2">2.9.1. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrframedata-rightprojectionmatrix">
@@ -2848,6 +2831,7 @@ matrix with the inverse of <code class="idl"><a data-link-type="idl" href="#vrst
    <b><a href="#dom-vrframedata-rightviewmatrix">#dom-vrframedata-rightviewmatrix</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-vrframedata-rightviewmatrix-1">2.7. VRFrameData</a>
+    <li><a href="#ref-for-dom-vrframedata-rightviewmatrix-2">2.9.1. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrframedata-pose">
@@ -2895,17 +2879,15 @@ matrix with the inverse of <code class="idl"><a data-link-type="idl" href="#vrst
    <ul>
     <li><a href="#ref-for-vrstageparameters-1">2.1. VRDisplay</a>
     <li><a href="#ref-for-vrstageparameters-2">2.1.1. Attributes</a>
-    <li><a href="#ref-for-vrstageparameters-3">2.7.1. Attributes</a> <a href="#ref-for-vrstageparameters-4">(2)</a>
-    <li><a href="#ref-for-vrstageparameters-5">2.9. VRStageParameters</a>
+    <li><a href="#ref-for-vrstageparameters-3">2.9. VRStageParameters</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrstageparameters-sittingtostandingtransform">
    <b><a href="#dom-vrstageparameters-sittingtostandingtransform">#dom-vrstageparameters-sittingtostandingtransform</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-vrstageparameters-sittingtostandingtransform-1">2.1.1. Attributes</a>
-    <li><a href="#ref-for-dom-vrstageparameters-sittingtostandingtransform-2">2.7.1. Attributes</a> <a href="#ref-for-dom-vrstageparameters-sittingtostandingtransform-3">(2)</a>
-    <li><a href="#ref-for-dom-vrstageparameters-sittingtostandingtransform-4">2.9. VRStageParameters</a>
-    <li><a href="#ref-for-dom-vrstageparameters-sittingtostandingtransform-5">2.9.1. Attributes</a>
+    <li><a href="#ref-for-dom-vrstageparameters-sittingtostandingtransform-2">2.9. VRStageParameters</a>
+    <li><a href="#ref-for-dom-vrstageparameters-sittingtostandingtransform-3">2.9.1. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrstageparameters-sizex">

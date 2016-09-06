@@ -480,36 +480,16 @@ starts at 0 the first time {{getCurrentFrameData()}} is invoked for a given
 {{VRDisplay}}.
 
 <dfn attribute for="VRFrameData">leftProjectionMatrix</dfn>
-A 4x4 matrix describing the projection to be used for the left eye's rendering,
-represented as a 16 element array in column major order. This value may be
-passed directly to WebGL's uniformMatrix4fv function. It is highly recommended
-that applications use this matrix without modification. Failure to use this
-projection matrix when rendering may cause the presented frame to be distorted
-or badly aligned, resulting in varying degrees of user discomfort.
+A 4x4 matrix describing the projection to be used for the left eye's rendering, given as a 16 element array in column major order. This value may be passed directly to WebGL's uniformMatrix4fv function. It is highly recommended that applications use this matrix without modification. Failure to use this projection matrix when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
 
 <dfn attribute for="VRFrameData">leftViewMatrix</dfn>
-A 4x4 matrix describing the view transform to be used for the left eye's
-rendering, represented as a 16 element array in column major order. This value
-may be passed directly to WebGL's uniformMatrix4fv function. It is highly
-recommended that applications use this matrix when rendering. Multiplying this
-matrix with the inverse of {{VRStageParameters}}.{{sittingToStandingTransform}}
-will result in a standing space view matrix.
+A 4x4 matrix describing the view transform to be used for the left eye's rendering, given as a 16 element array in column major order. Represents the inverse of the model matrix of the left eye in sitting space. This value may be passed directly to WebGL's uniformMatrix4fv function. It is highly recommended that applications use this matrix when rendering.
 
 <dfn attribute for="VRFrameData">rightProjectionMatrix</dfn>
-A 4x4 matrix describing the projection to be used for the right eye's rendering,
-represented as a 16 element array in column major order. This value may be
-passed directly to WebGL's uniformMatrix4fv function. It is highly recommended
-that applications use this matrix without modification. Failure to use this
-projection matrix when rendering may cause the presented frame to be distorted
-or badly aligned, resulting in varying degrees of user discomfort.
+A 4x4 matrix describing the projection to be used for the right eye's rendering, given as a 16 element array in column major order. This value may be passed directly to WebGL's uniformMatrix4fv function. It is highly recommended that applications use this matrix without modification. Failure to use this projection matrix when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
 
 <dfn attribute for="VRFrameData">rightViewMatrix</dfn>
-A 4x4 matrix describing the view transform to be used for the right eye's
-rendering, represented as a 16 element array in column major order. This value
-may be passed directly to WebGL's uniformMatrix4fv function. It is highly
-recommended that applications use this matrix when rendering.  Multiplying this
-matrix with the inverse of {{VRStageParameters}}.{{sittingToStandingTransform}}
-will result in a standing space view matrix.
+A 4x4 matrix describing the view transform to be used for the right eye's rendering, given as a 16 element array in column major order. Represents the inverse of the model matrix of the right eye in sitting space. This value may be passed directly to WebGL's uniformMatrix4fv function. It is highly recommended that applications use this matrix when rendering.
 
 <dfn attribute for="VRFrameData">pose</dfn>
 The {{VRPose}} of the {{VRDisplay}} at {{timestamp}}.
@@ -572,7 +552,7 @@ interface VRStageParameters {
 ### Attributes ### {#vrstageparameters-attributes}
 
 <dfn attribute for="VRStageParameters">sittingToStandingTransform</dfn>
-The {{sittingToStandingTransform}} attribute is a 16-element array containing the components of a 4x4 affine transformation matrix in column-major order. This matrix transforms the sitting-space view matrices of {{VRFrameData}} to standing-space.
+The {{sittingToStandingTransform}} attribute is a 16-element array containing the components of a 4x4 affine transformation matrix in column-major order. This matrix transforms the sitting-space view matrices of {{VRFrameData}} to standing-space. Multiplying the inverse of this matrix with the {{leftViewMatrix}} or {{rightViewMatrix}} will result in a standing space view matrix for the respective eye.
 
 <dfn attribute for="VRStageParameters">sizeX</dfn>
 Width of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.
