@@ -90,7 +90,7 @@ interface VRDisplay : EventTarget {
    * Populates the passed VRFrameData with the information required to render
    * the current frame.
    */
-  void getCurrentFrameData(VRFrameData frameData);
+  boolean getFrameData(VRFrameData frameData);
 
   /**
    * Return a VRPose containing the future predicted pose of the VRDisplay
@@ -184,16 +184,16 @@ The {{capabilities}} attribute MUST return the {{VRDisplay}}'s {{VRDisplayCapabi
 <dfn method for="VRDisplay">getEyeParameters()</dfn>
 Returns the current {{VREyeParameters}} for the given eye. The eye parameters MAY change at any time due to external factors, such as the user changing the IPD with hardware controls.
 
-<dfn method for="VRDisplay">getCurrentFrameData()</dfn>
-Populates the provided {{VRFrameData}} object with the {{VRPose}} and view and projection matricies for the current frame. These values describe the position, orientation, acceleration, and velocity of the {{VRDisplay}} that should be used when rendering the next frame of a scene. The User Agent MAY optionally use predictive techniques to estimate what these values will be at the time that the next frame will be displayed to the user. Subsequent calls to {{getCurrentFrameData()}} MUST provide the same values until the next call to {{submitFrame()}}.
+<dfn method for="VRDisplay">getFrameData()</dfn>
+Populates the provided {{VRFrameData}} object with the {{VRPose}} and view and projection matricies for the current frame. These values describe the position, orientation, acceleration, and velocity of the {{VRDisplay}} that should be used when rendering the next frame of a scene. The User Agent MAY optionally use predictive techniques to estimate what these values will be at the time that the next frame will be displayed to the user. Subsequent calls to {{getFrameData()}} MUST provide the same values until the next call to {{submitFrame()}}. Returns true if the the provided {{VRFrameData}} object was successfully updated, false otherwise.
 
 <dfn method for="VRDisplay">getPose()</dfn>
 <i>(Deprecated)</i> Returns a {{VRPose}} describing the position, orientation, acceleration, and velocity of the {{VRDisplay}} that should be used when rendering the next frame of a scene. The User Agent MAY optionally use predictive techniques to estimate what the pose will be at the time that the next frame will be displayed to the user. Subsequent calls to {{getPose()}} MUST return a {{VRPose}} with the same values until the next call to {{submitFrame()}}.
 
-This function is deprecated but is preserved for backwards compatibility. Using it MAY incur warnings from the User Agent. Prefer using {{getCurrentFrameData()}}, which also provides a {{VRPose}}, instead.
+This function is deprecated but is preserved for backwards compatibility. Using it MAY incur warnings from the User Agent. Prefer using {{getFrameData()}}, which also provides a {{VRPose}}, instead.
 
 <dfn method for="VRDisplay">resetPose()</dfn>
-Reset the pose for the {{VRDisplay}}, treating its current position and orientation as the "origin/zero" values. Future values returned from {{getCurrentFrameData()}} or {{getPose()}} will describe positions relative to the {{VRDisplay}}'s position when {{resetPose()}} was last called and will treat the display's yaw when {{resetPose()}} was last called as the forward orientation. The {{VRDisplay}}'s reported roll and pitch do not change when {{resetPose()}} is called as they are relative to gravity. Calling {{resetPose()}} may change the {{sittingToStandingTransform}} matrix of the {{VRStageParameters}}.
+Reset the pose for the {{VRDisplay}}, treating its current position and orientation as the "origin/zero" values. Future values returned from {{getFrameData()}} or {{getPose()}} will describe positions relative to the {{VRDisplay}}'s position when {{resetPose()}} was last called and will treat the display's yaw when {{resetPose()}} was last called as the forward orientation. The {{VRDisplay}}'s reported roll and pitch do not change when {{resetPose()}} is called as they are relative to gravity. Calling {{resetPose()}} may change the {{sittingToStandingTransform}} matrix of the {{VRStageParameters}}.
 
 <dfn method for="VRDisplay">requestAnimationFrame()</dfn>
 Functionally equivalent to <a href="https://www.w3.org/TR/html51/webappapis.html#animation-frames">window.requestAnimationFrame</a> when the {{VRDisplay}} is not presenting. When the {{VRDisplay}} is presenting the callback is called at the native refresh rate of the {{VRDisplay}}.
@@ -211,7 +211,7 @@ Ends presentation to the {{VRDisplay}} and fulfills the returned promise when fu
 Returns an array with the {{VRLayer}} currently being presented. MUST return an empty array if the {{VRDisplay}} is not currently presenting. If the {{VRDisplay}} is presenting MUST return an array containing the {{VRLayer}}s last passed to {{requestPresent()}}.
 
 <dfn method for="VRDisplay">submitFrame()</dfn>
-Captures the current state of the {{VRLayer}} currently being presented and displays it on the {{VRDisplay}}. It is assumed that the frame was rendered using the {{VRPose}} and matrices provided by the last call to {{getCurrentFrameData()}}. If {{getCurrentFrameData()}} was not called prior to calling {{submitFrame()}} the user agent MAY warn the user of potentially malformed visuals or prevent the frame from being shown at all.
+Captures the current state of the {{VRLayer}} currently being presented and displays it on the {{VRDisplay}}. It is assumed that the frame was rendered using the {{VRPose}} and matrices provided by the last call to {{getFrameData()}}. If {{getFrameData()}} was not called prior to calling {{submitFrame()}} the user agent MAY warn the user of potentially malformed visuals or prevent the frame from being shown at all.
 
 
 <div class="example">
@@ -226,7 +226,7 @@ function onVRFrame() {
   vrDisplay.requestAnimationFrame(onVRFrame);
 
   // Poll the VRDisplay for the current frame's matrices and pose
-  vrDisplay.getCurrentFrameData(frameData);
+  vrDisplay.getFrameData(frameData);
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -476,7 +476,7 @@ Monotonically increasing value that allows the author to determine if position
 state data been updated from the hardware. Since values are monotonically
 increasing, they can be compared to determine the ordering of updates, as newer
 values will always be greater than or equal to older values. The timestamp
-starts at 0 the first time {{getCurrentFrameData()}} is invoked for a given
+starts at 0 the first time {{getFrameData()}} is invoked for a given
 {{VRDisplay}}.
 
 <dfn attribute for="VRFrameData">leftProjectionMatrix</dfn>
