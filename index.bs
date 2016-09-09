@@ -719,7 +719,7 @@ Return the {{VRDisplay/displayId}} of the {{VRDisplay}} this {{Gamepad}} is asso
 
 ## submitFrame ## {#submitframe-proc}
 
-The are multiple situations where applications won't invoke {{VRDisplay}}.{{submitFrame()}} at the expected rate (the {{VRDisplay}} native framerate). The User Agent MUST intervene to protect the user from motion sickness or consistently inform her about different situations such as errors or navigation between pages. This is the breakdown of the different scenarios:
+There are multiple situations where applications won't invoke {{VRDisplay}}.{{submitFrame()}} at the expected rate (the {{VRDisplay}} native framerate). The User Agent MUST intervene to protect the user from motion sickness or consistently inform her about different situations such as errors or navigation between pages. This is the breakdown of the different scenarios:
 
 * The application calls {{VRDisplay}}.{{submitFrame()}} at the expected rate, but only a few frames are dropped. The User Agent MUST re-project the last submitted frame.
 
