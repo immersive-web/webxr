@@ -3,7 +3,7 @@
 ## What is WebVR?
 [WebVR](https://w3c.github.io/webvr/) is an API that provides access to input and output capabilities commonly associated with Virtual Reality hardware like [Google’s Daydream](https://vr.google.com/daydream/), the [Oculus Rift](https://www3.oculus.com/rift/), the [Samsung Gear VR](http://www.samsung.com/global/galaxy/gear-vr/), and the [HTC Vive](https://www.htcvive.com/). More simply put, it lets you create Virtual Reality web sites that you can view in a VR headset.
 
-### Ooh, so like Johnny Mnemonic where the Internet is all ’90s CGI?
+### Ooh, so like _Johnny Mnemonic_ where the Internet is all ’90s CGI?
 Nope, not even slightly. And why do you even want that? That’s a terrible UX.
 
 WebVR, at least initially, is aimed at letting you create VR experiences that are embedded in the web that we know and love today. It’s explicitly not about creating a browser that you use completely in VR (although it could work well in an environment like that).
@@ -11,16 +11,16 @@ WebVR, at least initially, is aimed at letting you create VR experiences that ar
 ### Goals
 Enable Virtual Reality applications on the web by allowing pages to do the following:
 
- * Detect available Virtual Reality devices.
- * Query the devices capabilities.
- * Poll the device’s position and orientation.
- * Display imagery on the device at the appropriate frame rate.
+* Detect available Virtual Reality devices.
+* Query the devices capabilities.
+* Poll the device’s position and orientation.
+* Display imagery on the device at the appropriate frame rate.
 
 ### Non-goals
 
- * Define how a Virtual Reality browser would work.
- * Take full advantage of Augmented Reality devices.
- * Build “[The Metaverse](https://en.wikipedia.org/wiki/Metaverse).”
+* Define how a Virtual Reality browser would work.
+* Take full advantage of Augmented Reality devices.
+* Build “[The Metaverse](https://en.wikipedia.org/wiki/Metaverse).”
 
 ## Use cases
 Given the marketing of early VR hardware to gamers, it’s natural to expect that this API will primarily be used for development of games. While that’s certainly something we expect to see given the history of the WebGL API, which is tightly related, we’ll probably see far more “long tail”-style content than large-scale games. Broadly, VR content on the web will likely cover areas that do not cleanly fit into the app-store models being used as the primary distribution methods by all the major VR hardware providers, or where the content itself is not permitted by the store guidelines.
@@ -171,10 +171,11 @@ This overview attempts to touch on all the important parts of using WebVR but, f
 
 ### `DeviceOrientation` Events
 The data provided by a `VRPose` instance is similar to the data provided by `DeviceOrientationEvent`, with some key differences:
- * It’s an explicit polling interface, which ensures that new input is available for each frame. The event-driven `DeviceOrientation` data may skip a frame, or may deliver two updates in a single frame, which can lead to disruptive, jittery motion in a VR application.
- * `DeviceOrientation` events do not provide positional data, which is a key feature of high-end VR hardware.
- * More can be assumed about the intended use case of `VRDisplay` data, so optimizations such as motion prediction can be applied.
- * `DeviceOrientation` events are typically not available on desktops.
+
+* It’s an explicit polling interface, which ensures that new input is available for each frame. The event-driven `DeviceOrientation` data may skip a frame, or may deliver two updates in a single frame, which can lead to disruptive, jittery motion in a VR application.
+* `DeviceOrientation` events do not provide positional data, which is a key feature of high-end VR hardware.
+* More can be assumed about the intended use case of `VRDisplay` data, so optimizations such as motion prediction can be applied.
+* `DeviceOrientation` events are typically not available on desktops.
 
 That being said, however, for some simple VR devices (e.g., Cardboard) `DeviceOriention` events provide enough data to create a basic [polyfill](https://en.wikipedia.org/wiki/Polyfill) of the WebVR API, as demonstrated by [Boris Smus](https://twitter.com/borismus)’ wonderful [`webvr-polyfill` project](https://github.com/borismus/webvr-polyfill). This provides an approximation of a native implementation, allowing developers to experiment with the API even when unsupported by the user’s browser. While useful for testing and compatibility, such pure-JavaScript implementations miss out on the ability to take advantage of VR-specific optimizations available on some mobile devices (e.g., Google Daydream-ready phones or Samsung Gear VR’s compatible device lineup). A native implementation on mobile can provide a much better experience with lower latency, less jitter, and higher graphics performance than can a `DeviceOriention`-based one.
 
