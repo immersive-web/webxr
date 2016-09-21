@@ -265,8 +265,8 @@ typedef (HTMLCanvasElement or
 dictionary VRLayer {
   VRSource? source = null;
 
-  sequence&lt;float&gt;? leftBounds = [ ];
-  sequence&lt;float&gt;? rightBounds = [ ];
+  sequence&lt;float&gt; leftBounds = [ ];
+  sequence&lt;float&gt; rightBounds = [ ];
 };
 </pre>
 
