@@ -604,6 +604,7 @@ navigator.getVRDisplays().then(function (displays) {
 enum VRDisplayEventReason {
   "navigation",
   "mounted",
+  "requested"
   "unmounted",
 };
 </pre>
@@ -615,6 +616,9 @@ The page has been navigated to from a context that allows this page to begin pre
 
 <dfn enum-value for="VRDisplayEventReason">mounted</dfn>
 The {{VRDisplay}} has detected that the user has put it on.
+
+<dfn enum-value for="VRDisplayEventReason">requested</dfn>
+The user agent MAY request start VR presentation mode. This allows user agents to include a consistent UI to enter VR across diferent sites.
 
 <dfn enum-value for="VRDisplayEventReason">unmounted</dfn>
 The {{VRDisplay}} has detected that the user has taken it off.
