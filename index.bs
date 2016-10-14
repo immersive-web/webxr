@@ -169,6 +169,12 @@ interface VRDisplay : EventTarget {
    * created without preserveDrawingBuffer set to true will be cleared.
    */
   void submitFrame();
+
+  attribute EventHandler onactivate;
+  attribute EventHandler ondeactivate;
+  attribute EventHandler onblur;
+  attribute EventHandler onfocus;
+  attribute EventHandler onpresentchange;
 };
 </pre>
 
@@ -215,6 +221,24 @@ Returns an array with the {{VRLayer}} currently being presented. MUST return an 
 <dfn method for="VRDisplay">submitFrame()</dfn>
 Captures the current state of the {{VRLayer}} currently being presented and displays it on the {{VRDisplay}}. It is assumed that the frame was rendered using the {{VRPose}} and matrices provided by the last call to {{getFrameData()}}. If {{getFrameData()}} was not called prior to calling {{submitFrame()}} the user agent MAY warn the user of potentially malformed visuals or prevent the frame from being shown at all.
 
+### Events ### {#vrdisplay-events}
+
+The UA MUST provide the following new events. The corresponding events must be of type {{VRDisplayEvent}} and must fire on a {{VRDisplay}} object. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
+
+<dfn event for="VRDisplay" id="vrdisplay-onactivate-event">onactivate</dfn>
+A user agent MAY dispatch this event type to indicate that something has occured which suggests the {{VRDisplay}} should be presented to. For example, if the {{VRDisplay}} is capable of detecting when the user has put it on, this event SHOULD fire when they do so with the reason "mounted".
+
+<dfn event for="VRDisplay" id="vrdisplay-ondeactivate-event">ondeactivate</dfn>
+A user agent MAY dispatch this event type to indicate that something has occured which suggests the {{VRDisplay}} should exit presentation. For example, if the {{VRDisplay}} is capable of detecting when the user has taken it off, this event SHOULD fire when they do so with the reason "unmounted".
+
+<dfn event for="VRDisplay" id="vrdisplay-onblur-event">onblur</dfn>
+A user agent MAY dispatch this event type to indicate that presentation to the {{VRDisplay}} by the page is paused by the user agent, OS, or VR hardware. While a {{VRDisplay}} is blurred it does not lose it's presenting status ({{isPresenting}} continues to report true) but {{getFrameData()}} returns false without updating the provided {{VRFrameData}} and {{getPose()}} returns null. This is to prevent tracking while the user interacts with potentially sensitive UI. For example: A user agent SHOULD blur the presenting application when the user is typing a URL into the browser with a virtual keyboard, otherwise the presenting page may be able to guess the URL the user is entering by tracking their head motions.
+
+<dfn event for="VRDisplay" id="vrdisplay-onfocus-event">onfocus</dfn>
+A user agent MAY dispatch this event type to indicate that presentation to the {{VRDisplay}} by the page has resumed after being blurred.
+
+<dfn event for="VRDisplay" id="vrdisplay-onpresentchange-event">onpresentchange</dfn>
+A user agent MUST dispatch this event type to indicate that the {{VRDisplay}} has begun or ended VR presentation. This event should not fire on subsequent calls to {{requestPresent()}} after the {{VRDisplay}} has already begun VR presentation.
 
 <div class="example">
 The following code demonstrates presenting a simple rendering loop to a {{VRDisplay}}.
@@ -559,23 +583,48 @@ Width of the play-area bounds in meters. The bounds are defined as an axis-align
 <dfn attribute for="VRStageParameters">sizeZ</dfn>
 Depth of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.
 
+## VR Interface ## {#interface-vr}
+
+<pre class="idl">
+interface VR : EventTarget {
+  Promise&lt;sequence&lt;VRDisplay&gt;&gt; getDisplays();
+  readonly attribute FrozenArray&lt;VRDisplay&gt; activeDisplays;
+
+  attribute EventHandler ondisplayconnect;
+  attribute EventHandler ondisplaydisconnect;
+  attribute EventHandler onnavigate;
+};
+</pre>
+
+### Attributes ### {#vr-attributes}
+
+<dfn method for="VR" id="vr-getdisplays-attribute">getDisplays()</dfn>
+Return a Promise which resolves to a list of available {{VRDisplay}}s.
+
+<dfn attribute for="VR" id="vr-activedisplays-attribute">activeDisplays</dfn>
+{{activeDisplays}} includes every {{VRDisplay}} that is currently presenting.
+
+### Events ### {#vr-events}
+
+The UA MUST provide the following new events. The corresponding events must be of type {{VRDisplayEvent}} and must fire on the {{VR}} object. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
+
+<dfn event for="VR" id="vr-ondisplayconnect-event">ondisplayconnect</dfn>
+A user agent MAY dispatch this event type to indicate that a {{VRDisplay}} has been connected.
+
+<dfn event for="VR" id="vr-ondisplaydisconnect-event">ondisplaydisconnect</dfn>
+A user agent MAY dispatch this event type to indicate that a {{VRDisplay}} has been disconnected.
+
+<dfn event for="VR" id="vr-ondisplaynavigate-event">onnavigate</dfn>
+A user agent MAY dispatch this event type to indicate that the current page has been navigated to from a page that was actively presenting VR content. The current page can call {{requestPresent()}} in response to this event in order to stay in VR presentation mode.
+
 
 ## Navigator Interface extension ## {#interface-navigator}
 
 <pre class="idl">
 partial interface Navigator {
-  Promise&lt;sequence&lt;VRDisplay&gt;&gt; getVRDisplays();
-  readonly attribute FrozenArray&lt;VRDisplay&gt; activeVRDisplays;
+  readonly attribute VR vr;
 };
 </pre>
-
-### Attributes ### {#navigator-attributes}
-
-<dfn method for="Navigator" id="navigator-getvrdisplays-attribute">getVRDisplays()</dfn>
-Return a Promise which resolves to a list of available {{VRDisplay}}s.
-
-<dfn attribute for="Navigator" id="navigator-activevrdisplays-attribute">activeVRDisplays</dfn>
-{{activeVRDisplays}} includes every {{VRDisplay}} that is currently presenting.
 
 <div class="example">
 The following code finds the first available {{VRDisplay}}.
@@ -583,7 +632,7 @@ The following code finds the first available {{VRDisplay}}.
 <pre class="lang-js">
 var vrDisplay;
 
-navigator.getVRDisplays().then(function (displays) {
+navigator.vr.getDisplays().then(function (displays) {
   // Use the first display in the array if one is available. If multiple
   // displays are present, you may want to present the user with a way to
   // select which display to use.
@@ -641,44 +690,6 @@ The {{VRDisplay}} associated with this event.
 
 <dfn attribute for="VRDisplayEvent">reason</dfn>
 {{VRDisplayEventReason}} describing why this event has has been fired.
-
-
-## Window Interface extension ## {#interface-window}
-
-<pre class="idl">
-partial interface Window {
-  attribute EventHandler onvrdisplayconnect;
-  attribute EventHandler onvrdisplaydisconnect;
-  attribute EventHandler onvrdisplayactivate;
-  attribute EventHandler onvrdisplaydeactivate;
-  attribute EventHandler onvrdisplayblur;
-  attribute EventHandler onvrdisplayfocus;
-  attribute EventHandler onvrdisplaypresentchange;
-};
-</pre>
-
-User agents implementing this specification MUST provide the following new DOM events. The corresponding events must be of type {{VRDisplayEvent}} and must fire on the window object. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
-
-<dfn event for="Window" id="window-vrdisplayconnect-event">onvrdisplayconnect</dfn>
-A user agent MAY dispatch this event type to indicate that a {{VRDisplay}} has been connected.
-
-<dfn event for="Window" id="window-vrdisplaydisconnect-event">onvrdisplaydisconnect</dfn>
-A user agent MAY dispatch this event type to indicate that a {{VRDisplay}} has been disconnected.
-
-<dfn event for="Window" id="window-vrdisplayactivate-event">onvrdisplayactivate</dfn>
-A user agent MAY dispatch this event type to indicate that something has occured which suggests the {{VRDisplay}} should be presented to. For example, if the {{VRDisplay}} is capable of detecting when the user has put it on, this event SHOULD fire when they do so with the reason "mounted".
-
-<dfn event for="Window" id="window-vrdisplaydeactivate-event">onvrdisplaydeactivate</dfn>
-A user agent MAY dispatch this event type to indicate that something has occured which suggests the {{VRDisplay}} should exit presentation. For example, if the {{VRDisplay}} is capable of detecting when the user has taken it off, this event SHOULD fire when they do so with the reason "unmounted".
-
-<dfn event for="Window" id="window-onvrdisplayblur-event">onvrdisplayblur</dfn>
-A user agent MAY dispatch this event type to indicate that presentation to the display by the page is paused by the user agent, OS, or VR hardware. While a {{VRDisplay}} is blurred it does not lose it's presenting status ({{isPresenting}} continues to report true) but {{getFrameData()}} returns false without updating the provided {{VRFrameData}} and {{getPose()}} returns null. This is to prevent tracking while the user interacts with potentially sensitive UI. For example: A user agent SHOULD blur the presenting application when the user is typing a URL into the browser with a virtual keyboard, otherwise the presenting page may be able to guess the URL the user is entering by tracking their head motions.
-
-<dfn event for="Window" id="window-onvrdisplayfocus-event">onvrdisplayfocus</dfn>
-A user agent MAY dispatch this event type to indicate that presentation to the display by the page has resumed after being blurred.
-
-<dfn event for="Window" id="window-vrdisplaypresentchange-event">onvrdisplaypresentchange</dfn>
-A user agent MUST dispatch this event type to indicate that a {{VRDisplay}} has begun or ended VR presentation. This event should not fire on subsequent calls to {{requestPresent()}} after the {{VRDisplay}} has already begun VR presentation.
 
 ## Gamepad Interface extension ## {#interface-gamepad}
 
