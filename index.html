@@ -1421,7 +1421,7 @@ pre.idl.highlight { color: #708090; }
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebVR</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-10-20">20 October 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-11-03">3 November 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1435,6 +1435,8 @@ pre.idl.highlight { color: #708090; }
      <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:cvan@mozilla.com">Chris Van Wiemeersch</a> (<a class="p-org org" href="https://mozilla.org/">Mozilla</a>)
      <dt>Participate:
      <dd><span><a href="https://github.com/w3c/webvr/issues/new">File an issue</a> (<a href="https://github.com/w3c/webvr/issues">open issues</a>)</span>
+     <dd><span><a href="https://lists.w3.org/Archives/Public/public-webvr/">Mailing list archive</a></span>
+     <dd><span><a href="irc://irc.w3.org:6665/">W3C’s #webvr IRC</a></span>
      <dd><span></span>
     </dl>
    </div>
@@ -1652,7 +1654,7 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
    * If the number of values in the leftBounds/rightBounds arrays is not 0 or 4 for any of the passed layers the promise is rejected
    * If the source of any of the layers is not present (null), the promise is rejected.
    */
-  <span class="kt">Promise</span>&lt;<span class="kt">void</span>> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-1">requestPresent</a>(<span class="kt">sequence</span>&lt;<a class="n" data-link-type="idl-name" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-1">VRLayer</a>> <dfn class="nv idl-code" data-dfn-for="VRDisplay/requestPresent(layers)" data-dfn-type="argument" data-export="" id="dom-vrdisplay-requestpresent-layers-layers">layers<a class="self-link" href="#dom-vrdisplay-requestpresent-layers-layers"></a></dfn>);
+  <span class="kt">Promise</span>&lt;<span class="kt">void</span>> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-1">requestPresent</a>(<span class="kt">sequence</span>&lt;<a class="n" data-link-type="idl-name" href="#dictdef-vrlayerinit" id="ref-for-dictdef-vrlayerinit-1">VRLayerInit</a>> <dfn class="nv idl-code" data-dfn-for="VRDisplay/requestPresent(layers)" data-dfn-type="argument" data-export="" id="dom-vrdisplay-requestpresent-layers-layers">layers<a class="self-link" href="#dom-vrdisplay-requestpresent-layers-layers"></a></dfn>);
 
   /**
    * Stops presenting to the VRDisplay.
@@ -1662,7 +1664,7 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
   /**
    * Get the layers currently being presented.
    */
-  <span class="kt">sequence</span>&lt;<a class="n" data-link-type="idl-name" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-2">VRLayer</a>> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-getlayers" id="ref-for-dom-vrdisplay-getlayers-1">getLayers</a>();
+  <span class="kt">sequence</span>&lt;<a class="n" data-link-type="idl-name" href="#vrlayer" id="ref-for-vrlayer-1">VRLayer</a>> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-getlayers" id="ref-for-dom-vrdisplay-getlayers-1">getLayers</a>();
 
   /**
    * The VRLayer provided to the VRDisplay will be captured and presented
@@ -1684,10 +1686,10 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" id="dom-vrdisplay-resetpose">resetPose()</dfn> Reset the pose for the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-8">VRDisplay</a></code>, treating its current position and orientation as the "origin/zero" values. Future values returned from <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getframedata" id="ref-for-dom-vrdisplay-getframedata-4">getFrameData()</a></code> or <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getpose" id="ref-for-dom-vrdisplay-getpose-3">getPose()</a></code> will describe positions relative to the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-9">VRDisplay</a></code>'s position when <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-resetpose" id="ref-for-dom-vrdisplay-resetpose-2">resetPose()</a></code> was last called and will treat the display’s yaw when <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-resetpose" id="ref-for-dom-vrdisplay-resetpose-3">resetPose()</a></code> was last called as the forward orientation. The <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-10">VRDisplay</a></code>'s reported roll and pitch do not change when <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-resetpose" id="ref-for-dom-vrdisplay-resetpose-4">resetPose()</a></code> is called as they are relative to gravity. Calling <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-resetpose" id="ref-for-dom-vrdisplay-resetpose-5">resetPose()</a></code> may change the <code class="idl"><a data-link-type="idl" href="#dom-vrstageparameters-sittingtostandingtransform" id="ref-for-dom-vrstageparameters-sittingtostandingtransform-1">sittingToStandingTransform</a></code> matrix of the <code class="idl"><a data-link-type="idl" href="#vrstageparameters" id="ref-for-vrstageparameters-2">VRStageParameters</a></code>.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" data-lt="requestAnimationFrame(callback)" id="dom-vrdisplay-requestanimationframe">requestAnimationFrame()</dfn> Functionally equivalent to <a href="https://www.w3.org/TR/html51/webappapis.html#animation-frames">window.requestAnimationFrame</a> when the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-11">VRDisplay</a></code> is not presenting. When the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-12">VRDisplay</a></code> is presenting the callback is called at the native refresh rate of the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-13">VRDisplay</a></code>.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" data-lt="cancelAnimationFrame(handle)" id="dom-vrdisplay-cancelanimationframe">cancelAnimationFrame()</dfn> Passing the value returned by <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestanimationframe" id="ref-for-dom-vrdisplay-requestanimationframe-2">requestAnimationFrame()</a></code> to will unregister the callback.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" data-lt="requestPresent(layers)" id="dom-vrdisplay-requestpresent">requestPresent()</dfn> Begins presenting the contents of the specified <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-3">VRLayer</a></code> array on the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-14">VRDisplay</a></code> and fulfills the returned promise when presentation has begun. If <code class="idl"><a data-link-type="idl" href="#dom-vrdisplaycapabilities-canpresent" id="ref-for-dom-vrdisplaycapabilities-canpresent-1">canPresent</a></code> is false the promise MUST be rejected. If the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-4">VRLayer</a></code> array contains more than <code class="idl"><a data-link-type="idl" href="#dom-vrdisplaycapabilities-maxlayers" id="ref-for-dom-vrdisplaycapabilities-maxlayers-1">maxLayers</a></code> elements the promise MUST be rejected. If <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-2">requestPresent()</a></code> is called outside of a user gesture the promise MUST be rejected. The user agent MAY reject the promise for any other reason. If the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-15">VRDisplay</a></code> is already presenting when <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-3">requestPresent()</a></code> is called the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-16">VRDisplay</a></code> SHOULD update the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-5">VRLayer</a></code> list being presented. If a call to <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-4">requestPresent()</a></code> is rejected while the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-17">VRDisplay</a></code> is already presenting the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-18">VRDisplay</a></code> MUST end presentation.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" data-lt="requestPresent(layers)" id="dom-vrdisplay-requestpresent">requestPresent()</dfn> Begins presenting the contents of the specified <code class="idl"><a data-link-type="idl" href="#vrlayer" id="ref-for-vrlayer-2">VRLayer</a></code>s, described by <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayerinit" id="ref-for-dictdef-vrlayerinit-2">VRLayerInit</a></code> dictionaries, on the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-14">VRDisplay</a></code> and fulfills the returned promise when presentation has begun. If <code class="idl"><a data-link-type="idl" href="#dom-vrdisplaycapabilities-canpresent" id="ref-for-dom-vrdisplaycapabilities-canpresent-1">canPresent</a></code> is false the promise MUST be rejected. If the array contains more than <code class="idl"><a data-link-type="idl" href="#dom-vrdisplaycapabilities-maxlayers" id="ref-for-dom-vrdisplaycapabilities-maxlayers-1">maxLayers</a></code> elements the promise MUST be rejected. If <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-2">requestPresent()</a></code> is called outside of a user gesture the promise MUST be rejected. The user agent MAY reject the promise for any other reason. If the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-15">VRDisplay</a></code> is already presenting when <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-3">requestPresent()</a></code> is called the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-16">VRDisplay</a></code> SHOULD update the <code class="idl"><a data-link-type="idl" href="#vrlayer" id="ref-for-vrlayer-3">VRLayer</a></code> list being presented. If a call to <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-4">requestPresent()</a></code> is rejected while the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-17">VRDisplay</a></code> is already presenting the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-18">VRDisplay</a></code> MUST end presentation.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" id="dom-vrdisplay-exitpresent">exitPresent()</dfn> Ends presentation to the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-19">VRDisplay</a></code> and fulfills the returned promise when fully exited. If the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-20">VRDisplay</a></code> is not presenting the promise MUST be rejected.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" id="dom-vrdisplay-getlayers">getLayers()</dfn> Returns an array with the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-6">VRLayer</a></code> currently being presented. MUST return an empty array if the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-21">VRDisplay</a></code> is not currently presenting. If the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-22">VRDisplay</a></code> is presenting MUST return an array containing the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-7">VRLayer</a></code>s last passed to <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-5">requestPresent()</a></code>.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" id="dom-vrdisplay-submitframe">submitFrame()</dfn> Captures the current state of the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-8">VRLayer</a></code> currently being presented and displays it on the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-23">VRDisplay</a></code>. It is assumed that the frame was rendered using the <code class="idl"><a data-link-type="idl" href="#vrpose" id="ref-for-vrpose-6">VRPose</a></code> and matrices provided by the last call to <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getframedata" id="ref-for-dom-vrdisplay-getframedata-5">getFrameData()</a></code>. If <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getframedata" id="ref-for-dom-vrdisplay-getframedata-6">getFrameData()</a></code> was not called prior to calling <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-4">submitFrame()</a></code> the user agent MAY warn the user of potentially malformed visuals or prevent the frame from being shown at all.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" id="dom-vrdisplay-getlayers">getLayers()</dfn> Returns an array with the <code class="idl"><a data-link-type="idl" href="#vrlayer" id="ref-for-vrlayer-4">VRLayer</a></code> currently being presented. MUST return an empty array if the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-21">VRDisplay</a></code> is not currently presenting. If the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-22">VRDisplay</a></code> is presenting MUST return an array containing the <code class="idl"><a data-link-type="idl" href="#vrlayer" id="ref-for-vrlayer-5">VRLayer</a></code>s last passed to <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-5">requestPresent()</a></code>.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" id="dom-vrdisplay-submitframe">submitFrame()</dfn> Captures the current state of the <code class="idl"><a data-link-type="idl" href="#vrlayer" id="ref-for-vrlayer-6">VRLayer</a></code> currently being presented and displays it on the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-23">VRDisplay</a></code>. It is assumed that the frame was rendered using the <code class="idl"><a data-link-type="idl" href="#vrpose" id="ref-for-vrpose-6">VRPose</a></code> and matrices provided by the last call to <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getframedata" id="ref-for-dom-vrdisplay-getframedata-5">getFrameData()</a></code>. If <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getframedata" id="ref-for-dom-vrdisplay-getframedata-6">getFrameData()</a></code> was not called prior to calling <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-4">submitFrame()</a></code> the user agent MAY warn the user of potentially malformed visuals or prevent the frame from being shown at all.</p>
    <div class="example" id="example-471f1826">
     <a class="self-link" href="#example-471f1826"></a> The following code demonstrates presenting a simple rendering loop to a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-24">VRDisplay</a></code>. 
 <pre class="lang-js highlight"><span class="kd">var</span> frameData <span class="o">=</span> <span class="k">new</span> VRFrameData<span class="p">(</span><span class="p">)</span><span class="p">;</span>
@@ -1725,21 +1727,29 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
 </pre>
    </div>
    <h3 class="heading settled" data-level="2.2" id="interface-vrlayer"><span class="secno">2.2. </span><span class="content">VRLayer</span><a class="self-link" href="#interface-vrlayer"></a></h3>
-   <p>The <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-9">VRLayer</a></code> interface is provided to a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-25">VRDisplay</a></code> and presented in the HMD.</p>
+   <p>The <code class="idl"><a data-link-type="idl" href="#vrlayer" id="ref-for-vrlayer-7">VRLayer</a></code> interface is provided to a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-25">VRDisplay</a></code> and presented in the HMD.</p>
 <pre class="idl highlight def" id="vrlayer-dictionary"><span class="kt">typedef</span> (<a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/scripting.html#htmlcanvaselement">HTMLCanvasElement</a> <span class="kt">or</span>
          <a class="n" data-link-type="idl-name" href="https://wiki.whatwg.org/wiki/OffscreenCanvas#offscreencanvas">OffscreenCanvas</a>) <dfn class="nv dfn-paneled idl-code" data-dfn-type="typedef" data-export="" id="typedefdef-vrsource">VRSource</dfn>;
 
-<span class="kt">dictionary</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-vrlayer">VRLayer</dfn> {
-  <a class="n" data-link-type="idl-name" href="#typedefdef-vrsource" id="ref-for-typedefdef-vrsource-1">VRSource</a>? <a class="nv idl-code" data-default="null" data-link-type="dict-member" data-type="VRSource? " href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-1">source</a> = <span class="kt">null</span>;
+[<dfn class="nv idl-code" data-dfn-for="VRLayer" data-dfn-type="constructor" data-export="" data-lt="VRLayer(layer)|VRLayer()" id="dom-vrlayer-vrlayer">Constructor<a class="self-link" href="#dom-vrlayer-vrlayer"></a></dfn>(<span class="kt">optional</span> <a class="n" data-link-type="idl-name" href="#dictdef-vrlayerinit" id="ref-for-dictdef-vrlayerinit-3">VRLayerInit</a> <dfn class="nv idl-code" data-dfn-for="VRLayer/VRLayer(layer)" data-dfn-type="argument" data-export="" id="dom-vrlayer-vrlayer-layer-layer">layer<a class="self-link" href="#dom-vrlayer-vrlayer-layer-layer"></a></dfn>)]
+<span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrlayer">VRLayer</dfn> {
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#typedefdef-vrsource" id="ref-for-typedefdef-vrsource-1">VRSource</a>? <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRSource?" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-1">source</a>;
 
-  <span class="kt">sequence</span>&lt;<span class="kt">float</span>> <a class="nv idl-code" data-default="None" data-link-type="dict-member" data-type="sequence<float> " href="#dom-vrlayer-leftbounds" id="ref-for-dom-vrlayer-leftbounds-1">leftBounds</a> = [ ];
-  <span class="kt">sequence</span>&lt;<span class="kt">float</span>> <a class="nv idl-code" data-default="None" data-link-type="dict-member" data-type="sequence<float> " href="#dom-vrlayer-rightbounds" id="ref-for-dom-vrlayer-rightbounds-1">rightBounds</a> = [ ];
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">sequence</span>&lt;<span class="kt">float</span>> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="sequence<float>" href="#dom-vrlayer-leftbounds" id="ref-for-dom-vrlayer-leftbounds-1">leftBounds</a>;
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">sequence</span>&lt;<span class="kt">float</span>> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="sequence<float>" href="#dom-vrlayer-rightbounds" id="ref-for-dom-vrlayer-rightbounds-1">rightBounds</a>;
+};
+
+<span class="kt">dictionary</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-vrlayerinit">VRLayerInit</dfn> {
+  <a class="n" data-link-type="idl-name" href="#typedefdef-vrsource" id="ref-for-typedefdef-vrsource-2">VRSource</a>? <dfn class="nv idl-code" data-default="null" data-dfn-for="VRLayerInit" data-dfn-type="dict-member" data-export="" data-type="VRSource? " id="dom-vrlayerinit-source">source<a class="self-link" href="#dom-vrlayerinit-source"></a></dfn> = <span class="kt">null</span>;
+
+  <span class="kt">sequence</span>&lt;<span class="kt">float</span>> <dfn class="nv idl-code" data-default="None" data-dfn-for="VRLayerInit" data-dfn-type="dict-member" data-export="" data-type="sequence<float> " id="dom-vrlayerinit-leftbounds">leftBounds<a class="self-link" href="#dom-vrlayerinit-leftbounds"></a></dfn> = [ ];
+  <span class="kt">sequence</span>&lt;<span class="kt">float</span>> <dfn class="nv idl-code" data-default="None" data-dfn-for="VRLayerInit" data-dfn-type="dict-member" data-export="" data-type="sequence<float> " id="dom-vrlayerinit-rightbounds">rightBounds<a class="self-link" href="#dom-vrlayerinit-rightbounds"></a></dfn> = [ ];
 };
 </pre>
    <h4 class="heading settled" data-level="2.2.1" id="vrlayer-attributes"><span class="secno">2.2.1. </span><span class="content">Attributes</span><a class="self-link" href="#vrlayer-attributes"></a></h4>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRLayer" data-dfn-type="dict-member" data-export="" id="dom-vrlayer-source">source</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-2">source</a></code> attribute defines the canvas whose contents will be presented by the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-26">VRDisplay</a></code> when <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-27">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-5">submitFrame()</a></code> is called.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRLayer" data-dfn-type="dict-member" data-export="" id="dom-vrlayer-leftbounds">leftBounds</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-leftbounds" id="ref-for-dom-vrlayer-leftbounds-2">leftBounds</a></code> attribute contains four values defining the texture bounds within the <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-3">source</a></code> canvas to present to the eye in UV space: <code>[0]</code> left offset of the bounds (0.0 - 1.0); <code>[1]</code> top offset of the bounds (0.0 - 1.0); <code>[2]</code> width of the bounds (0.0 - 1.0); <code>[3]</code> height of the bounds (0.0 - 1.0). The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-leftbounds" id="ref-for-dom-vrlayer-leftbounds-3">leftBounds</a></code> MUST default to <code>[0.0, 0.0, 0.5, 1.0]</code>.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRLayer" data-dfn-type="dict-member" data-export="" id="dom-vrlayer-rightbounds">rightBounds</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-rightbounds" id="ref-for-dom-vrlayer-rightbounds-2">rightBounds</a></code> attribute contains four values defining the texture bounds rectangle within the <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-4">source</a></code> canvas to present to the eye in UV space: <code>[0]</code> left offset of the bounds (0.0 - 1.0); <code>[1]</code> top offset of the bounds (0.0 - 1.0); <code>[2]</code> width of the bounds (0.0 - 1.0); <code>[3]</code> height of the bounds (0.0 - 1.0). The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-rightbounds" id="ref-for-dom-vrlayer-rightbounds-3">rightBounds</a></code> MUST default to <code>[0.5, 0.0, 0.5, 1.0]</code>.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRLayer" data-dfn-type="attribute" data-export="" id="dom-vrlayer-source">source</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-2">source</a></code> attribute defines the canvas whose contents will be presented by the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-26">VRDisplay</a></code> when <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-27">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-5">submitFrame()</a></code> is called.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRLayer" data-dfn-type="attribute" data-export="" id="dom-vrlayer-leftbounds">leftBounds</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-leftbounds" id="ref-for-dom-vrlayer-leftbounds-2">leftBounds</a></code> attribute contains four values defining the texture bounds within the <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-3">source</a></code> canvas to present to the eye in UV space: <code>[0]</code> left offset of the bounds (0.0 - 1.0); <code>[1]</code> top offset of the bounds (0.0 - 1.0); <code>[2]</code> width of the bounds (0.0 - 1.0); <code>[3]</code> height of the bounds (0.0 - 1.0). The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-leftbounds" id="ref-for-dom-vrlayer-leftbounds-3">leftBounds</a></code> MUST default to <code>[0.0, 0.0, 0.5, 1.0]</code>.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRLayer" data-dfn-type="attribute" data-export="" id="dom-vrlayer-rightbounds">rightBounds</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-rightbounds" id="ref-for-dom-vrlayer-rightbounds-2">rightBounds</a></code> attribute contains four values defining the texture bounds rectangle within the <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-4">source</a></code> canvas to present to the eye in UV space: <code>[0]</code> left offset of the bounds (0.0 - 1.0); <code>[1]</code> top offset of the bounds (0.0 - 1.0); <code>[2]</code> width of the bounds (0.0 - 1.0); <code>[3]</code> height of the bounds (0.0 - 1.0). The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-rightbounds" id="ref-for-dom-vrlayer-rightbounds-3">rightBounds</a></code> MUST default to <code>[0.5, 0.0, 0.5, 1.0]</code>.</p>
    <h3 class="heading settled" data-level="2.3" id="interface-vrdisplaycapabilities"><span class="secno">2.3. </span><span class="content">VRDisplayCapabilities</span><a class="self-link" href="#interface-vrdisplaycapabilities"></a></h3>
    <p>The <code class="idl"><a data-link-type="idl" href="#vrdisplaycapabilities" id="ref-for-vrdisplaycapabilities-3">VRDisplayCapabilities</a></code> interface describes the capabilities of a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-28">VRDisplay</a></code>. These are expected to be static per-device/per-user.</p>
 <pre class="idl highlight def"><span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrdisplaycapabilities">VRDisplayCapabilities</dfn> {
@@ -1903,7 +1913,7 @@ starts at 0 the first time <code class="idl"><a data-link-type="idl" href="#dom-
 };
 </pre>
    <h4 class="heading settled" data-level="2.8.1" id="vreyeparameters-attributes"><span class="secno">2.8.1. </span><span class="content">Attributes</span><a class="self-link" href="#vreyeparameters-attributes"></a></h4>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VREyeParameters" data-dfn-type="attribute" data-export="" id="dom-vreyeparameters-offset">offset</dfn> Offset from the center point between the users eyes to the center of the eye in meters. This value SHOULD represent half of the user’s interpupillary distance (IPD), but MAY also represent the distance from the center point of the headset to the center point of the lens for the given eye. Values for the left eye MUST be negative; values for the right eye MUST be positive. This information should not be used to construct a view matrix, prefer using the view matricies provided in <code class="idl"><a data-link-type="idl" href="#vrframedata" id="ref-for-vrframedata-4">VRFrameData</a></code> instead.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VREyeParameters" data-dfn-type="attribute" data-export="" id="dom-vreyeparameters-offset">offset</dfn> A three component vector describing the offset from the center point between the users eyes to the center of the eye in meters. The x component of this vector SHOULD represent half of the user’s interpupillary distance (IPD), but MAY also represent the vector from the center point of the headset to the center point of the lens for the given eye. Values in the x component for left eye MUST be negative; values in the x component for right eye MUST be positive. This information should not be used to construct a view matrix, prefer using the view matricies provided in <code class="idl"><a data-link-type="idl" href="#vrframedata" id="ref-for-vrframedata-4">VRFrameData</a></code> instead.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VREyeParameters" data-dfn-type="attribute" data-export="" id="dom-vreyeparameters-fieldofview">fieldOfView</dfn> <i>(Deprecated)</i> The current field of view for the eye. SHOULD conservatively cover the entire viewable frustum of the eye. The application should not use these values to construct a projection matrix, as it may not take into account all aspects of the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-39">VRDisplay</a></code> optics. Prefer using the projection matrices provided in <code class="idl"><a data-link-type="idl" href="#vrframedata" id="ref-for-vrframedata-5">VRFrameData</a></code> instead.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VREyeParameters" data-dfn-type="attribute" data-export="" id="dom-vreyeparameters-renderwidth">renderWidth</dfn> Describes the recommended render target width of each eye viewport, in pixels. If multiple eyes are rendered in a single render target, then the render target should be made large enough to fit both viewports. The <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-renderwidth" id="ref-for-dom-vreyeparameters-renderwidth-2">renderWidth</a></code> for the left eye and right eye MUST NOT overlap, and the <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-renderwidth" id="ref-for-dom-vreyeparameters-renderwidth-3">renderWidth</a></code> for the right eye MUST be to the right of the <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-renderwidth" id="ref-for-dom-vreyeparameters-renderwidth-4">renderWidth</a></code> for the left eye.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VREyeParameters" data-dfn-type="attribute" data-export="" id="dom-vreyeparameters-renderheight">renderHeight</dfn> Describes the recommended render target height of each eye viewport, in pixels. If multiple eyes are rendered in a single render target, then the render target should be made large enough to fit both viewports. The <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-renderwidth" id="ref-for-dom-vreyeparameters-renderwidth-5">renderWidth</a></code> for the left eye and right eye MUST NOT overlap, and the <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-renderwidth" id="ref-for-dom-vreyeparameters-renderwidth-6">renderWidth</a></code> for the right eye MUST be to the right of the <code class="idl"><a data-link-type="idl" href="#dom-vreyeparameters-renderwidth" id="ref-for-dom-vreyeparameters-renderwidth-7">renderWidth</a></code> for the left eye.</p>
@@ -1937,7 +1947,7 @@ canvas<span class="p">.</span>height <span class="o">=</span> Math<span class="p
 };
 </pre>
    <h4 class="heading settled" data-level="2.10.1" id="navigator-attributes"><span class="secno">2.10.1. </span><span class="content">Attributes</span><a class="self-link" href="#navigator-attributes"></a></h4>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="Navigator" data-dfn-type="method" data-export="" id="navigator-getvrdisplays-attribute">getVRDisplays()</dfn> Return a Promise which resolves to a list of available <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-42">VRDisplay</a></code>s. The Promise MUST be rejected if the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/infrastructure.html#dom-document">Document</a></code> object is inside an iframe that does not have the <code class="idl"><a data-link-type="idl" href="#dom-htmliframeelement-allowvr" id="ref-for-dom-htmliframeelement-allowvr-1">allowvr</a></code> attribute set.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="Navigator" data-dfn-type="method" data-export="" id="navigator-getvrdisplays-attribute">getVRDisplays()</dfn> Return a Promise which resolves to a list of available <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-42">VRDisplay</a></code>s. The Promise MUST be rejected if the <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/html5/#document">Document</a></code> object is inside an iframe that does not have the <code class="idl"><a data-link-type="idl" href="#dom-htmliframeelement-allowvr" id="ref-for-dom-htmliframeelement-allowvr-1">allowvr</a></code> attribute set.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="Navigator" data-dfn-type="attribute" data-export="" id="navigator-activevrdisplays-attribute">activeVRDisplays</dfn> <code class="idl"><a data-link-type="idl" href="#navigator-activevrdisplays-attribute" id="ref-for-navigator-activevrdisplays-attribute-2">activeVRDisplays</a></code> includes every <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-43">VRDisplay</a></code> that is currently presenting.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="Navigator" data-dfn-type="attribute" data-export="" id="navigator-vrenabled-attribute">vrEnabled</dfn> The <code class="idl"><a data-link-type="idl" href="#navigator-vrenabled-attribute" id="ref-for-navigator-vrenabled-attribute-2">vrEnabled</a></code> attribute’s getter must return true if the context object is allowed to use the feature indicated by attribute name <code class="idl"><a data-link-type="idl" href="#dom-htmliframeelement-allowvr" id="ref-for-dom-htmliframeelement-allowvr-2">allowvr</a></code> and VR is supported, and false otherwise.</p>
    <div class="example" id="example-008f898a">
@@ -1956,19 +1966,19 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    </div>
    <h3 class="heading settled" data-level="2.11" id="interface-vrdisplayeventreason"><span class="secno">2.11. </span><span class="content">VRDisplayEventReason</span><a class="self-link" href="#interface-vrdisplayeventreason"></a></h3>
 <pre class="idl highlight def"><span class="kt">enum</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="enum" data-export="" id="enumdef-vrdisplayeventreason">VRDisplayEventReason</dfn> {
-  <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-navigation" id="ref-for-dom-vrdisplayeventreason-navigation-1">"navigation"</a>,
   <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-mounted" id="ref-for-dom-vrdisplayeventreason-mounted-1">"mounted"</a>,
+  <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-navigation" id="ref-for-dom-vrdisplayeventreason-navigation-1">"navigation"</a>,
   <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-requested" id="ref-for-dom-vrdisplayeventreason-requested-1">"requested"</a>,
   <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-unmounted" id="ref-for-dom-vrdisplayeventreason-unmounted-1">"unmounted"</a>
 };
 </pre>
    <h4 class="heading settled" data-level="2.11.1" id="vrdisplayeventreason-codes"><span class="secno">2.11.1. </span><span class="content">Reasons</span><a class="self-link" href="#vrdisplayeventreason-codes"></a></h4>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayEventReason" data-dfn-type="enum-value" data-export="" id="dom-vrdisplayeventreason-navigation">navigation</dfn> The page has been navigated to from a context that allows this page to begin presenting immediately, such as from another site that was already in VR presentation mode.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayEventReason" data-dfn-type="enum-value" data-export="" id="dom-vrdisplayeventreason-mounted">mounted</dfn> The <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-45">VRDisplay</a></code> has detected that the user has put it on.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayEventReason" data-dfn-type="enum-value" data-export="" id="dom-vrdisplayeventreason-navigation">navigation</dfn> The page has been navigated to from a context that allows this page to begin presenting immediately, such as from another site that was already in VR presentation mode.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayEventReason" data-dfn-type="enum-value" data-export="" id="dom-vrdisplayeventreason-requested">requested</dfn> The user agent MAY request start VR presentation mode. This allows user agents to include a consistent UI to enter VR across diferent sites.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplayEventReason" data-dfn-type="enum-value" data-export="" id="dom-vrdisplayeventreason-unmounted">unmounted</dfn> The <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-46">VRDisplay</a></code> has detected that the user has taken it off.</p>
    <h3 class="heading settled" data-level="2.12" id="interface-vrdisplayevent"><span class="secno">2.12. </span><span class="content">VRDisplayEvent</span><a class="self-link" href="#interface-vrdisplayevent"></a></h3>
-<pre class="idl highlight def">[<dfn class="nv idl-code" data-dfn-for="VRDisplayEvent" data-dfn-type="constructor" data-export="" data-lt="VRDisplayEvent(eventInitDict)" id="dom-vrdisplayevent-vrdisplayevent">Constructor<a class="self-link" href="#dom-vrdisplayevent-vrdisplayevent"></a></dfn>(<a class="n" data-link-type="idl-name" href="#dictdef-vrdisplayeventinit" id="ref-for-dictdef-vrdisplayeventinit-1">VRDisplayEventInit</a> <dfn class="nv idl-code" data-dfn-for="VRDisplayEvent/VRDisplayEvent(eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrdisplayevent-vrdisplayevent-eventinitdict-eventinitdict">eventInitDict<a class="self-link" href="#dom-vrdisplayevent-vrdisplayevent-eventinitdict-eventinitdict"></a></dfn>)]
+<pre class="idl highlight def">[<dfn class="nv idl-code" data-dfn-for="VRDisplayEvent" data-dfn-type="constructor" data-export="" data-lt="VRDisplayEvent(type, eventInitDict)" id="dom-vrdisplayevent-vrdisplayevent">Constructor<a class="self-link" href="#dom-vrdisplayevent-vrdisplayevent"></a></dfn>(<span class="kt">DOMString</span> <dfn class="nv idl-code" data-dfn-for="VRDisplayEvent/VRDisplayEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrdisplayevent-vrdisplayevent-type-eventinitdict-type">type<a class="self-link" href="#dom-vrdisplayevent-vrdisplayevent-type-eventinitdict-type"></a></dfn>, <a class="n" data-link-type="idl-name" href="#dictdef-vrdisplayeventinit" id="ref-for-dictdef-vrdisplayeventinit-1">VRDisplayEventInit</a> <dfn class="nv idl-code" data-dfn-for="VRDisplayEvent/VRDisplayEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrdisplayevent-vrdisplayevent-type-eventinitdict-eventinitdict">eventInitDict<a class="self-link" href="#dom-vrdisplayevent-vrdisplayevent-type-eventinitdict-eventinitdict"></a></dfn>)]
 <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrdisplayevent">VRDisplayEvent</dfn> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#event">Event</a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrdisplay" id="ref-for-vrdisplay-47">VRDisplay</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRDisplay" href="#dom-vrdisplayevent-display" id="ref-for-dom-vrdisplayevent-display-1">display</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#enumdef-vrdisplayeventreason" id="ref-for-enumdef-vrdisplayeventreason-1">VRDisplayEventReason</a>? <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRDisplayEventReason?" href="#dom-vrdisplayevent-reason" id="ref-for-dom-vrdisplayevent-reason-1">reason</a>;
@@ -1999,14 +2009,14 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-vrdisplayactivate-event">onvrdisplayactivate<a class="self-link" href="#window-vrdisplayactivate-event"></a></dfn> A user agent MAY dispatch this event type to indicate that something has occured which suggests the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-52">VRDisplay</a></code> should be presented to. For example, if the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-53">VRDisplay</a></code> is capable of detecting when the user has put it on, this event SHOULD fire when they do so with the reason "mounted".</p>
    <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-vrdisplaydeactivate-event">onvrdisplaydeactivate<a class="self-link" href="#window-vrdisplaydeactivate-event"></a></dfn> A user agent MAY dispatch this event type to indicate that something has occured which suggests the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-54">VRDisplay</a></code> should exit presentation. For example, if the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-55">VRDisplay</a></code> is capable of detecting when the user has taken it off, this event SHOULD fire when they do so with the reason "unmounted".</p>
    <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-onvrdisplayblur-event">onvrdisplayblur<a class="self-link" href="#window-onvrdisplayblur-event"></a></dfn> A user agent MAY dispatch this event type to indicate that presentation to the display by the page is paused by the user agent, OS, or VR hardware. While a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-56">VRDisplay</a></code> is blurred it does not lose it’s presenting status (<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-ispresenting" id="ref-for-dom-vrdisplay-ispresenting-3">isPresenting</a></code> continues to report true) but <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getframedata" id="ref-for-dom-vrdisplay-getframedata-8">getFrameData()</a></code> returns false without updating the provided <code class="idl"><a data-link-type="idl" href="#vrframedata" id="ref-for-vrframedata-7">VRFrameData</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getpose" id="ref-for-dom-vrdisplay-getpose-4">getPose()</a></code> returns null. This is to prevent tracking while the user interacts with potentially sensitive UI. For example: A user agent SHOULD blur the presenting application when the user is typing a URL into the browser with a virtual keyboard, otherwise the presenting page may be able to guess the URL the user is entering by tracking their head motions.</p>
-   <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-onvrdisplayblur-event0">onvrdisplayfocus<a class="self-link" href="#window-onvrdisplayblur-event0"></a></dfn> A user agent MAY dispatch this event type to indicate that presentation to the display by the page has resumed after being blurred.</p>
+   <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-onvrdisplayfocus-event">onvrdisplayfocus<a class="self-link" href="#window-onvrdisplayfocus-event"></a></dfn> A user agent MAY dispatch this event type to indicate that presentation to the display by the page has resumed after being blurred.</p>
    <p><dfn class="idl-code" data-dfn-for="Window" data-dfn-type="event" data-export="" id="window-vrdisplaypresentchange-event">onvrdisplaypresentchange<a class="self-link" href="#window-vrdisplaypresentchange-event"></a></dfn> A user agent MUST dispatch this event type to indicate that a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-57">VRDisplay</a></code> has begun or ended VR presentation. This event should not fire on subsequent calls to <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-9">requestPresent()</a></code> after the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-58">VRDisplay</a></code> has already begun VR presentation.</p>
    <h3 class="heading settled" data-level="2.14" id="allowvr-attribute"><span class="secno">2.14. </span><span class="content">allowvr iframe attribute</span><a class="self-link" href="#allowvr-attribute"></a></h3>
 <pre class="idl highlight def"><span class="kt">partial</span> <span class="kt">interface</span> <a class="nv idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/multipage/embedded-content.html#htmliframeelement">HTMLIFrameElement</a> {
   <span class="kt">attribute</span> <span class="kt">boolean</span> <dfn class="nv dfn-paneled idl-code" data-dfn-for="HTMLIFrameElement" data-dfn-type="attribute" data-export="" data-type="boolean" id="dom-htmliframeelement-allowvr">allowvr</dfn>;
 };
 </pre>
-   <p>The <code class="idl"><a data-link-type="idl" href="#dom-htmliframeelement-allowvr" id="ref-for-dom-htmliframeelement-allowvr-3">allowvr</a></code> attribute is a boolean attribute. When specified, it indicates that <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/infrastructure.html#dom-document">Document</a></code> objects in the iframe element’s browsing context are to be allowed to access VR devices (if it’s not blocked for other reasons, e.g. there is another ancestor iframe without this attribute set). <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/infrastructure.html#dom-document">Document</a></code> objects in an iframe element without this attribute should reject calls to <code class="idl"><a data-link-type="idl" href="#navigator-getvrdisplays-attribute" id="ref-for-navigator-getvrdisplays-attribute-2">getVRDisplays()</a></code> and should not fire any <code class="idl"><a data-link-type="idl" href="#vrdisplayevent" id="ref-for-vrdisplayevent-2">VRDisplayEvent</a></code>.</p>
+   <p>The <code class="idl"><a data-link-type="idl" href="#dom-htmliframeelement-allowvr" id="ref-for-dom-htmliframeelement-allowvr-3">allowvr</a></code> attribute is a boolean attribute. When specified, it indicates that <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/html5/#document">Document</a></code> objects in the iframe element’s browsing context are to be allowed to access VR devices (if it’s not blocked for other reasons, e.g. there is another ancestor iframe without this attribute set). <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/html5/#document">Document</a></code> objects in an iframe element without this attribute should reject calls to <code class="idl"><a data-link-type="idl" href="#navigator-getvrdisplays-attribute" id="ref-for-navigator-getvrdisplays-attribute-2">getVRDisplays()</a></code> and should not fire any <code class="idl"><a data-link-type="idl" href="#vrdisplayevent" id="ref-for-vrdisplayevent-2">VRDisplayEvent</a></code>.</p>
    <div class="example" id="example-9fa4da2d">
     <a class="self-link" href="#example-9fa4da2d"></a> Example of declaring an iframe that is allowed to access VR features. 
 <pre class="lang-js highlight"><span class="o">&lt;</span>body<span class="o">></span>
@@ -2026,7 +2036,7 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    <p>While not directly affecting the API interface and Web IDL, WebVR implementations should maintain the user’s expectations of privacy, security, and comfort on the Web by adhering to the following guidelines:</p>
    <ul>
     <li data-md="">
-     <p>Trusted UI must be drawn by an independent rendering context who’s state is isolated from that of the WebGL contexts provided as a <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-10">VRLayer</a></code> source to a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-63">VRDisplay</a></code>.</p>
+     <p>Trusted UI must be drawn by an independent rendering context who’s state is isolated from that of the WebGL contexts provided as a <code class="idl"><a data-link-type="idl" href="#vrlayer" id="ref-for-vrlayer-8">VRLayer</a></code> source to a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-63">VRDisplay</a></code>.</p>
     <li data-md="">
      <p>A "VR Compositor" runs asynchronously from content, responsible for compositing the trusted and untrusted content. If content is not performant or does not submit frames, or terminates unexpectedly the browser should be able to continue presenting a responsive front-end.</p>
     <li data-md="">
@@ -2040,7 +2050,7 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
     <li data-md="">
      <p>Non-focused tabs are allowed to enumerate <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/gamepad/#gamepad">Gamepad</a></code>s and <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-65">VRDisplay</a></code>s but will see last received state or default values.</p>
     <li data-md="">
-     <p>To prevent CORS-related vulnerabilities, each page will see a new instance of objects returned by the WebVR API, such as <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-66">VRDisplay</a></code>. Attributes such as the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-11">VRLayer</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-5">source</a></code> set by one page must not be able to be read by another.</p>
+     <p>To prevent CORS-related vulnerabilities, each page will see a new instance of objects returned by the WebVR API, such as <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-66">VRDisplay</a></code>. Attributes such as the <code class="idl"><a data-link-type="idl" href="#vrlayer" id="ref-for-vrlayer-9">VRLayer</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-5">source</a></code> set by one page must not be able to be read by another.</p>
    </ul>
    <h2 class="heading settled" data-level="4" id="ack"><span class="secno">4. </span><span class="content">Acknowledgements</span><a class="self-link" href="#ack"></a></h2>
   </main>
@@ -2230,7 +2240,12 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    <li><a href="#dom-vrdisplay-ispresenting">isPresenting</a><span>, in §2.1.1</span>
    <li><a href="#dom-vreye-left">"left"</a><span>, in §2.4</span>
    <li><a href="#dom-vreye-left">left</a><span>, in §2.4</span>
-   <li><a href="#dom-vrlayer-leftbounds">leftBounds</a><span>, in §2.2.1</span>
+   <li>
+    leftBounds
+    <ul>
+     <li><a href="#dom-vrlayerinit-leftbounds">dict-member for VRLayerInit</a><span>, in §2.2</span>
+     <li><a href="#dom-vrlayer-leftbounds">attribute for VRLayer</a><span>, in §2.2.1</span>
+    </ul>
    <li><a href="#dom-vrfieldofview-leftdegrees">leftDegrees</a><span>, in §2.5</span>
    <li><a href="#dom-vrframedata-leftprojectionmatrix">leftProjectionMatrix</a><span>, in §2.7.1</span>
    <li><a href="#dom-vrframedata-leftviewmatrix">leftViewMatrix</a><span>, in §2.7.1</span>
@@ -2274,7 +2289,7 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
     onvrdisplayfocus
     <ul>
      <li><a href="#dom-window-onvrdisplayfocus">attribute for Window</a><span>, in §2.13</span>
-     <li><a href="#window-onvrdisplayblur-event0">event for Window</a><span>, in §2.13</span>
+     <li><a href="#window-onvrdisplayfocus-event">event for Window</a><span>, in §2.13</span>
     </ul>
    <li>
     onvrdisplaypresentchange
@@ -2299,14 +2314,24 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    <li><a href="#dom-vrdisplay-resetpose">resetPose()</a><span>, in §2.1.1</span>
    <li><a href="#dom-vreye-right">right</a><span>, in §2.4</span>
    <li><a href="#dom-vreye-right">"right"</a><span>, in §2.4</span>
-   <li><a href="#dom-vrlayer-rightbounds">rightBounds</a><span>, in §2.2.1</span>
+   <li>
+    rightBounds
+    <ul>
+     <li><a href="#dom-vrlayerinit-rightbounds">dict-member for VRLayerInit</a><span>, in §2.2</span>
+     <li><a href="#dom-vrlayer-rightbounds">attribute for VRLayer</a><span>, in §2.2.1</span>
+    </ul>
    <li><a href="#dom-vrfieldofview-rightdegrees">rightDegrees</a><span>, in §2.5</span>
    <li><a href="#dom-vrframedata-rightprojectionmatrix">rightProjectionMatrix</a><span>, in §2.7.1</span>
    <li><a href="#dom-vrframedata-rightviewmatrix">rightViewMatrix</a><span>, in §2.7.1</span>
    <li><a href="#dom-vrstageparameters-sittingtostandingtransform">sittingToStandingTransform</a><span>, in §2.9.1</span>
    <li><a href="#dom-vrstageparameters-sizex">sizeX</a><span>, in §2.9.1</span>
    <li><a href="#dom-vrstageparameters-sizez">sizeZ</a><span>, in §2.9.1</span>
-   <li><a href="#dom-vrlayer-source">source</a><span>, in §2.2.1</span>
+   <li>
+    source
+    <ul>
+     <li><a href="#dom-vrlayerinit-source">dict-member for VRLayerInit</a><span>, in §2.2</span>
+     <li><a href="#dom-vrlayer-source">attribute for VRLayer</a><span>, in §2.2.1</span>
+    </ul>
    <li><a href="#dom-vrdisplay-stageparameters">stageParameters</a><span>, in §2.1</span>
    <li><a href="#dom-vrdisplay-submitframe">submitFrame()</a><span>, in §2.1.1</span>
    <li><a href="#dom-vrframedata-timestamp">timestamp</a><span>, in §2.7.1</span>
@@ -2315,16 +2340,19 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    <li><a href="#vrdisplay">VRDisplay</a><span>, in §2.1</span>
    <li><a href="#vrdisplaycapabilities">VRDisplayCapabilities</a><span>, in §2.3</span>
    <li><a href="#vrdisplayevent">VRDisplayEvent</a><span>, in §2.12</span>
-   <li><a href="#dom-vrdisplayevent-vrdisplayevent">VRDisplayEvent(eventInitDict)</a><span>, in §2.12</span>
    <li><a href="#dictdef-vrdisplayeventinit">VRDisplayEventInit</a><span>, in §2.12</span>
    <li><a href="#enumdef-vrdisplayeventreason">VRDisplayEventReason</a><span>, in §2.11</span>
+   <li><a href="#dom-vrdisplayevent-vrdisplayevent">VRDisplayEvent(type, eventInitDict)</a><span>, in §2.12</span>
    <li><a href="#navigator-vrenabled-attribute">vrEnabled</a><span>, in §2.10.1</span>
    <li><a href="#enumdef-vreye">VREye</a><span>, in §2.4</span>
    <li><a href="#vreyeparameters">VREyeParameters</a><span>, in §2.8</span>
    <li><a href="#vrfieldofview">VRFieldOfView</a><span>, in §2.5</span>
    <li><a href="#dom-vrframedata-vrframedata">VRFrameData()</a><span>, in §2.7</span>
    <li><a href="#vrframedata">VRFrameData</a><span>, in §2.7</span>
-   <li><a href="#dictdef-vrlayer">VRLayer</a><span>, in §2.2</span>
+   <li><a href="#dom-vrlayer-vrlayer">VRLayer()</a><span>, in §2.2</span>
+   <li><a href="#vrlayer">VRLayer</a><span>, in §2.2</span>
+   <li><a href="#dictdef-vrlayerinit">VRLayerInit</a><span>, in §2.2</span>
+   <li><a href="#dom-vrlayer-vrlayer">VRLayer(layer)</a><span>, in §2.2</span>
    <li><a href="#vrpose">VRPose</a><span>, in §2.6</span>
    <li><a href="#typedefdef-vrsource">VRSource</a><span>, in §2.2</span>
    <li><a href="#vrstageparameters">VRStageParameters</a><span>, in §2.9</span>
@@ -2341,7 +2369,6 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    <li>
     <a data-link-type="biblio">[HTML]</a> defines the following terms:
     <ul>
-     <li><a href="https://html.spec.whatwg.org/multipage/infrastructure.html#dom-document">Document</a>
      <li><a href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a>
      <li><a href="https://html.spec.whatwg.org/multipage/browsers.html#framerequestcallback">FrameRequestCallback</a>
      <li><a href="https://html.spec.whatwg.org/multipage/scripting.html#htmlcanvaselement">HTMLCanvasElement</a>
@@ -2350,7 +2377,7 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
      <li><a href="https://html.spec.whatwg.org/multipage/browsers.html#window">Window</a>
     </ul>
    <li>
-    <a data-link-type="biblio">[WebIDL-1]</a> defines the following terms:
+    <a data-link-type="biblio">[WebIDL]</a> defines the following terms:
     <ul>
      <li><a href="https://heycam.github.io/webidl/#NewObject">NewObject</a>
      <li><a href="https://heycam.github.io/webidl/#SameObject">SameObject</a>
@@ -2363,8 +2390,8 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    <dd>Ian Hickson. <a href="https://html.spec.whatwg.org/multipage/">HTML Standard</a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>. March 1997. Best Current Practice. URL: <a href="https://tools.ietf.org/html/rfc2119">https://tools.ietf.org/html/rfc2119</a>
-   <dt id="biblio-webidl-1">[WebIDL-1]
-   <dd>Cameron McCormack; Boris Zbarsky. <a href="https://heycam.github.io/webidl/">WebIDL Level 1</a>. 15 September 2016. PR. URL: <a href="https://heycam.github.io/webidl/">https://heycam.github.io/webidl/</a>
+   <dt id="biblio-webidl">[WebIDL]
+   <dd>Cameron McCormack; Boris Zbarsky; Tobie Langel. <a href="https://heycam.github.io/webidl/">Web IDL</a>. URL: <a href="https://heycam.github.io/webidl/">https://heycam.github.io/webidl/</a>
    <dt id="biblio-whatwg-dom">[WHATWG-DOM]
    <dd>Anne van Kesteren. <a href="https://dom.spec.whatwg.org/">DOM Standard</a>. Living Standard. URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
   </dl>
@@ -2467,7 +2494,7 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    * If the number of values in the leftBounds/rightBounds arrays is not 0 or 4 for any of the passed layers the promise is rejected
    * If the source of any of the layers is not present (null), the promise is rejected.
    */
-  <span class="kt">Promise</span>&lt;<span class="kt">void</span>> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-requestpresent">requestPresent</a>(<span class="kt">sequence</span>&lt;<a class="n" data-link-type="idl-name" href="#dictdef-vrlayer">VRLayer</a>> <a class="nv" href="#dom-vrdisplay-requestpresent-layers-layers">layers</a>);
+  <span class="kt">Promise</span>&lt;<span class="kt">void</span>> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-requestpresent">requestPresent</a>(<span class="kt">sequence</span>&lt;<a class="n" data-link-type="idl-name" href="#dictdef-vrlayerinit">VRLayerInit</a>> <a class="nv" href="#dom-vrdisplay-requestpresent-layers-layers">layers</a>);
 
   /**
    * Stops presenting to the VRDisplay.
@@ -2477,7 +2504,7 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
   /**
    * Get the layers currently being presented.
    */
-  <span class="kt">sequence</span>&lt;<a class="n" data-link-type="idl-name" href="#dictdef-vrlayer">VRLayer</a>> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-getlayers">getLayers</a>();
+  <span class="kt">sequence</span>&lt;<a class="n" data-link-type="idl-name" href="#vrlayer">VRLayer</a>> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-getlayers">getLayers</a>();
 
   /**
    * The VRLayer provided to the VRDisplay will be captured and presented
@@ -2491,11 +2518,19 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
 <span class="kt">typedef</span> (<a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/scripting.html#htmlcanvaselement">HTMLCanvasElement</a> <span class="kt">or</span>
          <a class="n" data-link-type="idl-name" href="https://wiki.whatwg.org/wiki/OffscreenCanvas#offscreencanvas">OffscreenCanvas</a>) <a class="nv" href="#typedefdef-vrsource">VRSource</a>;
 
-<span class="kt">dictionary</span> <a class="nv" href="#dictdef-vrlayer">VRLayer</a> {
-  <a class="n" data-link-type="idl-name" href="#typedefdef-vrsource">VRSource</a>? <a class="nv idl-code" data-default="null" data-link-type="dict-member" data-type="VRSource? " href="#dom-vrlayer-source">source</a> = <span class="kt">null</span>;
+[<a class="nv" href="#dom-vrlayer-vrlayer">Constructor</a>(<span class="kt">optional</span> <a class="n" data-link-type="idl-name" href="#dictdef-vrlayerinit">VRLayerInit</a> <a class="nv" href="#dom-vrlayer-vrlayer-layer-layer">layer</a>)]
+<span class="kt">interface</span> <a class="nv" href="#vrlayer">VRLayer</a> {
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#typedefdef-vrsource">VRSource</a>? <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRSource?" href="#dom-vrlayer-source">source</a>;
 
-  <span class="kt">sequence</span>&lt;<span class="kt">float</span>> <a class="nv idl-code" data-default="None" data-link-type="dict-member" data-type="sequence<float> " href="#dom-vrlayer-leftbounds">leftBounds</a> = [ ];
-  <span class="kt">sequence</span>&lt;<span class="kt">float</span>> <a class="nv idl-code" data-default="None" data-link-type="dict-member" data-type="sequence<float> " href="#dom-vrlayer-rightbounds">rightBounds</a> = [ ];
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">sequence</span>&lt;<span class="kt">float</span>> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="sequence<float>" href="#dom-vrlayer-leftbounds">leftBounds</a>;
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">sequence</span>&lt;<span class="kt">float</span>> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="sequence<float>" href="#dom-vrlayer-rightbounds">rightBounds</a>;
+};
+
+<span class="kt">dictionary</span> <a class="nv" href="#dictdef-vrlayerinit">VRLayerInit</a> {
+  <a class="n" data-link-type="idl-name" href="#typedefdef-vrsource">VRSource</a>? <a class="nv" data-default="null" data-type="VRSource? " href="#dom-vrlayerinit-source">source</a> = <span class="kt">null</span>;
+
+  <span class="kt">sequence</span>&lt;<span class="kt">float</span>> <a class="nv" data-default="None" data-type="sequence<float> " href="#dom-vrlayerinit-leftbounds">leftBounds</a> = [ ];
+  <span class="kt">sequence</span>&lt;<span class="kt">float</span>> <a class="nv" data-default="None" data-type="sequence<float> " href="#dom-vrlayerinit-rightbounds">rightBounds</a> = [ ];
 };
 
 <span class="kt">interface</span> <a class="nv" href="#vrdisplaycapabilities">VRDisplayCapabilities</a> {
@@ -2564,13 +2599,13 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
 };
 
 <span class="kt">enum</span> <a class="nv" href="#enumdef-vrdisplayeventreason">VRDisplayEventReason</a> {
-  <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-navigation">"navigation"</a>,
   <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-mounted">"mounted"</a>,
+  <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-navigation">"navigation"</a>,
   <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-requested">"requested"</a>,
   <a class="s idl-code" data-link-type="enum-value" href="#dom-vrdisplayeventreason-unmounted">"unmounted"</a>
 };
 
-[<a class="nv" href="#dom-vrdisplayevent-vrdisplayevent">Constructor</a>(<a class="n" data-link-type="idl-name" href="#dictdef-vrdisplayeventinit">VRDisplayEventInit</a> <a class="nv" href="#dom-vrdisplayevent-vrdisplayevent-eventinitdict-eventinitdict">eventInitDict</a>)]
+[<a class="nv" href="#dom-vrdisplayevent-vrdisplayevent">Constructor</a>(<span class="kt">DOMString</span> <a class="nv" href="#dom-vrdisplayevent-vrdisplayevent-type-eventinitdict-type">type</a>, <a class="n" data-link-type="idl-name" href="#dictdef-vrdisplayeventinit">VRDisplayEventInit</a> <a class="nv" href="#dom-vrdisplayevent-vrdisplayevent-type-eventinitdict-eventinitdict">eventInitDict</a>)]
 <span class="kt">interface</span> <a class="nv" href="#vrdisplayevent">VRDisplayEvent</a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#event">Event</a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrdisplay">VRDisplay</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRDisplay" href="#dom-vrdisplayevent-display">display</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#enumdef-vrdisplayeventreason">VRDisplayEventReason</a>? <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRDisplayEventReason?" href="#dom-vrdisplayevent-reason">reason</a>;
@@ -2727,16 +2762,24 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
   <aside class="dfn-panel" data-for="typedefdef-vrsource">
    <b><a href="#typedefdef-vrsource">#typedefdef-vrsource</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-typedefdef-vrsource-1">2.2. VRLayer</a>
+    <li><a href="#ref-for-typedefdef-vrsource-1">2.2. VRLayer</a> <a href="#ref-for-typedefdef-vrsource-2">(2)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dictdef-vrlayer">
-   <b><a href="#dictdef-vrlayer">#dictdef-vrlayer</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="vrlayer">
+   <b><a href="#vrlayer">#vrlayer</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dictdef-vrlayer-1">2.1. VRDisplay</a> <a href="#ref-for-dictdef-vrlayer-2">(2)</a>
-    <li><a href="#ref-for-dictdef-vrlayer-3">2.1.1. Attributes</a> <a href="#ref-for-dictdef-vrlayer-4">(2)</a> <a href="#ref-for-dictdef-vrlayer-5">(3)</a> <a href="#ref-for-dictdef-vrlayer-6">(4)</a> <a href="#ref-for-dictdef-vrlayer-7">(5)</a> <a href="#ref-for-dictdef-vrlayer-8">(6)</a>
-    <li><a href="#ref-for-dictdef-vrlayer-9">2.2. VRLayer</a>
-    <li><a href="#ref-for-dictdef-vrlayer-10">3. Security Considerations</a> <a href="#ref-for-dictdef-vrlayer-11">(2)</a>
+    <li><a href="#ref-for-vrlayer-1">2.1. VRDisplay</a>
+    <li><a href="#ref-for-vrlayer-2">2.1.1. Attributes</a> <a href="#ref-for-vrlayer-3">(2)</a> <a href="#ref-for-vrlayer-4">(3)</a> <a href="#ref-for-vrlayer-5">(4)</a> <a href="#ref-for-vrlayer-6">(5)</a>
+    <li><a href="#ref-for-vrlayer-7">2.2. VRLayer</a>
+    <li><a href="#ref-for-vrlayer-8">3. Security Considerations</a> <a href="#ref-for-vrlayer-9">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dictdef-vrlayerinit">
+   <b><a href="#dictdef-vrlayerinit">#dictdef-vrlayerinit</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dictdef-vrlayerinit-1">2.1. VRDisplay</a>
+    <li><a href="#ref-for-dictdef-vrlayerinit-2">2.1.1. Attributes</a>
+    <li><a href="#ref-for-dictdef-vrlayerinit-3">2.2. VRLayer</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrlayer-source">
@@ -3005,16 +3048,16 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
     <li><a href="#ref-for-enumdef-vrdisplayeventreason-3">2.12.1. Attributes</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-vrdisplayeventreason-navigation">
-   <b><a href="#dom-vrdisplayeventreason-navigation">#dom-vrdisplayeventreason-navigation</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-vrdisplayeventreason-navigation-1">2.11. VRDisplayEventReason</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="dom-vrdisplayeventreason-mounted">
    <b><a href="#dom-vrdisplayeventreason-mounted">#dom-vrdisplayeventreason-mounted</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-vrdisplayeventreason-mounted-1">2.11. VRDisplayEventReason</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-vrdisplayeventreason-navigation">
+   <b><a href="#dom-vrdisplayeventreason-navigation">#dom-vrdisplayeventreason-navigation</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-vrdisplayeventreason-navigation-1">2.11. VRDisplayEventReason</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrdisplayeventreason-requested">
