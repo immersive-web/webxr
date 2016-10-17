@@ -719,6 +719,21 @@ partial interface Gamepad {
 <dfn attribute for="Gamepad" id="gamepad-getvrdisplays-attribute">displayId</dfn>
 Return the {{VRDisplay/displayId}} of the {{VRDisplay}} this {{Gamepad}} is associated with. A {{Gamepad}} is considered to be associated with a {{VRDisplay}} if it reports a pose that is in the same space as the {{VRDisplay}} pose. If the {{Gamepad}} is not associated with a {{VRDisplay}} should return 0.
 
+# Processing Model # {#proc}
+
+## submitFrame ## {#submitframe-proc}
+
+There are multiple situations where applications won't invoke {{VRDisplay}}.{{submitFrame()}} at the {{VRDisplay}} native framerate. The User Agent MUST intervene to protect the user from motion sickness or consistently inform her about different situations, such as errors or navigation between pages. This is the breakdown of the different scenarios:
+
+* The application calls {{VRDisplay}}.{{submitFrame()}} at the expected rate, but only a few frames are dropped. The User Agent MUST re-project the last submitted frame.
+
+* The application calls {{VRDisplay}}.{{submitFrame()}} below the expected framerate to a degree that could cause discomfort to the user (simulator sickness). The User agent SHOULD render a trusted interstitial that obscures or minimize the application until a consistent, acceptable frame rate is achieved. If the low framerate persists for an extended period of time the User Agent MUST communicate the user that the application is too slow to be presented and the User Agent MAY terminate presentation.
+
+* An application can stop calling {{VRDisplay}}.{{submitFrame()}} all together under several circumstances:
+    * A content exception or error has ocurred. In this case, the User Agent SHOULD notify the user of the error.
+    * The User Agent navigates to a different site that can eventually present content on the {{VRDisplay}}. The User Agent MUST inform the user that a new site is about to load and give her some indication of progress. The UI MAY provide a period where the user can cancel or reverse the navigation. Once the new site starts calling {{VRDisplay}}.{{submitFrame()}} the UI MAY temporarly display the new URL to notify the user of the succesful site transition. If after a period of time {{VRDisplay}}.{{submitFrame()}} is not invoked the User Agent SHOULD display a message indicating that there's no VR content available in the current URL. The time the User Agent will wait for {{VRDisplay}}.{{submitFrame()}} to be invoked will be determined by different factors that express intent of presenting VR like the presence of a metatag that statically declares the presence of VR content or an application attaching an event listener to {{onvrdisplayactivate}}.
+    * The User Agent transitions to a new URL that returns an HTTP error. The User Agent will SHOULD inform the user about the error.
+
 # Security Considerations # {#security}
 
 While not directly affecting the API interface and Web IDL, WebVR implementations should maintain the user's expectations of privacy, security, and comfort on the Web by adhering to the following guidelines:
