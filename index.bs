@@ -511,7 +511,7 @@ interface VREyeParameters {
 ### Attributes ### {#vreyeparameters-attributes}
 
 <dfn attribute for="VREyeParameters">offset</dfn>
-Offset from the center point between the users eyes to the center of the eye in meters. This value SHOULD represent half of the user's interpupillary distance (IPD), but MAY also represent the distance from the center point of the headset to the center point of the lens for the given eye. Values for the left eye MUST be negative; values for the right eye MUST be positive. This information should not be used to construct a view matrix, prefer using the view matricies provided in {{VRFrameData}} instead.
+A three component vector describing the offset from the center point between the users eyes to the center of the eye in meters. The x component of this vector SHOULD represent half of the user's interpupillary distance (IPD), but MAY also represent the vector from the center point of the headset to the center point of the lens for the given eye. Values in the x component for left eye MUST be negative; values in the x component for right eye MUST be positive. This information should not be used to construct a view matrix, prefer using the view matricies provided in {{VRFrameData}} instead.
 
 <dfn attribute for="VREyeParameters">fieldOfView</dfn>
 <i>(Deprecated)</i> The current field of view for the eye. SHOULD conservatively cover the entire viewable frustum of the eye. The application should not use these values to construct a projection matrix, as it may not take into account all aspects of the {{VRDisplay}} optics. Prefer using the projection matrices provided in {{VRFrameData}} instead.
