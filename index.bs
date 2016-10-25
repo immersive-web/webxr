@@ -10,6 +10,8 @@ Mailing List Archives: https://lists.w3.org/Archives/Public/public-webvr/
 Mailing List: public-webvr@mozilla.org
 
 !Participate: <a href="https://github.com/w3c/webvr/issues/new">File an issue</a> (<a href="https://github.com/w3c/webvr/issues">open issues</a>)
+!Participate: <a href="https://lists.w3.org/Archives/Public/public-webvr/">Mailing list archive</a>
+!Participate: <a href="irc://irc.w3.org:6665/">W3C's #webvr IRC</a>
 
 Editor: Vladimir Vukicevic, Mozilla https://mozilla.org/, vladimir@mozilla.com
 Editor: Brandon Jones, Google http://google.com/, bajones@google.com
