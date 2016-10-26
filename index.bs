@@ -17,7 +17,7 @@ Editor: Vladimir Vukicevic, Mozilla https://mozilla.org/, vladimir@mozilla.com
 Editor: Brandon Jones, Google http://google.com/, bajones@google.com
 Editor: Kearwood Gilbert, Mozilla https://mozilla.org/, kgilbert@mozilla.com
 Editor: Chris Van Wiemeersch, Mozilla https://mozilla.org/, cvan@mozilla.com
-Abstract: This specification describes support for accessing virtual reality (VR) devices, including sensors and head-mounted displays on the Web.
+Abstract: This specification describes support for accessing virtual reality (VR) and mixed reality (MR) devices, including sensors and head-mounted displays on the Web.
 </pre>
 
 <pre class="anchors">
@@ -38,15 +38,49 @@ urlPrefix: https://www.w3.org/TR/html5/
 # Introduction # {#intro}
 
 Hardware that enables Virtual Reality applications requires high-precision, low-latency interfaces to deliver an acceptable experience.
-Other interfaces, such as device orientation events, can be repurposed to surface VR input but doing so dilutes the interface's original
-intent and often does not provide the precision necessary for high-quality VR. The WebVR API provides purpose-built interfaces
-to VR hardware to allow developers to build compelling, comfortable VR experiences.
+Other interfaces, such as device orientation events, can be repurposed to surface VR/MR input but doing so dilutes the interface's original
+intent and often does not provide the precision necessary for high-quality VR/MR. The WebVR API provides purpose-built interfaces
+to VR/MR hardware to allow developers to build compelling, comfortable VR/MR experiences.
+
+## Terminology ## {#intro-terminology}
+For the purposes of this specification, the following VR/MR specific terms are defined.
+
+### Content locking types ### {#intro-terminology-contentlockingtypes}
+
+<dfn>World-locked</dfn>
+Content that has a stationary position in the user's environment regardless of where the user is standing or which direction the user is looking.
+
+<dfn>Body-locked</dfn>
+Content that has a stationary orientation relative to the user's environment.  If the user changes orientation, the content stays put.  If the user changes position, the content tags along.
+
+<dfn>Face-locked</dfn>
+Content that is not related to the user's environment.  Regardless of the user changing orientation or position, the content stays at the same place in the user's field of view.
+
+<dfn>Head-locked</dfn>
+The same meaning as face-locked.
+
+
+### Experience Types ### {#intro-terminology-experiencetypes}
+
+<dfn>3DOF experience</dfn>
+An experience that does not require or allow a user to change their physical position in space.  These experiences are based on the user's head orientation and may include some amount of neck-modeling.  An example of this category of experience is a 360 degree video.
+
+<dfn>Seated experience</dfn>
+An experience that relies on knowledge of a user's position in space but does not rely on a floor plane.  An example of this category of experience is a racing game that allows a user to lean into turns.
+
+<dfn>Standing experience</dfn>
+An experience that relies on knowledge of the floor plane but does not encourage users to walk around.  An example of this category of experience is game of cricket or baseball.
+
+<dfn>Room-scale experience</dfn>
+An experience that utilizes knowledge of the floor plane and encourages users to walk around within specific bounds.  An example of this category of experience is CAD modeling which allows a user to walk around the object being modeled.
+
+<dfn>World-scale experience</dfn>
+An experience that takes advantage of the ability to walk anywhere without bounds.  In such experiences, there is no single floor plane.  An example of this category of experience is turn-by-turn directions within a multistory building.
 
 
 # DOM Interfaces # {#interfaces}
 
 This section describes the interfaces and functionality added to the DOM to support runtime access to the functionality described above.
-
 
 ## VRDisplay ## {#interface-vrdisplay}
 
@@ -61,17 +95,6 @@ interface VRDisplay : EventTarget {
    * Dictionary of capabilities describing the VRDisplay.
    */
   [SameObject] readonly attribute VRDisplayCapabilities capabilities;
-
-  /**
-   * If this VRDisplay supports room-scale experiences, the optional
-   * stage attribute contains details on the room-scale parameters.
-   * The stageParameters attribute can not change between null
-   * and non-null once the VRDisplay is enumerated; however,
-   * the values within VRStageParameters may change after
-   * any call to VRDisplay.submitFrame as the user may re-configure
-   * their environment at any time.
-   */
-  readonly attribute VRStageParameters? stageParameters;
 
   /**
    * Return the current VREyeParameters for the given eye.
@@ -89,30 +112,13 @@ interface VRDisplay : EventTarget {
    */
   readonly attribute DOMString displayName;
 
-  /**
-   * Populates the passed VRFrameData with the information required to render
-   * the current frame.
-   */
-  boolean getFrameData(VRFrameData frameData);
+  VRAttachedFrameOfReference createAttachedFrameOfReference();
 
-  /**
-   * Return a VRPose containing the future predicted pose of the VRDisplay
-   * when the current frame will be presented. The value returned will not
-   * change until JavaScript has returned control to the browser.
-   *
-   * The VRPose will contain the position, orientation, velocity,
-   * and acceleration of each of these properties.
-   */
-  [NewObject] VRPose getPose();
+  VRStationaryFrameOfReference? createStationaryFrameOfReference();
 
-  /**
-   * Reset the pose for this display, treating its current position and
-   * orientation as the "origin/zero" values. VRPose.position,
-   * VRPose.orientation, and VRStageParameters.sittingToStandingTransform may be
-   * updated when calling resetPose(). This should be called in only
-   * sitting-space experiences.
-   */
-  void resetPose();
+  VRStageFrameOfReference? createStageFrameOfReference();
+
+  boolean getFrameData(VRCoordinateSystem coordinateSystem, VRFrameData frameData);
 
   /**
    * z-depth defining the near plane of the eye view frustum
@@ -187,16 +193,27 @@ The {{capabilities}} attribute MUST return the {{VRDisplay}}'s {{VRDisplayCapabi
 <dfn method for="VRDisplay">getEyeParameters()</dfn>
 Returns the current {{VREyeParameters}} for the given eye. The eye parameters MAY change at any time due to external factors, such as the user changing the IPD with hardware controls.
 
+<dfn method for="VRDisplay">createAttachedFrameOfReference()</dfn>
+Creates a new {{VRAttachedFrameOfReference}} for the {{VRDisplay}}.  The returned frame of reference's {{VRCoordinateSystem}} should be supplied to {{getFrameData()}} for 3DOF experiences (such as 360 video) and as a fallback for other experiences when positional tracking is unavailable.
+
+While the returned {{VRAttachedFrameOfReference}} is body-locked, neck-modeling may be included and, as such, {{VRFrameData}} objects filled in by calls to {{getFrameData()}} using the {{VRAttachedFrameOfReference}}.{{VRAttachedFrameOfReference/coordinateSystem}} MAY include position information.
+
+<dfn method for="VRDisplay">createStationaryFrameOfReference()</dfn>
+Creates a new {{VRStationaryFrameOfReference}} whose {{VRCoordinateSystem}} will have an origin based on the {{VRDisplay}}'s current position and heading when the returned {{VRStationaryFrameOfReference}} first becomes trackable.
+
+The returned frame of reference's {{VRCoordinateSystem}} should be supplied to {{getFrameData()}} for seated experiences and world-scale experiences to simulate a global coordinate system.  For standing and room-scale experiences that require knowledge of the floor plane, developers should prefer {{createStageFrameOfReference()}}.
+
+This function MUST return null if the {{VRDisplayCapabilities}}.{{VRDisplayCapabilities/hasPosition}} is false.
+
+<dfn method for="VRDisplay">createStageFrameOfReference()</dfn>
+Creates a new {{VRStageFrameOfReference}} whose {{VRCoordinateSystem}} will have an origin at the center of floor of the returned stage.  If the user travels outside the bounds of the returned {{VRStageFrameOfReference}}, the {{VRStageFrameOfReference}}.{{VRStageFrameOfReference/coordinateSystem}} may not be relatable to the user's position.
+
+The returned frame of reference's {{VRCoordinateSystem}} should be supplied to {{getFrameData()}} for standing experiences and room-scale experiences.  For seated and world-scale experiences that do not require knowledge of a floor plane, developers should prefer {{createStationaryFrameOfReference()}}.
+
+This function MUST return null if the {{VRDisplayCapabilities}}.{{VRDisplayCapabilities/hasPosition}} is false or if the {{VRDisplay}} is unable to identify a floor plane.
+   
 <dfn method for="VRDisplay">getFrameData()</dfn>
-Populates the provided {{VRFrameData}} object with the {{VRPose}} and view and projection matricies for the current frame. These values describe the position, orientation, acceleration, and velocity of the {{VRDisplay}} that should be used when rendering the next frame of a scene. The User Agent MAY optionally use predictive techniques to estimate what these values will be at the time that the next frame will be displayed to the user. Subsequent calls to {{getFrameData()}} MUST provide the same values until the next call to {{submitFrame()}}. Returns true if the the provided {{VRFrameData}} object was successfully updated, false otherwise.
-
-<dfn method for="VRDisplay">getPose()</dfn>
-<i>(Deprecated)</i> Returns a {{VRPose}} describing the position, orientation, acceleration, and velocity of the {{VRDisplay}} that should be used when rendering the next frame of a scene. The User Agent MAY optionally use predictive techniques to estimate what the pose will be at the time that the next frame will be displayed to the user. Subsequent calls to {{getPose()}} MUST return a {{VRPose}} with the same values until the next call to {{submitFrame()}}.
-
-This function is deprecated but is preserved for backwards compatibility. Using it MAY incur warnings from the User Agent. Prefer using {{getFrameData()}}, which also provides a {{VRPose}}, instead.
-
-<dfn method for="VRDisplay">resetPose()</dfn>
-Reset the pose for the {{VRDisplay}}, treating its current position and orientation as the "origin/zero" values. Future values returned from {{getFrameData()}} or {{getPose()}} will describe positions relative to the {{VRDisplay}}'s position when {{resetPose()}} was last called and will treat the display's yaw when {{resetPose()}} was last called as the forward orientation. The {{VRDisplay}}'s reported roll and pitch do not change when {{resetPose()}} is called as they are relative to gravity. Calling {{resetPose()}} may change the {{sittingToStandingTransform}} matrix of the {{VRStageParameters}}.
+Populates the provided {{VRFrameData}} object with the {{VRPose}} and view and projection matricies for the current frame in the supplied {{VRCoordinateSystem}}.  The User Agent MAY optionally use predictive techniques to estimate what these values will be at the time that the next frame will be displayed to the user. Subsequent calls to {{getFrameData()}} MUST provide the same values until the next call to {{submitFrame()}}. Returns true if the the provided {{VRFrameData}} object was successfully updated, false otherwise.
 
 <dfn method for="VRDisplay">requestAnimationFrame()</dfn>
 Functionally equivalent to <a href="https://www.w3.org/TR/html51/webappapis.html#animation-frames">window.requestAnimationFrame</a> when the {{VRDisplay}} is not presenting. When the {{VRDisplay}} is presenting the callback is called at the native refresh rate of the {{VRDisplay}}.
@@ -222,28 +239,47 @@ The following code demonstrates presenting a simple rendering loop to a {{VRDisp
 
 <pre class="lang-js">
 var frameData = new VRFrameData();
+var attachedFrameOfReference;
+var stationaryFrameOfReference;
+
+function drawAttachedGeometry {
+  // Draw UI for 3DOF experience
+}
+
+function drawStationaryGeometry {
+  // Draw UI for standing experience
+}
 
 // Render a single frame of VR data.
 function onVRFrame() {
   // Schedule the next frame's callback
   vrDisplay.requestAnimationFrame(onVRFrame);
-
-  // Poll the VRDisplay for the current frame's matrices and pose
-  vrDisplay.getFrameData(frameData);
-
+    
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  var drawFunction;
+
+  // Attempt to draw world-locked content
+  if (stationaryFrameOfReference && vrDisplay.getFrameData(stationaryFrameOfReference.coordinateSystem, frameData)) {
+    drawFunction = drawStationaryGeometry;
+  }
+  else {
+    // This must always succeed
+    vrDisplay.getFrameData(attachedFrameOfReference.coordinateSystem, frameData);
+    drawFunction = drawStageGeometry;
+  }
 
   // Render to the left eye's view to the left half of the canvas
   gl.viewport(0, 0, canvas.width * 0.5, canvas.height);
   gl.uniformMatrix4fv(projectionMatrixLocation, false, frameData.leftProjectionMatrix);
   gl.uniformMatrix4fv(viewMatrixLocation, false, frameData.leftViewMatrix);
-  drawGeometry();
+  drawFunction();
 
   // Render to the right eye's view to the right half of the canvas
   gl.viewport(canvas.width * 0.5, 0, canvas.width * 0.5, canvas.height);
   gl.uniformMatrix4fv(projectionMatrixLocation, false, frameData.rightProjectionMatrix);
   gl.uniformMatrix4fv(viewMatrixLocation, false, frameData.rightViewMatrix);
-  drawGeometry();
+  drawFunction();
 
   // Indicate that we are ready to present the rendered frame to the VRDisplay
   vrDisplay.submitFrame();
@@ -251,11 +287,14 @@ function onVRFrame() {
 
 // Begin presentation (must be called within a user gesture)
 vrDisplay.requestPresent([{ source: canvas }]).then(function() {
+  stationaryFrameOfReference = vrDisplay.createStationaryFrameOfReference();
+  attachedFrameOfReference = vrDisplay.createAttachedFrameOfReference();
   vrDisplay.requestAnimationFrame(onVRFrame);
 });
 </pre>
 
 </div>
+
 
 ## VRLayer ## {#interface-vrlayer}
 
@@ -310,10 +349,10 @@ interface VRDisplayCapabilities {
 ### Attributes ### {#vrdisplaycapabilities-attributes}
 
 <dfn attribute for="VRDisplayCapabilities">hasPosition</dfn>
-The {{hasPosition}} attribute MUST return whether the {{VRDisplay}} is capable of tracking its position.
+The {{VRDisplayCapabilities}}.{{VRDisplayCapabilities/hasPosition}} attribute MUST return whether the {{VRDisplay}} is capable of tracking its position.
 
 <dfn attribute for="VRDisplayCapabilities">hasOrientation</dfn>
-The {{hasOrientation}} attribute MUST return whether the {{VRDisplay}} is capable of tracking its orientation.
+The {{VRDisplayCapabilities}}.{{VRDisplayCapabilities/hasOrientation}} attribute MUST return whether the {{VRDisplay}} is capable of tracking its orientation.
 
 <dfn attribute for="VRDisplayCapabilities">hasExternalDisplay</dfn>
 The {{hasExternalDisplay}} attribute MUST return whether the {{VRDisplay}} is separate from the device's primary display. If presenting VR content will obscure other content on the device, this should be false. When false, the application should not attempt to mirror VR content or update non-VR UI because that content will not be visible.
@@ -368,20 +407,7 @@ interface VRPose {
 ### Attributes ### {#vrpose-attributes}
 
 <dfn attribute for="VRPose">position</dfn>
-Position of the {{VRDisplay}} as a 3D vector. Position is given in meters from
-an origin point, which is either the position the sensor was first read at or
-the position of the sensor at the point that {{resetPose()}} was last called.
-The coordinate system uses these axis definitions:
-
-* Positive X is to the user's right.
-* Positive Y is up.
-* Positive Z is behind the user.
-
-All positions are given relative to the identity orientation in sitting space.
-MAY be null if the sensor is incapable of providing positional data. User agents
-MAY provide emulated position values through techniques such as neck modeling,
-but when doing so SHOULD report {{VRDisplayCapabilities}}.{{hasPosition}} as
-false. When not null MUST be a three-element array.
+Position of the {{VRDisplay}} as a 3D vector. Position is given in meters from the origin of the {{VRCoordinateSystem}} used to calculate the {{VRPose}}. When not null MUST be a three-element array.
 
 <dfn attribute for="VRPose">linearVelocity</dfn>
 Linear velocity of the sensor given in meters per second. MAY be null if the
@@ -394,12 +420,7 @@ null if the sensor is incapable of providing linear acceleration. When not null
 MUST be a three-element array.
 
 <dfn attribute for="VRPose">orientation</dfn>
-Orientation of the sensor as a quaternion. The orientation yaw (rotation around
-the Y axis) is relative to the initial yaw of the sensor when it was first read
-or the yaw of the sensor at the point that {{resetPose()}} was last called. An
-orientation of [0, 0, 0, 1] is considered to be "forward". MAY be null if the
-sensor is incapable of providing orientation data. When not null MUST be a
-four-element array.
+Orientation of the sensor as a quaternion. The orientation yaw (rotation around the Y axis) is relative to the {{VRCoordinateSystem}} used to calculate the {{VRPose}}. An orientation of [0, 0, 0, 1] is considered to be "forward". MAY be null if the sensor is incapable of providing orientation data. When not null MUST be a four-element array.
 
 <dfn attribute for="VRPose">angularVelocity</dfn>
 Angular velocity of the sensor given in radians per second. MAY be null if the
@@ -460,6 +481,7 @@ function poseToMatrix (pose) {
 </pre>
 </div>
 
+
 ## VRFrameData ## {#interface-vrframedata}
 
 The VRFrameData interface represents all the information needed to render a single frame of a VR scene.
@@ -502,7 +524,7 @@ A 4x4 matrix describing the projection to be used for the right eye's rendering,
 A 4x4 matrix describing the view transform to be used for the right eye's rendering, given as a 16 element array in column major order. Represents the inverse of the model matrix of the right eye in sitting space. This value may be passed directly to WebGL's uniformMatrix4fv function. It is highly recommended that applications use this matrix when rendering.
 
 <dfn attribute for="VRFrameData">pose</dfn>
-The {{VRPose}} of the {{VRDisplay}} at {{timestamp}}.
+The {{VRPose}} of the {{VRDisplay}} at {{VRFrameData/timestamp}}.
 
 ## VREyeParameters ## {#interface-vreyeparameters}
 
@@ -546,28 +568,93 @@ canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
 </div>
 
 
-## VRStageParameters ## {#interface-vrstageparameters}
+## VRCoordinateSystem ## {#interface-vrcoordinatesystem}
 
-The {{VRStageParameters}} interface represents the values describing the the stage/play area for devices that support room-scale experiences.
+The VRCoordinateSystem interface defines a cartesian coordinate system measured in meters.  {{VRPose}} and {{VRFrameData}} matrices are always expressed in the context of a VRCoordinateSystem.
+The coordinate system uses these axis definitions:
+
+* Positive X is to the right of the origin.
+* Positive Y is up from the origin.
+* Positive Z is behind the origin.
 
 <pre class="idl">
-interface VRStageParameters {
-  readonly attribute Float32Array sittingToStandingTransform;
+interface VRCoordinateSystem {
+  boolean getTransformTo(VRCoordinateSystem coordinateSystem, Float32Array transform);
+};
+</pre>
+
+### Attributes ### {#vrcoordinatesystem-attributes}
+
+<dfn method for="VRCoordinateSystem">getTransformTo()</dfn>
+Fills in the transform to the supplied {{VRCoordinateSystem}} as a 16-element array containing the components of a 4x4 affine transformation matrix in column-major order.  Returns true if a transform exists between the origins of the two {{VRCoordianteSystem}} objects at the current frame's timestamp.  Returns false if the two {{VRCoordinateSystem}}s cannot be related for any reason (e.g. positional tracking loss).
+
+
+## VRAttachedFrameOfReference ## {#interface-vrattachedframeofreference}
+
+The VRAttachedFrameOfReference interface defines a reference frame that is body-locked to the {{VRDisplay}} from which it was created.  The {{VRAttachedFrameOfReference}}'s {{VRCoordinateSystem}} should be used for 3DOF experiences (such as 360 video) and as a fallback for other experiences when positional tracking is unavailable.
+
+This frame of reference has a fixed yaw relative to the user's surroundings that points in the direction the user was facing when the frame of reference was created.  The roll and pitch are relative to gravity.
+
+Data returned in calls to {{VRDisplay}}.{{getFrameData()}} using the reference frame's {{VRCoordinateSystem}} will be relative to that fixed orientation and may also include position data if the {{VRDisplay}} performs neck-modeling.
+
+<pre class="idl">
+interface VRAttachedFrameOfReference {
+  readonly attribute VRCoordinateSystem coordinateSystem;
+};
+</pre>
+
+### Attributes ### {#vrattachedframeofreference-attributes}
+
+<dfn attribute for="VRAttachedFrameOfReference">coordinateSystem</dfn>
+This attribute is the {{VRCoordinateSystem}} to be used when relating objects from this body-locked frame of reference to objects in other coordinate systems.
+
+
+## VRStationaryFrameOfReference ## {#interface-vrstationaryframeofreference}
+
+The VRStationaryFrameOfReference interface defines a frame of reference with positional tracking that remains stable relative to the {{VRDisplay}} from which it was created.  The {{VRStationaryFrameOfReference}}'s {{VRCoordinateSystem}} should be used for seated or world-scale experiences.  
+
+Objects rendered using the {{VRCoordinateSystem}} belonging to this frame of reference stay generally in place as the user moves the device around. However, as the user travels large distances and the device adjusts its understanding of the surroundings, objects may drift relative to the world. 
+
+This frame of reference's roll and pitch are relative to gravity while the initial yaw and origin position were based on the {{VRDisplay}} from which the frame of reference was created.
+
+As this frame of reference may become untrackable due to environmental changes, developers are encouraged to be prepared fall back to body-locked content rendered using a {{VRAttachedFrameOfReference}}.
+
+<pre class="idl">
+interface VRStationaryFrameOfReference {
+  readonly attribute VRCoordinateSystem coordinateSystem;
+};
+</pre>
+
+### Attributes ### {#vrstationaryframeofreference-attributes}
+
+<dfn attribute for="VRStationaryFrameOfReference">coordinateSystem</dfn>
+This attribute is the {{VRCoordinateSystem}} to be used when relating objects from this stationary frame of reference to objects in other coodinate systems.
+
+
+## VRStageFrameOfReference ## {#interface-vrstageframeofreference}
+
+The {{VRStageFrameOfReference}} interface represents the stage/play area for devices that support room-scale experiences.  The values within {{VRStageFrameOfReference}} may change after any rendering frame is submitted as the user may re-configure their environment at any time.
+
+Room-scale experiences are expected to use the VRStageFrameOfReference rather than the VRStationaryFrameOfReference, otherwise they may experience drift on world-scale devices.
+
+<pre class="idl">
+interface VRStageFrameOfReference {
+  readonly attribute VRCoordinateSystem coordinateSystem;
 
   readonly attribute float sizeX;
   readonly attribute float sizeZ;
 };
 </pre>
 
-### Attributes ### {#vrstageparameters-attributes}
+### Attributes ### {#vrstageframeofreference-attributes}
 
-<dfn attribute for="VRStageParameters">sittingToStandingTransform</dfn>
-The {{sittingToStandingTransform}} attribute is a 16-element array containing the components of a 4x4 affine transformation matrix in column-major order. This matrix transforms the sitting-space view matrices of {{VRFrameData}} to standing-space. Multiplying the inverse of this matrix with the {{leftViewMatrix}} or {{rightViewMatrix}} will result in a standing space view matrix for the respective eye.
+<dfn attribute for="VRStageFrameOfReference">coordinateSystem</dfn>
+This attribute is the {{VRCoordinateSystem}} to be used when relating objects in this stage to objects in other coordinate systems.
 
-<dfn attribute for="VRStageParameters">sizeX</dfn>
+<dfn attribute for="VRStageFrameOfReference">sizeX</dfn>
 Width of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.
 
-<dfn attribute for="VRStageParameters">sizeZ</dfn>
+<dfn attribute for="VRStageFrameOfReference">sizeZ</dfn>
 Depth of the play-area bounds in meters. The bounds are defined as an axis-aligned rectangle on the floor. The center of the rectangle is at (0,0,0) in standing-space coordinates. These bounds are defined for safety purposes. Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of this rectangle.
 
 
@@ -722,6 +809,11 @@ Example of declaring an iframe that is allowed to access VR features.
 <pre class="idl">
 partial interface Gamepad {
   readonly attribute unsigned long displayId;
+  
+  readonly attribute boolean hasPosition;
+  readonly attribute boolean hasOrientation;
+  
+  boolean getPose(VRCoordinateSystem coordinateSystem, VRPose pose);
 };
 </pre>
 
@@ -729,6 +821,15 @@ partial interface Gamepad {
 
 <dfn attribute for="Gamepad" id="gamepad-getvrdisplays-attribute">displayId</dfn>
 Return the {{VRDisplay/displayId}} of the {{VRDisplay}} this {{Gamepad}} is associated with. A {{Gamepad}} is considered to be associated with a {{VRDisplay}} if it reports a pose that is in the same space as the {{VRDisplay}} pose. If the {{Gamepad}} is not associated with a {{VRDisplay}} should return 0.
+
+<dfn attribute for="Gamepad">hasPosition</dfn>
+The {{Gamepad}}.{{Gamepad/hasPosition}} attribute MUST return whether the {{Gamepad}}'s position is capable of being tracked.
+
+<dfn attribute for="Gamepad">hasOrientation</dfn>
+The {{Gamepad}}.{{Gamepad/hasOrientation}} attribute MUST return whether the {{Gamepad}}'s orientation is capable of being tracked.
+
+<dfn method for="Gamepad">getPose()</dfn>
+Retrieves a {{VRPose}} in the supplied {{VRCoordinateSystem}} for the current {{VRFrameData}}.  This function will return false if the Gamepad's pose cannot be expressed in the supplied {{VRCoordinateSystem}} and will return true otherwise.
 
 # Security Considerations # {#security}
 
