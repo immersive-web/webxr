@@ -1421,7 +1421,7 @@ pre.idl.highlight { color: #708090; }
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebVR</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-10-30">30 October 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-11-01">1 November 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1610,6 +1610,16 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
   <span class="kt">attribute</span> <span class="kt">double</span> <a class="nv idl-code" data-link-type="attribute" data-type="double" href="#dom-vrdisplay-depthfar" id="ref-for-dom-vrdisplay-depthfar-1">depthFar</a>;
 
   /**
+   * Maximum effective width of the VRLayer source, in pixels.
+   */
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">unsigned</span> <span class="kt">long</span> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="unsigned long" href="#dom-vrdisplay-maximumrenderwidth" id="ref-for-dom-vrdisplay-maximumrenderwidth-1">maximumRenderWidth</a>;
+
+  /**
+   * Maximum effective height of the VRLayer source, in pixels.
+   */
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">unsigned</span> <span class="kt">long</span> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="unsigned long" href="#dom-vrdisplay-maximumrenderheight" id="ref-for-dom-vrdisplay-maximumrenderheight-1">maximumRenderHeight</a>;
+
+  /**
    * Recommended width of the VRLayer source, in pixels.
    */
   <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">unsigned</span> <span class="kt">long</span> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="unsigned long" href="#dom-vrdisplay-recommendedrenderwidth" id="ref-for-dom-vrdisplay-recommendedrenderwidth-1">recommendedRenderWidth</a>;
@@ -1677,8 +1687,10 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="method" data-export="" id="dom-vrdisplay-submitframe">submitFrame()</dfn> Captures the current state of the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-8">VRLayer</a></code> currently being presented and displays it on the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-22">VRDisplay</a></code>. It is assumed that the frame was rendered using the <code class="idl"><a data-link-type="idl" href="#vrpose" id="ref-for-vrpose-2">VRPose</a></code> and matrices provided by the last call to <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getframedata" id="ref-for-dom-vrdisplay-getframedata-4">getFrameData()</a></code>. If <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-getframedata" id="ref-for-dom-vrdisplay-getframedata-5">getFrameData()</a></code> was not called prior to calling <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-3">submitFrame()</a></code> the user agent MAY warn the user of potentially malformed visuals or prevent the frame from being shown at all.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" id="dom-vrdisplay-depthnear">depthNear</dfn> Z-depth defining the near plane of the eye view frustum. Enables mapping of values in the render target depth attachment to scene coordinates. Initially set to 0.01.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" id="dom-vrdisplay-depthfar">depthFar</dfn> Z-depth defining the far plane of the eye view frustum. Enables mapping of values in the render target depth attachment to scene coordinates. Initially set to 10000.0.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" id="dom-vrdisplay-recommendedrenderwidth">recommendedRenderWidth</dfn> Recommended width of the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-9">VRLayer</a></code> source in pixels. The width reported SHOULD ideally be the resolution at which the final image presented to the user has a 1:1 pixel ratio at the center of the user’s view after any distortion the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-23">VRDisplay</a></code> will apply. The width reported MAY be lower than that, however, if the underlying platform recommends it for performance reasons. The width reported MUST be large enough to contain both the left and right eye viewports.</p>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" id="dom-vrdisplay-recommendedrenderheight">recommendedRenderHeight</dfn> Recommended height of the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-10">VRLayer</a></code> source in pixels. The height reported SHOULD ideally be the resolution at which the final image presented to the user has a 1:1 pixel ratio at the center of the user’s view after any distortion the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-24">VRDisplay</a></code> will apply. The height reported MAY be lower than that, however, if the underlying platform recommends it for performance reasons.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" id="dom-vrdisplay-maximumrenderwidth">maximumRenderWidth</dfn> Width of the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-9">VRLayer</a></code> source in pixels at which the final image presented to the user will have a 1:1 pixel ratio at the center of the user’s view after any distortion the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-23">VRDisplay</a></code> will apply. Applications should use a <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-10">VRLayer</a></code> source with this width to achive maximum quality. The width reported MUST be large enough to contain both the left and right eye viewports in the default side-by-side orientaion.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" id="dom-vrdisplay-maximumrenderheight">maximumRenderHeight</dfn> Height of the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-11">VRLayer</a></code> source in pixels at which the final image presented to the user will have a 1:1 pixel ratio at the center of the user’s view after any distortion the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-24">VRDisplay</a></code> will apply. Applications should use a <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-12">VRLayer</a></code> source with this height to achive maximum quality.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" id="dom-vrdisplay-recommendedrenderwidth">recommendedRenderWidth</dfn> Recommended width of the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-13">VRLayer</a></code> source in pixels that will provide a good balance of quality and performance for most applications. The width reported MAY be the same as the <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-maximumrenderwidth" id="ref-for-dom-vrdisplay-maximumrenderwidth-2">maximumRenderWidth</a></code> or MAY be lower if the underlying platform recommends it for performance reasons. The width reported MUST be large enough to contain both the left and right eye viewports in the default side-by-side orientaion.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDisplay" data-dfn-type="attribute" data-export="" id="dom-vrdisplay-recommendedrenderheight">recommendedRenderHeight</dfn> Recommended height of the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-14">VRLayer</a></code> source in pixels that will provide a good balance of quality and performance for most applications. The height reported MAY be the same as the <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-maximumrenderheight" id="ref-for-dom-vrdisplay-maximumrenderheight-2">maximumRenderHeight</a></code> or MAY be lower if the underlying platform recommends it for performance reasons.</p>
    <div class="example" id="example-471f1826">
     <a class="self-link" href="#example-471f1826"></a> The following code demonstrates presenting a simple rendering loop to a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-25">VRDisplay</a></code>. 
 <pre class="lang-js highlight"><span class="kd">var</span> frameData <span class="o">=</span> <span class="k">new</span> VRFrameData<span class="p">(</span><span class="p">)</span><span class="p">;</span>
@@ -1716,7 +1728,7 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
 </pre>
    </div>
    <h3 class="heading settled" data-level="2.2" id="interface-vrlayer"><span class="secno">2.2. </span><span class="content">VRLayer</span><a class="self-link" href="#interface-vrlayer"></a></h3>
-   <p>The <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-11">VRLayer</a></code> interface is provided to a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-26">VRDisplay</a></code> and presented in the HMD.</p>
+   <p>The <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-15">VRLayer</a></code> interface is provided to a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-26">VRDisplay</a></code> and presented in the HMD.</p>
 <pre class="idl highlight def" id="vrlayer-dictionary"><span class="kt">typedef</span> (<a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/scripting.html#htmlcanvaselement">HTMLCanvasElement</a> <span class="kt">or</span>
          <a class="n" data-link-type="idl-name" href="https://wiki.whatwg.org/wiki/OffscreenCanvas#offscreencanvas">OffscreenCanvas</a>) <dfn class="nv dfn-paneled idl-code" data-dfn-type="typedef" data-export="" id="typedefdef-vrsource">VRSource</dfn>;
 
@@ -1940,7 +1952,7 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    <p>While not directly affecting the API interface and Web IDL, WebVR implementations should maintain the user’s expectations of privacy, security, and comfort on the Web by adhering to the following guidelines:</p>
    <ul>
     <li data-md="">
-     <p>Trusted UI must be drawn by an independent rendering context who’s state is isolated from that of the WebGL contexts provided as a <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-12">VRLayer</a></code> source to a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-62">VRDisplay</a></code>.</p>
+     <p>Trusted UI must be drawn by an independent rendering context who’s state is isolated from that of the WebGL contexts provided as a <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-16">VRLayer</a></code> source to a <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-62">VRDisplay</a></code>.</p>
     <li data-md="">
      <p>A "VR Compositor" runs asynchronously from content, responsible for compositing the trusted and untrusted content. If content is not performant or does not submit frames, or terminates unexpectedly the browser should be able to continue presenting a responsive front-end.</p>
     <li data-md="">
@@ -1954,7 +1966,7 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
     <li data-md="">
      <p>Non-focused tabs are allowed to enumerate <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/gamepad/#gamepad">Gamepad</a></code>s and <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-64">VRDisplay</a></code>s but will see last received state or default values.</p>
     <li data-md="">
-     <p>To prevent CORS-related vulnerabilities, each page will see a new instance of objects returned by the WebVR API, such as <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-65">VRDisplay</a></code>. Attributes such as the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-13">VRLayer</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-5">source</a></code> set by one page must not be able to be read by another.</p>
+     <p>To prevent CORS-related vulnerabilities, each page will see a new instance of objects returned by the WebVR API, such as <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-65">VRDisplay</a></code>. Attributes such as the <code class="idl"><a data-link-type="idl" href="#dictdef-vrlayer" id="ref-for-dictdef-vrlayer-17">VRLayer</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-5">source</a></code> set by one page must not be able to be read by another.</p>
    </ul>
    <h2 class="heading settled" data-level="4" id="ack"><span class="secno">4. </span><span class="content">Acknowledgements</span><a class="self-link" href="#ack"></a></h2>
   </main>
@@ -2144,6 +2156,8 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    <li><a href="#dom-vrframedata-leftviewmatrix">leftViewMatrix</a><span>, in §2.5.1</span>
    <li><a href="#dom-vrpose-linearacceleration">linearAcceleration</a><span>, in §2.4.1</span>
    <li><a href="#dom-vrpose-linearvelocity">linearVelocity</a><span>, in §2.4.1</span>
+   <li><a href="#dom-vrdisplay-maximumrenderheight">maximumRenderHeight</a><span>, in §2.1.1</span>
+   <li><a href="#dom-vrdisplay-maximumrenderwidth">maximumRenderWidth</a><span>, in §2.1.1</span>
    <li><a href="#dom-vrdisplaycapabilities-maxlayers">maxLayers</a><span>, in §2.3.1</span>
    <li><a href="#dom-vrdisplayeventreason-mounted">mounted</a><span>, in §2.8.1</span>
    <li><a href="#dom-vrdisplayeventreason-navigation">navigation</a><span>, in §2.8.1</span>
@@ -2334,6 +2348,16 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    * attachment to scene coordinates. Initially set to 10000.0.
    */
   <span class="kt">attribute</span> <span class="kt">double</span> <a class="nv idl-code" data-link-type="attribute" data-type="double" href="#dom-vrdisplay-depthfar">depthFar</a>;
+
+  /**
+   * Maximum effective width of the VRLayer source, in pixels.
+   */
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">unsigned</span> <span class="kt">long</span> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="unsigned long" href="#dom-vrdisplay-maximumrenderwidth">maximumRenderWidth</a>;
+
+  /**
+   * Maximum effective height of the VRLayer source, in pixels.
+   */
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">unsigned</span> <span class="kt">long</span> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="unsigned long" href="#dom-vrdisplay-maximumrenderheight">maximumRenderHeight</a>;
 
   /**
    * Recommended width of the VRLayer source, in pixels.
@@ -2604,6 +2628,20 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
     <li><a href="#ref-for-dom-vrdisplay-depthfar-1">2.1. VRDisplay</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="dom-vrdisplay-maximumrenderwidth">
+   <b><a href="#dom-vrdisplay-maximumrenderwidth">#dom-vrdisplay-maximumrenderwidth</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-vrdisplay-maximumrenderwidth-1">2.1. VRDisplay</a>
+    <li><a href="#ref-for-dom-vrdisplay-maximumrenderwidth-2">2.1.1. Attributes</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-vrdisplay-maximumrenderheight">
+   <b><a href="#dom-vrdisplay-maximumrenderheight">#dom-vrdisplay-maximumrenderheight</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-vrdisplay-maximumrenderheight-1">2.1. VRDisplay</a>
+    <li><a href="#ref-for-dom-vrdisplay-maximumrenderheight-2">2.1.1. Attributes</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="dom-vrdisplay-recommendedrenderwidth">
    <b><a href="#dom-vrdisplay-recommendedrenderwidth">#dom-vrdisplay-recommendedrenderwidth</a></b><b>Referenced in:</b>
    <ul>
@@ -2626,9 +2664,9 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    <b><a href="#dictdef-vrlayer">#dictdef-vrlayer</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dictdef-vrlayer-1">2.1. VRDisplay</a> <a href="#ref-for-dictdef-vrlayer-2">(2)</a>
-    <li><a href="#ref-for-dictdef-vrlayer-3">2.1.1. Attributes</a> <a href="#ref-for-dictdef-vrlayer-4">(2)</a> <a href="#ref-for-dictdef-vrlayer-5">(3)</a> <a href="#ref-for-dictdef-vrlayer-6">(4)</a> <a href="#ref-for-dictdef-vrlayer-7">(5)</a> <a href="#ref-for-dictdef-vrlayer-8">(6)</a> <a href="#ref-for-dictdef-vrlayer-9">(7)</a> <a href="#ref-for-dictdef-vrlayer-10">(8)</a>
-    <li><a href="#ref-for-dictdef-vrlayer-11">2.2. VRLayer</a>
-    <li><a href="#ref-for-dictdef-vrlayer-12">3. Security Considerations</a> <a href="#ref-for-dictdef-vrlayer-13">(2)</a>
+    <li><a href="#ref-for-dictdef-vrlayer-3">2.1.1. Attributes</a> <a href="#ref-for-dictdef-vrlayer-4">(2)</a> <a href="#ref-for-dictdef-vrlayer-5">(3)</a> <a href="#ref-for-dictdef-vrlayer-6">(4)</a> <a href="#ref-for-dictdef-vrlayer-7">(5)</a> <a href="#ref-for-dictdef-vrlayer-8">(6)</a> <a href="#ref-for-dictdef-vrlayer-9">(7)</a> <a href="#ref-for-dictdef-vrlayer-10">(8)</a> <a href="#ref-for-dictdef-vrlayer-11">(9)</a> <a href="#ref-for-dictdef-vrlayer-12">(10)</a> <a href="#ref-for-dictdef-vrlayer-13">(11)</a> <a href="#ref-for-dictdef-vrlayer-14">(12)</a>
+    <li><a href="#ref-for-dictdef-vrlayer-15">2.2. VRLayer</a>
+    <li><a href="#ref-for-dictdef-vrlayer-16">3. Security Considerations</a> <a href="#ref-for-dictdef-vrlayer-17">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-vrlayer-source">

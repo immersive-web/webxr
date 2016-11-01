@@ -113,6 +113,16 @@ interface VRDisplay : EventTarget {
   attribute double depthFar;
 
   /**
+   * Maximum effective width of the VRLayer source, in pixels.
+   */
+  readonly attribute unsigned long maximumRenderWidth;
+
+  /**
+   * Maximum effective height of the VRLayer source, in pixels.
+   */
+  readonly attribute unsigned long maximumRenderHeight;
+
+  /**
    * Recommended width of the VRLayer source, in pixels.
    */
   readonly attribute unsigned long recommendedRenderWidth;
@@ -208,11 +218,17 @@ Z-depth defining the near plane of the eye view frustum. Enables mapping of valu
 <dfn attribute for="VRDisplay">depthFar</dfn>
 Z-depth defining the far plane of the eye view frustum. Enables mapping of values in the render target depth attachment to scene coordinates. Initially set to 10000.0.
 
+<dfn attribute for="VRDisplay">maximumRenderWidth</dfn>
+Width of the {{VRLayer}} source in pixels at which the final image presented to the user will have a 1:1 pixel ratio at the center of the user's view after any distortion the {{VRDisplay}} will apply. Applications should use a {{VRLayer}} source with this width to achive maximum quality. The width reported MUST be large enough to contain both the left and right eye viewports in the default side-by-side orientaion.
+
+<dfn attribute for="VRDisplay">maximumRenderHeight</dfn>
+Height of the {{VRLayer}} source in pixels at which the final image presented to the user will have a 1:1 pixel ratio at the center of the user's view after any distortion the {{VRDisplay}} will apply. Applications should use a {{VRLayer}} source with this height to achive maximum quality.
+
 <dfn attribute for="VRDisplay">recommendedRenderWidth</dfn>
-Recommended width of the {{VRLayer}} source in pixels. The width reported SHOULD ideally be the resolution at which the final image presented to the user has a 1:1 pixel ratio at the center of the user's view after any distortion the {{VRDisplay}} will apply. The width reported MAY be lower than that, however, if the underlying platform recommends it for performance reasons. The width reported MUST be large enough to contain both the left and right eye viewports.
+Recommended width of the {{VRLayer}} source in pixels that will provide a good balance of quality and performance for most applications. The width reported MAY be the same as the {{maximumRenderWidth}} or MAY be lower if the underlying platform recommends it for performance reasons. The width reported MUST be large enough to contain both the left and right eye viewports in the default side-by-side orientaion.
 
 <dfn attribute for="VRDisplay">recommendedRenderHeight</dfn>
-Recommended height of the {{VRLayer}} source in pixels. The height reported SHOULD ideally be the resolution at which the final image presented to the user has a 1:1 pixel ratio at the center of the user's view after any distortion the {{VRDisplay}} will apply. The height reported MAY be lower than that, however, if the underlying platform recommends it for performance reasons.
+Recommended height of the {{VRLayer}} source in pixels that will provide a good balance of quality and performance for most applications. The height reported MAY be the same as the {{maximumRenderHeight}} or MAY be lower if the underlying platform recommends it for performance reasons.
 
 <div class="example">
 The following code demonstrates presenting a simple rendering loop to a {{VRDisplay}}.
