@@ -284,7 +284,7 @@ dictionary VRLayerInit {
 ### Attributes ### {#vrlayer-attributes}
 
 <dfn attribute for="VRLayer">source</dfn>
-The {{VRLayer/source}} attribute defines the canvas whose contents will be presented by the {{VRDisplay}} when {{VRDisplay}}.{{submitFrame()}} is called.
+The {{VRLayer/source}} attribute defines the canvas whose contents will be presented by the {{VRDisplay}} when {{VRDisplay}}.{{submitFrame()}} is called. Upon being passed into {{requestPresent()}} the current backbuffer of the source's context MAY be lost, even if the context was created with the <code>preserveDrawingBuffer</code> context creation attribute set to <code>true</code>.
 
 <dfn attribute for="VRLayer">leftBounds</dfn>
 The {{VRLayer/leftBounds}} attribute contains four values defining the texture bounds within the {{VRLayer/source}} canvas to present to the eye in UV space: <code>[0]</code> left offset of the bounds (0.0 - 1.0); <code>[1]</code> top offset of the bounds (0.0 - 1.0); <code>[2]</code> width of the bounds (0.0 - 1.0); <code>[3]</code> height of the bounds (0.0 - 1.0). The {{VRLayer/leftBounds}} MUST default to <code>[0.0, 0.0, 0.5, 1.0]</code>.
