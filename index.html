@@ -968,6 +968,8 @@ Possible extra rowspan handling
 		/* Reverse color scheme */
 		color: black;
 		border-color: #3980B5;
+		border-bottom-width: 3px !important;
+		margin-bottom: 0px !important;
 	}
 	.toc a:visited {
 		border-color: #054572;
@@ -1174,7 +1176,7 @@ Possible extra rowspan handling
 		}
 	}
 </style>
-  <meta content="Bikeshed 1.0.0" name="generator">
+  <meta content="Bikeshed version 258032c803e345e163711f5fb2ec268425c773d2" name="generator">
 <style>/* style-md-lists */
 
             /* This is a weird hack for me not yet following the commonmark spec
@@ -1421,7 +1423,7 @@ pre.idl.highlight { color: #708090; }
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebVR</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-11-09">9 November 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-11-15">15 November 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1640,13 +1642,13 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
    * make no assumptions of frame rate or vsync behavior as the HMD runs
    * asynchronously from other displays and at differing refresh rates.
    */
-  <span class="kt">long</span> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-requestanimationframe" id="ref-for-dom-vrdisplay-requestanimationframe-1">requestAnimationFrame</a>(<a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/browsers.html#framerequestcallback">FrameRequestCallback</a> <dfn class="nv idl-code" data-dfn-for="VRDisplay/requestAnimationFrame(callback)" data-dfn-type="argument" data-export="" id="dom-vrdisplay-requestanimationframe-callback-callback">callback<a class="self-link" href="#dom-vrdisplay-requestanimationframe-callback-callback"></a></dfn>);
+  <span class="kt">unsigned</span> <span class="kt">long</span> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-requestanimationframe" id="ref-for-dom-vrdisplay-requestanimationframe-1">requestAnimationFrame</a>(<a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/browsers.html#framerequestcallback">FrameRequestCallback</a> <dfn class="nv idl-code" data-dfn-for="VRDisplay/requestAnimationFrame(callback)" data-dfn-type="argument" data-export="" id="dom-vrdisplay-requestanimationframe-callback-callback">callback<a class="self-link" href="#dom-vrdisplay-requestanimationframe-callback-callback"></a></dfn>);
 
   /**
    * Passing the value returned by `requestAnimationFrame` to
    * `cancelAnimationFrame` will unregister the callback.
    */
-  <span class="kt">void</span> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-cancelanimationframe" id="ref-for-dom-vrdisplay-cancelanimationframe-1">cancelAnimationFrame</a>(<span class="kt">long</span> <dfn class="nv idl-code" data-dfn-for="VRDisplay/cancelAnimationFrame(handle)" data-dfn-type="argument" data-export="" id="dom-vrdisplay-cancelanimationframe-handle-handle">handle<a class="self-link" href="#dom-vrdisplay-cancelanimationframe-handle-handle"></a></dfn>);
+  <span class="kt">void</span> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-cancelanimationframe" id="ref-for-dom-vrdisplay-cancelanimationframe-1">cancelAnimationFrame</a>(<span class="kt">unsigned</span> <span class="kt">long</span> <dfn class="nv idl-code" data-dfn-for="VRDisplay/cancelAnimationFrame(handle)" data-dfn-type="argument" data-export="" id="dom-vrdisplay-cancelanimationframe-handle-handle">handle<a class="self-link" href="#dom-vrdisplay-cancelanimationframe-handle-handle"></a></dfn>);
 
   /**
    * Begin presenting to the VRDisplay. Must be called in response to a user gesture.
@@ -1747,7 +1749,7 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
 };
 </pre>
    <h4 class="heading settled" data-level="2.2.1" id="vrlayer-attributes"><span class="secno">2.2.1. </span><span class="content">Attributes</span><a class="self-link" href="#vrlayer-attributes"></a></h4>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRLayer" data-dfn-type="attribute" data-export="" id="dom-vrlayer-source">source</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-2">source</a></code> attribute defines the canvas whose contents will be presented by the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-26">VRDisplay</a></code> when <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-27">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-5">submitFrame()</a></code> is called. Upon calling <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-6">requestPresent()</a></code> the current backbuffer of the source’s context MAY be lost, even if the context was created with the <code>preserveDrawingBuffer</code> context creation attribute set to <code>true</code>.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRLayer" data-dfn-type="attribute" data-export="" id="dom-vrlayer-source">source</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-2">source</a></code> attribute defines the canvas whose contents will be presented by the <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-26">VRDisplay</a></code> when <code class="idl"><a data-link-type="idl" href="#vrdisplay" id="ref-for-vrdisplay-27">VRDisplay</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-submitframe" id="ref-for-dom-vrdisplay-submitframe-5">submitFrame()</a></code> is called. Upon being passed into <code class="idl"><a data-link-type="idl" href="#dom-vrdisplay-requestpresent" id="ref-for-dom-vrdisplay-requestpresent-6">requestPresent()</a></code> the current backbuffer of the source’s context MAY be lost, even if the context was created with the <code>preserveDrawingBuffer</code> context creation attribute set to <code>true</code>.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRLayer" data-dfn-type="attribute" data-export="" id="dom-vrlayer-leftbounds">leftBounds</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-leftbounds" id="ref-for-dom-vrlayer-leftbounds-2">leftBounds</a></code> attribute contains four values defining the texture bounds within the <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-3">source</a></code> canvas to present to the eye in UV space: <code>[0]</code> left offset of the bounds (0.0 - 1.0); <code>[1]</code> top offset of the bounds (0.0 - 1.0); <code>[2]</code> width of the bounds (0.0 - 1.0); <code>[3]</code> height of the bounds (0.0 - 1.0). The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-leftbounds" id="ref-for-dom-vrlayer-leftbounds-3">leftBounds</a></code> MUST default to <code>[0.0, 0.0, 0.5, 1.0]</code>.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRLayer" data-dfn-type="attribute" data-export="" id="dom-vrlayer-rightbounds">rightBounds</dfn> The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-rightbounds" id="ref-for-dom-vrlayer-rightbounds-2">rightBounds</a></code> attribute contains four values defining the texture bounds rectangle within the <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-source" id="ref-for-dom-vrlayer-source-4">source</a></code> canvas to present to the eye in UV space: <code>[0]</code> left offset of the bounds (0.0 - 1.0); <code>[1]</code> top offset of the bounds (0.0 - 1.0); <code>[2]</code> width of the bounds (0.0 - 1.0); <code>[3]</code> height of the bounds (0.0 - 1.0). The <code class="idl"><a data-link-type="idl" href="#dom-vrlayer-rightbounds" id="ref-for-dom-vrlayer-rightbounds-3">rightBounds</a></code> MUST default to <code>[0.5, 0.0, 0.5, 1.0]</code>.</p>
    <h3 class="heading settled" data-level="2.3" id="interface-vrdisplaycapabilities"><span class="secno">2.3. </span><span class="content">VRDisplayCapabilities</span><a class="self-link" href="#interface-vrdisplaycapabilities"></a></h3>
@@ -2480,13 +2482,13 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">(</span><span clas
    * make no assumptions of frame rate or vsync behavior as the HMD runs
    * asynchronously from other displays and at differing refresh rates.
    */
-  <span class="kt">long</span> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-requestanimationframe">requestAnimationFrame</a>(<a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/browsers.html#framerequestcallback">FrameRequestCallback</a> <a class="nv" href="#dom-vrdisplay-requestanimationframe-callback-callback">callback</a>);
+  <span class="kt">unsigned</span> <span class="kt">long</span> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-requestanimationframe">requestAnimationFrame</a>(<a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/browsers.html#framerequestcallback">FrameRequestCallback</a> <a class="nv" href="#dom-vrdisplay-requestanimationframe-callback-callback">callback</a>);
 
   /**
    * Passing the value returned by `requestAnimationFrame` to
    * `cancelAnimationFrame` will unregister the callback.
    */
-  <span class="kt">void</span> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-cancelanimationframe">cancelAnimationFrame</a>(<span class="kt">long</span> <a class="nv" href="#dom-vrdisplay-cancelanimationframe-handle-handle">handle</a>);
+  <span class="kt">void</span> <a class="nv idl-code" data-link-type="method" href="#dom-vrdisplay-cancelanimationframe">cancelAnimationFrame</a>(<span class="kt">unsigned</span> <span class="kt">long</span> <a class="nv" href="#dom-vrdisplay-cancelanimationframe-handle-handle">handle</a>);
 
   /**
    * Begin presenting to the VRDisplay. Must be called in response to a user gesture.
