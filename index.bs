@@ -579,20 +579,16 @@ Depth of the play-area bounds in meters. The bounds are defined as an axis-align
 partial interface Navigator {
   Promise&lt;sequence&lt;VRDisplay&gt;&gt; getVRDisplays();
   readonly attribute FrozenArray&lt;VRDisplay&gt; activeVRDisplays;
-  readonly attribute boolean vrEnabled;
 };
 </pre>
 
 ### Attributes ### {#navigator-attributes}
 
 <dfn method for="Navigator" id="navigator-getvrdisplays-attribute">getVRDisplays()</dfn>
-Return a Promise which resolves to a list of available {{VRDisplay}}s. The Promise MUST be rejected if the {{Document}} object is inside an iframe that does not have the {{allowvr}} attribute set.
+Return a Promise which resolves to a list of available {{VRDisplay}}s.
 
 <dfn attribute for="Navigator" id="navigator-activevrdisplays-attribute">activeVRDisplays</dfn>
 {{activeVRDisplays}} includes every {{VRDisplay}} that is currently presenting.
-
-<dfn attribute for="Navigator" id="navigator-vrenabled-attribute">vrEnabled</dfn>
-The {{vrEnabled}} attribute's getter must return true if the context object is allowed to use the feature indicated by attribute name {{allowvr}} and VR is supported, and false otherwise.
 
 <div class="example">
 The following code finds the first available {{VRDisplay}}.
@@ -696,28 +692,6 @@ A user agent MAY dispatch this event type to indicate that presentation to the d
 
 <dfn event for="Window" id="window-vrdisplaypresentchange-event">onvrdisplaypresentchange</dfn>
 A user agent MUST dispatch this event type to indicate that a {{VRDisplay}} has begun or ended VR presentation. This event should not fire on subsequent calls to {{requestPresent()}} after the {{VRDisplay}} has already begun VR presentation.
-
-
-## allowvr iframe attribute ## {#allowvr-attribute}
-
-<pre class="idl">
-partial interface HTMLIFrameElement {
-  attribute boolean allowvr;
-};
-</pre>
-
-The {{allowvr}} attribute is a boolean attribute. When specified, it indicates that {{Document}} objects in the iframe element's browsing context are to be allowed to access VR devices (if it's not blocked for other reasons, e.g. there is another ancestor iframe without this attribute set). {{Document}} objects in an iframe element without this attribute should reject calls to {{getVRDisplays()}} and should not fire any {{VRDisplayEvent}}.
-
-<div class="example">
-Example of declaring an iframe that is allowed to access VR features.
-
-<pre class="lang-js">
-  &lt;body&gt;
-    &lt;p&gt;This iframe is allowed to use VR features&lt;/p&gt;
-    &lt;iframe src="https://vr.example.com/embed?id=67445" allowvr&gt;&lt;/iframe&gt;
-  &lt;/body&gt;
-</pre>
-</div>
 
 ## Gamepad Interface extension ## {#interface-gamepad}
 
