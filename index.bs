@@ -642,7 +642,7 @@ The {{VRDisplay}} has detected that the user has taken it off.
 [Constructor(DOMString type, VRDisplayEventInit eventInitDict)]
 interface VRDisplayEvent : Event {
   readonly attribute VRDisplay display;
-  readonly attribute VRDisplayEventReason? reason;
+  readonly attribute VRDisplayEventReason reason;
 };
 
 dictionary VRDisplayEventInit : EventInit {
