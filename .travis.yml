@@ -1,0 +1,18 @@
+language: node_js
+
+node_js:
+  - '6'
+
+cache:
+  directories:
+    - node_modules
+
+script:
+  - npm run build
+
+after_success:
+  - "./scripts/deploy.sh"
+
+env:
+  global:
+    secure: WXL9NW/jX5EW9KPjNyJum5Z2nGpCw1VJCo9RYGWHXAUcR9XyfdNlIKK978UD1IhUO6V181vOhSs7cR8D0T8zyc8WSggZs7KlVMhY19nn9yM8PJ2L30x1p1rQoWXtKDyoBjxX4OXthSS9fze8jSvNZTuKq2DmzGS5o7IId8g0/wCQGrqSmNps4bRa/V1THeA76jSS7a6S/QxveNgx0CRUEhqV7Kvh3iu4jA768D0L4l+OyFpvnf4ncYsGM8ZhNpaCirepl0pi3Z4rDea9eOrvZ9ukSvo3LPy6LBsyPoWYE/XItJz2XEvByeXfYGw0i7AqQvWuiEsIMouUw52dWmF+3EZmEGHy7fBs1F8ZhpQ6EvaeAIVoyVg+tPVO7aoY5Eqj6i8xk7WysllyFR9I7h80Z1YL8Jm45qOUuqI4HwRi1DlK3J2Xcm/GB5v22AD/DJbl2zK2yRj+JBQhx322SezkiqGNE2ovmGriTv3FuHB1RDGHO3RNYIZpvMgUG6C5gf39pif+yFYBeVxu77kEvQJkkesapwwtnITgAEyQEj+qyO3Y6vIYfeS+YjyK+HS9h5Vr7L484l79MRwc5n77BKmmQZQTwd5LpnzNJDQJsCNIr48w1+4Phde0SuwJA6fpufvCrdegiCSxtqlMbaYjJJ60zNYBJR97C+/i9RcC5Tc/LUQ=
