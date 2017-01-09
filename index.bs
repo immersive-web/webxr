@@ -262,8 +262,13 @@ vrDisplay.requestPresent([ new CanvasVRLayer(canvas) ]).then(function() {
 The {{VRLayer}} is the base interface for the various layer types that can be
 provided to a {{requestPresent()}} call to be presented in the HMD.
 
+Each type of {{VRLayer}} should have a corresponding {{VRLayerReadOnly}} that
+will be returned by {{getLayers()}}.
+
 <pre class="idl" id="vrlayer-interface">
 interface VRLayer {};
+
+interface VRLayerReadOnly {};
 </pre>
 
 ## CanvasVRLayer ## {#interface-canvasvrlayer}
@@ -282,13 +287,23 @@ interface CanvasVRLayer : VRLayer {
   attribute float renderScale;
   attribute boolean resizeSourceOnPresent;
 
-  readonly attribute unsigned long renderWidth;
-  readonly attribute unsigned long renderHeight;
-
   void setLeftBounds(float left, float bottom, float right, float top);
   sequence&lt;float&gt; getLeftBounds();
 
   void setRightBounds(float left, float bottom, float right, float top);
+  sequence&lt;float&gt; getRightBounds();
+};
+
+interface CanvasVRLayerReadOnly : VRLayerReadOnly {
+  readonly attribute CanvasVRSource source;
+
+  readonly attribute float renderScale;
+  readonly attribute boolean resizeSourceOnPresent;
+
+  readonly attribute unsigned long renderWidth;
+  readonly attribute unsigned long renderHeight;
+
+  sequence&lt;float&gt; getLeftBounds();
   sequence&lt;float&gt; getRightBounds();
 };
 </pre>
@@ -301,7 +316,7 @@ The {{CanvasVRLayer/source}} attribute defines the canvas whose contents will be
 <dfn attribute for="CanvasVRLayer">renderScale</dfn>
 Specifies the ratio of the number of canvas pixels to the {{VRDisplay}}'s physical pixels at the center of the output image. Note that a value of <code>1.0</code> will generally result in a larger canvas resolution than the {{VRDisplay}}'s physical screen in order to allow for corrective distiorion. Specifying a lower value can improve performance. A value of <code>0.0</code> instructs the user agent to select a ratio that provides a good balance between quality and performance for most applications on the current {{VRDisplay}}. Calls to {{requestPresent()}} MUST be rejected if the renderScale of any {{CanvasVRLayer}} provided is less than <code>0.0</code>.
 
-If this value was set to <code>0.0</code> when the {{CanvasVRLayer}} is passed to {{requestPresent()}} the {{renderScale}} of the corresponding {{CanvasVRLayer}} returned from {{getLayers()}} should be set to the value selected by the user agent.
+If this value was set to <code>0.0</code> when the {{CanvasVRLayer}} is passed to {{requestPresent()}} the {{renderScale}} of the corresponding {{CanvasVRLayerReadOnly}} returned from {{getLayers()}} should be set to the value selected by the user agent.
 
 The default value for {{renderScale}} MUST be <code>0.0</code>.
 
@@ -309,12 +324,6 @@ The default value for {{renderScale}} MUST be <code>0.0</code>.
 If <code>true</code> the {{CanvasVRLayer/source}} of any {{CanvasVRLayer}} provided to {{requestPresent()}} will be resized to the width and height computed from the {{renderScale}} before the promise resolves or the vrdisplaypresentchange events are fired. If {{requestPresent()}} is rejected the {{CanvasVRLayer/source}} dimensions will not be changed.
 
 The default value for {{resizeSourceOnPresent}} MUST be <code>true</code>.
-
-<dfn attribute for="CanvasVRLayer">renderWidth</dfn>
-When a {{CanvasVRLayer}} is returned from {{getLayers()}} this attribute MUST be set to the width computed from the {{renderScale}} when the {{CanvasVRLayer}} was passed to {{requestPresent()}}.
-
-<dfn attribute for="CanvasVRLayer">renderHeight</dfn>
-When a {{CanvasVRLayer}} is returned from {{getLayers()}} this attribute MUST be set to the height computed from the {{renderScale}} when the {{CanvasVRLayer}} was passed to {{requestPresent()}}.
 
 <dfn method for="CanvasVRLayer">setLeftBounds()</dfn>
 Sets the portion of the canvas to present to the left eye. Bounds are specified as texture coordinates in UV space (0.0 - 1.0), where <code>(0, 0)</code> represents the bottom left corner of the canvas and <code>(1, 1)</code> represents the top right corner. Calls to {{requestPresent()}} MUST be rejected if the left bounds of any {{CanvasVRLayer}} provided specifies bounds where <code>right</code> is less than <code>left</code> or <code>top</code> is less than <code>bottom</code>.
@@ -331,6 +340,12 @@ The default right eye bounds MUST be <code>(0.5, 0.0, 1.0, 1.0)</code>.
 
 <dfn method for="CanvasVRLayer">getRightBounds()</dfn>
 Returns the current texture bounds for the right eye as a sequence of floats in the following order: <code>[left, bottom, right, top]</code>
+
+<dfn attribute for="CanvasVRLayerReadOnly">renderWidth</dfn>
+When a {{CanvasVRLayerReadOnly}} is returned from {{getLayers()}} this attribute MUST be set to the width computed from the {{renderScale}} when the associated {{CanvasVRLayer}} was passed to {{requestPresent()}}.
+
+<dfn attribute for="CanvasVRLayerReadOnly">renderHeight</dfn>
+When a {{CanvasVRLayerReadOnly}} is returned from {{getLayers()}} this attribute MUST be set to the height computed from the {{renderScale}} when the associated {{CanvasVRLayer}} was passed to {{requestPresent()}}.
 
 ## VRDisplayCapabilities ## {#interface-vrdisplaycapabilities}
 
