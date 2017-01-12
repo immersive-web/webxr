@@ -23,9 +23,6 @@ Abstract: This specification describes support for accessing virtual reality (VR
 </pre>
 
 <pre class="anchors">
-urlPrefix: http://www.w3.org/TR/hr-time/
-    type: typedef; text: DOMHighResTimeStamp
-    type: dfn; text: timestamp origin
 urlPrefix: https://wiki.whatwg.org/wiki/OffscreenCanvas
     type: typedef; text: OffscreenCanvas
     type: dfn; text: offscreen canvas
@@ -353,7 +350,7 @@ interface VRFieldOfView {
 
 ## VRPose ## {#interface-vrpose}
 
-The VRPose interface represents a sensor's state at a given timestamp.
+The VRPose interface represents a sensor's state.
 
 <pre class="idl">
 interface VRPose {
@@ -469,8 +466,6 @@ The VRFrameData interface represents all the information needed to render a sing
 <pre class="idl">
 [Constructor]
 interface VRFrameData {
-  readonly attribute DOMHighResTimeStamp timestamp;
-
   readonly attribute Float32Array leftProjectionMatrix;
   readonly attribute Float32Array leftViewMatrix;
 
@@ -482,14 +477,6 @@ interface VRFrameData {
 </pre>
 
 ### Attributes ### {#vrframedata-attributes}
-
-<dfn attribute for="VRFrameData">timestamp</dfn>
-Monotonically increasing value that allows the author to determine if position
-state data been updated from the hardware. Since values are monotonically
-increasing, they can be compared to determine the ordering of updates, as newer
-values will always be greater than or equal to older values. The timestamp
-starts at 0 the first time {{getFrameData()}} is invoked for a given
-{{VRDisplay}}.
 
 <dfn attribute for="VRFrameData">leftProjectionMatrix</dfn>
 A 4x4 matrix describing the projection to be used for the left eye's rendering, given as a 16 element array in column major order. This value may be passed directly to WebGL's uniformMatrix4fv function. It is highly recommended that applications use this matrix without modification. Failure to use this projection matrix when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
@@ -504,7 +491,7 @@ A 4x4 matrix describing the projection to be used for the right eye's rendering,
 A 4x4 matrix describing the view transform to be used for the right eye's rendering, given as a 16 element array in column major order. Represents the inverse of the model matrix of the right eye in sitting space. This value may be passed directly to WebGL's uniformMatrix4fv function. It is highly recommended that applications use this matrix when rendering.
 
 <dfn attribute for="VRFrameData">pose</dfn>
-The {{VRPose}} of the {{VRDisplay}} at {{timestamp}}.
+The {{VRPose}} of the {{VRDisplay}} at the point the {{VRFrameData}} was produced.
 
 ## VREyeParameters ## {#interface-vreyeparameters}
 
