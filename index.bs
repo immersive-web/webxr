@@ -491,7 +491,7 @@ A 4x4 matrix describing the projection to be used for the right eye's rendering,
 A 4x4 matrix describing the view transform to be used for the right eye's rendering, given as a 16 element array in column major order. Represents the inverse of the model matrix of the right eye in sitting space. This value may be passed directly to WebGL's uniformMatrix4fv function. It is highly recommended that applications use this matrix when rendering.
 
 <dfn attribute for="VRFrameData">pose</dfn>
-The {{VRPose}} of the {{VRDisplay}} at the point the {{VRFrameData}} was produced.
+The {{VRPose}} of the {{VRDisplay}} at the time the {{VRFrameData}} was produced.
 
 ## VREyeParameters ## {#interface-vreyeparameters}
 
