@@ -226,19 +226,19 @@ Captures the current state of the {{VRLayer}} currently being presented and disp
 The UA MUST provide the following new events. The corresponding events must be of type {{VRDisplayEvent}} and must fire on a {{VRDisplay}} object. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
 
 <dfn event for="VRDisplay" id="vrdisplay-onactivate-event">onactivate</dfn>
-A user agent MAY dispatch this event type to indicate that something has occured which suggests the {{VRDisplay}} should be presented to. For example, if the {{VRDisplay}} is capable of detecting when the user has put it on, this event SHOULD fire when they do so with the reason "mounted".
+A user agent MAY dispatch this event type to indicate that something has occured which suggests the {{VRDisplay}} should be presented to. For example, if the {{VRDisplay}} is capable of detecting when the user has put it on, this event SHOULD fire when they do so with the {{VRDisplayEvent/reason}} "mounted".
 
 <dfn event for="VRDisplay" id="vrdisplay-ondeactivate-event">ondeactivate</dfn>
-A user agent MAY dispatch this event type to indicate that something has occured which suggests the {{VRDisplay}} should exit presentation. For example, if the {{VRDisplay}} is capable of detecting when the user has taken it off, this event SHOULD fire when they do so with the reason "unmounted".
+A user agent MAY dispatch this event type to indicate that something has occured which suggests the {{VRDisplay}} should exit presentation. For example, if the {{VRDisplay}} is capable of detecting when the user has taken it off, this event SHOULD fire when they do so with the {{VRDisplayEvent/reason}} "unmounted".
 
 <dfn event for="VRDisplay" id="vrdisplay-onblur-event">onblur</dfn>
-A user agent MAY dispatch this event type to indicate that presentation to the {{VRDisplay}} by the page is paused by the user agent, OS, or VR hardware. While a {{VRDisplay}} is blurred it does not lose it's presenting status ({{isPresenting}} continues to report true) but {{getFrameData()}} returns false without updating the provided {{VRFrameData}} and {{getPose()}} returns null. This is to prevent tracking while the user interacts with potentially sensitive UI. For example: A user agent SHOULD blur the presenting application when the user is typing a URL into the browser with a virtual keyboard, otherwise the presenting page may be able to guess the URL the user is entering by tracking their head motions.
+A user agent MAY dispatch this event type to indicate that presentation to the {{VRDisplay}} by the page is paused by the user agent, OS, or VR hardware. While a {{VRDisplay}} is blurred it does not lose it's presenting status ({{isPresenting}} continues to report true) but {{getFrameData()}} returns false without updating the provided {{VRFrameData}} and {{getPose()}} returns null. This is to prevent tracking while the user interacts with potentially sensitive UI. For example: A user agent SHOULD blur the presenting application when the user is typing a URL into the browser with a virtual keyboard, otherwise the presenting page may be able to guess the URL the user is entering by tracking their head motions. The event {{VRDisplayEvent/reason}} MUST be set to "blur".
 
 <dfn event for="VRDisplay" id="vrdisplay-onfocus-event">onfocus</dfn>
-A user agent MAY dispatch this event type to indicate that presentation to the {{VRDisplay}} by the page has resumed after being blurred.
+A user agent MAY dispatch this event type to indicate that presentation to the {{VRDisplay}} by the page has resumed after being blurred. The event {{VRDisplayEvent/reason}} MUST be set to "focus".
 
 <dfn event for="VRDisplay" id="vrdisplay-onpresentchange-event">onpresentchange</dfn>
-A user agent MUST dispatch this event type to indicate that the {{VRDisplay}} has begun or ended VR presentation. This event should not fire on subsequent calls to {{requestPresent()}} after the {{VRDisplay}} has already begun VR presentation.
+A user agent MUST dispatch this event type to indicate that the {{VRDisplay}} has begun or ended VR presentation. This event should not fire on subsequent calls to {{requestPresent()}} after the {{VRDisplay}} has already begun VR presentation. If presentation has begun the event {{VRDisplayEvent/reason}} MUST be set to "presentstart". If presentation has ended the event {{VRDisplayEvent/reason}} MUST be set to "presentend".
 
 <div class="example">
 The following code demonstrates presenting a simple rendering loop to a {{VRDisplay}}.
@@ -587,8 +587,8 @@ Depth of the play-area bounds in meters. The bounds are defined as an axis-align
 
 <pre class="idl">
 interface VR : EventTarget {
+  Promise&lt;boolean&gt; getAvailability();
   Promise&lt;sequence&lt;VRDisplay&gt;&gt; getDisplays();
-  readonly attribute FrozenArray&lt;VRDisplay&gt; activeDisplays;
 
   attribute EventHandler ondisplayconnect;
   attribute EventHandler ondisplaydisconnect;
@@ -598,11 +598,15 @@ interface VR : EventTarget {
 
 ### Attributes ### {#vr-attributes}
 
+<dfn method for="VR" id="vr-getavailability-attribute">getAvailability()</dfn>
+Return a Promise and run the following steps in parallel:
+
+* If the user has configured the UA to return a particular answer from this function for the current origin, queue a task to resolve the promise with the configured answer, and abort these steps.
+* If the UA has the ability to use WebVR, queue a task to resolve the promise with true.
+* Otherwise, queue a task to resolve the promise with false.
+
 <dfn method for="VR" id="vr-getdisplays-attribute">getDisplays()</dfn>
 Return a Promise which resolves to a list of available {{VRDisplay}}s.
-
-<dfn attribute for="VR" id="vr-activedisplays-attribute">activeDisplays</dfn>
-{{activeDisplays}} includes every {{VRDisplay}} that is currently presenting.
 
 ### Events ### {#vr-events}
 
@@ -650,7 +654,11 @@ enum VRDisplayEventReason {
   "mounted",
   "navigation",
   "requested",
-  "unmounted"
+  "unmounted",
+  "blur",
+  "focus",
+  "presentstart",
+  "presentend",
 };
 </pre>
 
@@ -667,6 +675,19 @@ The user agent MAY request start VR presentation mode. This allows user agents t
 
 <dfn enum-value for="VRDisplayEventReason">unmounted</dfn>
 The {{VRDisplay}} has detected that the user has taken it off.
+
+<dfn enum-value for="VRDisplayEventReason">blur</dfn>
+The {{VRDisplay}} has lost focus.
+
+<dfn enum-value for="VRDisplayEventReason">focus</dfn>
+The {{VRDisplay}} has regained focus.
+
+<dfn enum-value for="VRDisplayEventReason">presentstart</dfn>
+The {{VRDisplay}} has entered presentation mode.
+
+<dfn enum-value for="VRDisplayEventReason">presentend</dfn>
+The {{VRDisplay}} has exited presentation mode.
+
 
 ## VRDisplayEvent ## {#interface-vrdisplayevent}
 
