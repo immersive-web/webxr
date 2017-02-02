@@ -221,24 +221,39 @@ Returns an array with the {{VRLayer}} currently being presented. MUST return an 
 <dfn method for="VRDisplay">submitFrame()</dfn>
 Captures the current state of the {{VRLayer}} currently being presented and displays it on the {{VRDisplay}}. It is assumed that the frame was rendered using the {{VRPose}} and matrices provided by the last call to {{getFrameData()}}. If {{getFrameData()}} was not called prior to calling {{submitFrame()}} the user agent MAY warn the user of potentially malformed visuals or prevent the frame from being shown at all.
 
+<dfn attribute for="VRDisplay">onactivate</dfn>
+An <a>Event handler IDL attribute</a> for the {{activate}} event type.
+
+<dfn attribute for="VRDisplay">ondeactivate</dfn>
+An <a>Event handler IDL attribute</a> for the {{deactivate}} event type.
+
+<dfn attribute for="VRDisplay">onblur</dfn>
+An <a>Event handler IDL attribute</a> for the {{VRDisplay/blur}} event type.
+
+<dfn attribute for="VRDisplay">onfocus</dfn>
+An <a>Event handler IDL attribute</a> for the {{VRDisplay/focus}} event type.
+
+<dfn attribute for="VRDisplay">onpresentchange</dfn>
+An <a>Event handler IDL attribute</a> for the {{presentchange}} event type.
+
 ### Events ### {#vrdisplay-events}
 
 The UA MUST provide the following new events. The corresponding events must be of type {{VRDisplayEvent}} and must fire on a {{VRDisplay}} object. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
 
-<dfn event for="VRDisplay" id="vrdisplay-onactivate-event">onactivate</dfn>
-A user agent MAY dispatch this event type to indicate that something has occured which suggests the {{VRDisplay}} should be presented to. For example, if the {{VRDisplay}} is capable of detecting when the user has put it on, this event SHOULD fire when they do so with the {{VRDisplayEvent/reason}} "mounted".
+<dfn event for="VRDisplay" id="vrdisplay-onactivate-event">activate</dfn>
+A UA MAY dispatch this event type to indicate that something has occurred which suggests the {{VRDisplay}} should be presented to. For example, if the {{VRDisplay}} is capable of detecting when the user has put it on, this event SHOULD fire when they do so with the {{VRDisplayEvent/reason}} "mounted".
 
-<dfn event for="VRDisplay" id="vrdisplay-ondeactivate-event">ondeactivate</dfn>
-A user agent MAY dispatch this event type to indicate that something has occured which suggests the {{VRDisplay}} should exit presentation. For example, if the {{VRDisplay}} is capable of detecting when the user has taken it off, this event SHOULD fire when they do so with the {{VRDisplayEvent/reason}} "unmounted".
+<dfn event for="VRDisplay" id="vrdisplay-deactivate-event">deactivate</dfn>
+A UA MAY dispatch this event type to indicate that something has occurred which suggests the {{VRDisplay}} should exit presentation. For example, if the {{VRDisplay}} is capable of detecting when the user has taken it off, this event SHOULD fire when they do so with the {{VRDisplayEvent/reason}} "unmounted".
 
-<dfn event for="VRDisplay" id="vrdisplay-onblur-event">onblur</dfn>
-A user agent MAY dispatch this event type to indicate that presentation to the {{VRDisplay}} by the page is paused by the user agent, OS, or VR hardware. While a {{VRDisplay}} is blurred it does not lose it's presenting status ({{isPresenting}} continues to report true) but {{getFrameData()}} returns false without updating the provided {{VRFrameData}} and {{getPose()}} returns null. This is to prevent tracking while the user interacts with potentially sensitive UI. For example: A user agent SHOULD blur the presenting application when the user is typing a URL into the browser with a virtual keyboard, otherwise the presenting page may be able to guess the URL the user is entering by tracking their head motions. The event {{VRDisplayEvent/reason}} MUST be set to "blur".
+<dfn event for="VRDisplay" id="vrdisplay-blur-event">blur</dfn>
+A UA MAY dispatch this event type to indicate that presentation to the {{VRDisplay}} by the page is paused by the user agent, OS, or VR hardware. While a {{VRDisplay}} is blurred it does not lose it's presenting status ({{isPresenting}} continues to report true) but {{getFrameData()}} returns false without updating the provided {{VRFrameData}} and {{getPose()}} returns null. This is to prevent tracking while the user interacts with potentially sensitive UI. For example: A user agent SHOULD blur the presenting application when the user is typing a URL into the browser with a virtual keyboard, otherwise the presenting page may be able to guess the URL the user is entering by tracking their head motions. The event {{VRDisplayEvent/reason}} MUST be set to "blur".
 
-<dfn event for="VRDisplay" id="vrdisplay-onfocus-event">onfocus</dfn>
-A user agent MAY dispatch this event type to indicate that presentation to the {{VRDisplay}} by the page has resumed after being blurred. The event {{VRDisplayEvent/reason}} MUST be set to "focus".
+<dfn event for="VRDisplay" id="vrdisplay-focus-event">focus</dfn>
+A UA MAY dispatch this event type to indicate that presentation to the {{VRDisplay}} by the page has resumed after being blurred. The event {{VRDisplayEvent/reason}} MUST be set to "focus".
 
-<dfn event for="VRDisplay" id="vrdisplay-onpresentchange-event">onpresentchange</dfn>
-A user agent MUST dispatch this event type to indicate that the {{VRDisplay}} has begun or ended VR presentation. This event should not fire on subsequent calls to {{requestPresent()}} after the {{VRDisplay}} has already begun VR presentation. If presentation has begun the event {{VRDisplayEvent/reason}} MUST be set to "presentstart". If presentation has ended the event {{VRDisplayEvent/reason}} MUST be set to "presentend".
+<dfn event for="VRDisplay" id="vrdisplay-presentchange-event">presentchange</dfn>
+A UA MUST dispatch this event type to indicate that the {{VRDisplay}} has begun or ended VR presentation. This event should not fire on subsequent calls to {{requestPresent()}} after the {{VRDisplay}} has already begun VR presentation. If presentation has begun the event {{VRDisplayEvent/reason}} MUST be set to "presentstart". If presentation has ended the event {{VRDisplayEvent/reason}} MUST be set to "presentend".
 
 <div class="example">
 The following code demonstrates presenting a simple rendering loop to a {{VRDisplay}}.
@@ -601,25 +616,34 @@ interface VR : EventTarget {
 <dfn method for="VR" id="vr-getavailability-attribute">getAvailability()</dfn>
 Return a Promise and run the following steps in parallel:
 
-* If the user has configured the UA to return a particular answer from this function for the current origin, queue a task to resolve the promise with the configured answer, and abort these steps.
-* If the UA has the ability to use WebVR, queue a task to resolve the promise with true.
-* Otherwise, queue a task to resolve the promise with false.
+0. If the user has configured the UA to return a particular answer from this function for the current origin, queue a task to resolve the promise with the configured answer, and abort these steps.
+1. If the UA has the ability to use WebVR, queue a task to resolve the promise with true.
+2. Otherwise, queue a task to resolve the promise with false.
 
-<dfn method for="VR" id="vr-getdisplays-attribute">getDisplays()</dfn>
+<dfn method for="VR" id="vr-getdisplays-method">getDisplays()</dfn>
 Return a Promise which resolves to a list of available {{VRDisplay}}s.
+
+<dfn attribute for="VR" id="vr-ondisplayconnect-attribute">ondisplayconnect</dfn>
+An <a>Event handler IDL attribute</a> for the {{displayconnect}} event type.
+
+<dfn attribute for="VR" id="vr-ondisplaydisconnect-attribute">ondisplaydisconnect</dfn>
+An <a>Event handler IDL attribute</a> for the {{displaydisconnect}} event type.
+
+<dfn attribute for="VR" id="vr-onnavigate-attribute">onnavigate</dfn>
+An <a>Event handler IDL attribute</a> for the {{navigate}} event type.
 
 ### Events ### {#vr-events}
 
 The UA MUST provide the following new events. The corresponding events must be of type {{VRDisplayEvent}} and must fire on the {{VR}} object. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
 
-<dfn event for="VR" id="vr-ondisplayconnect-event">ondisplayconnect</dfn>
-A user agent MAY dispatch this event type to indicate that a {{VRDisplay}} has been connected.
+<dfn event for="VR" id="vr-displayconnect-event">displayconnect</dfn>
+A UA MAY dispatch this event type to indicate that a {{VRDisplay}} has been connected.
 
-<dfn event for="VR" id="vr-ondisplaydisconnect-event">ondisplaydisconnect</dfn>
-A user agent MAY dispatch this event type to indicate that a {{VRDisplay}} has been disconnected.
+<dfn event for="VR" id="vr-displaydisconnect-event">displaydisconnect</dfn>
+A UA MAY dispatch this event type to indicate that a {{VRDisplay}} has been disconnected.
 
-<dfn event for="VR" id="vr-ondisplaynavigate-event">onnavigate</dfn>
-A user agent MAY dispatch this event type to indicate that the current page has been navigated to from a page that was actively presenting VR content. The current page can call {{requestPresent()}} in response to this event in order to stay in VR presentation mode.
+<dfn event for="VR" id="vr-navigate-event">navigate</dfn>
+A UA MAY dispatch this event type to indicate that the current page has been navigated to from a browsing context that was actively presenting VR content. The current page can call {{requestPresent()}} in response to this event in order to stay in VR presentation mode.
 
 
 ## Navigator Interface extension ## {#interface-navigator}
@@ -736,6 +760,6 @@ While not directly affecting the API interface and Web IDL, WebVR implementation
 * The {{VRDisplay}} pose and other VR inputs are only updated for the focused page.
 * The Gamepad API will be updated such that the gamepad inputs are only updated for the focused page.
 * Non-focused tabs are allowed to enumerate {{Gamepad}}s and {{VRDisplay}}s but will see last received state or default values.
-* To prevent CORS-related vulnerabilities, each page will see a new instance of objects returned by the WebVR API, such as {{VRDisplay}}. Attributes such as the {{VRLayer}}.{{VRLayer/source}} set by one page must not be able to be read by another.
+* To prevent CORS-related vulnerabilities, each page will see a new instance of objects returned by the WebVR API, such as {{VRDisplay}}. Attributes such as the {{VRLayer/source}} set by one page must not be able to be read by another.
 
 # Acknowledgements # {#ack}
