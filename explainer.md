@@ -44,7 +44,7 @@ The basic steps any WebVR application will go through are:
 
  1. Request a list of the available VR displays.
  2. Checks to see if the desired display supports the presentation modes the application needs.
- 3. If so, application advertise VR functionality to the user.
+ 3. If so, application advertises VR functionality to the user.
  4. User performs an action that indicates they want to enter VR mode.
  5. Request a VR session to present VR content with.
  6. Begin a render loop that produces graphical frames to be displayed on the VR display.
@@ -398,9 +398,9 @@ vrSession.addEventListener('resetpose', vrSessionEvent => {
 
 ### Page navigation
 
-WebVR applications can, like any web page, link to other pages. In the context of a VR scene this is handled by setting `window.location` to the desired URL when the user performs some action. If the page being linked to is not VR-capable the user will either have to remove the VR display to view it (which th UA should explicitly instruct them to do) or the page could be shown as a 2D page in a VR browser.
+WebVR applications can, like any web page, link to other pages. In the context of a VR scene this is handled by setting `window.location` to the desired URL when the user performs some action. If the page being linked to is not VR-capable the user will either have to remove the VR display to view it (which the UA should explicitly instruct them to do) or the page could be shown as a 2D page in a VR browser.
 
-If the page being navigated to is VR capable, however, it's frequently desriable to allow the user to immediately begin using a VR session for that page as well, so that the user feels as though they are navigating through a single continous VR experience. To achive this the page can handle the `navigate` event, fired on the `navigator.vr` object. This event provides the `VRDisplay` that the previous page was presenting to and a `VRSession` that's compatible with the one the previous page was using.
+If the page being navigated to is VR capable, however, it's frequently desirable to allow the user to immediately begin using a VR session for that page as well, so that the user feels as though they are navigating through a single continuous VR experience. To achieve this the page can handle the `navigate` event, fired on the `navigator.vr` object. This event provides the `VRDisplay` that the previous page was presenting to and a `VRSession` that's compatible with the one the previous page was using.
 
 To indicate to indicate that you wish to continue presenting VR content on this page the handler must call `event.preventDefault()`.
 
