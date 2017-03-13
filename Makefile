@@ -1,19 +1,21 @@
-.PHONY: all index.html archive/prerelease/1.1/index.html
+.PHONY: all spec/latest/index.html spec/1.1/index.html
 
-all: index.html archive/prerelease/1.1/index.html
+all: latest 1.1
 
-latest: index.html
+latest: spec/latest/index.html
 
-wip: index_wip.html
+1.1: spec/1.1/index.html
 
-index.html: index.bs
-	curl https://api.csswg.org/bikeshed/ -F file=@index.bs -F output=err
-	curl https://api.csswg.org/bikeshed/ -F file=@index.bs -F force=1 > index.html | tee
+spec/latest/index.html: spec/latest/index.bs
+	curl https://api.csswg.org/bikeshed/ -F file=@spec/latest/index.bs -F output=err
+	curl https://api.csswg.org/bikeshed/ -F file=@spec/latest/index.bs -F force=1 > spec/latest/index.html | tee
 
-index_wip.html: index_wip.bs
-	curl https://api.csswg.org/bikeshed/ -F file=@index_wip.bs -F output=err
-	curl https://api.csswg.org/bikeshed/ -F file=@index_wip.bs -F force=1 > index_wip.html | tee
+spec/1.1/index.html: spec/1.1/index.bs
+	curl https://api.csswg.org/bikeshed/ -F file=@spec/1.1/index.bs -F output=err
+	curl https://api.csswg.org/bikeshed/ -F file=@spec/1.1/index.bs -F force=1 > spec/1.1/index.html | tee
 
-archive/prerelease/1.1/index.html: archive/prerelease/1.1/index.bs
-	curl https://api.csswg.org/bikeshed/ -F file=@archive/prerelease/1.1/index.bs -F output=err
-	curl https://api.csswg.org/bikeshed/ -F file=@archive/prerelease/1.1/index.bs -F force=1 > archive/prerelease/1.1/index.html | tee
+wip: spec/wip/index.html
+
+spec/wip/index.html: spec/wip/index.bs
+	curl https://api.csswg.org/bikeshed/ -F file=@spec/wip/index.bs -F output=err
+	curl https://api.csswg.org/bikeshed/ -F file=@spec/wip/index.bs -F force=1 > spec/wip/index.html | tee

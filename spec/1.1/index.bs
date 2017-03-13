@@ -35,6 +35,11 @@ urlPrefix: https://www.w3.org/TR/html5/
     type: interface; text: Document
 </pre>
 
+
+<b style="color: red; font-size: 1.3em">Deprecated API</b>
+
+<b>The version of the WebVR API represented in this document is does not represent the final shape of the API. While the API is being finalized support for this version may temporarily be available in some browsers.</b>
+
 # Introduction # {#intro}
 
 Hardware that enables Virtual Reality applications requires high-precision, low-latency interfaces to deliver an acceptable experience.
