@@ -15,11 +15,8 @@ Mailing List: public-webvr@mozilla.org
 
 !Archive: <a href="archive/">Previous spec versions</a>
 
-Editor: Vladimir Vukicevic, Mozilla https://mozilla.org/, vladimir@mozilla.com
-Editor: Brandon Jones, Google http://google.com/, bajones@google.com
-Editor: Kearwood Gilbert, Mozilla https://mozilla.org/, kgilbert@mozilla.com
-Editor: Chris Van Wiemeersch, Mozilla https://mozilla.org/, cvan@mozilla.com
-Editor: Nell Waliczek, Microsoft https://microsoft.com/, nell.waliczek@microsoft.com
+Editor: See contributors on GitHub, , https://github.com/w3c/webvr/graphs/contributors
+
 Abstract: This specification describes support for accessing virtual reality (VR) devices, including sensors and head-mounted displays on the Web.
 </pre>
 
