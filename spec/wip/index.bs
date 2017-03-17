@@ -18,6 +18,7 @@ Editor: Brandon Jones, Google http://google.com/, bajones@google.com
 Editor: Kearwood Gilbert, Mozilla https://mozilla.org/, kgilbert@mozilla.com
 Editor: Chris Van Wiemeersch, Mozilla https://mozilla.org/, cvan@mozilla.com
 Editor: Nell Waliczek, Microsoft https://microsoft.com/, nell.waliczek@microsoft.com
+Editor: Rafael Cintron, Microsoft https://microsoft.com/, rafael.cintron@microsoft.com
 Abstract: This specification describes support for accessing virtual reality (VR) devices, including sensors and head-mounted displays on the Web.
 </pre>
 
@@ -576,5 +577,13 @@ partial interface Navigator {
   [SameObject] readonly attribute VR vr;
 };
 </pre>
+
+
+Acknowledgements {#ack}
+===================
+
+The following individuals have contributed to the design of the WebVR standard:
+
+* Sebastian Sylvan, Microsoft https://microsoft.com/, ssylvan@microsoft.com
 
 </section>

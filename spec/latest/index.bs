@@ -18,6 +18,7 @@ Editor: Brandon Jones, Google http://google.com/, bajones@google.com
 Editor: Kearwood Gilbert, Mozilla https://mozilla.org/, kgilbert@mozilla.com
 Editor: Chris Van Wiemeersch, Mozilla https://mozilla.org/, cvan@mozilla.com
 Editor: Nell Waliczek, Microsoft https://microsoft.com/, nell.waliczek@microsoft.com
+Editor: Rafael Cintron, Microsoft https://microsoft.com/, rafael.cintron@microsoft.com
 Abstract: This specification describes support for accessing virtual reality (VR) devices, including sensors and head-mounted displays on the Web.
 </pre>
 
@@ -783,5 +784,12 @@ While not directly affecting the API interface and Web IDL, WebVR implementation
 * The Gamepad API will be updated such that the gamepad inputs are only updated for the focused page.
 * Non-focused tabs are allowed to enumerate {{Gamepad}}s and {{VRDisplay}}s but will see last received state or default values.
 * To prevent CORS-related vulnerabilities, each page will see a new instance of objects returned by the WebVR API, such as {{VRDisplay}}. Attributes such as the {{VRLayer/source}} set by one page must not be able to be read by another.
+
+
+# Acknowledgements # {#ack}
+
+The following individuals have contributed to the design of the WebVR standard:
+
+* Sebastian Sylvan, Microsoft https://microsoft.com/, ssylvan@microsoft.com
 
 </section>
