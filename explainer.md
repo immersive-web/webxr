@@ -124,11 +124,6 @@ function BeginVRSession() {
     glCanvas.width = sourceProperties.width;
     glCanvas.height = sourceProperties.height;
 
-    // The depth range of the scene should be set so that the projection
-    // matrices returned by the session are correct.
-    vrSession.depthNear = 0.1;
-    vrSession.depthFar = 100.0;
-
     // The content that will be shown on the device is
     // defined by the current layer.
     vrCanvasLayer = new VRCanvasLayer(vrSession, glCanvas);
@@ -157,11 +152,6 @@ function TryBeginMagicWindow() {
 
     // Store the session for use later.
     vrSession = session;
-
-    // The depth range of the scene should be set so that the projection
-    // matrices returned by the session are correct.
-    vrSession.depthNear = 0.1;
-    vrSession.depthFar = 100.0;
 
     // The baseLayer is no longer used for presentation in non-exclusive mode,
     // but the canvas dimensions are used to construct the projection matrices.
@@ -193,10 +183,17 @@ let vrFrameOfRef = null;
 
 function OnFirstVRFrame() {
   // The Frame of Reference indicates what the matrices and coordinates the
-  // VRDevice returns are relative to. An "EyeLevel" VRFrameOfReference reports
-  // values relative to the orientation and position where the device first
-  // began tracking.
-  vrFrameOfRef = await vrSession.createFrameOfReference("EyeLevel");
+  // VRDevice returns are relative to.
+  vrFrameOfRef = new VRFrameOfReference(vrSession, {
+      // An "EyeLevel" VRFrameOfReference reports values relative to the
+      // orientation and position where the device first began tracking.
+      type: "EyeLevel",
+
+      // The depth range of the scene should be set so that the projection
+      // matrices returned by the session are correct.
+      depthNear = 0.1,
+      depthFar = 100.0
+    });
 
   OnDrawFrame();
 }
@@ -316,28 +313,28 @@ Beyond the core APIs described above, the WebVR API also exposes several options
 A viewer for 360 photos or videos should not respond to head translation, since the source material is intended to be viewed from a single point. While some headsets naturally function this way (Daydream, Gear VR, Cardboard) it can be useful for app developers to specify that they don't want any positional tracking in the matrices they receive. (This may also provide power savings on some devices, since it may allow some sensors to be turned off.) That can be accomplished by requesting a "HeadModel" `VRFrameOfReference`.
 
 ```js
-let frameOfRef = await vrSession.createFrameOfReference("HeadModel");
+frameOfRef = new VRFrameOfReference(vrSession, { type: "HeadModel" });
 
 // Use frameOfRef as detailed above.
 ```
 
 ### Room-scale tracking and boundaries
 
-Some VR devices have been configured with details about the area they are being used in, including things like where the floor is and what boundaries of the safe space is so that it can be communicated to the user in VR. It can be beneficial to render the virtual scene so that it lines up with the users physical space for added immersion, especially ensuring that the virtual floor and the physical floor align. This is frequently called "room scale" or "standing" VR. It helps the user feel grounded in the virtual space. WebVR refers to this type of bounded, floor relative play space as a "Stage". Applications can take advantage of that space by creating a Stage `VRFrameOfReference`. This will report values relative to the floor, ideally at the center of the room. (In other words the users physical floor is at Y = 0.) Not all `VRDevices` will support this mode, however. `createFrameOfReference` will reject the promise in that case.
+Some VR devices have been configured with details about the area they are being used in, including things like where the floor is and what boundaries of the safe space is so that it can be communicated to the user in VR. It can be beneficial to render the virtual scene so that it lines up with the users physical space for added immersion, especially ensuring that the virtual floor and the physical floor align. This is frequently called "room scale" or "standing" VR. It helps the user feel grounded in the virtual space. WebVR refers to this type of bounded, floor relative play space as a "Stage". Applications can take advantage of that space by creating a Stage `VRFrameOfReference`. This will report values relative to the floor, ideally at the center of the room. (In other words the users physical floor is at Y = 0.) Not all device or sessions will support this mode, however. The `VRFrameOfReference` constructor will throw and exception in that case.
 
 ```js
-// Try to get a frame of reference where the floor is at Y = 0
-vrSession.createFrameOfReference("Stage").then(frame => {
-  frameOfRef = frame;
-}).catch(err => {
-  // "Stage" VRFrameOfReference is not supported.
+try {
+  // Try to get a frame of reference where the floor is at Y = 0
+  frameOfRef = new VRFrameOfReference(vrSession, { type: "Stage" });
+} catch(err) {
+  // "Stage" VRFrameOfReference is not supported by that session.
 
   // In this case the application will want to estimate the position of the
   // floor, perhaps by asking the user's height, and translate the reported
   // values upward by that distance so that the floor appears in approximately
   // the correct position.
-  frameOfRef = await vrSession.createFrameOfReference("EyeLevel");
-});
+  frameOfRef = new VRFrameOfReference(vrSession, { type: "EyeLevel" });
+}
 
 // Use frameOfRef as detailed above, but render the floor of the virtual space at Y = 0;
 ```
@@ -547,9 +544,6 @@ interface VRSession : EventTarget {
   readonly attribute VRDevice device;
   readonly attribute VRSessionCreateParameters createParameters;
 
-  attribute double depthNear;
-  attribute double depthFar;
-
   attribute VRLayer baseLayer;
 
   attribute EventHandler onblur;
@@ -558,7 +552,6 @@ interface VRSession : EventTarget {
 
   VRSourceProperties getSourceProperties(optional double scale);
 
-  Promise<VRFrameOfReference> createFrameOfReference(VRFrameOfReferenceType type);
   VRDevicePose? getDevicePose(VRCoordinateSystem coordinateSystem);
 
   Promise<void> endSession();
@@ -614,7 +607,17 @@ enum VRFrameOfReferenceType {
   "Stage",
 };
 
+dictionary VRFrameOfReferenceInit {
+  VRFrameOfReferenceType type = "EyeLevel";
+  double depthNear = 0.1;
+  double depthFar = 1000.0;
+};
+
+[Constructor(VRSession session, optional VRFrameOfReferenceInit init)]
 interface VRFrameOfReference : VRCoordinateSystem {
+  readonly attribute VRFrameOfReferenceType type;
+  readonly attribute double depthNear;
+  readonly attribute double depthFar;
   readonly attribute VRStageBounds? bounds;
 };
 

@@ -221,13 +221,10 @@ interface VRSession : EventTarget {
   readonly attribute VRDevice device;
   readonly attribute VRSessionCreateParameters createParameters;
 
-  attribute double depthNear;
-  attribute double depthFar;
   attribute VRLayer baseLayer;
 
   // Methods
   VRSourceProperties getSourceProperties(optional double scale);
-  Promise&lt;VRFrameOfReference&gt; createFrameOfReference(VRFrameOfReferenceType type);
   VRDevicePose? getDevicePose(VRCoordinateSystem coordinateSystem);
   Promise&lt;void&gt; endSession();
 
@@ -246,15 +243,9 @@ The UA, when possible, SHOULD NOT initialize device tracking or rendering capabi
 
 <dfn attribute for="VRSession">createParameters</dfn>
 
-<dfn attribute for="VRSession">depthNear</dfn>
-
-<dfn attribute for="VRSession">depthFar</dfn>
-
 <dfn attribute for="VRSession">baseLayer</dfn>
 
 <dfn method for="VRSession">getSourceProperties()</dfn>
-
-<dfn method for="VRSession">createFrameOfReference()</dfn>
 
 <dfn method for="VRSession">getDevicePose()</dfn>
 
@@ -468,7 +459,6 @@ interface VRCoordinateSystem {
 };
 </pre>
 
-
 VRFrameOfReference {#vrframeofreference-interface}
 ------------------
 
@@ -479,7 +469,17 @@ enum VRFrameOfReferenceType {
   "Stage",
 };
 
+dictionary VRFrameOfReferenceInit {
+  VRFrameOfReferenceType type = "EyeLevel";
+  double depthNear = 0.1;
+  double depthFar = 1000.0;
+};
+
+[Constructor(VRSession session, optional VRFrameOfReferenceInit init)]
 interface VRFrameOfReference : VRCoordinateSystem {
+  readonly attribute VRFrameOfReferenceType type;
+  readonly attribute double depthNear;
+  readonly attribute double depthFar;
   readonly attribute VRStageBounds? bounds;
 };
 </pre>
