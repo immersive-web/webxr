@@ -100,7 +100,7 @@ When navigating between pages in VR the UA should display trusted UI elements in
 Context Isolation {#contextisolation-security}
 -----------------
 
-The trusted UI must be drawing by an independent rendering context who's state is isolated from any rendering contexts used by the page. (For example, any WebGL rendering contexts.) This is to prevent the page from corrupting the state of the trusted UI's context, which may prevent it from properly rendering a tracked environment. It also prevents the possibility of the page being able to capture imagery from the trusted UI, which could lead to private information being leaked.
+The trusted UI must be drawing by an independent rendering context whose state is isolated from any rendering contexts used by the page. (For example, any WebGL rendering contexts.) This is to prevent the page from corrupting the state of the trusted UI's context, which may prevent it from properly rendering a tracked environment. It also prevents the possibility of the page being able to capture imagery from the trusted UI, which could lead to private information being leaked.
 
 Also, to prevent CORS-related vulnerabilities each page will see a new instance of objects returned by the API, such as {{VRDevice}} and {{VRSession}}. Attributes such as the {{VRCanvasLayer/source}} set by one page must not be able to be read by another. Similarly, methods invoked on the API MUST NOT cause an observable state change on other pages. For example: No method will be exposed that enables a system-level orientation reset, as this could be called repeatedly by a malicious page to prevent other pages from tracking properly. The UA MUST, however, respect system-level orientation resets triggered by a user gesture or system menu.
 
@@ -300,7 +300,7 @@ The VR Compositor {#compositor}
 
 Issue: This needs to be broken up a bit more and more clearly decribe things such as the frame lifecycle.
 
-The UA MUST maintain a <dfn>VR Compositor</dfn> which handles layer composition and frame timing. The compositor MUST use an independent rendering context who's state is isolated from that of the WebGL contexts provided as {{VRCanvasLayer}} sources to prevent the page from corruption the compositor state or reading back content from other pages.
+The UA MUST maintain a <dfn>VR Compositor</dfn> which handles layer composition and frame timing. The compositor MUST use an independent rendering context whose state is isolated from that of the WebGL contexts provided as {{VRCanvasLayer}} sources to prevent the page from corruption the compositor state or reading back content from other pages.
 
 There are no direct interfaces to the compositor, but applications may submit bitmaps to be composited via the layer system and observe the frame timing via calls to {{VRCanvasLayer/commit()}}. The compositor consists of two different loops, assumed to be running in separate threads or processes. The <dfn>Frame Loop</dfn>, which drives the page script, and the <dfn>Render Loop</dfn>, which continuously presents imagery provided by the Frame Loop to the VR device. The render loop maintains it's own copy of the session's layer list. Communication between the two loops is synchronized with a lock that limits access to the render loop's layer list.
 
