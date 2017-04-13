@@ -711,7 +711,7 @@ Return the {{VRDisplay/displayId}} of the {{VRDisplay}} this {{Gamepad}} is asso
 
 While not directly affecting the API interface and Web IDL, WebVR implementations should maintain the user's expectations of privacy, security, and comfort on the Web by adhering to the following guidelines:
 
-* Trusted UI must be drawn by an independent rendering context who's state is isolated from that of the WebGL contexts provided as a {{VRLayerInit}} source to a {{VRDisplay}}.
+* Trusted UI must be drawn by an independent rendering context whose state is isolated from that of the WebGL contexts provided as a {{VRLayerInit}} source to a {{VRDisplay}}.
 * A "VR Compositor" runs asynchronously from content, responsible for compositing the trusted and untrusted content. If content is not performant or does not submit frames, or terminates unexpectedly the browser should be able to continue presenting a responsive front-end.
 * Users should always be provided an action, such as pressing a reserved hardware button or performing a gesture, that escapes out of WebVR content and displays the browsers trusted UI.
 * When navigating between pages in VR the browser should display trusted UI elements informing the user of the security information of the site they are navigating to which is normally presented by the 2D UI, such as the URL and encryption status.
