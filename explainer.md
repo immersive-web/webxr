@@ -349,7 +349,7 @@ If the `bounds` are available the application should try to ensure that all cont
 ```js
 if(frameOfRef.bounds) {
   // Reposition the scene to match the reported bounds. Assumes a scene with a
-  // floor who's left back corner is at (0, 0, 0) and is 1 meter square.
+  // floor whose left back corner is at (0, 0, 0) and is 1 meter square.
   scene.translateX(frameOfRef.bounds.minX);
   scene.translateZ(frameOfRef.bounds.minZ);
   scene.scaleX(frameOfRef.bounds.maxX - frameOfRef.bounds.minX);
