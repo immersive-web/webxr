@@ -107,7 +107,7 @@ Also, to prevent CORS-related vulnerabilities each page will see a new instance 
 Fingerprinting {#fingerprinting-security}
 --------------
 
-Given that the API describes hardware available to the user and its capabilities it will inevitably provide additional surface area for fingerprinting. While its impossible to completely avoid this, steps can be taken to mitigate the issue such as ensuring that device names are reasonably generic and don't contain unique IDs. (For example: "Daydream View" instead of "Daydream View, Pixel XL (Black) - Serial: 1234-56-7890")
+Given that the API describes hardware available to the user and its capabilities it will inevitably provide additional surface area for fingerprinting. While it's impossible to completely avoid this, steps can be taken to mitigate the issue such as ensuring that device names are reasonably generic and don't contain unique IDs. (For example: "Daydream View" instead of "Daydream View, Pixel XL (Black) - Serial: 1234-56-7890")
 
 Issue: Discuss use of sensor activity as a possible fingerprinting vector.
 
