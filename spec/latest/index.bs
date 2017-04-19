@@ -107,7 +107,7 @@ Also, to prevent CORS-related vulnerabilities each page will see a new instance 
 Fingerprinting {#fingerprinting-security}
 --------------
 
-Given that the API describes hardware available to the user and it's capabilities it will inevitably provide additional surface area for fingerprinting. While it's impossible to completely avoid this, steps can be taken to mitigate the issue such as ensuring that device names are reasonably generic and don't contain unique IDs. (For example: "Daydream View" instead of "Daydream View, Pixel XL (Black) - Serial: 1234-56-7890")
+Given that the API describes hardware available to the user and its capabilities it will inevitably provide additional surface area for fingerprinting. While its impossible to completely avoid this, steps can be taken to mitigate the issue such as ensuring that device names are reasonably generic and don't contain unique IDs. (For example: "Daydream View" instead of "Daydream View, Pixel XL (Black) - Serial: 1234-56-7890")
 
 Issue: Discuss use of sensor activity as a possible fingerprinting vector.
 
@@ -177,7 +177,7 @@ In order to set or retrieve the [=active session=] a page must <dfn>request a se
  1. If another page has an [=exclusive session=] for the device, <a>reject</a> |promise| and abort these steps.
  1. Let |nextSession| be a new {{VRSession}} which matches the [=session description=].
  1. Let |prevSession| be the current [=active session=].
- 1. <a>Fire an event</a> named {{sessionchange}} on the device with it's {{VRSessionEvent/session}} attribute initialized to |nextSession|.
+ 1. <a>Fire an event</a> named {{sessionchange}} on the device with its {{VRSessionEvent/session}} attribute initialized to |nextSession|.
  1. Set the [=active session=] to |nextSession|.
  1. If |prevSession| is not null, [=end the session=].
  1. <a>Resolve</a> |promise| with the [=active session=].
@@ -308,7 +308,7 @@ Issue: This needs to be broken up a bit more and more clearly decribe things suc
 
 The UA MUST maintain a <dfn>VR Compositor</dfn> which handles layer composition and frame timing. The compositor MUST use an independent rendering context whose state is isolated from that of the WebGL contexts provided as {{VRCanvasLayer}} sources to prevent the page from corruption the compositor state or reading back content from other pages.
 
-There are no direct interfaces to the compositor, but applications may submit bitmaps to be composited via the layer system and observe the frame timing via calls to {{VRCanvasLayer/commit()}}. The compositor consists of two different loops, assumed to be running in separate threads or processes. The <dfn>Frame Loop</dfn>, which drives the page script, and the <dfn>Render Loop</dfn>, which continuously presents imagery provided by the Frame Loop to the VR device. The render loop maintains it's own copy of the session's layer list. Communication between the two loops is synchronized with a lock that limits access to the render loop's layer list.
+There are no direct interfaces to the compositor, but applications may submit bitmaps to be composited via the layer system and observe the frame timing via calls to {{VRCanvasLayer/commit()}}. The compositor consists of two different loops, assumed to be running in separate threads or processes. The <dfn>Frame Loop</dfn>, which drives the page script, and the <dfn>Render Loop</dfn>, which continuously presents imagery provided by the Frame Loop to the VR device. The render loop maintains its own copy of the session's layer list. Communication between the two loops is synchronized with a lock that limits access to the render loop's layer list.
 
 Both loops are started when a session is successfully created. The compositor's render loop goes through the following steps:
 
@@ -318,7 +318,7 @@ Both loops are started when a session is successfully created. The compositor's 
  1. Notify the frame loop that a frame has been completed.
  1. return to step 1.
 
-The render loop MUST throttle it's throughput to the refresh rate of the VR device. The exact point in the loop that is most effective to block at may differ between platforms, so no perscription is made for when that should happen.
+The render loop MUST throttle its throughput to the refresh rate of the VR device. The exact point in the loop that is most effective to block at may differ between platforms, so no perscription is made for when that should happen.
 
 Upon session creation, the following steps are taken to start the frame loop:
 
@@ -427,7 +427,7 @@ Invoking the <dfn method for="VRCanvasLayer">getLeftBounds()</dfn> method return
 
 Invoking the <dfn method for="VRCanvasLayer">getRightBounds()</dfn> method returns a {{FrozenArray}} of doubles containing the [=right bounds=] to |left|, |bottom|, |right|, and |top| values in that order.
 
-<dfn method for="VRCanvasLayer">commit()</dfn> captures the {{VRCanvasLayer/source}} canvas's bitmap and submits it to the [=VR compositor=]. Calling {{commit()}} has the same effect on the source canvas as any other operation that uses it's bitmap, and canvases created without <code>preserveDrawingBuffer</code> set to <code>true</code> will be cleared.
+<dfn method for="VRCanvasLayer">commit()</dfn> captures the {{VRCanvasLayer/source}} canvas's bitmap and submits it to the [=VR compositor=]. Calling {{commit()}} has the same effect on the source canvas as any other operation that uses its bitmap, and canvases created without <code>preserveDrawingBuffer</code> set to <code>true</code> will be cleared.
 
 Issue: Need an example snippet of a {{VRCanvasLayer}} render loop
 
@@ -567,7 +567,7 @@ The UA MAY dispatch a <dfn event for="VRDevice">activate</dfn> event on a {{VRDe
 
 The UA MAY dispatch a <dfn event for="VRDevice">deactivate</dfn> event on a {{VRDevice}} to indicate that something has occurred which suggests the {{VRDevice}} should end the active session. For example, if the {{VRDevice}} is capable of detecting when the user has taken it off, this event SHOULD fire when they do so. The event MUST be of type {{VRDeviceEvent}}.
 
-A UA MAY dispatch a <dfn event for="VRSession">blur</dfn> event on a {{VRSession}} to indicate that presentation to the {{VRSession}} by the page has been suspended by the UA, OS, or VR hardware. While a {{VRSession}} is blurred it remains active but it may have it's frame production throttled. This is to prevent tracking while the user interacts with potentially sensitive UI. For example: The UA SHOULD blur the presenting application when the user is typing a URL into the browser with a virtual keyboard, otherwise the presenting page may be able to guess the URL the user is entering by tracking their head motions. The event MUST be of type {{VRSessionEvent}}.
+A UA MAY dispatch a <dfn event for="VRSession">blur</dfn> event on a {{VRSession}} to indicate that presentation to the {{VRSession}} by the page has been suspended by the UA, OS, or VR hardware. While a {{VRSession}} is blurred it remains active but it may have its frame production throttled. This is to prevent tracking while the user interacts with potentially sensitive UI. For example: The UA SHOULD blur the presenting application when the user is typing a URL into the browser with a virtual keyboard, otherwise the presenting page may be able to guess the URL the user is entering by tracking their head motions. The event MUST be of type {{VRSessionEvent}}.
 
 A UA MAY dispatch a <dfn event for="VRSession">focus</dfn> event on a {{VRSession}} to indicate that presentation to the {{VRSession}} by the page has resumed after being suspended. The event MUST be of type {{VRSessionEvent}}.
 
