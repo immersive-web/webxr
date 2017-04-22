@@ -1,7 +1,7 @@
 ﻿# WebVR Explained
 
 ## What is WebVR?
-[WebVR](https://w3c.github.io/webvr/) is an API that provides access to input and output capabilities commonly associated with Virtual Reality hardware like [Google’s Daydream](https://vr.google.com/daydream/), the [Oculus Rift](https://www3.oculus.com/rift/), the [Samsung Gear VR](http://www.samsung.com/global/galaxy/gear-vr/), and the [HTC Vive](https://www.htcvive.com/). More simply put, it lets you create Virtual Reality web sites that you can view in a VR headset.
+[WebVR](https://w3c.github.io/webvr/) is an API that provides access to input and output capabilities commonly associated with Virtual Reality hardware like [Google’s Daydream](https://vr.google.com/daydream/), the [Oculus Rift](https://www3.oculus.com/rift/), the [Samsung Gear VR](http://www.samsung.com/global/galaxy/gear-vr/), the [HTC Vive](https://www.htcvive.com/), and [Windows Mixed Reality headsets](https://developer.microsoft.com/en-us/windows/mixed-reality). More simply put, it lets you create Virtual Reality web sites that you can view in a VR headset.
 
 ### Ooh, so like _Johnny Mnemonic_ where the Internet is all ’90s CGI?
 Nope, not even slightly. And why do you even want that? That’s a terrible UX.
@@ -99,13 +99,27 @@ async function OnVRAvailable() {
 
 ### Beginning a VR session
 
-Clicking that button will attempt to initiate a [`VRSession`](https://w3c.github.io/webvr/#interface-vrsession), which manages input and output for the display. When creating a session with `VRDevice.requestSession` the capabilities that the returned session must have are passed in via a dictionary, exactly like the `supportsSession` call. If `supportsSession` returned true for a given dictionary then calling `requestSession` with the same dictionary values should be reasonably expected to succeed, barring external factors (such as `requestSession` not being called in a user gesture for an exclusive session or another page currently having an active session for the same device.)
-
-The content to present to the device is defined by a [`VRLayer`](https://w3c.github.io/webvr/#interface-vrlayer). In the initial version of the spec only one layer type, `VRWebGLLayer`, is defined and only one layer can be used at a time. This is set via the `VRSession.baseLayer` attribute. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.) Developers may optionally take advantage of extensions to both WebGL 1.0 and WebGL 2.0 to utilize optimized multiview rendering.
+Clicking that button will attempt to initiate a [`VRSession`](https://w3c.github.io/webvr/#interface-vrsession), which manages input and output for the display. When creating a session with `VRDevice.requestSession` the capabilities that the returned session must have are passed in via a dictionary, exactly like the `supportsSession` call. If `supportsSession` returned true for a given dictionary then calling `requestSession` with the same dictionary values should be reasonably expected to succeed, barring external factors (such as `requestSession` not being called in a user gesture for an exclusive session or another page currently having an exclusive session for the same device.)
 
 The page may also want to create a session that doesn't need exclusive access to the device for tracking purposes. Since the `VRSession` is also what provides access to the device's position and orientation data requesting a non-exclusive session enables what's referred to as "Magic Window" use cases, where the scene is rendered on the page normally but is responsive to device movement. This is especially useful for mobile devices, where moving the device can be used to look around a scene. Devices with Tango tracking capabilities may also expose 6DoF tracking this way, even when the device itself is not capable of stereo presentation.
 
-It’s worth noting that requesting a new type of session will end any previously active ones.
+Requesting a new type of session will end any previously active ones.
+
+```js
+function BeginVRSession(isExclusive) {
+  // VRDevice.requestSession must be called within a user gesture event
+  // like click or touch when requesting exclusive access.
+  vrDevice.requestSession({ exclusive: isExclusive })
+      .then(OnSessionStarted)
+      .catch(err => {
+        // May fail for a variety of reasons, including another page already
+        // having exclusive access to the device. Probably just want to render
+        // the scene normally without any tracking at this point.
+        window.requestAnimationFrame(OnDrawFrame);
+      });
+}
+```
+Once the session is started some setup must be done to prepare for rendering. The content to present to the device is defined by a [`VRLayer`](https://w3c.github.io/webvr/#interface-vrlayer). In the initial version of the spec only one layer type, `VRWebGLLayer`, is defined and only one layer can be used at a time. This is set via the `VRSession.baseLayer` attribute. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.) Developers may optionally take advantage of extensions to both WebGL 1.0 and WebGL 2.0 to utilize optimized multiview rendering.
 
 ```js
 let glCanvas = document.createElement("canvas");
@@ -113,28 +127,21 @@ let gl = glCanvas.getContext("webgl");
 
 let vrSession = null;
 
-function BeginVRSession(boolean isExclusive) {
-  // VRDevice.requestSession must be called within a user gesture event
-  // like click or touch when requesting exclusive access.
-  vrDevice.requestSession({ exclusive: isExclusive }).then(session => {
-    // Store the session for use later.
-    vrSession = session;
+function OnSessionStarted(session) {
+  // Store the session for use later.
+  vrSession = session;
+  
+  // The depth range of the scene should be set so that the projection
+  // matrices returned by the session are correct.
+  vrSession.depthNear = 0.1;
+  vrSession.depthFar = 100.0;
 
-    // The depth range of the scene should be set so that the projection
-    // matrices returned by the session are correct.
-    vrSession.depthNear = 0.1;
-    vrSession.depthFar = 100.0;
+  // The content that will be shown on the device is
+  // defined by the current layer.
+  vrSession.baseLayer = new VRWebGLLayer(vrSession, glCanvas);
 
-    // The content that will be shown on the device is
-    // defined by the current layer.
-    vrSession.baseLayer = new VRWebGLLayer(vrSession, glCanvas);
-
-    // Start the render loop
-    vrSession.requestVRFrame(onDrawFrame);
-  }, err => {
-    // May fail for a variety of reasons, including another page already
-    // having exclusive access to the device.
-  });
+  // Start the render loop
+  vrSession.requestVRFrame(onDrawFrame);
 }
 ```
 
@@ -229,7 +236,7 @@ function drawScene(VRView view) {
 
 ### Ending the VR session
 
-To stop presenting to the `VRDevice`, the page calls [`VRSession.endSession`](https://w3c.github.io/webvr/#dom-vrsession-endsession). Once the session has ended any canvas used as a layer source should be resized to fit the page again.
+To stop presenting to the `VRDevice`, the page calls [`VRSession.endSession`](https://w3c.github.io/webvr/#dom-vrsession-endsession). Once the session has ended the page's animation loop should be started up again if necessary and any canvas used as a layer source should be resized to fit the page again.
 
 ```js
 function EndVRSession() {
@@ -322,11 +329,16 @@ While in exclusive sessions, the UA is responsible for providing a framebuffer t
 The first scaling mechanism is done by specifying a `bufferScaleFactor` at `VRWebGLLayer` creation time. In response, the UA may create a framebuffer that is based on the requested percentage of the maximum size supported by the `VRDevice`. On some platforms such as Daydream, the UA may set the default value of `bufferScaleFactor` to be less 1.0 for performance reasons. Developers explicitly wishing to use the full resolution on these devices can do so by requesting the `bufferScaleFactor` be set to 1.0. 
 
 ```js
-vrDevice.requestSession().then(session => {
+let vrSession = null;
+function OnSessionStarted(session) {
+  vrSession = session;
+  
   // Request the layer be created with a buffer 80% of the maximum supported 
   // by the VRDevice
   let layer = new VRWebGLLayer(vrSession, glCanvas, { bufferScaleFactor:0.8 });
   vrSession.baseLayer = layer;
+
+  // Do any other necessary setup
 
   // Start render loop
   vrSession.requestVRFrame(onDrawFrame);
@@ -355,9 +367,7 @@ Many VR devices have some way of detecting when the user has put the headset on 
 vrDevice.addEventListener('activate', vrDeviceEvent => {
   // The activate event acts as a user gesture, so exclusive access can be
   // requested in the even handler.
-  vrDevice.requestSession().then(session => {
-    // Setup for VR presentation and start render loop.
-  });
+  vrDevice.requestSession().then(OnSessionStarted);
 });
 ```
 
@@ -427,7 +437,7 @@ navigator.vr.addEventListener('navigate', vrSessionEvent => {
 ## Appendix A: I don’t understand why this is a new API. Why can’t we use…
 
 ### `DeviceOrientation` Events
-The data provided by a `VRPose` instance is similar to the data provided by `DeviceOrientationEvent`, with some key differences:
+The data provided by a `VRDevicePose` instance is similar to the data provided by `DeviceOrientationEvent`, with some key differences:
 
 * It’s an explicit polling interface, which ensures that new input is available for each frame. The event-driven `DeviceOrientation` data may skip a frame, or may deliver two updates in a single frame, which can lead to disruptive, jittery motion in a VR application.
 * `DeviceOrientation` events do not provide positional data, which is a key feature of high-end VR hardware.
