@@ -122,6 +122,10 @@ function BeginVRSession(isExclusive) {
 
 Once the session is started some setup must be done to prepare for rendering. The content to present to the device is defined by a [`VRLayer`](https://w3c.github.io/webvr/#interface-vrlayer). In the initial version of the spec only one layer type, `VRCanvasLayer`, is defined and only one layer can be used at a time. This is set via the `VRSession.baseLayer` attribute. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.)
 
+In order for a canvas to be used with a WebVR layer, it's context must be _compatible_ with the `VRDevice`. This can mean different things for different environments. For example, on a desktop computer this means that the context should be created against the graphics adapter that the `VRDevice` is physically plugged into. On most mobile devices though, that's not a concern and so the context will always be compatible. In either case, the WebVR application should call `VRDisplay.ensureContextCompatibility` with the WebGL context before using it with a `VRLayer`. This will set a compatibility bit on the context that allows it to be used. Contexts without the compatibility bit will fail when attempting to create a `VRLayer` with them.
+
+In the event that a context is not already compatible with the `VRDisplay` the [context will be lost and attempt to recreate itself](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14.13) using the compatible graphics adapter. The page must handle WebGL context creation loss properly for this to work. If the context loss is not properly handled the promise returned by `ensureContextCompatibility` will fail.
+
 ```js
 // Initially only canvases with WebGL contexts will be supported.
 let glCanvas = document.createElement("canvas");
@@ -147,15 +151,24 @@ function OnSessionStarted(session) {
   vrSession.depthNear = 0.1;
   vrSession.depthFar = 100.0;
 
-  // The content that will be shown on the device is defined by the session's
-  // baseLayer. In non-exclusive The baseLayer is not used for presentation, but
-  // the canvas dimensions are used to construct the projection matrices.
-  vrLayer = new VRCanvasLayer(vrSession, glCanvas);
-  vrSession.baseLayer = vrLayer;
+  // Make sure the canvas context we want to use is compatible with the device.
+  vrDevice.ensureContextCompatibility(gl).then(() => {
+    // The content that will be shown on the device is defined by the session's
+    // baseLayer. In non-exclusive The baseLayer is not used for presentation, but
+    // the canvas dimensions are used to construct the projection matrices.
+    vrLayer = new VRCanvasLayer(vrSession, glCanvas);
+    vrSession.baseLayer = vrLayer;
 
-  // Start the render loop
-  vrSession.commit().then(OnFirstVRFrame);
+    // Start the render loop
+    vrSession.commit().then(OnFirstVRFrame);
+  });
 }
+```
+
+Alternately, to avoid the need to call `ensureContextCompatibility` and the possible context loss that it may trigger, if the developer knows which `VRDevice` a context will be used with when the context is created it can be passed in as a context creation argument.
+
+```js
+let gl = glCanvas.getContext("webgl", { compatibleVrDevice: vrDevice });
 ```
 
 ### Main render loop
@@ -499,6 +512,8 @@ interface VRDevice : EventTarget {
 
   Promise<boolean> supportsSession(VRSessionCreateParametersInit parameters);
   Promise<VRSession> requestSession(VRSessionCreateParametersInit parameters);
+
+  Promise<void> ensureContextCompatibility(WebGLRenderingContext context);
 };
 
 //
@@ -621,5 +636,12 @@ interface VRSessionEvent : Event {
 
 dictionary VRSessionEventInit : EventInit {
   required VRSession session;
+};
+
+//
+// WebGL
+//
+partial dictionary WebGLContextAttributes {
+    VRDevice compatibleVrDevice = null;
 };
 ```
