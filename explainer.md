@@ -121,16 +121,6 @@ function BeginVRSession(isExclusive) {
 ```
 Once the session is started some setup must be done to prepare for rendering. The content to present to the device is defined by a [`VRLayer`](https://w3c.github.io/webvr/#interface-vrlayer). In the initial version of the spec only one layer type, `VRWebGLLayer`, is defined and only one layer can be used at a time. This is set via the `VRSession.baseLayer` attribute. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.) 
 
-Developers may optionally take advantage of the [WEBGL_multiview extension](https://www.khronos.org/registry/webgl/extensions/proposals/WEBGL_multiview/) to both WebGL 1.0 and WebGL 2.0 for optimized multiview rendering. If the UA is unable to support the multiview option, (e.g. the supplied context does not support this extension), the `VRWebGLLayer` constructor will throw an exception to ensure developers do not try to use incompatible shaders. Additionally, developers can query the `VRWebGLLayer.multiview` attribute to determine the framebuffer's configuration.
-
-When `VRWebGLLayer.multiview` is true:
-- The UA may decide to back the framebuffer with a texture array, side-by-side texture or another implementation of the UA's choosing. This implementation decision must not have any impact how developers author their shaders or setup the WebGL context for rendering. 
-- When calling `VRPresentationFrame.getViewport()` with this type of `VRWebGLLayer`, the `VRView` parameter will be ignored.  All `VRView`s will have the same `VRWebGLViewport`
-
-When `VRWebGLLayer.multiview` is false:
-- The `VRWebGLLayer` is created with a context that does not support this extension, the framebuffer must be created in a side-by-side configuration.
-- When calling `VRPresentationFrame.getViewport()` with this type of `VRWebGLLayer`, a valid `VRView` parameter is required and will return a different `VRWebGLViewport` for each.
-
 ```js
 let glCanvas = document.createElement("canvas");
 let gl = glCanvas.getContext("webgl");
@@ -149,7 +139,7 @@ function OnSessionStarted(session) {
   // The content that will be shown on the device is
   // defined by the current layer.
   // VRWebGLLayer allows for the optional use of the WEBGL_multiview extension
-  vrSession.baseLayer = new VRWebGLLayer(vrSession, glCanvas, { multiview: true });
+  vrSession.baseLayer = new VRWebGLLayer(vrSession, glCanvas);
 
   // Start the render loop
   vrSession.requestVRPresentationFrame().then(onDrawFrame);
@@ -188,18 +178,10 @@ function onDrawFrame(vrFrame) {
     let pose = vrFrame.getDevicePose(vrFrameOfRef);
     gl.bindFramebuffer(vrSession.baseLayer.framebuffer);
     
-    if (vrSession.baseLayer.multiview) {
-      // When using the `WEBGL_multiview` extension, a `VRView` does not need
-      // to be supplied to `getViewport()` because all viewports are the same
-      let viewport = vrFrame.getViewport(vrSession.baseLayer);
+    for (let view in vrFrame.views) {
+      let viewport = vrFrame.getViewport(vrSession.baseLayer, view);
       gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
-      drawMultiviewScene(vrFrame.views, pose);
-    } else {
-      for (let view in vrFrame.views) {
-        let viewport = vrFrame.getViewport(vrSession.baseLayer, view);
-        gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
-        drawScene(view, pose);
-      }
+      drawScene(view, pose);
     }
 
     // Request the next VR callback
@@ -213,17 +195,6 @@ function onDrawFrame(vrFrame) {
     // Request the next window callback
     window.requestAnimationFrame(onDrawFrame);
   }
-}
-
-function drawMultiviewScene(sequence<VRView> views, VRPose pose) {
-  for (let view in views) {
-    let viewMatrix = pose.getViewMatrix(view);
-    let projectionMatrix = view.projectionMatrix;
-    
-    // Set uniforms as appropriate for shaders being used
-  }
-  
-  // Draw Scene
 }
 
 function drawScene(VRView view, VRPose pose) {
@@ -332,10 +303,97 @@ if(frameOfRef.bounds) {
 }
 ```
 
+### Multivew rendering
+Developers may optionally take advantage of the [WEBGL_multiview extension](https://www.khronos.org/registry/webgl/extensions/proposals/WEBGL_multiview/) to both WebGL 1.0 and WebGL 2.0 for optimized multiview rendering. The UA may not honor this request (e.g. when the supplied context does not support this extension) and the `VRWebGLLayer` will fallback to using a framebuffer that is not multiview-aware. As such, developers must query the `VRWebGLLayer.multiview` property after the `VRWebGLLayer` is constructed and respond accordingly.
+
+When `VRWebGLLayer.multiview` is false:
+- The `VRWebGLLayer.framebuffer` will be created in a side-by-side configuration.
+- When calling `VRPresentationFrame.getViewport()` with this type of `VRWebGLLayer`, a valid `VRView` parameter is required and will return a different `VRWebGLViewport` for each.
+
+When `VRWebGLLayer.multiview` is true:
+- The UA may decide to back the framebuffer with a texture array, side-by-side texture or another implementation of the UA's choosing. This implementation decision must not have any impact how developers author their shaders or setup the WebGL context for rendering. 
+- When calling `VRPresentationFrame.getViewport()` with this type of `VRWebGLLayer`, the `VRView` parameter will be ignored.  All `VRView`s will have the same `VRWebGLViewport`
+
+```js
+let vrSession = null;
+let frameOfRef = null;
+
+function OnSessionStarted(session) {
+  vrSession = session;
+  await vrSession.createFrameOfReference("headModel");
+
+  // VRWebGLLayer allows for the optional use of the WEBGL_multiview extension
+  vrSession.baseLayer = new VRWebGLLayer(vrSession, glCanvas, { multiview: true });
+
+  // Start the render loop
+  vrSession.requestVRPresentationFrame().then(onDrawFrame);
+}
+
+function onDrawFrame(vrFrame) {
+  // Do we have an active session?
+  if (vrSession) {
+    let pose = vrFrame.getDevicePose(vrFrameOfRef);
+    gl.bindFramebuffer(vrSession.baseLayer.framebuffer);
+    
+    if (vrSession.baseLayer.multiview) {
+      // When using the `WEBGL_multiview` extension, a `VRView` does not need
+      // to be supplied to `getViewport()` because all viewports are the same
+      let viewport = vrFrame.getViewport(vrSession.baseLayer);
+      gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+      drawMultiviewScene(vrFrame.views, pose);
+    } else {
+      for (let view in vrFrame.views) {
+        let viewport = vrFrame.getViewport(vrSession.baseLayer, view);
+        gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+        drawScene(view, pose);
+      }
+    }
+
+    // Request the next VR callback
+    vrSession.requestVRPresentationFrame().then(onDrawFrame);
+    
+  } else {
+    // No session available, so render a default mono view.
+    gl.viewport(0, 0, glCanvas.width, glCanvas.height);
+    drawScene();
+
+    // Request the next window callback
+    window.requestAnimationFrame(onDrawFrame);
+  }
+}
+
+function drawMultiviewScene(sequence<VRView> views, VRPose pose) {
+  for (let view in views) {
+    let viewMatrix = pose.getViewMatrix(view);
+    let projectionMatrix = view.projectionMatrix;
+    
+    // Set uniforms as appropriate for shaders being used
+  }
+  
+  // Draw Scene
+}
+
+function drawScene(VRView view, VRPose pose) {
+  let viewMatrix = null;
+  let projectionMatrix = null;
+  if (view) {
+    viewMatrix = pose.getViewMatrix(view);
+    projectionMatrix = view.projectionMatrix;
+  } else {
+    viewMatrix = defaultViewMatrix;
+    projectionMatrix = defaultProjectionMatrix;
+  }
+  
+  // Set uniforms as appropriate for shaders being used
+  
+  // Draw Scene
+}
+```
+
 ### High quality rendering
 While in exclusive sessions, the UA is responsible for providing a framebuffer that is correctly optimized for presentation to the `VRSession` in each VRFrame. Developers can optionally request either the buffer size or viewport size be scaled, though the UA may not respect the request. Even when the UA honors the scaling requests, the result is not guaranteed to be the exact percentage requested.
 
-The first scaling mechanism is done by specifying a `bufferScaleFactor` at `VRWebGLLayer` creation time. In response, the UA may create a framebuffer that is based on the requested percentage of the maximum size supported by the `VRDevice`. On some platforms such as Daydream, the UA may set the default value of `bufferScaleFactor` to be less 1.0 for performance reasons. Developers explicitly wishing to use the full resolution on these devices can do so by requesting the `bufferScaleFactor` be set to 1.0. 
+The first scaling mechanism is done by specifying a `framebufferScaleFactor` at `VRWebGLLayer` creation time. In response, the UA may create a framebuffer that is based on the requested percentage of the maximum size supported by the `VRDevice`. On some platforms such as Daydream, the UA may set the default value of `framebufferScaleFactor` to be less 1.0 for performance reasons. Developers explicitly wishing to use the full resolution on these devices can do so by requesting the `framebufferScaleFactor` be set to 1.0. 
 
 ```js
 let vrSession = null;
@@ -344,7 +402,7 @@ function OnSessionStarted(session) {
   
   // Request the layer be created with a buffer 80% of the maximum supported 
   // by the VRDevice
-  let layer = new VRWebGLLayer(vrSession, glCanvas, { bufferScaleFactor:0.8 });
+  let layer = new VRWebGLLayer(vrSession, glCanvas, { framebufferScaleFactor:0.8 });
   vrSession.baseLayer = layer;
 
   // Do any other necessary setup
@@ -533,8 +591,6 @@ interface VRSession : EventTarget {
   attribute EventHandler onfocus;
   attribute EventHandler onresetpose;
 
-  readonly attribute VRDevicePose pose;
-
   Promise<VRFrameOfReference> createFrameOfReference(VRFrameOfReferenceType type);
 
   Promise<VRPresentationFrame> requestVRPresentationFrame();
@@ -584,7 +640,7 @@ dictionary VRWebGLLayerInit {
   boolean stencil = false;
   boolean alpha = true;
   boolean multiview = false;
-  double bufferScaleFactor;
+  double framebufferScaleFactor;
 };
 
 [Constructor(VRSession session, VRCanvasSource source, optional VRWebGLLayerInit layerInit)]
@@ -596,6 +652,8 @@ interface VRWebGLLayer : VRLayer {
   readonly attribute boolean alpha;
   readonly attribute boolean multiview;
   
+  readonly attribute int framebufferWidth;
+  readonly attribute int framebufferHeight;
   readonly attribute WebGLFrameBuffer frameBuffer;
     
   void requestViewportScaling(double viewportScaleFactor);
