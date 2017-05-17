@@ -231,7 +231,7 @@ function onDrawFrame(vrFrame) {
   }
 }
 
-function drawScene(VRView view, VRPose pose) {
+function drawScene(view, pose) {
   let viewMatrix = null;
   let projectionMatrix = null;
   if (view) {
@@ -389,29 +389,13 @@ function onDrawFrame(vrFrame) {
   }
 }
 
-function drawMultiviewScene(sequence<VRView> views, VRPose pose) {
+function drawMultiviewScene(views, pose) {
   for (let view in views) {
     let viewMatrix = pose.getViewMatrix(view);
     let projectionMatrix = view.projectionMatrix;
     
     // Set uniforms as appropriate for shaders being used
   }
-  
-  // Draw Scene
-}
-
-function drawScene(VRView view, VRPose pose) {
-  let viewMatrix = null;
-  let projectionMatrix = null;
-  if (view) {
-    viewMatrix = pose.getViewMatrix(view);
-    projectionMatrix = view.projectionMatrix;
-  } else {
-    viewMatrix = defaultViewMatrix;
-    projectionMatrix = defaultProjectionMatrix;
-  }
-  
-  // Set uniforms as appropriate for shaders being used
   
   // Draw Scene
 }
@@ -433,6 +417,8 @@ The second scaling mechanism is to request a scaled viewport into the `VRWebGLLa
 
 ```js
 function onDrawFrame() {
+  // Draw the current frame 
+
   // In response to a performance dip, request the viewport be restricted 
   // to a percentage (ex: 50%) of the layer's actual buffer. This change
   // will apply to subsequent rendering frames
