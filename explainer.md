@@ -115,13 +115,13 @@ function BeginVRSession(isExclusive) {
         // May fail for a variety of reasons, including another page already
         // having exclusive access to the device. Probably just want to render
         // the scene normally without any tracking at this point.
-        window.requestAnimationFrame(OnDrawFrame);
+        window.requestAnimationFrame(onDrawFrame);
       });
 }
 ```
 Once the session has started, some setup must be done to prepare for rendering. 
-- A VRFrameOfReference must be created to define the coordinate system in which the `VRDevicePose` objects will be defined. See the Advanced Functionality section for more details about frames of reference.
-- The depth range of the session should be set to something appropriate for the application. This range will be used in the construction of the projection matricies provided by `VRRenderingFrame`.
+- A `VRFrameOfReference` must be created to define the coordinate system in which the `VRDevicePose` objects will be defined. See the Advanced Functionality section for more details about frames of reference.
+- The depth range of the session should be set to something appropriate for the application. This range will be used in the construction of the projection matricies provided by `VRPresentationFrame`.
 - A `VRLayer` must be created and assigned to the `VRSession.baseLayer` attribute. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.)
 
 ```js
@@ -131,16 +131,16 @@ let vrFrameOfRef = null;
 function OnSessionStarted(session) {
   // Store the session for use later.
   vrSession = session;
-  
-  // The depth range of the scene should be set so that the projection
-  // matrices returned by the session are correct.
-  vrSession.depthNear = 0.1;
-  vrSession.depthFar = 100.0;
 
   // The `VRFrameOfReference` provides the coordinate system in which
   // `getViewMatrix()` and the `poseModelMatrix` are defined. For more
   // information on this see the `Advanced functionality` section
   frameOfRef = await vrSession.createFrameOfReference("headModel");
+  
+  // The depth range of the scene should be set so that the projection
+  // matrices returned by the session are correct.
+  vrSession.depthNear = 0.1;
+  vrSession.depthFar = 100.0;
 
   // Ensure the canvas context is compatible and create the VRLayer.
   setupWebGLLayer().then(() => {
@@ -175,6 +175,7 @@ function setupWebGLLayer() {
     vrSession.baseLayer = new VRWebGLLayer(vrSession, glCanvas);
   });
 }
+```
 
 **VR Centric:** The app's primary use case is VR, and as such it doesn't mind initializing resources in a VR-centric fashion, which may include asking users to select a headset as soon as the app starts. An example would be a game which is dependent on VR presentation and input. These types of applications can to avoid the need to call `ensureContextCompatibility` and the possible context loss that it may trigger by passing the `VRDevice` that the context will be used with as a context creation argument.
 
@@ -186,7 +187,7 @@ Ensuring context compatibility with a `VRDisplay` through either method may have
 
 ### Main render loop
 
-WebVR provides information about the current frame to be rendered via the [`VRRenderingFrame`] object which developers must examine each frame. The [`VRDevicePose`](https://w3c.github.io/webvr/#interface-vrdevicepose) contains the informaton about all views which must be rendered and targets into which this rendering must be done.
+WebVR provides information about the current frame to be rendered via the [`VRPresentationFrame`] object which developers must examine each frame. The [`VRDevicePose`](https://w3c.github.io/webvr/#interface-vrdevicepose) contains the informaton about all views which must be rendered and targets into which this rendering must be done.
 
 `VRWebGLLayer` objects are not updated automatically. To present new frames, developers must use `VRSession.requestVRPresentationFrame()`. When the promise fulfills, it returns fresh rendering data that must be used to draw into the `VRWebGLLayer.framebuffer` during the callback. The VR device will continue presenting the `VRWebGLLayer` framebuffer, regardless of whether or not the callback has been requested. Potentially future spec iterations could enable additional types of layers, such as video layers, that could automatically be synchronized to the device's refresh rate.
 
@@ -262,7 +263,7 @@ function EndVRSession() {
 
 // Restore the page to normal after exclusive access has been released.
 function OnSessionEnded() {
-  // Ending the session stops fulfillment of promises returned by `requestVRPresentationFrame()`.
+  // Ending the session stops fulfillment of promises returned by requestVRPresentationFrame().
   // To continue rendering, use the window's AnimationFrame callback
   window.requestAnimationFrame(onDrawFrame);
 }
@@ -345,7 +346,7 @@ When `VRWebGLLayer.multiview` is false:
 
 When `VRWebGLLayer.multiview` is true:
 - The UA may decide to back the framebuffer with a texture array, side-by-side texture or another implementation of the UA's choosing. This implementation decision must not have any impact how developers author their shaders or setup the WebGL context for rendering. 
-- When calling `VRPresentationFrame.getViewport()` with this type of `VRWebGLLayer`, the `VRView` parameter will be ignored.  All `VRView`s will have the same `VRWebGLViewport`
+- When calling `VRPresentationFrame.getViewport()` with this type of `VRWebGLLayer`, the `VRView` parameter will be ignored.  All `VRView` objects use the same `VRWebGLViewport`.
 
 ```js
 function setupWebGLLayer() {
