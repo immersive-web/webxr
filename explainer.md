@@ -172,7 +172,7 @@ function setupWebGLLayer() {
     // The content that will be shown on the device is defined by the session's
     // baseLayer. In non-exclusive The baseLayer is not used for presentation, but
     // the canvas dimensions are used to construct the projection matrices.
-    vrSession.baseLayer = new VRWebGLLayer(vrSession, glCanvas);
+    vrSession.baseLayer = new VRWebGLLayer(vrSession, gl);
   });
 }
 ```
@@ -202,8 +202,8 @@ During exclusive sessions:
 
 During non-exclusive (aka 'Magic Window') sessions:
 - The UA runs the rendering loop at the refresh rate of page (aligned with `window.requestAnimationFrame`)
-- `VRWebGLLayer.framebuffer` will always be null. When this is passed into `gl.bindFramebuffer`, it will result in rendering occurring in the default framebuffer of the `VRWebGLLayer.source`.
-- Changes to the size of the `VRWebGLLayer.source` canvas will automatically update the `VRViewport` and potentially projection matrix in the first `VRPresentationFrame` after the changes have been applied in the page. Calls to `VRWebGLLayer.requestViewportScaling()` will have no effect.
+- `VRWebGLLayer.framebuffer` will always be null. When this is passed into `gl.bindFramebuffer`, it will result in rendering occurring in the default framebuffer of the `VRWebGLLayer.context`.
+- Changes to the size of the canvas hosting the `VRWebGLLayer.context` will automatically update the `VRViewport` and potentially projection matrix in the first `VRPresentationFrame` after the changes have been applied in the page. Calls to `VRWebGLLayer.requestViewportScaling()` will have no effect.
 
 ```js
 function onDrawFrame(vrFrame) {
@@ -352,7 +352,7 @@ When `VRWebGLLayer.multiview` is true:
 function setupWebGLLayer() {
   return vrDevice.ensureContextCompatibility(gl).then(() => {
     // VRWebGLLayer allows for the optional use of the WEBGL_multiview extension
-    vrSession.baseLayer = new VRWebGLLayer(vrSession, glCanvas, { multiview: true });
+    vrSession.baseLayer = new VRWebGLLayer(vrSession, gl, { multiview: true });
   });
 }
 
@@ -409,11 +409,11 @@ The first scaling mechanism is done by specifying a `framebufferScaleFactor` at 
 ```js
 function setupWebGLLayer() {
   return vrDevice.ensureContextCompatibility(gl).then(() => {
-    vrSession.baseLayer = new VRWebGLLayer(vrSession, glCanvas, { framebufferScaleFactor:0.8 });
+    vrSession.baseLayer = new VRWebGLLayer(vrSession, gl, { framebufferScaleFactor:0.8 });
   });
 ```
 
-The second scaling mechanism is to request a scaled viewport into the `VRWebGLLayer.framebuffer`. For example, under times of heavy load the developer may choose to temporarily render fewer pixels. To do so, developers should call `VRWebGLLayer.requestViewportScaling()` and supply a value between 0.0 and 1.0. The UA may then respond by changing the `VRWebGLLayerTarget.framebuffer` and/or the `VRViewport` values in future VR rendering frames. It is worth noting that the UA may change the viewports for reasons other than developer request; as such, developers must always query the viewport values on each VR rendering frame.
+The second scaling mechanism is to request a scaled viewport into the `VRWebGLLayer.framebuffer`. For example, under times of heavy load the developer may choose to temporarily render fewer pixels. To do so, developers should call `VRWebGLLayer.requestViewportScaling()` and supply a value between 0.0 and 1.0. The UA may then respond by changing the `VRWebGLLayer.framebuffer` and/or the `VRViewport` values in future VR rendering frames. It is worth noting that the UA may change the viewports for reasons other than developer request; as such, developers must always query the viewport values on each VR rendering frame.
 
 ```js
 function onDrawFrame() {
@@ -555,6 +555,9 @@ interface VR : EventTarget {
 // Device
 //
 
+typedef (WebGLRenderingContext or
+         WebGL2RenderingContext) VRWebGLRenderingContext;
+
 interface VRDevice : EventTarget {
   readonly attribute DOMString deviceName;
   readonly attribute boolean isExternal;
@@ -568,7 +571,7 @@ interface VRDevice : EventTarget {
   Promise<boolean> supportsSession(VRSessionCreateParametersInit parameters);
   Promise<VRSession> requestSession(VRSessionCreateParametersInit parameters);
 
-  Promise<void> ensureContextCompatibility(WebGLRenderingContextBase context);
+  Promise<void> ensureContextCompatibility(VRWebGLRenderingContext context);
 };
 
 //
@@ -643,9 +646,6 @@ interface VRDevicePose {
 
 interface VRLayer {};
 
-typedef (HTMLCanvasElement or
-         OffscreenCanvas) VRCanvasSource;
-
 dictionary VRWebGLLayerInit {
   boolean antialias = true;
   boolean depth = false;
@@ -655,9 +655,11 @@ dictionary VRWebGLLayerInit {
   double framebufferScaleFactor;
 };
 
-[Constructor(VRSession session, VRCanvasSource source, optional VRWebGLLayerInit layerInit)]
+[Constructor(VRSession session,
+             VRWebGLRenderingContext context,
+             optional VRWebGLLayerInit layerInit)]
 interface VRWebGLLayer : VRLayer {
-  readonly attribute VRCanvasSource source;
+  readonly attribute VRWebGLRenderingContext context;
   readonly attribute boolean antialias;
   readonly attribute boolean depth;
   readonly attribute boolean stencil;
