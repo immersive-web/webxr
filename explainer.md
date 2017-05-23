@@ -198,12 +198,12 @@ Exclusive and non-exclusive (aka 'Magic Window') sessions can use the same rende
 During exclusive sessions:
 - The UA runs a rendering loop at the device's native refresh rate
 - `VRWebGLLayer.framebuffer` is a custom framebuffer similar to a canvas's default frame buffer. Using framebufferTexture2D, framebufferRenderbuffer, getFramebufferAttachmentParameter, and getRenderbufferParameter will all flag INVALID_OPERATION. Additionally, attempting to render to this framebuffer outside of the `requestVRPresentationFrame()` callback will flag INVALID_OPERATION.
-- To modify the `VRWebGLViewport` objects for a `VRWebGLLayer`, web developers may call `VRWebGLLayer.requestViewportScaling()`. Not all UA will respect the request, but if the request can be honored changes will always take effect on a future `VRPresentationFrame`
+- To modify the `VRViewport` objects for a `VRWebGLLayer`, web developers may call `VRWebGLLayer.requestViewportScaling()`. Not all UA will respect the request, but if the request can be honored changes will always take effect on a future `VRPresentationFrame`
 
 During non-exclusive (aka 'Magic Window') sessions:
 - The UA runs the rendering loop at the refresh rate of page (aligned with `window.requestAnimationFrame`)
 - `VRWebGLLayer.framebuffer` will always be null. When this is passed into `gl.bindFramebuffer`, it will result in rendering occurring in the default framebuffer of the `VRWebGLLayer.source`.
-- Changes to the size of the `VRWebGLLayer.source` canvas will automatically update the `VRWebGLViewport` and potentially projection matrix in the first `VRPresentationFrame` after the changes have been applied in the page. Calls to `VRWebGLLayer.requestViewportScaling()` will have no effect.
+- Changes to the size of the `VRWebGLLayer.source` canvas will automatically update the `VRViewport` and potentially projection matrix in the first `VRPresentationFrame` after the changes have been applied in the page. Calls to `VRWebGLLayer.requestViewportScaling()` will have no effect.
 
 ```js
 function onDrawFrame(vrFrame) {
@@ -213,7 +213,7 @@ function onDrawFrame(vrFrame) {
     gl.bindFramebuffer(vrSession.baseLayer.framebuffer);
 
     for (let view in vrFrame.views) {
-      let viewport = vrFrame.getViewport(vrSession.baseLayer, view);
+      let viewport = view.getViewport(vrSession.baseLayer);
       gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
       drawScene(view, pose);
     }
@@ -342,11 +342,11 @@ Developers may optionally take advantage of the [WEBGL_multiview extension](http
 
 When `VRWebGLLayer.multiview` is false:
 - The `VRWebGLLayer.framebuffer` will be created in a side-by-side configuration.
-- When calling `VRPresentationFrame.getViewport()` with this type of `VRWebGLLayer`, a valid `VRView` parameter is required and will return a different `VRWebGLViewport` for each.
+- Calling `VRView.getViewport()` with this type of `VRWebGLLayer` will return a different `VRViewport` for each `VRView`.
 
 When `VRWebGLLayer.multiview` is true:
 - The UA may decide to back the framebuffer with a texture array, side-by-side texture or another implementation of the UA's choosing. This implementation decision must not have any impact how developers author their shaders or setup the WebGL context for rendering.
-- When calling `VRPresentationFrame.getViewport()` with this type of `VRWebGLLayer`, the `VRView` parameter will be ignored.  All `VRView` objects use the same `VRWebGLViewport`.
+- Calling `VRView.getViewport()` with this type of `VRWebGLLayer` will return the same `VRViewport` for all `VRView`s.
 
 ```js
 function setupWebGLLayer() {
@@ -363,14 +363,14 @@ function onDrawFrame(vrFrame) {
     gl.bindFramebuffer(vrSession.baseLayer.framebuffer);
 
     if (vrSession.baseLayer.multiview) {
-      // When using the `WEBGL_multiview` extension, a `VRView` does not need
-      // to be supplied to `getViewport()` because all viewports are the same
-      let viewport = vrFrame.getViewport(vrSession.baseLayer);
+      // When using the `WEBGL_multiview` extension, all `VRView`s return the
+      // same value from `getViewport()`, so it only needs to be called once.
+      let viewport = vrFrame.views[0].getViewport(vrSession.baseLayer);
       gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
       drawMultiviewScene(vrFrame.views, pose);
     } else {
       for (let view in vrFrame.views) {
-        let viewport = vrFrame.getViewport(vrSession.baseLayer, view);
+        let viewport = view.getViewport(vrSession.baseLayer);
         gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
         drawScene(view, pose);
       }
@@ -413,7 +413,7 @@ function setupWebGLLayer() {
   });
 ```
 
-The second scaling mechanism is to request a scaled viewport into the `VRWebGLLayer.framebuffer`. For example, under times of heavy load the developer may choose to temporarily render fewer pixels. To do so, developers should call `VRWebGLLayer.requestViewportScaling()` and supply a value between 0.0 and 1.0. The UA may then respond by changing the `VRWebGLLayerTarget.framebuffer` and/or the `VRWebGLViewport` values in future VR rendering frames. It is worth noting that the UA may change the viewports for reasons other than developer request; as such, developers must always query the viewport values on each VR rendering frame.
+The second scaling mechanism is to request a scaled viewport into the `VRWebGLLayer.framebuffer`. For example, under times of heavy load the developer may choose to temporarily render fewer pixels. To do so, developers should call `VRWebGLLayer.requestViewportScaling()` and supply a value between 0.0 and 1.0. The UA may then respond by changing the `VRWebGLLayerTarget.framebuffer` and/or the `VRViewport` values in future VR rendering frames. It is worth noting that the UA may change the viewports for reasons other than developer request; as such, developers must always query the viewport values on each VR rendering frame.
 
 ```js
 function onDrawFrame() {
@@ -610,8 +610,6 @@ interface VRPresentationFrame {
   readonly attribute FrozenArray<VRView> views;
 
   VRDevicePose? getDevicePose(VRCoordinateSystem coordinateSystem);
-
-  VRWebGLViewport getViewport(VRWebGLLayer layer, VRView? view);
 };
 
 enum VREye {
@@ -622,6 +620,15 @@ enum VREye {
 interface VRView {
   readonly attribute VREye? eye;
   readonly attribute Float32Array projectionMatrix;
+
+  VRViewport? getViewport(VRLayer layer);
+};
+
+interface VRViewport {
+  readonly attribute long x;
+  readonly attribute long y;
+  readonly attribute long width;
+  readonly attribute long height;
 };
 
 interface VRDevicePose {
@@ -662,13 +669,6 @@ interface VRWebGLLayer : VRLayer {
   readonly attribute WebGLFramebuffer framebuffer;
 
   void requestViewportScaling(double viewportScaleFactor);
-};
-
-interface VRWebGLViewport {
-  readonly attribute long x;
-  readonly attribute long y;
-  readonly attribute long width;
-  readonly attribute long height;
 };
 
 //
