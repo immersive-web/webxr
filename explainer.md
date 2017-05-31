@@ -103,7 +103,7 @@ Clicking that button will attempt to initiate a [`VRSession`](https://w3c.github
 
 The page may also want to create a session that doesn't need exclusive access to the device for tracking purposes. Since the `VRSession` is also what provides access to the device's position and orientation data requesting a non-exclusive session enables what's referred to as "Magic Window" use cases, where the scene is rendered on the page normally but is responsive to device movement. This is especially useful for mobile devices, where moving the device can be used to look around a scene. Devices with Tango tracking capabilities may also expose 6DoF tracking this way, even when the device itself is not capable of stereo presentation.
 
-Requesting a new type of session will end any previously active ones.
+Starting an exclusive session will suspend all non-exclusive sessions for the device (firing the session `blur` event) until the exclusive session is ended.
 
 ```js
 function BeginVRSession(isExclusive) {
@@ -255,29 +255,26 @@ To stop presenting to the `VRDevice`, the page calls [`VRSession.endSession`](ht
 ```js
 function EndVRSession() {
   // Do we have an active session?
-  if (vrDevice.activeSession) {
+  if (vrSession) {
     // End VR mode now.
-    vrDevice.activeSession.endSession().then(OnSessionEnded);
+    vrSession.endSession().then(OnSessionEnded);
   }
 }
 
 // Restore the page to normal after exclusive access has been released.
 function OnSessionEnded() {
+  vrSession = null;
+
   // Ending the session stops executing callbacks passed to requestFrame().
   // To continue rendering, use the window's AnimationFrame callback
   window.requestAnimationFrame(onDrawFrame);
 }
 ```
 
-In addition to the application ending the session manually, the UA may force the session to end at any time for a variety of reasons. Well behaved applications should monitor the `sessionchange` event on the `VRDevice` to detect when that happens.
+In addition to the application ending a session manually, the UA may force sessions to end at any time for a variety of reasons. Well behaved applications should monitor the `ended` event on the `VRSession` to detect when that happens.
 
 ```js
-vrDevice.addEventListener('sessionchange', vrDeviceEvent => {
-  // Check to see if the vrDevice no longer has an active session.
-  if (!vrDevice.activeSession) {
-    OnSessionEnded();
-  }
-});
+vrSession.addEventListener('ended', OnSessionEnded);
 
 ```
 
@@ -461,8 +458,8 @@ Similarly, the `deactivate` event can be used to detect when the user removes th
 
 ```js
 vrDevice.addEventListener('deactivate', vrDeviceEvent => {
-  if (vrDevice.activeSession) {
-    vrDevice.activeSession.endSession().then(OnSessionEnded);
+  if (vrSession) {
+    vrSession.endSession().then(OnSessionEnded);
   }
 });
 ```
@@ -578,9 +575,6 @@ interface VRDevice : EventTarget {
   readonly attribute DOMString deviceName;
   readonly attribute boolean isExternal;
 
-  attribute VRSession? activeSession;
-
-  attribute EventHandler onsessionchange;
   attribute EventHandler onactivate;
   attribute EventHandler ondeactivate;
 
@@ -612,6 +606,7 @@ interface VRSession : EventTarget {
   attribute EventHandler onblur;
   attribute EventHandler onfocus;
   attribute EventHandler onresetpose;
+  attribute EventHandler onended;
 
   Promise<VRFrameOfReference> createFrameOfReference(VRFrameOfReferenceType type);
 
