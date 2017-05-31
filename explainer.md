@@ -76,9 +76,15 @@ navigator.vr.getDevices().then(devices => {
 ```
 ### Detecting and advertising VR mode
 
-If a VRDevice is available and has the appropriate capabilities the page will usually want to add some UI to trigger activation of "VR Presentation Mode", where the page can begin sending imagery to the device. Testing to see if the device supports the capabilities the page needs is done via the `supportsSession` call, which takes a dictionary of the desired functionality and returns whether or not the device can create a session supporting them. Querying for support this way is necessary because it allows the application to detect what VR features are available without actually engaging the sensors or beginning presentation, which can incur significant power or performance overhead on some systems and may have side effects such as launching a VR status tray or storefront.
+If a `VRDevice` is available and has the appropriate capabilities the page will usually want to add some UI to trigger activation of "VR Presentation Mode", where the page can begin sending imagery to the device. Testing to see if the device supports the capabilities the page needs is done via the `supportsSession` call, which takes a dictionary of the desired functionality and returns whether or not the device can create a session supporting them. Querying for support this way is necessary because it allows the application to detect what VR features are available without actually engaging the sensors or beginning presentation, which can incur significant power or performance overhead on some systems and may have side effects such as launching a VR status tray or storefront.
 
-In this case, we only ask if the ability to have `exclusive` access (Which includes the ability to display imagery on the headset). Note that `exclusive: true` is actually the dictionary default, and so does not need to be specified here. It’s made explicit in this example for clarity.
+Sessions can be created with two levels of access:
+
+**Exclusive Access**: The default mode, but can be explicitly requested with the `exclusive: true` dictionary argument. Exclusive sessions present content directly to the `VRDevice`, enabling immersive VR presentation. Only one exclusive session is allowed at a time across the entire UA. Exclusive sessions must be created within a user gesture event.
+
+**Non-Exclusive Access**: Requested with the `exclusive: false` dictionary argument. Non-exclusive sessions do not have the ability to display anything on the `VRDevice`, but are able to access device tracking information and use it to render content on the page. This technique, where a scene rendered to the page is responsive to device movement is sometimes referred to as "Magic Window" mode. It's especially useful for mobile devices, where moving the device can be used to look around a scene. Devices like Tango phones and tablets with 6DoF tracking capabilities may expose them via non-exclusive sessions even if the hardware is not capable of immersive, stereo presentation. Multiple non-exclusive sessions can be active at once, but all non-exclusive sessions are suspended when an exclusive session is active. Non-exclusive sessions are not required to be created within a user gesture event.
+
+In this case, we ask if the `VRDevice` supports sessions with `exclusive` access, since we want the ability to display imagery on the headset.
 
 ```js
 async function OnVRAvailable() {
@@ -91,7 +97,7 @@ async function OnVRAvailable() {
   if (exclusiveMode) {
     var enterVrBtn = document.createElement("button");
     enterVrBtn.innerHTML = "Enter VR";
-    enterVrBtn.addEventListener("click", BeginVRSession());
+    enterVrBtn.addEventListener("click", BeginVRSession);
     document.body.appendChild(enterVrBtn);
   }
 }
@@ -100,10 +106,6 @@ async function OnVRAvailable() {
 ### Beginning a VR session
 
 Clicking that button will attempt to initiate a [`VRSession`](https://w3c.github.io/webvr/#interface-vrsession), which manages input and output for the display. When creating a session with `VRDevice.requestSession` the capabilities that the returned session must have are passed in via a dictionary, exactly like the `supportsSession` call. If `supportsSession` returned true for a given dictionary then calling `requestSession` with the same dictionary values should be reasonably expected to succeed, barring external factors (such as `requestSession` not being called in a user gesture for an exclusive session or another page currently having an exclusive session for the same device.)
-
-The page may also want to create a session that doesn't need exclusive access to the device for tracking purposes. Since the `VRSession` is also what provides access to the device's position and orientation data requesting a non-exclusive session enables what's referred to as "Magic Window" use cases, where the scene is rendered on the page normally but is responsive to device movement. This is especially useful for mobile devices, where moving the device can be used to look around a scene. Devices with Tango tracking capabilities may also expose 6DoF tracking this way, even when the device itself is not capable of stereo presentation.
-
-Starting an exclusive session will suspend all non-exclusive sessions for the device (firing the session `blur` event) until the exclusive session is ended.
 
 ```js
 function BeginVRSession(isExclusive) {
@@ -466,9 +468,11 @@ vrDevice.addEventListener('deactivate', vrDeviceEvent => {
 
 ### Responding to a suspended session
 
-The UA may temporarily suspend a session if allowing the page to continue reading the headset position represents a security risk (like when the user is entering a password or URL with a virtual keyboard, in which case the head motion may infer the user's input), or if other content is obscuring the page's output. While suspended the page may either refresh the vr device at a slower rate or not at all, and poses queried from the headset may be less accurate. The UA is expected to present a tracked environment to the user when the page is being throttled to prevent user discomfort.
+The UA may temporarily suspend a session if allowing the page to continue reading the headset position represents a security risk (like when the user is entering a password or URL with a virtual keyboard, in which case the head motion may infer the user's input), or if other content is obscuring the page's output. Additionally, non-exclusive sessions are suspended while an exclusive session is active.
 
-In general the page should continue drawing frames in response to `VRSession.requestFrame()` callbacks. The UA may use these frames as part of it's tracked environment, though they may be partially occluded, blurred, or otherwise manipulated. Still, some applications may wish to respond to this suspension by halting game logic, purposefully obscuring content, or pausing media. To do so, the application should listen for the `blur` and `focus` events from the `VRSession`. For example, a 360 media player would do this to pause the video/audio whenever the UA has obscured it.
+While suspended the page may either refresh the vr device at a slower rate or not at all, and poses queried from the device may be less accurate. If the user is wearing a headset the UA is expected to present a tracked environment when the page is being throttled to prevent user discomfort.
+
+In general the page should continue drawing frames in response to `VRSession.requestFrame()` callbacks. The UA may use these frames as part of it's tracked environment or page composition, though they may be partially occluded, blurred, or otherwise manipulated. Still, some applications may wish to respond to this suspension by halting game logic, purposefully obscuring content, or pausing media. To do so, the application should listen for the `blur` and `focus` events from the `VRSession`. For example, a 360 media player would do this to pause the video/audio whenever the UA has obscured it.
 
 ```js
 vrSession.addEventListener('blur', vrSessionEvent => {
