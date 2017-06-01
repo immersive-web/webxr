@@ -90,7 +90,7 @@ Sessions can be created with one of two levels of access:
 
 If a `VRDevice` is available and able to create an exclusive session, the application will usually want to add some UI to trigger activation of "VR Presentation Mode", where the application can begin sending imagery to the device. Testing to see if the device supports the capabilities the application needs is done via the `supportsSession` call, which takes a dictionary of the desired functionality and returns a promise which resolves if the device can create a session which supporting those properties and rejects otherwise. Querying for support this way is necessary because it allows the application to detect what VR features are available without actually engaging the sensors or beginning presentation, which can incur significant power or performance overhead on some systems and may have side effects such as launching a VR status tray or storefront.
 
-In the following example we ask if the `VRDevice` supports sessions with `exclusive` access, since we want the ability to display imagery on the headset.
+In the following examples we will focus on using exclusive sessions, and cover non-exclusive session use in the [`Advanced Functionality`](#non-exclusive-sessions-magic-windows) secion. With that in mind, we ask here if the `VRDevice` supports sessions with `exclusive` access, since we want the ability to display imagery on the headset.
 
 ```js
 async function OnVRAvailable() {
@@ -115,10 +115,10 @@ async function OnVRAvailable() {
 Clicking the "Enter VR" button in the previous sample will attempt to acquire a `VRSession` by callling `VRDisplay.requestSession`. This returns a promise that resolves to a `VRSession` upon success. When requesting a session, the capabilities that the returned session must have are passed in via a dictionary, exactly like the `supportsSession` call. If `supportsSession` resolved for a given dictionary, then calling `requestSession` with the same dictionary values should be reasonably expected to succeed, barring external factors (such as `requestSession` not being called in a user gesture for an exclusive session.) The UA is ultimately responsible for determining if it can honor the request.
 
 ```js
-function BeginVRSession(isExclusive) {
+function BeginVRSession() {
   // VRDevice.requestSession must be called within a user gesture event
   // like click or touch when requesting exclusive access.
-  vrDevice.requestSession({ exclusive: isExclusive })
+  vrDevice.requestSession()
       .then(OnSessionStarted)
       .catch(err => {
         // May fail for a variety of reasons. Probably just want to
@@ -129,7 +129,7 @@ function BeginVRSession(isExclusive) {
 ```
 Once the session has started, some setup must be done to prepare for rendering.
 - A `VRFrameOfReference` must be created to define the coordinate system in which the `VRDevicePose` objects will be defined. See the Advanced Functionality section for more details about frames of reference.
-- The depth range of the session should be set to something appropriate for the application. This range will be used in the construction of the projection matricies provided by `VRPresentationFrame`.
+- The depth range of the session should be set to something appropriate for the application. This range will be used in the construction of the projection matricies provided by `VRFrame`.
 - A `VRLayer` must be created and assigned to the `VRSession.baseLayer` attribute. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.)
 
 ```js
@@ -178,8 +178,7 @@ function setupWebGLLayer() {
   // Make sure the canvas context we want to use is compatible with the device.
   return gl.setCompatibleVrDevice(vrDevice).then(() => {
     // The content that will be shown on the device is defined by the session's
-    // baseLayer. In non-exclusive The baseLayer is not used for presentation, but
-    // the canvas dimensions are used to construct the projection matrices.
+    // baseLayer.
     vrSession.baseLayer = new VRWebGLLayer(vrSession, gl);
   });
 }
@@ -195,23 +194,13 @@ Ensuring context compatibility with a `VRDisplay` through either method may have
 
 ### Main render loop
 
-WebVR provides information about the current frame to be rendered via the [`VRPresentationFrame`] object which developers must examine each frame. The [`VRDevicePose`](https://w3c.github.io/webvr/#interface-vrdevicepose) contains the informaton about all views which must be rendered and targets into which this rendering must be done.
+WebVR provides information about the current frame to be rendered via the [`VRFrame`] object which developers must examine each frame. The [`VRDevicePose`](https://w3c.github.io/webvr/#interface-vrdevicepose) contains the informaton about all views which must be rendered and targets into which this rendering must be done.
 
-`VRWebGLLayer` objects are not updated automatically. To present new frames, developers must use `VRSession.requestFrame()`. When the callback function is run, it passes fresh rendering data that must be used to draw into the `VRWebGLLayer.framebuffer` during the callback. The VR device will continue presenting the `VRWebGLLayer` framebuffer, regardless of whether or not the callback has been requested. Potentially future spec iterations could enable additional types of layers, such as video layers, that could automatically be synchronized to the device's refresh rate.
+`VRWebGLLayer` objects are not updated automatically. To present new frames, developers must use `VRSession.requestFrame()`. When the callback function is run, it passes fresh rendering data that must be used to draw into the `VRWebGLLayer.framebuffer` during the callback. This framebuffer is created by the UA and behaves similarly to a canvas's default framebuffer. Using framebufferTexture2D, framebufferRenderbuffer, getFramebufferAttachmentParameter, and getRenderbufferParameter will all flag INVALID_OPERATION. Additionally, attempting to render to this framebuffer outside of the `requestFrame()` callback will flag INVALID_OPERATION.
 
-To get view matrices or the `poseModelMatrix` for each presentation frame, developers must call `getDevicePose()` and provide a `VRCoordinateSystem` to specify the coordinate system in which these matrices should be defined. Unless the "headModel" `VRFrameOfReference` is being used, this function is not guaranteed to return a value. For example, the most common frame of reference, "eyeLevel", will fail to return a viewMatrix or a poseModelMatrix under tracking loss conditions. In that case, the page will need to decide how to respond. It may wish to re-render the scene using an older pose, fade the scene out to prevent disorientation, fall back to a "headModel" `VRFrameOfReference`, or simply not update. For more information on this see the `Advanced functionality` section.
+Once drawn to, the VR device will continue displaying the contents of the `VRWebGLLayer` framebuffer, potentially reprojected to match head motion, regardless of whether or not the page continues processing new frames. Potentially future spec iterations could enable additional types of layers, such as video layers, that could automatically be synchronized to the device's refresh rate.
 
-Exclusive and non-exclusive (aka 'Magic Window') sessions can use the same render loop code, but will have slight variations in the their behavior. The differences are as follows:
-
-During exclusive sessions:
-- The UA runs a rendering loop at the device's native refresh rate
-- `VRWebGLLayer.framebuffer` is a custom framebuffer similar to a canvas's default frame buffer. Using framebufferTexture2D, framebufferRenderbuffer, getFramebufferAttachmentParameter, and getRenderbufferParameter will all flag INVALID_OPERATION. Additionally, attempting to render to this framebuffer outside of the `requestFrame()` callback will flag INVALID_OPERATION.
-- To modify the `VRViewport` objects for a `VRWebGLLayer`, web developers may call `VRWebGLLayer.requestViewportScaling()`. Not all UA will respect the request, but if the request can be honored changes will always take effect on a future `VRPresentationFrame`
-
-During non-exclusive (aka 'Magic Window') sessions:
-- The UA runs the rendering loop at the refresh rate of page (aligned with `window.requestAnimationFrame`)
-- `VRWebGLLayer.framebuffer` will always be null. When this is passed into `gl.bindFramebuffer`, it will result in rendering occurring in the default framebuffer of the `VRWebGLLayer.context`.
-- Changes to the size of the canvas hosting the `VRWebGLLayer.context` will automatically update the `VRViewport` and potentially projection matrix in the first `VRPresentationFrame` after the changes have been applied in the page. Calls to `VRWebGLLayer.requestViewportScaling()` will have no effect.
+To get view matrices or the `poseModelMatrix` for each presentation frame, developers must call `getDevicePose()` and provide a `VRCoordinateSystem` to specify the coordinate system in which these matrices should be defined. Unless the "headModel" `VRFrameOfReference` is being used, this function is not guaranteed to return a value. For example, the most common frame of reference, "eyeLevel", will fail to return a viewMatrix or a poseModelMatrix under tracking loss conditions. In that case, the page will need to decide how to respond. It may wish to re-render the scene using an older pose, fade the scene out to prevent disorientation, fall back to a "headModel" `VRFrameOfReference`, or simply not update. For more information on this see the [`Advanced functionality`](#orientation-only-tracking) section.
 
 ```js
 function onDrawFrame(vrFrame) {
@@ -228,7 +217,6 @@ function onDrawFrame(vrFrame) {
 
     // Request the next VR callback
     vrSession.requestFrame(onDrawFrame);
-
   } else {
     // No session available, so render a default mono view.
     gl.viewport(0, 0, glCanvas.width, glCanvas.height);
@@ -385,6 +373,89 @@ Changes to the bounds while a session is active should be a relatively rare occu
 frameOfRef.addEventListener('boundschange', OnBoundsUpdate);
 ```
 
+### Mirroring
+
+On desktop devices, or any device which has an external display connected to it, it's frequently desirable to show what the user in the headset is seeing on the exernal display. This is usually referred to as mirroring.
+
+In order to mirror WebVR content to the page, developers specify an `outputCanvas` in the `VRSessionCreateParameters` of an exclusive session. The canvas supplied must have a [`ImageBitmapRenderingContext`](https://developer.mozilla.org/en-US/docs/Web/API/ImageBitmapRenderingContext) or the promise returned by `requestSession` will be rejected. Once the session has started any content displayed on the headset will then be mirrored into that canvas.
+
+When mirroring only one eye's content will be shown, and it should be shown undistorted. The UA may choose to crop the image shown, display it at a lower resolution than originally rendered, and the mirror may be multiple frames behind the image shown in the headset. The mirror may include or exclude elements added by the underlying VR system (such as visualizations of room boundaries) at the UA's discretion. Pages should not rely on a particular timing or presentation of mirrored content, it's really just for the benefit of bystanders or demo operators.
+
+On devices without an external display to mirror to, such as mobile or all-in-one systems, the `outputCanvas` will be ignored.
+
+```js
+function BeginVRSession() {
+  // Only bother to initialize the mirror canvas if we know it will be shown.
+  let mirrorCanvas = null;
+  if (vrDevice.isExternal) {
+    mirrorCanvas = document.createElement('canvas');
+    let imgCtx = mirrorCanvas.getContext('bitmaprenderer');
+    document.body.appendChild(mirrorCanvas);
+  }
+
+  vrDevice.requestSession({ outputCanvas: mirrorCanvas })
+      .then(OnSessionStarted);
+}
+```
+
+### Non-exclusive sessions ("Magic Windows")
+
+There are several scenarios where it's beneficial to render a scene on the page who's view is controlled by device tracking. For example:
+
+ - Using phone rotation to view panoramic content.
+ - Taking advantage of 6DoF tracking on devices (like [Tango](https://get.google.com/tango/) phones) with no associated headset.
+ - Making use of head-tracking features for devices like [zSpace](http://zspace.com/) systems.
+
+These scenarios can make use of non-exclusive sessions to render tracked content to the page. Similar to mirroring, to make use of this mode an `outputCanvas` is provided at session creation time, as well as the `exclusive: false` flag. Just like with mirroring the `outputCanvas` must have a `ImageBitmapRenderingContext`. At that point content rendered to the `VRSession.baseLayer` will be rendered to the `outputCanvas`. In the future, if multiple `VRLayers` are used their composited result will be what is displayed in the `outputCanvas`. Given that the session is tied to a specific output canvas it's permissible to have multiple non-exclusive sessions active at once to handle multiple output surfaces.
+
+Exclusive and non-exclusive sessions use the same render loop code, but there are some differences in behavior to be aware of. The sessions may run their render loops at at different rates. During exclusive sessions the UA runs the rendering loop at the `VRDevice`'s native refresh rate. During non-exclusive sessions the UA runs the rendering loop at the refresh rate of page (aligned with `window.requestAnimationFrame`.) Also, when rendering with an exclusive session the projection matrices provided each frame are based on the device optics, while non-exclusive sessions provide projection matrices based on the output canvas dimensions.
+
+Most instances of non-exclusive sessions will only provide a single `VRView` to be rendered, but UA may request multiple views be rendered if, for example, it's detected that that output medium of the page supports stereo rendering. As a result pages should always draw every `VRView` provided by the `VRFrame` regardless of what type of session has been requested.
+
+UAs may have different restrictions on non-exclusive contexts that don't apply to exclusive contexts. For instance, a different set of `VRFrameOfReference` types may be available with a non-exclusive session versus an exclusive session.
+
+The UA may reject requests for a non-exclusive sessions for a variety of reasons, such as the inability of the underlying hardware to provide tracking data without actively rendering to the device. Pages should be designed to robustly handle the inability to aquire non-exclusive sessions.
+
+```js
+function BeginMagicWindowVRSession() {
+  let mirrorCanvas = document.createElement('canvas');
+  let imgCtx = mirrorCanvas.getContext('bitmaprenderer');
+  document.body.appendChild(mirrorCanvas);
+
+  // Request a non-exclusive session for magic window rendering.
+  vrDevice.requestSession({ exclusive: false, outputCanvas: mirrorCanvas})
+      .then(OnSessionStarted);
+}
+
+```
+
+### Tracking only non-exclusive sessions
+
+If a non-exclusive session is requested without a corresponding `outputCanvas`, it's considered to be a "tracking only" session. These can be useful for several reasons, such as providing debugging and troubleshooting information or using VR devices as a form of input without the need for the associated rendering pipeline.
+
+Tracking only sessions process the frame loop the same way as the other session types, but the `VRFrame` will not provide any `VRViews`. Similarly, attempts to create `VRLayer`s for a tracking only session will fail.
+
+As with magic window sessions, requests for tracking only sessions may be rejected for a variety of reasons and pages should be able to operate without them.
+
+```js
+function BeginTrackingVRSession() {
+  // Request a session that only provides tracking data, no rendering.
+  vrDevice.requestSession({ exclusive: false }).then(session => {
+    vrSession = session;
+    vrSession.requestFrame().then(OnTrackingFrame);
+  }
+}
+
+function OnTrackingFrame(vrFrame) {
+  let pose = vrFrame.getDevicePose(vrFrameOfRef);
+
+  // Use the pose somehow. No rendering component provided.
+
+  // Request the next tracking frame.
+  vrSession.requestFrame().then(OnTrackingFrame);
+}
+```
+
 ### Multivew rendering
 
 Developers may optionally take advantage of the [WEBGL_multiview extension](https://www.khronos.org/registry/webgl/extensions/proposals/WEBGL_multiview/) to both WebGL 1.0 and WebGL 2.0 for optimized multiview rendering. The UA may not honor this request (e.g. when the supplied context does not support this extension) and the `VRWebGLLayer` will fallback to using a framebuffer that is not multiview-aware. As such, developers must query the `VRWebGLLayer.multiview` property after the `VRWebGLLayer` is constructed and respond accordingly.
@@ -463,7 +534,7 @@ function setupWebGLLayer() {
   });
 ```
 
-The second scaling mechanism is to request a scaled viewport into the `VRWebGLLayer.framebuffer`. For example, under times of heavy load the developer may choose to temporarily render fewer pixels. To do so, developers should call `VRWebGLLayer.requestViewportScaling()` and supply a value between 0.0 and 1.0. The UA may then respond by changing the `VRWebGLLayer.framebuffer` and/or the `VRViewport` values in future VR rendering frames. It is worth noting that the UA may change the viewports for reasons other than developer request; as such, developers must always query the viewport values on each VR rendering frame.
+The second scaling mechanism is to request a scaled viewport into the `VRWebGLLayer.framebuffer`. For example, under times of heavy load the developer may choose to temporarily render fewer pixels. To do so, developers should call `VRWebGLLayer.requestViewportScaling()` and supply a value between 0.0 and 1.0. The UA may then respond by changing the `VRWebGLLayer.framebuffer` and/or the `VRViewport` values in future VR rendering frames. It is worth noting that the UA may change the viewports for reasons other than developer request, and that not all UAs will respect requested viewport changes; as such, developers must always query the viewport values on each VR rendering frame.
 
 ```js
 function onDrawFrame() {
@@ -557,10 +628,12 @@ interface VRDevice : EventTarget {
 
 dictionary VRSessionCreateParametersInit {
   boolean exclusive = true;
+  HTMLCanvasElement outputCanvas = null;
 };
 
 interface VRSessionCreateParameters {
   readonly attribute boolean exclusive;
+  readonly attribute HTMLCanvasElement outputCanvas;
 };
 
 interface VRSession : EventTarget {
@@ -588,9 +661,10 @@ interface VRSession : EventTarget {
 callback VRFrameRequestCallback = void (VRPresentationFrame frame);
 
 //
-// Presentation Frame, Device Pose, and Views
+// Frame, Device Pose, and Views
 //
-interface VRPresentationFrame {
+
+interface VRFrame {
   readonly attribute FrozenArray<VRView> views;
 
   VRDevicePose? getDevicePose(VRCoordinateSystem coordinateSystem);
