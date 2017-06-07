@@ -400,33 +400,6 @@ function BeginMagicWindowVRSession() {
 
 ```
 
-### Tracking only non-exclusive sessions
-
-If a non-exclusive session is requested without a corresponding `outputCanvas`, it's considered to be a "tracking only" session. These can be useful for several reasons, such as providing debugging and troubleshooting information or using VR devices as a form of input without the need for the associated rendering pipeline.
-
-Tracking only sessions process the frame loop the same way as the other session types, but the `VRFrame` will not provide any `VRViews`. Similarly, attempts to create `VRLayer`s for a tracking only session will fail.
-
-As with magic window sessions, requests for tracking only sessions may be rejected for a variety of reasons and pages should be able to operate without them.
-
-```js
-function BeginTrackingVRSession() {
-  // Request a session that only provides tracking data, no rendering.
-  vrDevice.requestSession({ exclusive: false }).then(session => {
-    vrSession = session;
-    vrSession.requestFrame().then(OnTrackingFrame);
-  }
-}
-
-function OnTrackingFrame(vrFrame) {
-  let pose = vrFrame.getDevicePose(vrFrameOfRef);
-
-  // Use the pose somehow. No rendering component provided.
-
-  // Request the next tracking frame.
-  vrSession.requestFrame().then(OnTrackingFrame);
-}
-```
-
 ### Multivew rendering
 
 Developers may optionally take advantage of the [WEBGL_multiview extension](https://www.khronos.org/registry/webgl/extensions/proposals/WEBGL_multiview/) to both WebGL 1.0 and WebGL 2.0 for optimized multiview rendering. The UA may not honor this request (e.g. when the supplied context does not support this extension) and the `VRWebGLLayer` will fallback to using a framebuffer that is not multiview-aware. As such, developers must query the `VRWebGLLayer.multiview` property after the `VRWebGLLayer` is constructed and respond accordingly.
