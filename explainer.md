@@ -145,7 +145,7 @@ function OnSessionStarted(session) {
   // Ensure the canvas context is compatible and create the VRLayer.
   setupWebGLLayer().then(() => {
     // Start the render loop
-    vrSession.requestVRPresentationFrame().then(onDrawFrame);
+    vrSession.requestFrame(onDrawFrame);
   });
 }
 ```
@@ -189,7 +189,7 @@ Ensuring context compatibility with a `VRDisplay` through either method may have
 
 WebVR provides information about the current frame to be rendered via the [`VRPresentationFrame`] object which developers must examine each frame. The [`VRDevicePose`](https://w3c.github.io/webvr/#interface-vrdevicepose) contains the informaton about all views which must be rendered and targets into which this rendering must be done.
 
-`VRWebGLLayer` objects are not updated automatically. To present new frames, developers must use `VRSession.requestVRPresentationFrame()`. When the promise fulfills, it returns fresh rendering data that must be used to draw into the `VRWebGLLayer.framebuffer` during the callback. The VR device will continue presenting the `VRWebGLLayer` framebuffer, regardless of whether or not the callback has been requested. Potentially future spec iterations could enable additional types of layers, such as video layers, that could automatically be synchronized to the device's refresh rate.
+`VRWebGLLayer` objects are not updated automatically. To present new frames, developers must use `VRSession.requestFrame()`. When the callback function is run, it passes fresh rendering data that must be used to draw into the `VRWebGLLayer.framebuffer` during the callback. The VR device will continue presenting the `VRWebGLLayer` framebuffer, regardless of whether or not the callback has been requested. Potentially future spec iterations could enable additional types of layers, such as video layers, that could automatically be synchronized to the device's refresh rate.
 
 To get view matrices or the `poseModelMatrix` for each presentation frame, developers must call `getDevicePose()` and provide a `VRCoordinateSystem` to specify the coordinate system in which these matrices should be defined. Unless the "headModel" `VRFrameOfReference` is being used, this function is not guaranteed to return a value. For example, the most common frame of reference, "eyeLevel", will fail to return a viewMatrix or a poseModelMatrix under tracking loss conditions. In that case, the page will need to decide how to respond. It may wish to re-render the scene using an older pose, fade the scene out to prevent disorientation, fall back to a "headModel" `VRFrameOfReference`, or simply not update. For more information on this see the `Advanced functionality` section.
 
@@ -197,7 +197,7 @@ Exclusive and non-exclusive (aka 'Magic Window') sessions can use the same rende
 
 During exclusive sessions:
 - The UA runs a rendering loop at the device's native refresh rate
-- `VRWebGLLayer.framebuffer` is a custom framebuffer similar to a canvas's default frame buffer. Using framebufferTexture2D, framebufferRenderbuffer, getFramebufferAttachmentParameter, and getRenderbufferParameter will all flag INVALID_OPERATION. Additionally, attempting to render to this framebuffer outside of the `requestVRPresentationFrame()` callback will flag INVALID_OPERATION.
+- `VRWebGLLayer.framebuffer` is a custom framebuffer similar to a canvas's default frame buffer. Using framebufferTexture2D, framebufferRenderbuffer, getFramebufferAttachmentParameter, and getRenderbufferParameter will all flag INVALID_OPERATION. Additionally, attempting to render to this framebuffer outside of the `requestFrame()` callback will flag INVALID_OPERATION.
 - To modify the `VRViewport` objects for a `VRWebGLLayer`, web developers may call `VRWebGLLayer.requestViewportScaling()`. Not all UA will respect the request, but if the request can be honored changes will always take effect on a future `VRPresentationFrame`
 
 During non-exclusive (aka 'Magic Window') sessions:
@@ -219,7 +219,7 @@ function onDrawFrame(vrFrame) {
     }
 
     // Request the next VR callback
-    vrSession.requestVRPresentationFrame().then(onDrawFrame);
+    vrSession.requestFrame(onDrawFrame);
 
   } else {
     // No session available, so render a default mono view.
@@ -263,7 +263,7 @@ function EndVRSession() {
 
 // Restore the page to normal after exclusive access has been released.
 function OnSessionEnded() {
-  // Ending the session stops fulfillment of promises returned by requestVRPresentationFrame().
+  // Ending the session stops executing callbacks passed to requestFrame().
   // To continue rendering, use the window's AnimationFrame callback
   window.requestAnimationFrame(onDrawFrame);
 }
@@ -377,7 +377,7 @@ function onDrawFrame(vrFrame) {
     }
 
     // Request the next VR callback
-    vrSession.requestVRPresentationFrame().then(onDrawFrame);
+    vrSession.requestFrame(onDrawFrame);
 
   } else {
     // No session available, so render a default mono view.
@@ -425,7 +425,7 @@ function onDrawFrame() {
   layer.requestViewportScaling(0.5);
 
   // Register for next frame callback
-  vrSession.requestVRPresentationFrame().then(onDrawFrame);
+  vrSession.requestFrame(onDrawFrame);
 }
 ```
 
@@ -455,7 +455,7 @@ vrDevice.addEventListener('deactivate', vrDeviceEvent => {
 
 The UA may temporarily suspend a session if allowing the page to continue reading the headset position represents a security risk (like when the user is entering a password or URL with a virtual keyboard, in which case the head motion may infer the user's input), or if other content is obscuring the page's output. While suspended the page may either refresh the vr device at a slower rate or not at all, and poses queried from the headset may be less accurate. The UA is expected to present a tracked environment to the user when the page is being throttled to prevent user discomfort.
 
-In general the page should continue drawing frames in response to fulfilled Promises returned from `VRSession.requestVRPresentationFrame()`. The UA may use these frames as part of it's tracked environment, though they may be partially occluded, blurred, or otherwise manipulated. Still, some applications may wish to respond to this suspension by halting game logic, purposefully obscuring content, or pausing media. To do so, the application should listen for the `blur` and `focus` events from the `VRSession`. For example, a 360 media player would do this to pause the video/audio whenever the UA has obscured it.
+In general the page should continue drawing frames in response to `VRSession.requestFrame()` callbacks. The UA may use these frames as part of it's tracked environment, though they may be partially occluded, blurred, or otherwise manipulated. Still, some applications may wish to respond to this suspension by halting game logic, purposefully obscuring content, or pausing media. To do so, the application should listen for the `blur` and `focus` events from the `VRSession`. For example, a 360 media player would do this to pause the video/audio whenever the UA has obscured it.
 
 ```js
 vrSession.addEventListener('blur', vrSessionEvent => {
@@ -599,10 +599,13 @@ interface VRSession : EventTarget {
 
   Promise<VRFrameOfReference> createFrameOfReference(VRFrameOfReferenceType type);
 
-  Promise<VRPresentationFrame> requestVRPresentationFrame();
+  long requestFrame(VRFrameRequestCallback callback);
+  void cancelFrame(long handle);
 
   Promise<void> endSession();
 };
+
+callback VRFrameRequestCallback = void (VRPresentationFrame frame);
 
 //
 // Presentation Frame, Device Pose, and Views
