@@ -321,20 +321,43 @@ When using a stage `VRFrameOfReference` the device will frequently have a config
 If the `bounds` are available the application should try to ensure that all content the user needs to interact with can be reached while staying inside the described bounds geometry, and ideally from within the play area rectangle.
 
 ```js
-if(frameOfRef.bounds) {
-  // Reposition the scene to match the reported bounds. Assumes a scene with a
-  // floor whose left back corner is at (0, 0, 0) and is 1 meter square.
-  scene.translateX(frameOfRef.bounds.playAreaMin.x);
-  scene.translateZ(frameOfRef.bounds.playAreaMin.z);
-  scene.scaleX(frameOfRef.bounds.playAreaMax.x - frameOfRef.bounds.playAreaMin.x);
-  scene.scaleZ(frameOfRef.bounds.playAreaMax.z - frameOfRef.bounds.playAreaMin.z);
-} else {
-  // Use default bounds. (2 meters square, centered at the origin)
-  scene.translateX(-1.0);
-  scene.translateZ(-1.0);
-  scene.scaleX(2.0);
-  scene.scaleZ(2.0);
+// Demonstrated here using a fictional 3D library to simplify the example code.
+function OnBoundsUpdate() {
+  if(frameOfRef.bounds) {
+    // Reposition the scene to match the reported bounds. Assumes a scene with a
+    // floor whose left back corner is at (0, 0, 0) and is 1 meter square.
+    scene.translateX(frameOfRef.bounds.playAreaMin.x);
+    scene.translateZ(frameOfRef.bounds.playAreaMin.z);
+    scene.scaleX(frameOfRef.bounds.playAreaMax.x - frameOfRef.bounds.playAreaMin.x);
+    scene.scaleZ(frameOfRef.bounds.playAreaMax.z - frameOfRef.bounds.playAreaMin.z);
+
+    // Visualize the bounds geometry as 2 meter high quads
+    boundsMesh.clear();
+    for (let i = 0; i < frameOfRef.bounds.geometry.length - 1; ++i) {
+      let pointA = frameOfRef.bounds.geometry[i];
+      let pointB = frameOfRef.bounds.geometry[i+1];
+      boundsMesh.addQuad(
+          pointA.x, 0, pointA.z, // Quad Corner 1
+          pointB.x, 2.0, pointB.z) // Quad Corner 2
+    }
+  } else {
+    // Use default bounds. (2 meters square, centered at the origin)
+    scene.translateX(-1.0);
+    scene.translateZ(-1.0);
+    scene.scaleX(2.0);
+    scene.scaleZ(2.0);
+
+    // No bounds geometry to visualize
+    boundsMesh.clear();
+  }
 }
+```
+
+Changes to the bounds while a session is active should be a relatively rare occurance, but it can be monitored by listening for the `boundschange` event.
+
+```js
+frameOfRef.addEventListener('boundschange', OnBoundsUpdate);
+
 ```
 
 ### Multivew rendering
@@ -678,7 +701,7 @@ interface VRWebGLLayer : VRLayer {
 // Coordinate Systems
 //
 
-interface VRCoordinateSystem {
+interface VRCoordinateSystem : EventTarget {
   Float32Array? getTransformTo(VRCoordinateSystem other);
 };
 
