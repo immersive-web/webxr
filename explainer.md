@@ -333,13 +333,20 @@ function OnBoundsUpdate() {
 
     // Visualize the bounds geometry as 2 meter high quads
     boundsMesh.clear();
-    for (let i = 0; i < frameOfRef.bounds.geometry.length - 1; ++i) {
+    let pointCount = frameOfRef.bounds.geometry.length;
+    for (let i = 0; i < pointCount - 1; ++i) {
       let pointA = frameOfRef.bounds.geometry[i];
       let pointB = frameOfRef.bounds.geometry[i+1];
       boundsMesh.addQuad(
           pointA.x, 0, pointA.z, // Quad Corner 1
           pointB.x, 2.0, pointB.z) // Quad Corner 2
     }
+    // Close the loop
+    let pointA = frameOfRef.bounds.geometry[pointCount-1];
+    let pointB = frameOfRef.bounds.geometry[0];
+    boundsMesh.addQuad(
+          pointA.x, 0, pointA.z, // Quad Corner 1
+          pointB.x, 2.0, pointB.z) // Quad Corner 2
   } else {
     // Use default bounds. (2 meters square, centered at the origin)
     scene.translateX(-1.0);
@@ -353,11 +360,10 @@ function OnBoundsUpdate() {
 }
 ```
 
-Changes to the bounds while a session is active should be a relatively rare occurance, but it can be monitored by listening for the `boundschange` event.
+Changes to the bounds while a session is active should be a relatively rare occurance, but it can be monitored by listening for the session's `boundschange` event.
 
 ```js
-frameOfRef.addEventListener('boundschange', OnBoundsUpdate);
-
+vrSession.addEventListener('boundschange', OnBoundsUpdate);
 ```
 
 ### Multivew rendering
@@ -619,6 +625,7 @@ interface VRSession : EventTarget {
   attribute EventHandler onblur;
   attribute EventHandler onfocus;
   attribute EventHandler onresetpose;
+  attribute EventHandler onboundschange;
 
   Promise<VRFrameOfReference> createFrameOfReference(VRFrameOfReferenceType type);
 
@@ -713,7 +720,6 @@ enum VRFrameOfReferenceType {
 
 interface VRFrameOfReference : VRCoordinateSystem {
   readonly attribute VRStageBounds? bounds;
-  attribute EventHandler onboundschange;
 };
 
 interface VRStageBounds {
