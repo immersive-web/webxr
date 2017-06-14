@@ -360,10 +360,10 @@ function OnBoundsUpdate() {
 }
 ```
 
-Changes to the bounds while a session is active should be a relatively rare occurance, but it can be monitored by listening for the session's `boundschange` event.
+Changes to the bounds while a session is active should be a relatively rare occurance, but it can be monitored by listening for the frame of reference's `boundschange` event.
 
 ```js
-vrSession.addEventListener('boundschange', OnBoundsUpdate);
+frameOfRef.addEventListener('boundschange', OnBoundsUpdate);
 ```
 
 ### Multivew rendering
@@ -625,7 +625,6 @@ interface VRSession : EventTarget {
   attribute EventHandler onblur;
   attribute EventHandler onfocus;
   attribute EventHandler onresetpose;
-  attribute EventHandler onboundschange;
 
   Promise<VRFrameOfReference> createFrameOfReference(VRFrameOfReferenceType type);
 
@@ -708,7 +707,7 @@ interface VRWebGLLayer : VRLayer {
 // Coordinate Systems
 //
 
-interface VRCoordinateSystem {
+interface VRCoordinateSystem : EventTarget {
   Float32Array? getTransformTo(VRCoordinateSystem other);
 };
 
@@ -720,6 +719,7 @@ enum VRFrameOfReferenceType {
 
 interface VRFrameOfReference : VRCoordinateSystem {
   readonly attribute VRStageBounds? bounds;
+  attribute EventHandler onboundschange;
 };
 
 interface VRStageBounds {
@@ -753,6 +753,15 @@ interface VRSessionEvent : Event {
 
 dictionary VRSessionEventInit : EventInit {
   required VRSession session;
+};
+
+[Constructor(DOMString type, VRCoordinateSystemEventInit eventInitDict)]
+interface VRCoordinateSystemEvent : Event {
+  readonly attribute VRCoordinateSystem coordinateSystem;
+};
+
+dictionary VRCoordinateSystemEventInit : EventInit {
+  required VRCoordinateSystem coordinateSystem;
 };
 
 //
