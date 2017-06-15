@@ -316,21 +316,14 @@ vrSession.createFrameOfReference("stage").then(frame => {
 // Use frameOfRef as detailed above, but render the floor of the virtual space at Y = 0;
 ```
 
-When using a stage `VRFrameOfReference` the device will frequently have a configured "safe area" that the user can move around in without fear of bumping into real world objects. WebVR can communicate the rough boundaries of this space via the `VRFrameOfReference.bounds` attribute. It provides two descriptions of the area. First, an axis-aligned bounding rectangle which represents a conservative estimate of the known safe space with the `playAreaMin` and `playAreaMax` points. Second, a more detailed polygonal boundary given in the 'geometry' point array, which represents a clockwise loop of points at the edges of the safe space. The shape it describes is not guaranteed to be convex. The values reported are relative to the stage origin, but do not necessarily contain it. The `bounds` attribute is null if the bounds are unavailable for the current frame of reference.
+When using a stage `VRFrameOfReference` the device will frequently have a configured "safe area" that the user can move around in without fear of bumping into real world objects. WebVR can communicate the rough boundaries of this space via the `VRFrameOfReference.bounds` attribute. It provides a polygonal boundary given in the 'geometry' point array, which represents a clockwise loop of points at the edges of the safe space. The shape it describes is not guaranteed to be convex. The values reported are relative to the stage origin, but do not necessarily contain it. The `bounds` attribute is null if the bounds are unavailable for the current frame of reference.
 
-If the `bounds` are available the application should try to ensure that all content the user needs to interact with can be reached while staying inside the described bounds geometry, and ideally from within the play area rectangle.
+If the `bounds` are available the application should try to ensure that all content the user needs to interact with can be reached while staying inside the described bounds geometry.
 
 ```js
 // Demonstrated here using a fictional 3D library to simplify the example code.
 function OnBoundsUpdate() {
   if (frameOfRef.bounds) {
-    // Reposition the scene to match the reported bounds. Assumes a scene with a
-    // floor whose left back corner is at (0, 0, 0) and is 1 meter square.
-    scene.translateX(frameOfRef.bounds.playAreaMin.x);
-    scene.translateZ(frameOfRef.bounds.playAreaMin.z);
-    scene.scaleX(frameOfRef.bounds.playAreaMax.x - frameOfRef.bounds.playAreaMin.x);
-    scene.scaleZ(frameOfRef.bounds.playAreaMax.z - frameOfRef.bounds.playAreaMin.z);
-
     // Visualize the bounds geometry as 2 meter high quads
     boundsMesh.clear();
     let pointCount = frameOfRef.bounds.geometry.length;
@@ -348,12 +341,6 @@ function OnBoundsUpdate() {
           pointA.x, 0, pointA.z, // Quad Corner 1
           pointB.x, 2.0, pointB.z) // Quad Corner 2
   } else {
-    // Use default bounds. (2 meters square, centered at the origin)
-    scene.translateX(-1.0);
-    scene.translateZ(-1.0);
-    scene.scaleX(2.0);
-    scene.scaleZ(2.0);
-
     // No bounds geometry to visualize
     boundsMesh.clear();
   }
@@ -724,8 +711,6 @@ interface VRFrameOfReference : VRCoordinateSystem {
 
 interface VRStageBounds {
   readonly attribute FrozenArray<VRStageBoundsPoint> geometry;
-  readonly attribute VRStageBoundsPoint playAreaMin;
-  readonly attribute VRStageBoundsPoint playAreaMax;
 };
 
 interface VRStageBoundsPoint {
