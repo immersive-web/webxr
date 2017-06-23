@@ -55,7 +55,7 @@ The basic steps any WebVR application will go through are:
 
 The first thing that any VR-enabled page will want to do is enumerate the available VR hardware and, if present, advertise VR functionality to the user.
 
-[`navigator.vr.getDevices`](https://w3c.github.io/webvr/#navigator-getvrdevices-attribute) returns a [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that resolves to a list of available devices. Each [`VRDevice`](https://w3c.github.io/webvr/#interface-vrdevice) represents a physical unit of VR hardware that can present imagery to the user somehow, referred to here as a "VR hardware device". On desktops this will usually be a headset peripheral; on mobile devices it may represent the device itself in conjunction with a viewer harness (e.g., Google Cardboard or Samsung Gear VR). It may also represent devices without stereo presentation capabilities but more advanced tracking, such as Tango devices.
+[`navigator.vr.getDevices`](https://w3c.github.io/webvr/#navigator-getvrdevices-attribute) returns a [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that resolves to a list of available devices. Each [`VRDevice`](https://w3c.github.io/webvr/#interface-vrdevice) represents a physical unit of VR hardware that can present imagery to the user somehow, referred to here as a "VR hardware device". On desktop clients this will usually be a headset peripheral; on mobile clients it may represent the mobile device itself in conjunction with a viewer harness (e.g., Google Cardboard or Samsung Gear VR). It may also represent devices without stereo presentation capabilities but more advanced tracking, such as Tango devices.
 
 ```js
 let vrDevice = null;
@@ -78,9 +78,9 @@ navigator.vr.getDevices().then(devices => {
 
 ### Sessions
 
-A `VRDevice` indicates the presence of a VR hardware device but provides very little information about it outside of a name that could be used to select it from a list. In order to do anything that involves the hardware's presentation or tracking capabilities the page will need to request a [`VRSession`](https://w3c.github.io/webvr/#interface-vrsession) from the `VRDevice`.
+A `VRDevice` indicates the presence of a VR hardware device but provides very little information about it outside of a name that could be used to select it from a list. In order to do anything that involves the hardware's presentation or tracking capabilities the application will need to request a [`VRSession`](https://w3c.github.io/webvr/#interface-vrsession) from the `VRDevice`.
 
-Sessions can be created with two levels of access:
+Sessions can be created with one of two levels of access:
 
 **Exclusive Access**: The default mode, but can be explicitly requested with the `exclusive: true` dictionary argument. Exclusive sessions present content directly to the `VRDevice`, enabling immersive VR presentation. Only one exclusive session per VR hardware device is allowed at a time across the entire UA. Exclusive sessions must be created within a user gesture event or within another callback that has been explicitly indicated to allow exclusive session creation.
 
@@ -88,9 +88,9 @@ Sessions can be created with two levels of access:
 
 ### Detecting and advertising VR mode
 
-If a `VRDevice` is available and able to create an exclusive session the page will usually want to add some UI to trigger activation of "VR Presentation Mode", where the page can begin sending imagery to the device. Testing to see if the device supports the capabilities the page needs is done via the `supportsSession` call, which takes a dictionary of the desired functionality and returns whether or not the device can create a session supporting them. Querying for support this way is necessary because it allows the application to detect what VR features are available without actually engaging the sensors or beginning presentation, which can incur significant power or performance overhead on some systems and may have side effects such as launching a VR status tray or storefront.
+If a `VRDevice` is available and able to create an exclusive session, the application will usually want to add some UI to trigger activation of "VR Presentation Mode", where the application can begin sending imagery to the device. Testing to see if the device supports the capabilities the application needs is done via the `supportsSession` call, which takes a dictionary of the desired functionality and returns whether or not the device can create a session supporting them. Querying for support this way is necessary because it allows the application to detect what VR features are available without actually engaging the sensors or beginning presentation, which can incur significant power or performance overhead on some systems and may have side effects such as launching a VR status tray or storefront.
 
-In this case, we ask if the `VRDevice` supports sessions with `exclusive` access, since we want the ability to display imagery on the headset.
+In the following example we ask if the `VRDevice` supports sessions with `exclusive` access, since we want the ability to display imagery on the headset.
 
 ```js
 async function OnVRAvailable() {
@@ -111,7 +111,7 @@ async function OnVRAvailable() {
 
 ### Beginning a VR session
 
-Clicking that button will attempt to acquire a `VRSession` by callling `VRDisplay.requestSession`. This returns a promise that resolves to a `VRSession` upon success. When requesting a session the capabilities that the returned session must have are passed in via a dictionary, exactly like the `supportsSession` call. If `supportsSession` returned true for a given dictionary then calling `requestSession` with the same dictionary values should be reasonably expected to succeed, barring external factors (such as `requestSession` not being called in a user gesture for an exclusive session or another page currently having an exclusive session for the same device.)
+Clicking that button will attempt to acquire a `VRSession` by callling `VRDisplay.requestSession`. This returns a promise that resolves to a `VRSession` upon success. When requesting a session, the capabilities that the returned session must have are passed in via a dictionary, exactly like the `supportsSession` call. If `supportsSession` returned true for a given dictionary, then calling `requestSession` with the same dictionary values should be reasonably expected to succeed, barring external factors (such as `requestSession` not being called in a user gesture for an exclusive session or another application currently having an exclusive session for the same VR hardware device.)
 
 ```js
 function BeginVRSession(isExclusive) {
@@ -120,9 +120,9 @@ function BeginVRSession(isExclusive) {
   vrDevice.requestSession({ exclusive: isExclusive })
       .then(OnSessionStarted)
       .catch(err => {
-        // May fail for a variety of reasons, including another page already
-        // having exclusive access to the device. Probably just want to render
-        // the scene normally without any tracking at this point.
+        // May fail for a variety of reasons, including another application
+        // already having exclusive access to the device. Probably just want to
+        // render the scene normally without any tracking at this point.
         window.requestAnimationFrame(onDrawFrame);
       });
 }
