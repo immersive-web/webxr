@@ -111,7 +111,7 @@ async function OnVRAvailable() {
 
 ### Beginning a VR session
 
-Clicking that button will attempt to acquire a `VRSession` by callling `VRDisplay.requestSession`. This returns a promise that resolves to a `VRSession` upon success. When requesting a session, the capabilities that the returned session must have are passed in via a dictionary, exactly like the `supportsSession` call. If `supportsSession` returned true for a given dictionary, then calling `requestSession` with the same dictionary values should be reasonably expected to succeed, barring external factors (such as `requestSession` not being called in a user gesture for an exclusive session or another application currently having an exclusive session for the same VR hardware device.)
+Clicking the "Enter VR" button in the previous sample will attempt to acquire a `VRSession` by callling `VRDisplay.requestSession`. This returns a promise that resolves to a `VRSession` upon success. When requesting a session, the capabilities that the returned session must have are passed in via a dictionary, exactly like the `supportsSession` call. If `supportsSession` returned true for a given dictionary, then calling `requestSession` with the same dictionary values should be reasonably expected to succeed, barring external factors (such as `requestSession` not being called in a user gesture for an exclusive session.) The UA is ultimately responsible for determining if it can honor the request.
 
 ```js
 function BeginVRSession(isExclusive) {
@@ -120,8 +120,7 @@ function BeginVRSession(isExclusive) {
   vrDevice.requestSession({ exclusive: isExclusive })
       .then(OnSessionStarted)
       .catch(err => {
-        // May fail for a variety of reasons, including another application
-        // already having exclusive access to the device. Probably just want to
+        // May fail for a variety of reasons. Probably just want to
         // render the scene normally without any tracking at this point.
         window.requestAnimationFrame(onDrawFrame);
       });
