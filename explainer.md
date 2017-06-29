@@ -255,9 +255,35 @@ function drawScene(view, pose) {
 }
 ```
 
+### Handling suspended sessions
+
+The UA may temporarily "suspend" a session at any time. While suspended a session has restricted or throttled access to the `VRDevice` state and may process frames slowly or not at all. Suspended sessions can be resonably be expected to be resumed at some point, usually when the user has finished performing whatever action triggered the suspension in the first place.
+
+The UA may suspend a session if allowing the page to continue reading the headset position represents a security or privacy risk (like when the user is entering a password or URL with a virtual keyboard, in which case the head motion may infer the user's input), or if other content is obscuring the page's output. Additionally, non-exclusive sessions are suspended while an exclusive session is active.
+
+While suspended the page may either refresh the vr device at a slower rate or not at all, and poses queried from the device may be less accurate. If the user is wearing a headset the UA is expected to present a tracked environment (a scene which remains responsive to user's head motion) when the page is being throttled to prevent user discomfort.
+
+The application should continue requesting and drawing frames while suspended, but should not depend on them being processed at the normal VR hardware device framerate. The UA may use these frames as part of it's tracked environment or page composition, though they may be partially occluded, blurred, or otherwise manipulated. Additionally, poses queried while the session is suspended may not accurately reflect the VR hardware device's physical pose.
+
+Some applications may wish to respond to session suspension by halting game logic, purposefully obscuring content, or pausing media. To do so, the application should listen for the `blur` and `focus` events from the `VRSession`. For example, a 360 media player would do this to pause the video/audio whenever the UA has obscured it.
+
+```js
+vrSession.addEventListener('blur', vrSessionEvent => {
+  PauseMedia();
+  // Allow the render loop to keep running, but just keep rendering the last frame.
+  // Render loop may not run at full framerate.
+});
+
+vrSession.addEventListener('focus', vrSessionEvent => {
+  ResumeMedia();
+});
+```
+
 ### Ending the VR session
 
-To stop presenting to the `VRDevice`, the page calls [`VRSession.endSession`](https://w3c.github.io/webvr/#dom-vrsession-endsession). Once the session has ended the page's animation loop should be started up again if necessary and any canvas used as a layer source should be resized to fit the page again.
+A `VRSession` is "ended" when it is no longer expected to be used. An ended session object becomes detached and all operations on the object will fail. Ended sessions cannot be restored, and if a new active session is needed it must be requested from `VRDevice.requestSession()`.
+
+To manually end a session the application calls [`VRSession.endSession`](https://w3c.github.io/webvr/#dom-vrsession-endsession). This returns a promise that, when resolved, indicates that presentation to the VR hardware device by that session has stopped. Once the session has ended any continued animation the application's requires should be done using `window.requestAnimationFrame()`.
 
 ```js
 function EndVRSession() {
@@ -278,11 +304,13 @@ function OnSessionEnded() {
 }
 ```
 
-In addition to the application ending a session manually, the UA may force sessions to end at any time for a variety of reasons. Well behaved applications should monitor the `ended` event on the `VRSession` to detect when that happens.
+The UA may end a session at any time for a variety of reasons. For example: The user may forcibly end presentation via a gesture to the UA, other native applications may take exclusive access of the VR hardware device, or the VR hardware device may become disconnected from the system. Well behaved applications should monitor the `ended` event on the `VRSession` to detect when that happens.
 
 ```js
 vrSession.addEventListener('ended', OnSessionEnded);
 ```
+
+If the UA needs to halt use of a session temporarily the session should be suspended instead of ended. (See previous section.)
 
 ## Advanced functionality
 
@@ -469,26 +497,6 @@ vrDevice.addEventListener('deactivate', vrDeviceEvent => {
   if (vrSession) {
     vrSession.endSession().then(OnSessionEnded);
   }
-});
-```
-
-### Responding to a suspended session
-
-The UA may temporarily suspend a session if allowing the page to continue reading the headset position represents a security or privacy risk (like when the user is entering a password or URL with a virtual keyboard, in which case the head motion may infer the user's input), or if other content is obscuring the page's output. Additionally, non-exclusive sessions are suspended while an exclusive session is active.
-
-While suspended the page may either refresh the vr device at a slower rate or not at all, and poses queried from the device may be less accurate. If the user is wearing a headset the UA is expected to present a tracked environment (a scene which remains responsive to user's head motion) when the page is being throttled to prevent user discomfort.
-
-In general the page should continue drawing frames in response to `VRSession.requestFrame()` callbacks. The UA may use these frames as part of it's tracked environment or page composition, though they may be partially occluded, blurred, or otherwise manipulated. Still, some applications may wish to respond to this suspension by halting game logic, purposefully obscuring content, or pausing media. To do so, the application should listen for the `blur` and `focus` events from the `VRSession`. For example, a 360 media player would do this to pause the video/audio whenever the UA has obscured it.
-
-```js
-vrSession.addEventListener('blur', vrSessionEvent => {
-  PauseMedia();
-  // Allow the render loop to keep running, but just keep rendering the last frame.
-  // Render loop may not run at full framerate.
-});
-
-vrSession.addEventListener('focus', vrSessionEvent => {
-  ResumeMedia();
 });
 ```
 
