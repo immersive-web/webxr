@@ -96,7 +96,9 @@ interface VRDisplay : EventTarget {
 
   /**
    * Populates the passed VRFrameData with the information required to render
-   * the current frame.
+   * the current frame. The value provided will not change until JavaScript has
+   * returned control to the browser. Only valid to call in a
+   * VRDisplay.requestAnimationFrame callback.
    */
   boolean getFrameData(VRFrameData frameData);
 
@@ -172,7 +174,8 @@ interface VRDisplay : EventTarget {
    * The layer provided to the VRDisplay will be captured and presented
    * in the HMD. Calling this function has the same effect on the source
    * canvas as any other operation that uses its source image, and canvases
-   * created without preserveDrawingBuffer set to true will be cleared.
+   * created without preserveDrawingBuffer set to true will be cleared. Only
+   * valid to call in a VRDisplay.requestAnimationFrame callback.
    */
   void submitFrame();
 };
