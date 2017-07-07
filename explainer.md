@@ -301,6 +301,67 @@ vrSession.addEventListener('ended', OnSessionEnded);
 
 If the UA needs to halt use of a session temporarily the session should be suspended instead of ended. (See previous section.)
 
+## Rendering to the Page
+
+There are a couple of scenarios in which developers may want to present content rendered with the WebVR API on the page instead of (or in addition to) a headset.
+
+### VRRenderingContext
+
+Any time WebVR content is presented on the page it's done through a `VRRenderingContext`. Like a `WebGLRenderingContext`, developers acquire a `VRRenderingContext` by calling `HTMLCanvasElement.getContext()` or `OffscreenCanvas.getContext()` with the context id of "vr". (Editor's note: Naming is hard. Please _please_ *please* suggest something better!) The returned `VRRenderingContext` is permenantly bound to the canvas.
+
+A `VRRenderingContext` can only be supplied imagery by a `VRSession`, though the exact behavior depends on the context in which it's being used.
+
+### Mirroring
+
+On desktop devices, or any device which has an external display connected to it, it's frequently desirable to show what the user in the headset is seeing on the exernal display. This is usually referred to as mirroring.
+
+In order to mirror WebVR content to the page, developers provide a `VRRenderingContext` as the `outputContext` in the `VRSessionCreateParameters` of an exclusive session. Once the session has started any content displayed on the headset will then be mirrored into the canvas associated with the `outputContext`.
+
+When mirroring only one eye's content will be shown, and it should be shown undistorted. The UA may choose to crop the image shown, display it at a lower resolution than originally rendered, and the mirror may be multiple frames behind the image shown in the headset. The mirror may include or exclude elements added by the underlying VR system (such as visualizations of room boundaries) at the UA's discretion. Pages should not rely on a particular timing or presentation of mirrored content, it's really just for the benefit of bystanders or demo operators.
+
+The UA may also choose to ignore the `outputCanvas` on systems where mirroring is inappropriate, such as devices without an external display to mirror to like mobile or all-in-one systems.
+
+```js
+function BeginVRSession() {
+  let mirrorCanvas = document.createElement('canvas');
+  let mirrorCtx = mirrorCanvas.getContext('vr');
+  document.body.appendChild(mirrorCanvas);
+
+  vrDevice.requestSession({ outputContext: mirrorCtx })
+      .then(OnSessionStarted);
+}
+```
+
+### Non-exclusive sessions ("Magic Windows")
+
+There are several scenarios where it's beneficial to render a scene on the page who's view is controlled by device tracking. For example:
+
+ - Using phone rotation to view panoramic content.
+ - Taking advantage of 6DoF tracking on devices (like [Tango](https://get.google.com/tango/) phones) with no associated headset.
+ - Making use of head-tracking features for devices like [zSpace](http://zspace.com/) systems.
+
+These scenarios can make use of non-exclusive sessions to render tracked content to the page. Similar to mirroring, to make use of this mode a `VRRenderingContext` is provided as the `outputContext` at session creation time, as well as the `exclusive: false` flag. At that point content rendered to the `VRSession.baseLayer` will be rendered to the canvas associated with the `outputContext`. In the future, if multiple `VRLayers` are used their composited result will be what is displayed in the `outputContext`. Given that the session is tied to a specific `outputContext` it's permissible to have multiple non-exclusive sessions active at once to handle multiple output surfaces.
+
+Exclusive and non-exclusive sessions use the same render loop code, but there are some differences in behavior to be aware of. The sessions may run their render loops at at different rates. During exclusive sessions the UA runs the rendering loop at the `VRDevice`'s native refresh rate. During non-exclusive sessions the UA runs the rendering loop at the refresh rate of page (aligned with `window.requestAnimationFrame`.) Also, when rendering with an exclusive session the projection matrices provided each frame are based on the device optics, while non-exclusive sessions provide projection matrices based on the output canvas dimensions and possibly on the position of the users head in relation to the canvas if that can be determined.
+
+Most instances of non-exclusive sessions will only provide a single `VRView` to be rendered, but UA may request multiple views be rendered if, for example, it's detected that that output medium of the page supports stereo rendering. As a result pages should always draw every `VRView` provided by the `VRPresentationFrame` regardless of what type of session has been requested.
+
+UAs may have different restrictions on non-exclusive contexts that don't apply to exclusive contexts. For instance, a different set of `VRFrameOfReference` types may be available with a non-exclusive session versus an exclusive session.
+
+The UA may reject requests for a non-exclusive sessions for a variety of reasons, such as the inability of the underlying hardware to provide tracking data without actively rendering to the device. Pages should be designed to robustly handle the inability to aquire non-exclusive sessions.
+
+```js
+function BeginMagicWindowVRSession() {
+  let magicWindowCanvas = document.createElement('canvas');
+  let magicWindowCtx = magicWindowCanvas.getContext('vr');
+  document.body.appendChild(magicWindowCanvas);
+
+  // Request a non-exclusive session for magic window rendering.
+  vrDevice.requestSession({ exclusive: false, outputContext: magicWindowCtx})
+      .then(OnSessionStarted);
+}
+```
+
 ## Advanced functionality
 
 Beyond the core APIs described above, the WebVR API also exposes several options for taking greater advantage of the VR hardware's capabilities.
@@ -371,58 +432,6 @@ Changes to the bounds while a session is active should be a relatively rare occu
 
 ```js
 frameOfRef.addEventListener('boundschange', OnBoundsUpdate);
-```
-
-### Mirroring
-
-On desktop devices, or any device which has an external display connected to it, it's frequently desirable to show what the user in the headset is seeing on the exernal display. This is usually referred to as mirroring.
-
-In order to mirror WebVR content to the page, developers specify an `outputCanvas` in the `VRSessionCreateParameters` of an exclusive session. The canvas supplied must have a [`ImageBitmapRenderingContext`](https://developer.mozilla.org/en-US/docs/Web/API/ImageBitmapRenderingContext) or the promise returned by `requestSession` will be rejected. Once the session has started any content displayed on the headset will then be mirrored into that canvas.
-
-When mirroring only one eye's content will be shown, and it should be shown undistorted. The UA may choose to crop the image shown, display it at a lower resolution than originally rendered, and the mirror may be multiple frames behind the image shown in the headset. The mirror may include or exclude elements added by the underlying VR system (such as visualizations of room boundaries) at the UA's discretion. Pages should not rely on a particular timing or presentation of mirrored content, it's really just for the benefit of bystanders or demo operators.
-
-The UA may also choose to ignore the `outputCanvas` on systems where mirroring is inappropriate, such as devices without an external display to mirror to like mobile or all-in-one systems.
-
-```js
-function BeginVRSession() {
-  let mirrorCanvas = document.createElement('canvas');
-  let imgCtx = mirrorCanvas.getContext('bitmaprenderer');
-  document.body.appendChild(mirrorCanvas);
-
-  vrDevice.requestSession({ outputCanvas: mirrorCanvas })
-      .then(OnSessionStarted);
-}
-```
-
-### Non-exclusive sessions ("Magic Windows")
-
-There are several scenarios where it's beneficial to render a scene on the page who's view is controlled by device tracking. For example:
-
- - Using phone rotation to view panoramic content.
- - Taking advantage of 6DoF tracking on devices (like [Tango](https://get.google.com/tango/) phones) with no associated headset.
- - Making use of head-tracking features for devices like [zSpace](http://zspace.com/) systems.
-
-These scenarios can make use of non-exclusive sessions to render tracked content to the page. Similar to mirroring, to make use of this mode an `outputCanvas` is provided at session creation time, as well as the `exclusive: false` flag. Just like with mirroring the `outputCanvas` must have a `ImageBitmapRenderingContext`. At that point content rendered to the `VRSession.baseLayer` will be rendered to the `outputCanvas`. In the future, if multiple `VRLayers` are used their composited result will be what is displayed in the `outputCanvas`. Given that the session is tied to a specific output canvas it's permissible to have multiple non-exclusive sessions active at once to handle multiple output surfaces.
-
-Exclusive and non-exclusive sessions use the same render loop code, but there are some differences in behavior to be aware of. The sessions may run their render loops at at different rates. During exclusive sessions the UA runs the rendering loop at the `VRDevice`'s native refresh rate. During non-exclusive sessions the UA runs the rendering loop at the refresh rate of page (aligned with `window.requestAnimationFrame`.) Also, when rendering with an exclusive session the projection matrices provided each frame are based on the device optics, while non-exclusive sessions provide projection matrices based on the output canvas dimensions and possibly on the position of the users head in relation to the canvas if that can be determined.
-
-Most instances of non-exclusive sessions will only provide a single `VRView` to be rendered, but UA may request multiple views be rendered if, for example, it's detected that that output medium of the page supports stereo rendering. As a result pages should always draw every `VRView` provided by the `VRPresentationFrame` regardless of what type of session has been requested.
-
-UAs may have different restrictions on non-exclusive contexts that don't apply to exclusive contexts. For instance, a different set of `VRFrameOfReference` types may be available with a non-exclusive session versus an exclusive session.
-
-The UA may reject requests for a non-exclusive sessions for a variety of reasons, such as the inability of the underlying hardware to provide tracking data without actively rendering to the device. Pages should be designed to robustly handle the inability to aquire non-exclusive sessions.
-
-```js
-function BeginMagicWindowVRSession() {
-  let mirrorCanvas = document.createElement('canvas');
-  let imgCtx = mirrorCanvas.getContext('bitmaprenderer');
-  document.body.appendChild(mirrorCanvas);
-
-  // Request a non-exclusive session for magic window rendering.
-  vrDevice.requestSession({ exclusive: false, outputCanvas: mirrorCanvas})
-      .then(OnSessionStarted);
-}
-
 ```
 
 ### Multivew rendering
@@ -597,12 +606,12 @@ interface VRDevice : EventTarget {
 
 dictionary VRSessionCreateParametersInit {
   boolean exclusive = true;
-  HTMLCanvasElement outputCanvas = null;
+  VRRenderingContext outputContext = null;
 };
 
 interface VRSessionCreateParameters {
   readonly attribute boolean exclusive;
-  readonly attribute HTMLCanvasElement outputCanvas;
+  readonly attribute VRRenderingContext outputContext;
 };
 
 interface VRSession : EventTarget {
@@ -768,5 +777,16 @@ partial dictionary WebGLContextAttributes {
 
 partial interface WebGLRenderingContextBase {
     Promise<void> setCompatibleVrDevice(VRDevice device);
+};
+
+//
+// RenderingContext
+//
+interface VRRenderingContext {
+  readonly attribute HTMLCanvasElement canvas;
+};
+
+dictionary VRRenderingContextSettings {
+  boolean alpha = true;
 };
 ```
