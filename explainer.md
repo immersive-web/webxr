@@ -142,7 +142,7 @@ function OnSessionStarted(session) {
   // The `VRFrameOfReference` provides the coordinate system in which
   // `getViewMatrix()` and the `poseModelMatrix` are defined. For more
   // information on this see the `Advanced functionality` section
-  frameOfRef = await vrSession.createFrameOfReference("headModel");
+  frameOfRef = await vrSession.requestFrameOfReference("headModel");
 
   // The depth range of the scene should be set so that the projection
   // matrices returned by the session are correct.
@@ -321,18 +321,18 @@ Beyond the core APIs described above, the WebVR API also exposes several options
 A viewer for 360 photos or videos should not respond to head translation, since the source material is intended to be viewed from a single point. While some headsets naturally function this way (Daydream, Gear VR, Cardboard) it can be useful for app developers to specify that they don't want any positional tracking in the matrices they receive. (This may also provide power savings on some devices, since it may allow some sensors to be turned off.) That can be accomplished by requesting a "headModel" `VRFrameOfReference`.
 
 ```js
-let frameOfRef = await vrSession.createFrameOfReference("headModel");
+let frameOfRef = await vrSession.requestFrameOfReference("headModel");
 
 // Use frameOfRef as detailed above.
 ```
 
 ### Room-scale tracking and boundaries
 
-Some VR devices have been configured with details about the area they are being used in, including things like where the floor is and what boundaries of the safe space is so that it can be communicated to the user in VR. It can be beneficial to render the virtual scene so that it lines up with the users physical space for added immersion, especially ensuring that the virtual floor and the physical floor align. This is frequently called "room scale" or "standing" VR. It helps the user feel grounded in the virtual space. WebVR refers to this type of bounded, floor relative play space as a "stage". Applications can take advantage of that space by creating a stage `VRFrameOfReference`. This will report values relative to the floor, ideally at the center of the room. (In other words the users physical floor is at Y = 0.) Not all `VRDevices` will support this mode, however. `createFrameOfReference` will reject the promise in that case.
+Some VR devices have been configured with details about the area they are being used in, including things like where the floor is and what boundaries of the safe space is so that it can be communicated to the user in VR. It can be beneficial to render the virtual scene so that it lines up with the users physical space for added immersion, especially ensuring that the virtual floor and the physical floor align. This is frequently called "room scale" or "standing" VR. It helps the user feel grounded in the virtual space. WebVR refers to this type of bounded, floor relative play space as a "stage". Applications can take advantage of that space by creating a stage `VRFrameOfReference`. This will report values relative to the floor, ideally at the center of the room. (In other words the users physical floor is at Y = 0.) Not all `VRDevices` will support this mode, however. `requestFrameOfReference` will reject the promise in that case.
 
 ```js
 // Try to get a frame of reference where the floor is at Y = 0
-vrSession.createFrameOfReference("stage").then(frame => {
+vrSession.requestFrameOfReference("stage").then(frame => {
   frameOfRef = frame;
 }).catch(err => {
   // "stage" VRFrameOfReference is not supported.
@@ -341,7 +341,7 @@ vrSession.createFrameOfReference("stage").then(frame => {
   // floor, perhaps by asking the user's height, and translate the reported
   // values upward by that distance so that the floor appears in approximately
   // the correct position.
-  frameOfRef = await vrSession.createFrameOfReference("eyeLevel");
+  frameOfRef = await vrSession.requestFrameOfReference("eyeLevel");
 });
 
 // Use frameOfRef as detailed above, but render the floor of the virtual space at Y = 0;
@@ -626,7 +626,7 @@ interface VRSession : EventTarget {
   attribute EventHandler onresetpose;
   attribute EventHandler onended;
 
-  Promise<VRFrameOfReference> createFrameOfReference(VRFrameOfReferenceType type);
+  Promise<VRFrameOfReference> requestFrameOfReference(VRFrameOfReferenceType type);
 
   long requestFrame(VRFrameRequestCallback callback);
   void cancelFrame(long handle);
