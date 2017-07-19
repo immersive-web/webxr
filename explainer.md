@@ -88,7 +88,7 @@ Sessions can be created with one of two levels of access:
 
 ### Detecting and advertising VR mode
 
-If a `VRDevice` is available and able to create an exclusive session, the application will usually want to add some UI to trigger activation of "VR Presentation Mode", where the application can begin sending imagery to the device. Testing to see if the device supports the capabilities the application needs is done via the `supportsSession` call, which takes a dictionary of the desired functionality and returns whether or not the device can create a session supporting them. Querying for support this way is necessary because it allows the application to detect what VR features are available without actually engaging the sensors or beginning presentation, which can incur significant power or performance overhead on some systems and may have side effects such as launching a VR status tray or storefront.
+If a `VRDevice` is available and able to create an exclusive session, the application will usually want to add some UI to trigger activation of "VR Presentation Mode", where the application can begin sending imagery to the device. Testing to see if the device supports the capabilities the application needs is done via the `supportsSession` call, which takes a dictionary of the desired functionality and returns a promise which resolves if the device can create a session which supporting those properties and rejects otherwise. Querying for support this way is necessary because it allows the application to detect what VR features are available without actually engaging the sensors or beginning presentation, which can incur significant power or performance overhead on some systems and may have side effects such as launching a VR status tray or storefront.
 
 In the following example we ask if the `VRDevice` supports sessions with `exclusive` access, since we want the ability to display imagery on the headset.
 
@@ -99,19 +99,20 @@ async function OnVRAvailable() {
   // has that capability the page will want to add an "Enter VR" button (similar
   // to "Enter Fullscreen") that triggers the page to begin showing imagery on
   // the headset.
-  let exclusiveMode = await vrDevice.supportsSession({ exclusive: true });
-  if (exclusiveMode) {
+  vrDevice.supportsSession({ exclusive: true }).then(() => {
     var enterVrBtn = document.createElement("button");
     enterVrBtn.innerHTML = "Enter VR";
     enterVrBtn.addEventListener("click", BeginVRSession);
     document.body.appendChild(enterVrBtn);
-  }
+  }).catch(() => {
+    console.log("VRDevice does not support exclusive sessions.");
+  });
 }
 ```
 
 ### Beginning a VR session
 
-Clicking the "Enter VR" button in the previous sample will attempt to acquire a `VRSession` by callling `VRDisplay.requestSession`. This returns a promise that resolves to a `VRSession` upon success. When requesting a session, the capabilities that the returned session must have are passed in via a dictionary, exactly like the `supportsSession` call. If `supportsSession` returned true for a given dictionary, then calling `requestSession` with the same dictionary values should be reasonably expected to succeed, barring external factors (such as `requestSession` not being called in a user gesture for an exclusive session.) The UA is ultimately responsible for determining if it can honor the request.
+Clicking the "Enter VR" button in the previous sample will attempt to acquire a `VRSession` by callling `VRDisplay.requestSession`. This returns a promise that resolves to a `VRSession` upon success. When requesting a session, the capabilities that the returned session must have are passed in via a dictionary, exactly like the `supportsSession` call. If `supportsSession` resolved for a given dictionary, then calling `requestSession` with the same dictionary values should be reasonably expected to succeed, barring external factors (such as `requestSession` not being called in a user gesture for an exclusive session.) The UA is ultimately responsible for determining if it can honor the request.
 
 ```js
 function BeginVRSession(isExclusive) {
@@ -593,7 +594,7 @@ interface VRDevice : EventTarget {
   attribute EventHandler onactivate;
   attribute EventHandler ondeactivate;
 
-  Promise<boolean> supportsSession(optional VRSessionCreateParametersInit parameters);
+  Promise<void> supportsSession(optional VRSessionCreateParametersInit parameters);
   Promise<VRSession> requestSession(optional VRSessionCreateParametersInit parameters);
 };
 
