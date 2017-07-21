@@ -104,8 +104,8 @@ async function OnVRAvailable() {
     enterVrBtn.innerHTML = "Enter VR";
     enterVrBtn.addEventListener("click", BeginVRSession);
     document.body.appendChild(enterVrBtn);
-  }).catch(() => {
-    console.log("VRDevice does not support exclusive sessions.");
+  }).catch((reason) => {
+    console.log("Session not supported: " + reason);
   });
 }
 ```
