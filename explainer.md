@@ -479,28 +479,6 @@ function onDrawFrame() {
 }
 ```
 
-### Presenting automatically when the user interacts with the headset
-
-Many VR devices have some way of detecting when the user has put the headset on or is otherwise trying to use the hardware. For example: an Oculus Rift or Vive have proximity sensors that indicate when the headset is being worn. And a Daydream device uses NFC tags to inform the phone when it's been placed in a headset. In both of these cases the user is showing a clear intent to begin using VR. A well behaved WebVR application should ideally begin presenting automatically in these scenarios. The `activate` event fired from the `VRDevice` can be used to accomplish that.
-
-```js
-vrDevice.addEventListener('activate', vrDeviceEvent => {
-  // The activate event acts as a user gesture, so exclusive access can be
-  // requested in the even handler.
-  vrDevice.requestSession().then(OnSessionStarted);
-});
-```
-
-Similarly, the `deactivate` event can be used to detect when the user removes the headset, at which point the application may want to end the session.
-
-```js
-vrDevice.addEventListener('deactivate', vrDeviceEvent => {
-  if (vrSession) {
-    vrSession.endSession().then(OnSessionEnded);
-  }
-});
-```
-
 ### Responding to a reset pose
 
 Most VR systems have a mechanism for allowing the user to reset which direction is "forward." For security and comfort reasons the WebVR API has no mechanism to trigger a pose reset programatically, but it can still be useful to know when it happens. Pages may want to take advantage of the visual discontinuity to reposition the user or other elements in the scene into a more natural position for the new orientation. Pages may also want to use the opportunity to clear or reset any additional transforms that have been applied if no longer needed.
@@ -568,9 +546,6 @@ interface VR : EventTarget {
 interface VRDevice : EventTarget {
   readonly attribute DOMString deviceName;
   readonly attribute boolean isExternal;
-
-  attribute EventHandler onactivate;
-  attribute EventHandler ondeactivate;
 
   Promise<void> supportsSession(optional VRSessionCreateParametersInit parameters);
   Promise<VRSession> requestSession(optional VRSessionCreateParametersInit parameters);
