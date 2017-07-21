@@ -515,6 +515,31 @@ vrSession.addEventListener('resetpose', vrSessionEvent => {
 });
 ```
 
+### Handling Transparent Displays
+
+The majority of current VR devices are opaque and do not enable the user to see their surrounding environment while using it. However some devices, like Microsoft's HoloLens, utilize transparent displays in the service of AR features. While the initial version of the WebVR API does not attempt to provide access to AR-centric features it does communicate whether or not the device display is see-through with the session's `isTransparent` attribute.
+
+WebVR content may want to refrain from drawing a background over the full frame in cases where the display is transparent, to allow the virtual content to appear as if it's floating in the real environment. (Note that this version of the WebVR API provides no mechanism for aligning or occluding content againts the environment.) To do so, skip rendering virtual backgrounds when the display indicates it is transparent.
+
+```js
+function onDrawFrame(vrFrame) {
+  let pose = vrFrame.getDevicePose(vrFrameOfRef);
+  gl.bindFramebuffer(vrSession.baseLayer.framebuffer);
+
+  for (let view in vrFrame.views) {
+    let viewport = view.getViewport(vrSession.baseLayer);
+    gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+    if (!vrSession.isTransparent) {
+      drawBackgroundContent(view, pose);
+    }
+    drawPrimaryContent(view, pose);
+  }
+
+  // Request the next VR callback
+  vrSession.requestFrame(onDrawFrame);
+}
+```
+
 ### Page navigation
 
 WebVR applications can, like any web page, link to other pages. In the context of a VR scene this is handled by setting `window.location` to the desired URL when the user performs some action. If the page being linked to is not VR-capable the user will either have to remove the VR device to view it (which the UA should explicitly instruct them to do) or the page could be shown as a 2D page in a VR browser.
@@ -613,6 +638,7 @@ interface VRSessionCreateParameters {
 interface VRSession : EventTarget {
   readonly attribute VRDevice device;
   readonly attribute VRSessionCreateParameters createParameters;
+  readonly attribute boolean isTransparent;
 
   attribute double depthNear;
   attribute double depthFar;
