@@ -90,7 +90,7 @@ Sessions can be created with one of two levels of access:
 
 If a `VRDevice` is available and able to create an exclusive session, the application will usually want to add some UI to trigger activation of "VR Presentation Mode", where the application can begin sending imagery to the device. Testing to see if the device supports the capabilities the application needs is done via the `supportsSession` call, which takes a dictionary of the desired functionality and returns a promise which resolves if the device can create a session which supporting those properties and rejects otherwise. Querying for support this way is necessary because it allows the application to detect what VR features are available without actually engaging the sensors or beginning presentation, which can incur significant power or performance overhead on some systems and may have side effects such as launching a VR status tray or storefront.
 
-In the following examples we will focus on using exclusive sessions, and cover non-exclusive session use in the [`Advanced Functionality`](#non-exclusive-sessions-magic-windows) secion. With that in mind, we ask here if the `VRDevice` supports sessions with `exclusive` access, since we want the ability to display imagery on the headset.
+In the following examples we will focus on using exclusive sessions, and cover non-exclusive session use in the [`Advanced Functionality`](#non-exclusive-sessions-magic-windows) section. With that in mind, we ask here if the `VRDevice` supports sessions with `exclusive` access (the default), since we want the ability to display imagery on the headset.
 
 ```js
 async function OnVRAvailable() {
@@ -99,7 +99,7 @@ async function OnVRAvailable() {
   // has that capability the page will want to add an "Enter VR" button (similar
   // to "Enter Fullscreen") that triggers the page to begin showing imagery on
   // the headset.
-  vrDevice.supportsSession({ exclusive: true }).then(() => {
+  vrDevice.supportsSession().then(() => {
     var enterVrBtn = document.createElement("button");
     enterVrBtn.innerHTML = "Enter VR";
     enterVrBtn.addEventListener("click", BeginVRSession);
@@ -196,7 +196,7 @@ Ensuring context compatibility with a `VRDisplay` through either method may have
 
 WebVR provides information about the current frame to be rendered via the [`VRPresentationFrame`] object which developers must examine each frame. The [`VRDevicePose`](https://w3c.github.io/webvr/#interface-vrdevicepose) contains the informaton about all views which must be rendered and targets into which this rendering must be done.
 
-`VRWebGLLayer` objects are not updated automatically. To present new frames, developers must use `VRSession.requestFrame()`. When the callback function is run, it passes fresh rendering data that must be used to draw into the `VRWebGLLayer.framebuffer` during the callback. This framebuffer is created by the UA and behaves similarly to a canvas's default framebuffer. Using framebufferTexture2D, framebufferRenderbuffer, getFramebufferAttachmentParameter, and getRenderbufferParameter will all flag INVALID_OPERATION. Additionally, attempting to render to this framebuffer outside of the `requestFrame()` callback will flag INVALID_OPERATION.
+`VRWebGLLayer` objects are not updated automatically. To present new frames, developers must use `VRSession.requestFrame()`. When the callback function is run, it passes fresh rendering data that must be used to draw into the `VRWebGLLayer.framebuffer` during the callback. This framebuffer is created by the UA and behaves similarly to a canvas's default framebuffer. Using framebufferTexture2D, framebufferRenderbuffer, getFramebufferAttachmentParameter, and getRenderbufferParameter will all generate an INVALID_OPERATION error. Additionally, attempting to render to this framebuffer outside of the `requestFrame()` callback will generate an INVALID_OPERATION error. 
 
 Once drawn to, the VR device will continue displaying the contents of the `VRWebGLLayer` framebuffer, potentially reprojected to match head motion, regardless of whether or not the page continues processing new frames. Potentially future spec iterations could enable additional types of layers, such as video layers, that could automatically be synchronized to the device's refresh rate.
 
@@ -331,7 +331,7 @@ function BeginVRSession() {
 
 ### Non-exclusive sessions ("Magic Windows")
 
-There are several scenarios where it's beneficial to render a scene on the page whose view is controlled by device tracking. For example:
+There are several scenarios where it's beneficial to render a scene whose view is controlled by device tracking within a 2D page. For example:
 
  - Using phone rotation to view panoramic content.
  - Taking advantage of 6DoF tracking on devices (like [Tango](https://get.google.com/tango/) phones) with no associated headset.
@@ -341,24 +341,33 @@ These scenarios can make use of non-exclusive sessions to render tracked content
 
 Similar to mirroring, to make use of this mode a `VRPresentationContext` is provided as the `outputContext` at session creation time, as well as the `exclusive: false` flag. At that point content rendered to the `VRSession.baseLayer` will be rendered to the canvas associated with the `outputContext`. In the future, if multiple `VRLayers` are used their composited result will be what is displayed in the `outputContext`. Requests to create a non-exclusive session without an output context will be rejected.
 
-Exclusive and non-exclusive sessions can use the same render loop, but there are some differences in behavior to be aware of. The sessions may run their render loops at at different rates. During exclusive sessions the UA runs the rendering loop at the `VRDevice`'s native refresh rate. During non-exclusive sessions the UA runs the rendering loop at the refresh rate of page (aligned with `window.requestAnimationFrame`.) Also, when rendering with an exclusive session the projection matrices provided each frame are based on the device optics, while non-exclusive sessions provide projection matrices based on the output canvas dimensions and possibly on the position of the users head in relation to the canvas if that can be determined.
+Exclusive and non-exclusive sessions can use the same render loop, but there are some differences in behavior to be aware of. The sessions may run their render loops at at different rates. During exclusive sessions the UA runs the rendering loop at the `VRDevice`'s native refresh rate. During non-exclusive sessions the UA runs the rendering loop at the refresh rate of page (aligned with `window.requestAnimationFrame`.) The method of computation of `VRView` projection and view matrices also differs between exclusive and non-exclusive sessions, with non-exclusive sessions taking into account the output canvas dimensions and possibly the position of the users head in relation to the canvas if that can be determined.
 
 Most instances of non-exclusive sessions will only provide a single `VRView` to be rendered, but UA may request multiple views be rendered if, for example, it's detected that that output medium of the page supports stereo rendering. As a result pages should always draw every `VRView` provided by the `VRPresentationFrame` regardless of what type of session has been requested.
 
 UAs may have different restrictions on non-exclusive contexts that don't apply to exclusive contexts. For instance, a different set of `VRFrameOfReference` types may be available with a non-exclusive session versus an exclusive session.
 
-The UA may reject requests for a non-exclusive sessions for a variety of reasons, such as the inability of the underlying hardware to provide tracking data without actively rendering to the device. Pages should be designed to robustly handle the inability to aquire non-exclusive sessions.
-
 ```js
-function BeginMagicWindowVRSession() {
-  let magicWindowCanvas = document.createElement('canvas');
-  let magicWindowCtx = magicWindowCanvas.getContext('vrpresent');
-  document.body.appendChild(magicWindowCanvas);
+let magicWindowCanvas = document.createElement('canvas');
+let magicWindowCtx = magicWindowCanvas.getContext('vrpresent');
+document.body.appendChild(magicWindowCanvas);
 
+function BeginMagicWindowVRSession() {
   // Request a non-exclusive session for magic window rendering.
-  vrDevice.requestSession({ exclusive: false, outputContext: magicWindowCtx})
+  vrDevice.requestSession({ exclusive: false, outputContext: magicWindowCtx })
       .then(OnSessionStarted)
       .catch((reason) => { console.log("requestSession failed: " + reason); });
+}
+```
+
+The UA may reject requests for a non-exclusive sessions for a variety of reasons, such as the inability of the underlying hardware to provide tracking data without actively rendering to the device. Pages should be designed to robustly handle the inability to acquire non-exclusive sessions. 'VRDevice.supportsSession()` can be used if a page wants to test for non-exclusive session support before attempting to create the `VRSession`.
+
+```js
+function CheckMagicWindowSupport() {
+  // Check to see if the UA can support a non-exclusive sessions with the given output context.
+  return vrDevice.supportsSession({ exclusive: false, outputContext: magicWindowCtx })
+      .then(() => { console.log("Magic Window content is supported!"); })
+      .catch((reason) => { console.log("Magic Window content is not supported: " + reason); });
 }
 ```
 
