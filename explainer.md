@@ -443,7 +443,7 @@ Changes to the bounds while a session is active should be a relatively rare occu
 frameOfRef.addEventListener('boundschange', OnBoundsUpdate);
 ```
 
-### Multivew rendering
+### Multiview rendering
 
 Developers may optionally take advantage of the [WEBGL_multiview extension](https://www.khronos.org/registry/webgl/extensions/proposals/WEBGL_multiview/) to both WebGL 1.0 and WebGL 2.0 for optimized multiview rendering. The UA may not honor this request (e.g. when the supplied context does not support this extension) and the `VRWebGLLayer` will fallback to using a framebuffer that is not multiview-aware. As such, developers must query the `VRWebGLLayer.multiview` property after the `VRWebGLLayer` is constructed and respond accordingly.
 
