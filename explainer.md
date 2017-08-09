@@ -313,7 +313,7 @@ A `VRPresentationContext` can only be supplied imagery by a `VRSession`, though 
 
 On desktop devices, or any device which has an external display connected to it, it's frequently desirable to show what the user in the headset is seeing on the exernal display. This is usually referred to as mirroring.
 
-In order to mirror WebVR content to the page, developers provide a `VRPresentationContext` as the `outputContext` in the `VRSessionCreateParameters` of an exclusive session. Once the session has started any content displayed on the headset will then be mirrored into the canvas associated with the `outputContext`. The `outputContext` remains bound to the session until the session has ended, and cannot be used with multiple `VRSession`s simultaneously.
+In order to mirror WebVR content to the page, developers provide a `VRPresentationContext` as the `outputContext` in the `VRSessionCreationOptions` of an exclusive session. Once the session has started any content displayed on the headset will then be mirrored into the canvas associated with the `outputContext`. The `outputContext` remains bound to the session until the session has ended, and cannot be used with multiple `VRSession`s simultaneously.
 
 When mirroring only one eye's content will be shown, and it should be shown without any distortion to correct for headset optics. The UA may choose to crop the image shown, display it at a lower resolution than originally rendered, and the mirror may be multiple frames behind the image shown in the headset. The mirror may include or exclude elements added by the underlying VR system (such as visualizations of room boundaries) at the UA's discretion. Pages should not rely on a particular timing or presentation of mirrored content, it's really just for the benefit of bystanders or demo operators.
 
@@ -611,27 +611,23 @@ interface VRDevice : EventTarget {
   readonly attribute DOMString deviceName;
   readonly attribute boolean isExternal;
 
-  Promise<void> supportsSession(optional VRSessionCreateParametersInit parameters);
-  Promise<VRSession> requestSession(optional VRSessionCreateParametersInit parameters);
+  Promise<void> supportsSession(optional VRSessionCreationOptions parameters);
+  Promise<VRSession> requestSession(optional VRSessionCreationOptions parameters);
 };
 
 //
 // Session
 //
 
-dictionary VRSessionCreateParametersInit {
+dictionary VRSessionCreationOptions {
   boolean exclusive = true;
   VRPresentationContext outputContext;
 };
 
-interface VRSessionCreateParameters {
-  readonly attribute boolean exclusive;
-  readonly attribute VRPresentationContext outputContext;
-};
-
 interface VRSession : EventTarget {
   readonly attribute VRDevice device;
-  readonly attribute VRSessionCreateParameters createParameters;
+  readonly attribute boolean exclusive;
+  readonly attribute VRPresentationContext outputContext;
 
   attribute double depthNear;
   attribute double depthFar;
