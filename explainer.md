@@ -82,9 +82,9 @@ A `VRDevice` indicates the presence of a VR hardware device but provides very li
 
 Sessions can be created with one of two levels of access:
 
-**Exclusive Access**: The default mode, but can be explicitly requested with the `exclusive: true` dictionary argument. Exclusive sessions present content directly to the `VRDevice`, enabling immersive VR presentation. Only one exclusive session per VR hardware device is allowed at a time across the entire UA. Exclusive sessions must be created within a user gesture event or within another callback that has been explicitly indicated to allow exclusive session creation.
+**Exclusive Access**: Requested with the `exclusive: true` dictionary argument. Exclusive sessions present content directly to the `VRDevice`, enabling immersive VR presentation. Only one exclusive session per VR hardware device is allowed at a time across the entire UA. Exclusive sessions must be created within a user gesture event or within another callback that has been explicitly indicated to allow exclusive session creation.
 
-**Non-Exclusive Access**: Requested with the `exclusive: false` dictionary argument. Non-exclusive sessions do not have the ability to display immersive content on the `VRDevice` but are able to access device tracking information and use it to render content on the page. This technique, where a scene rendered to the page is responsive to device movement, is sometimes referred to as "Magic Window" mode. It's especially useful for mobile devices, where moving the device can be used to look around a scene. Devices like Tango phones and tablets with 6DoF tracking capabilities may expose them via non-exclusive sessions even if the hardware is not capable of immersive, stereo presentation. Any non-exclusive sessions are suspended when an exclusive session is active. Non-exclusive sessions are not required to be created within a user gesture event.
+**Non-Exclusive Access**: The default mode, but can be explicitly requested with the `exclusive: false` dictionary argument. Non-exclusive sessions do not have the ability to display immersive content on the `VRDevice` but are able to access device tracking information and use it to render content on the page. This technique, where a scene rendered to the page is responsive to device movement, is sometimes referred to as "Magic Window" mode. It's especially useful for mobile devices, where moving the device can be used to look around a scene. Devices like Tango phones and tablets with 6DoF tracking capabilities may expose them via non-exclusive sessions even if the hardware is not capable of immersive, stereo presentation. Any non-exclusive sessions are suspended when an exclusive session is active. Non-exclusive sessions are not required to be created within a user gesture event.
 
 ### Detecting and advertising VR mode
 
@@ -99,7 +99,7 @@ async function onVRAvailable() {
   // has that capability the page will want to add an "Enter VR" button (similar
   // to "Enter Fullscreen") that triggers the page to begin showing imagery on
   // the headset.
-  vrDevice.supportsSession().then(() => {
+  vrDevice.supportsSession({ exclusive: true }).then(() => {
     var enterVrBtn = document.createElement("button");
     enterVrBtn.innerHTML = "Enter VR";
     enterVrBtn.addEventListener("click", beginVRSession);
@@ -118,7 +118,7 @@ Clicking the "Enter VR" button in the previous sample will attempt to acquire a 
 function beginVRSession() {
   // VRDevice.requestSession must be called within a user gesture event
   // like click or touch when requesting exclusive access.
-  vrDevice.requestSession()
+  vrDevice.requestSession({ exclusive: true })
       .then(onSessionStarted)
       .catch(err => {
         // May fail for a variety of reasons. Probably just want to
@@ -325,7 +325,7 @@ function beginVRSession() {
   let mirrorCtx = mirrorCanvas.getContext('vrpresent');
   document.body.appendChild(mirrorCanvas);
 
-  vrDevice.requestSession({ outputContext: mirrorCtx })
+  vrDevice.requestSession({ exclusive: true, outputContext: mirrorCtx })
       .then(onSessionStarted)
       .catch((reason) => { console.log("requestSession failed: " + reason); });
 }
@@ -341,7 +341,7 @@ There are several scenarios where it's beneficial to render a scene whose view i
 
 These scenarios can make use of non-exclusive sessions to render tracked content to the page. While `deviceorientation` events can be used to facilitate the first case the other two need the additional tracking support that WebVR provides. Also, using a non-exclusive session also enables content to use a single rendering path for both magic window and VR presentation modes and makes switching between magic window content and VR presentation of that content easier.
 
-Similar to mirroring, to make use of this mode a `VRPresentationContext` is provided as the `outputContext` at session creation time, as well as the `exclusive: false` flag. At that point content rendered to the `VRSession`'s `baseLayer` will be rendered to the canvas associated with the `outputContext`. The UA is also allowed to composite in additional content if desired. In the future, if multiple `VRLayers` are used their composited result will be what is displayed in the `outputContext`. Requests to create a non-exclusive session without an output context will be rejected.
+Similar to mirroring, to make use of this mode a `VRPresentationContext` is provided as the `outputContext` at session creation time with a non-exclusive session. At that point content rendered to the `VRSession`'s `baseLayer` will be rendered to the canvas associated with the `outputContext`. The UA is also allowed to composite in additional content if desired. In the future, if multiple `VRLayers` are used their composited result will be what is displayed in the `outputContext`. Requests to create a non-exclusive session without an output context will be rejected.
 
 Exclusive and non-exclusive sessions can use the same render loop, but there are some differences in behavior to be aware of. The sessions may run their render loops at at different rates. During exclusive sessions the UA runs the rendering loop at the `VRDevice`'s native refresh rate. During non-exclusive sessions the UA runs the rendering loop at the refresh rate of page (aligned with `window.requestAnimationFrame`.) The method of computation of `VRView` projection and view matrices also differs between exclusive and non-exclusive sessions, with non-exclusive sessions taking into account the output canvas dimensions and possibly the position of the users head in relation to the canvas if that can be determined.
 
@@ -356,7 +356,7 @@ document.body.appendChild(magicWindowCanvas);
 
 function beginMagicWindowVRSession() {
   // Request a non-exclusive session for magic window rendering.
-  vrDevice.requestSession({ exclusive: false, outputContext: magicWindowCtx })
+  vrDevice.requestSession({ outputContext: magicWindowCtx })
       .then(OnSessionStarted)
       .catch((reason) => { console.log("requestSession failed: " + reason); });
 }
@@ -367,7 +367,7 @@ The UA may reject requests for a non-exclusive sessions for a variety of reasons
 ```js
 function checkMagicWindowSupport() {
   // Check to see if the UA can support a non-exclusive sessions with the given output context.
-  return vrDevice.supportsSession({ exclusive: false, outputContext: magicWindowCtx })
+  return vrDevice.supportsSession({ outputContext: magicWindowCtx })
       .then(() => { console.log("Magic Window content is supported!"); })
       .catch((reason) => { console.log("Magic Window content is not supported: " + reason); });
 }
@@ -620,7 +620,7 @@ interface VRDevice : EventTarget {
 //
 
 dictionary VRSessionCreationOptions {
-  boolean exclusive = true;
+  boolean exclusive = false;
   VRPresentationContext outputContext;
 };
 
