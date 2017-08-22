@@ -449,6 +449,40 @@ Changes to the bounds while a session is active should be a relatively rare occu
 vrFrameOfRef.addEventListener('boundschange', onBoundsUpdate);
 ```
 
+### Emulated stage frame of reference
+
+Often times content designed to be used with a `stage` `VRFrameOfReference` (that is, the physical floor is at Y=0) can still be used with headsets that don't have appropriate knowledge of the user's physical space. For example the headset may only support 3DoF tracking, or 6DoF tracking without floor detection. In these case as a matter of developer convenience an emulated `stage` frame of reference can be requested as a fallback.
+
+An emulated `stage` frame or reference is functionally identical to an `eyeLevel` frame of reference with an offset applied along the Y axis to place the user's head at an estimated height. The default estimated height is determined by the UA, and can be an aritrary or user configurable value. If the platform APIs provide a user configured height that should be taken into consideration when determining the emulated height. Note that the floor's location will almost certainly not match up with the user's physical floor when using `stage` emulation, the intent is just to get it "close enough" that the user doesn't overtly feel like they are stuck in the ground or floating. No bounds are reported for an emulated `stage`.
+
+The emulated `stage` is requested by setting the `stageEmulationAllowed` dictionary option to `true` when calling `requestFrameOfReference()`. If the system is capable of providing native `stage` tracking the emulation request is ignored and a non-emulated `stage` frame of reference is returned.
+
+```js
+// Get a stage frame of reference, emulating one if necessary.
+vrSession.requestFrameOfReference("stage", { stageEmulationAllowed: true })
+    .then((frameOfRef) => {
+      // Will always succeed.
+      vrFrameOfRef = frameOfRef;
+    });
+```
+
+At which point the developer can use the stage frame of reference as usual, rendering the scene with virtual floors at Y=0. To detect if the stage is using an emulated height or not after creation developers can check the `VRFrameOfReference`'s `emulatedHeight` attribute. A non-zero value indicates that the `stage` is being emulated.
+
+Some experiences that use a `stage` frame of reference may assume that the user will be sitting, kneeling, or assuming some pose other than standing for the majority of the experience, such as a racing game or meditation application. To accomodate these types of non-standing `stage` experiences a preferred height can also be provided to the `requestFrameOfReference()` options dictionary via the `stageEmulationHeight` option, given in meters. When `stageEmulationHeight` is not `0` it must be used in favor of UA provided default values while emulating.
+
+```js
+// Get a stage frame of reference, emulating one defaulting to 1.2 meters high
+// if necessary.
+vrSession.requestFrameOfReference("stage", { stageEmulationAllowed: true,
+                                             stageEmulationHeight: 1.2 })
+    .then((frameOfRef) => {
+      // Will always succeed.
+      vrFrameOfRef = frameOfRef;
+    });
+```
+
+Using an emulated `stage` as a fallback prevents the need for additional state tracking and matrix transforms on the developer's part in order to render the same content on a wide range of devices.   
+
 ### Multiview rendering
 
 Developers may optionally take advantage of the [WEBGL_multiview extension](https://www.khronos.org/registry/webgl/extensions/proposals/WEBGL_multiview/) to both WebGL 1.0 and WebGL 2.0 for optimized multiview rendering. The UA may not honor this request (e.g. when the supplied context does not support this extension) and the `VRWebGLLayer` will fallback to using a framebuffer that is not multiview-aware. As such, developers must query the `VRWebGLLayer.multiview` property after the `VRWebGLLayer` is constructed and respond accordingly.
@@ -639,7 +673,7 @@ dictionary VRSessionCreationOptions {
   attribute EventHandler onresetpose;
   attribute EventHandler onend;
 
-  Promise<VRFrameOfReference> requestFrameOfReference(VRFrameOfReferenceType type);
+  Promise<VRFrameOfReference> requestFrameOfReference(VRFrameOfReferenceType type, optional VRFrameOfReferenceInit options);
 
   long requestFrame(VRFrameRequestCallback callback);
   void cancelFrame(long handle);
@@ -736,8 +770,15 @@ enum VRFrameOfReferenceType {
   "stage",
 };
 
+dictionary VRFrameOfReferenceInit {
+  boolean stageEmulationAllowed = false;
+  [EnforceRange] double stageEmulationHeight = 0.0;
+};
+
 [SecureContext, Exposed=Window] interface VRFrameOfReference : VRCoordinateSystem {
   readonly attribute VRStageBounds? bounds;
+  readonly attribute double emulatedHeight;
+
   attribute EventHandler onboundschange;
 };
 
