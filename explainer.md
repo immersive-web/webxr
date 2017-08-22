@@ -673,7 +673,7 @@ dictionary VRSessionCreationOptions {
   attribute EventHandler onresetpose;
   attribute EventHandler onend;
 
-  Promise<VRFrameOfReference> requestFrameOfReference(VRFrameOfReferenceType type, optional VRFrameOfReferenceInit options);
+  Promise<VRFrameOfReference> requestFrameOfReference(VRFrameOfReferenceType type, optional VRFrameOfReferenceOptions options);
 
   long requestFrame(VRFrameRequestCallback callback);
   void cancelFrame(long handle);
@@ -770,7 +770,7 @@ enum VRFrameOfReferenceType {
   "stage",
 };
 
-dictionary VRFrameOfReferenceInit {
+dictionary VRFrameOfReferenceOptions {
   boolean stageEmulationAllowed = false;
   [EnforceRange] double stageEmulationHeight = 0.0;
 };
