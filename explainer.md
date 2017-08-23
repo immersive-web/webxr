@@ -192,11 +192,11 @@ function setupWebGLLayer() {
 let gl = glCanvas.getContext("webgl", { compatibleVRDevice: vrDevice });
 ```
 
-Ensuring context compatibility with a `VRDevice` through either method may have side effects on other graphics resources in the page, such as causing the entire user agent to switch from rendering using an integrated GPU to a discreet GPU.
+Ensuring context compatibility with a `VRDevice` through either method may have side effects on other graphics resources in the page, such as causing the entire user agent to switch from rendering using an integrated GPU to a discrete GPU.
 
 ### Main render loop
 
-WebVR provides information about the current frame to be rendered via the `VRPresentationFrame` object which developers must examine each frame. The `VRDevicePose` contains the informaton about all views which must be rendered and targets into which this rendering must be done.
+WebVR provides information about the current frame to be rendered via the `VRPresentationFrame` object which developers must examine each frame. The `VRDevicePose` contains the information about all views which must be rendered and targets into which this rendering must be done.
 
 `VRWebGLLayer` objects are not updated automatically. To present new frames, developers must use `VRSession`'s `requestFrame()` method. When the callback function is run, it passes fresh rendering data that must be used to draw into the `VRWebGLLayer`'s `framebuffer` during the callback. This framebuffer is created by the UA and behaves similarly to a canvas's default framebuffer. Using framebufferTexture2D, framebufferRenderbuffer, getFramebufferAttachmentParameter, and getRenderbufferParameter will all generate an INVALID_OPERATION error. Additionally, attempting to render to this framebuffer outside of the `requestFrame()` callback will generate an INVALID_OPERATION error. 
 
