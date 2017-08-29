@@ -1,0 +1,7 @@
+{
+    "src_file": "spec/latest/index.bs",
+    "type": "bikeshed",
+    "params": {
+        "force": 1
+    }
+}
