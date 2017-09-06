@@ -396,17 +396,9 @@ Some VR devices have been configured with details about the area they are being 
 ```js
 // Try to get a frame of reference where the floor is at Y = 0
 vrSession.requestFrameOfReference("stage").then((frameOfRef) => {
+  // Will always succeed due to stage emulation. See the section titled
+  // "Emulated stage frame of reference" for details.
   vrFrameOfRef = frameOfRef;
-}).catch((err) => {
-  // "stage" VRFrameOfReference is not supported.
-
-  // In this case the application will want to estimate the position of the
-  // floor, perhaps by asking the user's height, and translate the reported
-  // values upward by that distance so that the floor appears in approximately
-  // the correct position.
-  vrSession.requestFrameOfReference("eyeLevel").then((frameOfRef) => {
-    vrFrameOfRef = frameOfRef;
-  });
 });
 
 // Use vrFrameOfRef as detailed above, but render the floor of the virtual space at Y = 0;
@@ -451,37 +443,37 @@ vrFrameOfRef.addEventListener('boundschange', onBoundsUpdate);
 
 ### Emulated stage frame of reference
 
-Often times content designed to be used with a `stage` `VRFrameOfReference` (that is, the physical floor is at Y=0) can still be used with headsets that don't have appropriate knowledge of the user's physical space. For example the headset may only support 3DoF tracking, or 6DoF tracking without floor detection. In these case as a matter of developer convenience an emulated `stage` frame of reference can be requested as a fallback.
+Often times content designed to be used with a `stage` `VRFrameOfReference` (that is, the physical floor is at Y=0) can still be used with headsets that don't have appropriate knowledge of the user's physical space. For example the headset may only support 3DoF tracking, or 6DoF tracking without floor detection. In these case as a matter of developer convenience an emulated `stage` frame of reference is provided by default as a fallback.
 
 An emulated `stage` frame or reference is functionally identical to an `eyeLevel` frame of reference with an offset applied along the Y axis to place the user's head at an estimated height. The default estimated height is determined by the UA, and can be an aritrary or user configurable value. If the platform APIs provide a user configured height that should be taken into consideration when determining the emulated height. Note that the floor's location will almost certainly not match up with the user's physical floor when using `stage` emulation, the intent is just to get it "close enough" that the user doesn't overtly feel like they are stuck in the ground or floating. No bounds are reported for an emulated `stage`.
 
-The emulated `stage` is requested by setting the `stageEmulationAllowed` dictionary option to `true` when calling `requestFrameOfReference()`. If the system is capable of providing native `stage` tracking the emulation request is ignored and a non-emulated `stage` frame of reference is returned.
+Using an emulated `stage` as a fallback prevents the need for additional state tracking and matrix transforms on the developer's part in order to render the same content on a wide range of devices. To detect if the stage is using an emulated height or not after creation developers can check the `VRFrameOfReference`'s `emulatedHeight` attribute. A non-zero value indicates that the `stage` is being emulated.
+
+If the system is capable of providing native `stage` tracking it must do so instead of providing an emulated `stage` frame of reference. Some applications may require a non-emulated `stage`, however, so the application is allowed to opt-out of emulation by setting the `disableStageEmulation` dictionary option to `true` when calling `requestFrameOfReference()`. 
 
 ```js
-// Get a stage frame of reference, emulating one if necessary.
-vrSession.requestFrameOfReference("stage", { stageEmulationAllowed: true })
+// Get a native stage frame of reference if one is available, fail otherwise.
+vrSession.requestFrameOfReference("stage", { disableStageEmulation: true })
     .then((frameOfRef) => {
-      // Will always succeed.
       vrFrameOfRef = frameOfRef;
+    }).catch(() => {
+      // No stage frame of reference available for this device. Fall back to
+      // using a different frame of reference type of provide an appropriate
+      // error to the user.
     });
 ```
 
-At which point the developer can use the stage frame of reference as usual, rendering the scene with virtual floors at Y=0. To detect if the stage is using an emulated height or not after creation developers can check the `VRFrameOfReference`'s `emulatedHeight` attribute. A non-zero value indicates that the `stage` is being emulated.
-
-Some experiences that use a `stage` frame of reference may assume that the user will be sitting, kneeling, or assuming some pose other than standing for the majority of the experience, such as a racing game or meditation application. To accomodate these types of non-standing `stage` experiences a preferred height can also be provided to the `requestFrameOfReference()` options dictionary via the `stageEmulationHeight` option, given in meters. When `stageEmulationHeight` is not `0` it must be used in favor of UA provided default values while emulating.
+Some experiences that use a `stage` frame of reference may assume that the user will be sitting, kneeling, or assuming some pose other than standing for the majority of the experience, such as a racing game or a meditation application. To accomodate these types of non-standing `stage` experiences a preferred height can also be provided to the `requestFrameOfReference()` options dictionary via the `stageEmulationHeight` option, given in meters. When `stageEmulationHeight` is not `0` it must be used in favor of UA provided default values while emulating.
 
 ```js
 // Get a stage frame of reference, emulating one defaulting to 1.2 meters high
 // if necessary.
-vrSession.requestFrameOfReference("stage", { stageEmulationAllowed: true,
-                                             stageEmulationHeight: 1.2 })
+vrSession.requestFrameOfReference("stage", { stageEmulationHeight: 1.2 })
     .then((frameOfRef) => {
       // Will always succeed.
       vrFrameOfRef = frameOfRef;
     });
-```
-
-Using an emulated `stage` as a fallback prevents the need for additional state tracking and matrix transforms on the developer's part in order to render the same content on a wide range of devices.   
+```   
 
 ### Multiview rendering
 
@@ -771,7 +763,7 @@ enum VRFrameOfReferenceType {
 };
 
 dictionary VRFrameOfReferenceOptions {
-  boolean stageEmulationAllowed = false;
+  boolean disableStageEmulation = false;
   [EnforceRange] double stageEmulationHeight = 0.0;
 };
 
