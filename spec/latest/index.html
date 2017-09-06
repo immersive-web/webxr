@@ -1176,7 +1176,7 @@ Possible extra rowspan handling
 		}
 	}
 </style>
-  <meta content="Bikeshed version 7018a6f1ff92cfd8deb54176c6a0459be54c3896" name="generator">
+  <meta content="Bikeshed version bbe9248eb5d0801cb5dd013b3254431d0a802f86" name="generator">
   <link href="https://w3c.github.io/webvr/" rel="canonical">
 <style>
   .unstable::before {
@@ -1196,151 +1196,151 @@ Possible extra rowspan handling
 </style>
 <style>/* style-md-lists */
 
-            /* This is a weird hack for me not yet following the commonmark spec
-               regarding paragraph and lists. */
-            [data-md] > :first-child {
-                margin-top: 0;
-            }
-            [data-md] > :last-child {
-                margin-bottom: 0;
-            }</style>
+/* This is a weird hack for me not yet following the commonmark spec
+   regarding paragraph and lists. */
+[data-md] > :first-child {
+    margin-top: 0;
+}
+[data-md] > :last-child {
+    margin-bottom: 0;
+}</style>
 <style>/* style-selflinks */
 
-            .heading, .issue, .note, .example, li, dt {
-                position: relative;
-            }
-            a.self-link {
-                position: absolute;
-                top: 0;
-                left: calc(-1 * (3.5rem - 26px));
-                width: calc(3.5rem - 26px);
-                height: 2em;
-                text-align: center;
-                border: none;
-                transition: opacity .2s;
-                opacity: .5;
-            }
-            a.self-link:hover {
-                opacity: 1;
-            }
-            .heading > a.self-link {
-                font-size: 83%;
-            }
-            li > a.self-link {
-                left: calc(-1 * (3.5rem - 26px) - 2em);
-            }
-            dfn > a.self-link {
-                top: auto;
-                left: auto;
-                opacity: 0;
-                width: 1.5em;
-                height: 1.5em;
-                background: gray;
-                color: white;
-                font-style: normal;
-                transition: opacity .2s, background-color .2s, color .2s;
-            }
-            dfn:hover > a.self-link {
-                opacity: 1;
-            }
-            dfn > a.self-link:hover {
-                color: black;
-            }
+.heading, .issue, .note, .example, li, dt {
+    position: relative;
+}
+a.self-link {
+    position: absolute;
+    top: 0;
+    left: calc(-1 * (3.5rem - 26px));
+    width: calc(3.5rem - 26px);
+    height: 2em;
+    text-align: center;
+    border: none;
+    transition: opacity .2s;
+    opacity: .5;
+}
+a.self-link:hover {
+    opacity: 1;
+}
+.heading > a.self-link {
+    font-size: 83%;
+}
+li > a.self-link {
+    left: calc(-1 * (3.5rem - 26px) - 2em);
+}
+dfn > a.self-link {
+    top: auto;
+    left: auto;
+    opacity: 0;
+    width: 1.5em;
+    height: 1.5em;
+    background: gray;
+    color: white;
+    font-style: normal;
+    transition: opacity .2s, background-color .2s, color .2s;
+}
+dfn:hover > a.self-link {
+    opacity: 1;
+}
+dfn > a.self-link:hover {
+    color: black;
+}
 
-            a.self-link::before            { content: "¶"; }
-            .heading > a.self-link::before { content: "§"; }
-            dfn > a.self-link::before      { content: "#"; }</style>
+a.self-link::before            { content: "¶"; }
+.heading > a.self-link::before { content: "§"; }
+dfn > a.self-link::before      { content: "#"; }</style>
 <style>/* style-counters */
 
-            body {
-                counter-reset: example figure issue;
-            }
-            .issue {
-                counter-increment: issue;
-            }
-            .issue:not(.no-marker)::before {
-                content: "Issue " counter(issue);
-            }
+body {
+    counter-reset: example figure issue;
+}
+.issue {
+    counter-increment: issue;
+}
+.issue:not(.no-marker)::before {
+    content: "Issue " counter(issue);
+}
 
-            .example {
-                counter-increment: example;
-            }
-            .example:not(.no-marker)::before {
-                content: "Example " counter(example);
-            }
-            .invalid.example:not(.no-marker)::before,
-            .illegal.example:not(.no-marker)::before {
-                content: "Invalid Example" counter(example);
-            }
+.example {
+    counter-increment: example;
+}
+.example:not(.no-marker)::before {
+    content: "Example " counter(example);
+}
+.invalid.example:not(.no-marker)::before,
+.illegal.example:not(.no-marker)::before {
+    content: "Invalid Example" counter(example);
+}
 
-            figcaption {
-                counter-increment: figure;
-            }
-            figcaption:not(.no-marker)::before {
-                content: "Figure " counter(figure) " ";
-            }</style>
+figcaption {
+    counter-increment: figure;
+}
+figcaption:not(.no-marker)::before {
+    content: "Figure " counter(figure) " ";
+}</style>
 <style>/* style-autolinks */
 
-            .css.css, .property.property, .descriptor.descriptor {
-                color: #005a9c;
-                font-size: inherit;
-                font-family: inherit;
-            }
-            .css::before, .property::before, .descriptor::before {
-                content: "‘";
-            }
-            .css::after, .property::after, .descriptor::after {
-                content: "’";
-            }
-            .property, .descriptor {
-                /* Don't wrap property and descriptor names */
-                white-space: nowrap;
-            }
-            .type { /* CSS value <type> */
-                font-style: italic;
-            }
-            pre .property::before, pre .property::after {
-                content: "";
-            }
-            [data-link-type="property"]::before,
-            [data-link-type="propdesc"]::before,
-            [data-link-type="descriptor"]::before,
-            [data-link-type="value"]::before,
-            [data-link-type="function"]::before,
-            [data-link-type="at-rule"]::before,
-            [data-link-type="selector"]::before,
-            [data-link-type="maybe"]::before {
-                content: "‘";
-            }
-            [data-link-type="property"]::after,
-            [data-link-type="propdesc"]::after,
-            [data-link-type="descriptor"]::after,
-            [data-link-type="value"]::after,
-            [data-link-type="function"]::after,
-            [data-link-type="at-rule"]::after,
-            [data-link-type="selector"]::after,
-            [data-link-type="maybe"]::after {
-                content: "’";
-            }
+.css.css, .property.property, .descriptor.descriptor {
+    color: #005a9c;
+    font-size: inherit;
+    font-family: inherit;
+}
+.css::before, .property::before, .descriptor::before {
+    content: "‘";
+}
+.css::after, .property::after, .descriptor::after {
+    content: "’";
+}
+.property, .descriptor {
+    /* Don't wrap property and descriptor names */
+    white-space: nowrap;
+}
+.type { /* CSS value <type> */
+    font-style: italic;
+}
+pre .property::before, pre .property::after {
+    content: "";
+}
+[data-link-type="property"]::before,
+[data-link-type="propdesc"]::before,
+[data-link-type="descriptor"]::before,
+[data-link-type="value"]::before,
+[data-link-type="function"]::before,
+[data-link-type="at-rule"]::before,
+[data-link-type="selector"]::before,
+[data-link-type="maybe"]::before {
+    content: "‘";
+}
+[data-link-type="property"]::after,
+[data-link-type="propdesc"]::after,
+[data-link-type="descriptor"]::after,
+[data-link-type="value"]::after,
+[data-link-type="function"]::after,
+[data-link-type="at-rule"]::after,
+[data-link-type="selector"]::after,
+[data-link-type="maybe"]::after {
+    content: "’";
+}
 
-            [data-link-type].production::before,
-            [data-link-type].production::after,
-            .prod [data-link-type]::before,
-            .prod [data-link-type]::after {
-                content: "";
-            }
+[data-link-type].production::before,
+[data-link-type].production::after,
+.prod [data-link-type]::before,
+.prod [data-link-type]::after {
+    content: "";
+}
 
-            [data-link-type=element],
-            [data-link-type=element-attr] {
-                font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
-                font-size: .9em;
-            }
-            [data-link-type=element]::before { content: "<" }
-            [data-link-type=element]::after  { content: ">" }
+[data-link-type=element],
+[data-link-type=element-attr] {
+    font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    font-size: .9em;
+}
+[data-link-type=element]::before { content: "<" }
+[data-link-type=element]::after  { content: ">" }
 
-            [data-link-type=biblio] {
-                white-space: pre;
-            }</style>
+[data-link-type=biblio] {
+    white-space: pre;
+}</style>
 <style>/* style-dfn-panel */
 
         .dfn-panel {
@@ -1440,7 +1440,7 @@ pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebVR</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2017-08-08">8 August 2017</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2017-09-06">6 September 2017</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1595,7 +1595,7 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
     <p class="issue" id="issue-5bd3ee1f"><a class="self-link" href="#issue-5bd3ee1f"></a> Discuss use of sensor activity as a possible fingerprinting vector.</p>
     <h2 class="heading settled" data-level="3" id="deviceenumeration"><span class="secno">3. </span><span class="content">Device Enumeration</span><a class="self-link" href="#deviceenumeration"></a></h2>
     <h3 class="heading settled" data-level="3.1" id="vr-interface"><span class="secno">3.1. </span><span class="content">VR</span><a class="self-link" href="#vr-interface"></a></h3>
-<pre class="idl highlight def"><span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vr"><code>VR</code></dfn> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget">EventTarget</a> {
+<pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vr"><code>VR</code></dfn> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget">EventTarget</a> {
   // Methods
   <span class="kt">Promise</span>&lt;<span class="kt">sequence</span>&lt;<a class="n" data-link-type="idl-name" href="#vrdevice" id="ref-for-vrdevice①">VRDevice</a>>> <a class="nv idl-code" data-link-type="method" href="#dom-vr-getdevices" id="ref-for-dom-vr-getdevices">getDevices</a>();
 
@@ -1608,7 +1608,7 @@ to VR hardware to allow developers to build compelling, comfortable VR experienc
     <p><dfn class="dfn-paneled idl-code" data-dfn-for="VR" data-dfn-type="attribute" data-export="" id="dom-vr-ondeviceconnect"><code>ondeviceconnect</code></dfn> is an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-idl-attributes" id="ref-for-event-handler-idl-attributes">Event handler IDL attribute</a> for the <code class="idl"><a data-link-type="idl" href="#eventdef-vr-deviceconnect" id="ref-for-eventdef-vr-deviceconnect">deviceconnect</a></code> event type.</p>
     <p><dfn class="dfn-paneled idl-code" data-dfn-for="VR" data-dfn-type="attribute" data-export="" id="dom-vr-ondevicedisconnect"><code>ondevicedisconnect</code></dfn> is an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-idl-attributes" id="ref-for-event-handler-idl-attributes①">Event handler IDL attribute</a> for the <code class="idl"><a data-link-type="idl" href="#eventdef-vr-devicedisconnect" id="ref-for-eventdef-vr-devicedisconnect">devicedisconnect</a></code> event type.</p>
     <h3 class="heading settled" data-level="3.2" id="vrdevice-interface"><span class="secno">3.2. </span><span class="content">VRDevice</span><a class="self-link" href="#vrdevice-interface"></a></h3>
-<pre class="idl highlight def"><span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrdevice"><code>VRDevice</code></dfn> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget①">EventTarget</a> {
+<pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrdevice"><code>VRDevice</code></dfn> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget①">EventTarget</a> {
   // Attributes
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString"><span class="kt">DOMString</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="DOMString" href="#dom-vrdevice-devicename" id="ref-for-dom-vrdevice-devicename">deviceName</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean"><span class="kt">boolean</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="boolean" href="#dom-vrdevice-isexternal" id="ref-for-dom-vrdevice-isexternal">isExternal</a>;
@@ -1673,7 +1673,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
     </div>
     <h2 class="heading settled" data-level="4" id="session"><span class="secno">4. </span><span class="content">Session</span><a class="self-link" href="#session"></a></h2>
     <h3 class="heading settled" data-level="4.1" id="vrsession-interface"><span class="secno">4.1. </span><span class="content">VRSession</span><a class="self-link" href="#vrsession-interface"></a></h3>
-<pre class="idl highlight def"><span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrsession"><code>VRSession</code></dfn> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget②">EventTarget</a> {
+<pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed②">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrsession"><code>VRSession</code></dfn> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget②">EventTarget</a> {
   // Attributes
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrdevice" id="ref-for-vrdevice⑨">VRDevice</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRDevice" href="#dom-vrsession-device" id="ref-for-dom-vrsession-device">device</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrsessioncreateparameters" id="ref-for-vrsessioncreateparameters">VRSessionCreateParameters</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRSessionCreateParameters" href="#dom-vrsession-createparameters" id="ref-for-dom-vrsession-createparameters">createParameters</a>;
@@ -1722,7 +1722,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
   <span class="kt">required</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②"><span class="kt">boolean</span></a> <dfn class="nv idl-code" data-default="true" data-dfn-for="VRSessionCreateParametersInit" data-dfn-type="dict-member" data-export="" data-type="boolean " id="dom-vrsessioncreateparametersinit-exclusive"><code>exclusive</code><a class="self-link" href="#dom-vrsessioncreateparametersinit-exclusive"></a></dfn> = <span class="kt">true</span>;
 };
 
-<span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrsessioncreateparameters"><code>VRSessionCreateParameters</code></dfn> {
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed③">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrsessioncreateparameters"><code>VRSessionCreateParameters</code></dfn> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean③"><span class="kt">boolean</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="boolean" href="#dom-vrsessioncreateparameters-exclusive" id="ref-for-dom-vrsessioncreateparameters-exclusive">exclusive</a>;
 };
 </pre>
@@ -1738,7 +1738,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
 </pre>
     <p>Each <code class="idl"><a data-link-type="idl" href="#callbackdef-vrframerequestcallback" id="ref-for-callbackdef-vrframerequestcallback①">VRFrameRequestCallback</a></code> object has a <dfn data-dfn-for="VRFrameRequestCallback" data-dfn-type="dfn" data-noexport="" id="vrframerequestcallback-cancelled">cancelled<a class="self-link" href="#vrframerequestcallback-cancelled"></a></dfn> boolean flag. This flag is initially false and is not exposed by any interface.</p>
     <h3 class="heading settled" data-level="5.2" id="vrpresentationframe-interface"><span class="secno">5.2. </span><span class="content">VRPresentationFrame</span><a class="self-link" href="#vrpresentationframe-interface"></a></h3>
-<pre class="idl highlight def"><span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrpresentationframe"><code>VRPresentationFrame</code></dfn> {
+<pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed④">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrpresentationframe"><code>VRPresentationFrame</code></dfn> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">FrozenArray</span>&lt;<a class="n" data-link-type="idl-name" href="#vrview" id="ref-for-vrview">VRView</a>> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="FrozenArray<VRView>" href="#dom-vrpresentationframe-views" id="ref-for-dom-vrpresentationframe-views">views</a>;
 
   <a class="n" data-link-type="idl-name" href="#vrdevicepose" id="ref-for-vrdevicepose">VRDevicePose</a>? <dfn class="nv idl-code" data-dfn-for="VRPresentationFrame" data-dfn-type="method" data-export="" data-lt="getDevicePose(coordinateSystem)" id="dom-vrpresentationframe-getdevicepose"><code>getDevicePose</code><a class="self-link" href="#dom-vrpresentationframe-getdevicepose"></a></dfn>(<a class="n" data-link-type="idl-name" href="#vrcoordinatesystem" id="ref-for-vrcoordinatesystem">VRCoordinateSystem</a> <dfn class="nv idl-code" data-dfn-for="VRPresentationFrame/getDevicePose(coordinateSystem)" data-dfn-type="argument" data-export="" id="dom-vrpresentationframe-getdevicepose-coordinatesystem-coordinatesystem"><code>coordinateSystem</code><a class="self-link" href="#dom-vrpresentationframe-getdevicepose-coordinatesystem-coordinatesystem"></a></dfn>);
@@ -1749,7 +1749,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
     <p><dfn class="idl-code" data-dfn-for="VRPresentationFrame" data-dfn-type="method" data-export="" id="dom-vrpresentationframe-getdevicepose①"><code>getDevicePose()</code><a class="self-link" href="#dom-vrpresentationframe-getdevicepose①"></a></dfn></p>
     <h2 class="heading settled" data-level="6" id="view"><span class="secno">6. </span><span class="content">Views</span><a class="self-link" href="#view"></a></h2>
     <h3 class="heading settled" data-level="6.1" id="vrview-interface"><span class="secno">6.1. </span><span class="content">VRView</span><a class="self-link" href="#vrview-interface"></a></h3>
-<pre class="idl highlight def"><span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrview"><code>VRView</code></dfn> {
+<pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑤">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrview"><code>VRView</code></dfn> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#enumdef-vreye" id="ref-for-enumdef-vreye">VREye</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VREye" href="#dom-vrview-eye" id="ref-for-dom-vrview-eye">eye</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array"><span class="kt">Float32Array</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array" href="#dom-vrview-projectionmatrix" id="ref-for-dom-vrview-projectionmatrix">projectionMatrix</a>;
 
@@ -1766,7 +1766,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
     <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="VRView" data-dfn-type="attribute" data-export="" id="dom-vrview-projectionmatrix"><code>projectionMatrix</code></dfn> is a <a data-link-type="dfn" href="#matrix" id="ref-for-matrix">matrix</a> describing the projection to be used for the view’s rendering. It is highly recommended that applications use this matrix without modification. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.</p>
     <p><dfn class="idl-code" data-dfn-for="VRView" data-dfn-type="method" data-export="" id="dom-vrview-getviewport①"><code>getViewport()</code><a class="self-link" href="#dom-vrview-getviewport①"></a></dfn></p>
     <h3 class="heading settled" data-level="6.2" id="vrviewport-interface"><span class="secno">6.2. </span><span class="content">VRViewport</span><a class="self-link" href="#vrviewport-interface"></a></h3>
-<pre class="idl highlight def"><span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrviewport"><code>VRViewport</code></dfn> {
+<pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑥">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrviewport"><code>VRViewport</code></dfn> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long" id="ref-for-idl-long②"><span class="kt">long</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="long" href="#dom-vrviewport-x" id="ref-for-dom-vrviewport-x">x</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long" id="ref-for-idl-long③"><span class="kt">long</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="long" href="#dom-vrviewport-y" id="ref-for-dom-vrviewport-y">y</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long" id="ref-for-idl-long④"><span class="kt">long</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="long" href="#dom-vrviewport-width" id="ref-for-dom-vrviewport-width">width</a>;
@@ -1782,7 +1782,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
     <p>WebVR provides various transforms in the form of <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="matrix|matrices" data-noexport="" id="matrix">matrices</dfn>. WebVR matrices are always 4x4 and given as 16 element <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array①">Float32Array</a></code>s in column major order. They may be passed directly to WebGL’s <code class="idl"><a data-link-type="idl" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#uniformmatrix4fv" id="ref-for-uniformmatrix4fv">uniformMatrix4fv</a></code> function, used to create an equivalent <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry/#dommatrix" id="ref-for-dommatrix">DOMMatrix</a></code>, or used with a variety of third party math libraries.</p>
     <p>Translations specified by WebVR matrices are always given in meters.</p>
     <h3 class="heading settled" data-level="7.2" id="vrdevicepose-interface"><span class="secno">7.2. </span><span class="content">VRDevicePose</span><a class="self-link" href="#vrdevicepose-interface"></a></h3>
-<pre class="idl highlight def"><span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrdevicepose"><code>VRDevicePose</code></dfn> {
+<pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑦">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrdevicepose"><code>VRDevicePose</code></dfn> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array②"><span class="kt">Float32Array</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array" href="#dom-vrdevicepose-posemodelmatrix" id="ref-for-dom-vrdevicepose-posemodelmatrix">poseModelMatrix</a>;
 
   <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array③"><span class="kt">Float32Array</span></a> <dfn class="nv idl-code" data-dfn-for="VRDevicePose" data-dfn-type="method" data-export="" data-lt="getViewMatrix(view)" id="dom-vrdevicepose-getviewmatrix"><code>getViewMatrix</code><a class="self-link" href="#dom-vrdevicepose-getviewmatrix"></a></dfn>(<a class="n" data-link-type="idl-name" href="#vrview" id="ref-for-vrview②">VRView</a> <dfn class="nv idl-code" data-dfn-for="VRDevicePose/getViewMatrix(view)" data-dfn-type="argument" data-export="" id="dom-vrdevicepose-getviewmatrix-view-view"><code>view</code><a class="self-link" href="#dom-vrdevicepose-getviewmatrix-view-view"></a></dfn>);
@@ -1793,14 +1793,14 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
     <p>The <dfn class="idl-code" data-dfn-for="VRDevicePose" data-dfn-type="method" data-export="" id="dom-vrdevicepose-getviewmatrix①"><code>getViewMatrix()</code><a class="self-link" href="#dom-vrdevicepose-getviewmatrix①"></a></dfn> method returns a <a data-link-type="dfn" href="#matrix" id="ref-for-matrix①">matrix</a> describing the view transform to be used when rendering the passed <code class="idl"><a data-link-type="idl" href="#vrview" id="ref-for-vrview③">VRView</a></code>. The matrices represent the inverse of the model matrix of the associated viewpoint.</p>
     <h2 class="heading settled" data-level="8" id="layers"><span class="secno">8. </span><span class="content">Layers</span><a class="self-link" href="#layers"></a></h2>
     <h3 class="heading settled" data-level="8.1" id="vrlayer-interface"><span class="secno">8.1. </span><span class="content">VRLayer</span><a class="self-link" href="#vrlayer-interface"></a></h3>
-<pre class="idl highlight def"><span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrlayer"><code>VRLayer</code></dfn> {};
+<pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑧">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrlayer"><code>VRLayer</code></dfn> {};
 </pre>
     <p>A <code class="idl"><a data-link-type="idl" href="#vrlayer" id="ref-for-vrlayer②">VRLayer</a></code> defines a source of bitmap images and a description of how the image is to be rendered in the <code class="idl"><a data-link-type="idl" href="#vrdevice" id="ref-for-vrdevice①⑤">VRDevice</a></code>. Initially only one type of layer, the <code class="idl"><a data-link-type="idl" href="#vrwebgllayer" id="ref-for-vrwebgllayer①">VRWebGLLayer</a></code>, is defined but future revisions of the spec may extend the available layer types.</p>
     <h3 class="heading settled" data-level="8.2" id="vrwebgllayer-interface"><span class="secno">8.2. </span><span class="content">VRWebGLLayer</span><a class="self-link" href="#vrwebgllayer-interface"></a></h3>
 <pre class="idl highlight def"><span class="kt">typedef</span> (<a class="n" data-link-type="idl-name" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#webglrenderingcontext" id="ref-for-webglrenderingcontext">WebGLRenderingContext</a> <span class="kt">or</span>
          <a class="n" data-link-type="idl-name" href="https://www.khronos.org/registry/webgl/specs/latest/2.0/#webgl2renderingcontext" id="ref-for-webgl2renderingcontext">WebGL2RenderingContext</a>) <dfn class="nv dfn-paneled idl-code" data-dfn-type="typedef" data-export="" id="typedefdef-vrwebglrenderingcontext"><code>VRWebGLRenderingContext</code></dfn>;
 
-[<dfn class="nv idl-code" data-dfn-for="VRWebGLLayer" data-dfn-type="constructor" data-export="" data-lt="VRWebGLLayer(session, context, layerInit)|VRWebGLLayer(session, context)" id="dom-vrwebgllayer-vrwebgllayer"><code>Constructor</code><a class="self-link" href="#dom-vrwebgllayer-vrwebgllayer"></a></dfn>(<a class="n" data-link-type="idl-name" href="#vrsession" id="ref-for-vrsession⑥">VRSession</a> <dfn class="nv idl-code" data-dfn-for="VRWebGLLayer/VRWebGLLayer(session, context, layerInit)" data-dfn-type="argument" data-export="" id="dom-vrwebgllayer-vrwebgllayer-session-context-layerinit-session"><code>session</code><a class="self-link" href="#dom-vrwebgllayer-vrwebgllayer-session-context-layerinit-session"></a></dfn>,
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑨">Exposed</a>=<span class="n">Window</span>, <dfn class="nv idl-code" data-dfn-for="VRWebGLLayer" data-dfn-type="constructor" data-export="" data-lt="VRWebGLLayer(session, context, layerInit)|VRWebGLLayer(session, context)" id="dom-vrwebgllayer-vrwebgllayer"><code>Constructor</code><a class="self-link" href="#dom-vrwebgllayer-vrwebgllayer"></a></dfn>(<a class="n" data-link-type="idl-name" href="#vrsession" id="ref-for-vrsession⑥">VRSession</a> <dfn class="nv idl-code" data-dfn-for="VRWebGLLayer/VRWebGLLayer(session, context, layerInit)" data-dfn-type="argument" data-export="" id="dom-vrwebgllayer-vrwebgllayer-session-context-layerinit-session"><code>session</code><a class="self-link" href="#dom-vrwebgllayer-vrwebgllayer-session-context-layerinit-session"></a></dfn>,
              <a class="n" data-link-type="idl-name" href="#typedefdef-vrwebglrenderingcontext" id="ref-for-typedefdef-vrwebglrenderingcontext">VRWebGLRenderingContext</a> <dfn class="nv idl-code" data-dfn-for="VRWebGLLayer/VRWebGLLayer(session, context, layerInit)" data-dfn-type="argument" data-export="" id="dom-vrwebgllayer-vrwebgllayer-session-context-layerinit-context"><code>context</code><a class="self-link" href="#dom-vrwebgllayer-vrwebgllayer-session-context-layerinit-context"></a></dfn>,
              <span class="kt">optional</span> <a class="n" data-link-type="idl-name" href="#dictdef-vrwebgllayerinit" id="ref-for-dictdef-vrwebgllayerinit">VRWebGLLayerInit</a> <dfn class="nv idl-code" data-dfn-for="VRWebGLLayer/VRWebGLLayer(session, context, layerInit)" data-dfn-type="argument" data-export="" id="dom-vrwebgllayer-vrwebgllayer-session-context-layerinit-layerinit"><code>layerInit</code><a class="self-link" href="#dom-vrwebgllayer-vrwebgllayer-session-context-layerinit-layerinit"></a></dfn>)]
 <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrwebgllayer"><code>VRWebGLLayer</code></dfn> : <a class="n" data-link-type="idl-name" href="#vrlayer" id="ref-for-vrlayer③">VRLayer</a> {
@@ -1865,7 +1865,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
     <h2 class="heading settled" data-level="10" id="coordinatesystems"><span class="secno">10. </span><span class="content">Coordinate Systems</span><a class="self-link" href="#coordinatesystems"></a></h2>
     <p class="issue" id="issue-908c5434"><a class="self-link" href="#issue-908c5434"></a> Pretty much nothing in this section is documented</p>
     <h3 class="heading settled" data-level="10.1" id="vrcoordinatesystem-interface"><span class="secno">10.1. </span><span class="content">VRCoordinateSystem</span><a class="self-link" href="#vrcoordinatesystem-interface"></a></h3>
-<pre class="idl highlight def"><span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrcoordinatesystem"><code>VRCoordinateSystem</code></dfn> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget③">EventTarget</a> {
+<pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①⓪">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrcoordinatesystem"><code>VRCoordinateSystem</code></dfn> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget③">EventTarget</a> {
   <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array④"><span class="kt">Float32Array</span></a>? <dfn class="nv idl-code" data-dfn-for="VRCoordinateSystem" data-dfn-type="method" data-export="" data-lt="getTransformTo(other)" id="dom-vrcoordinatesystem-gettransformto"><code>getTransformTo</code><a class="self-link" href="#dom-vrcoordinatesystem-gettransformto"></a></dfn>(<a class="n" data-link-type="idl-name" href="#vrcoordinatesystem" id="ref-for-vrcoordinatesystem②">VRCoordinateSystem</a> <dfn class="nv idl-code" data-dfn-for="VRCoordinateSystem/getTransformTo(other)" data-dfn-type="argument" data-export="" id="dom-vrcoordinatesystem-gettransformto-other-other"><code>other</code><a class="self-link" href="#dom-vrcoordinatesystem-gettransformto-other-other"></a></dfn>);
 };
 </pre>
@@ -1877,7 +1877,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
   <dfn class="s idl-code" data-dfn-for="VRFrameOfReferenceType" data-dfn-type="enum-value" data-export="" data-lt="&quot;stage&quot;|stage" id="dom-vrframeofreferencetype-stage"><code>"stage"</code><a class="self-link" href="#dom-vrframeofreferencetype-stage"></a></dfn>,
 };
 
-<span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrframeofreference"><code>VRFrameOfReference</code></dfn> : <a class="n" data-link-type="idl-name" href="#vrcoordinatesystem" id="ref-for-vrcoordinatesystem③">VRCoordinateSystem</a> {
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrframeofreference"><code>VRFrameOfReference</code></dfn> : <a class="n" data-link-type="idl-name" href="#vrcoordinatesystem" id="ref-for-vrcoordinatesystem③">VRCoordinateSystem</a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrstagebounds" id="ref-for-vrstagebounds">VRStageBounds</a>? <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRStageBounds?" href="#dom-vrframeofreference-bounds" id="ref-for-dom-vrframeofreference-bounds">bounds</a>;
   <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler" id="ref-for-eventhandler⑦">EventHandler</a> <a class="nv idl-code" data-link-type="attribute" data-type="EventHandler" href="#dom-vrframeofreference-onboundschange" id="ref-for-dom-vrframeofreference-onboundschange">onboundschange</a>;
 };
@@ -1885,7 +1885,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
     <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRFrameOfReference" data-dfn-type="attribute" data-export="" id="dom-vrframeofreference-bounds"><code>bounds</code></dfn></p>
     <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRFrameOfReference" data-dfn-type="attribute" data-export="" id="dom-vrframeofreference-onboundschange"><code>onboundschange</code></dfn></p>
     <h3 class="heading settled" data-level="10.3" id="vrstagebounds-interface"><span class="secno">10.3. </span><span class="content">VRStageBounds</span><a class="self-link" href="#vrstagebounds-interface"></a></h3>
-<pre class="idl highlight def"><span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrstagebounds"><code>VRStageBounds</code></dfn> {
+<pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①②">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrstagebounds"><code>VRStageBounds</code></dfn> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">FrozenArray</span>&lt;<a class="n" data-link-type="idl-name" href="#vrstageboundspoint" id="ref-for-vrstageboundspoint">VRStageBoundsPoint</a>> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="FrozenArray<VRStageBoundsPoint>" href="#dom-vrstagebounds-geometry" id="ref-for-dom-vrstagebounds-geometry">geometry</a>;
 };
 </pre>
@@ -1893,7 +1893,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
     <p>A polygonal boundary is given by the <dfn class="dfn-paneled idl-code" data-dfn-for="VRStageBounds" data-dfn-type="attribute" data-export="" id="dom-vrstagebounds-geometry"><code>geometry</code></dfn> point array, which represents a loop of points at the edges of the safe space. The points MUST be given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The bounds are assumed to originate at the floor (Y == 0) and extend infinitely high. The shape it describes MAY not be convex. The values reported are relative to the <a data-link-type="dfn" href="#vrstagebounds-stage" id="ref-for-vrstagebounds-stage①">stage</a> origin, but MAY not contain it.</p>
     <p class="note" role="note"><span>Note:</span> Content should not require the user to move beyond these bounds; however, it is possible for the user to ignore the bounds resulting in position values outside of the rectangle they describe if their physical surroundings allow for it.</p>
     <h3 class="heading settled" data-level="10.4" id="vrstageboundspoint-interface"><span class="secno">10.4. </span><span class="content">VRStageBoundsPoint</span><a class="self-link" href="#vrstageboundspoint-interface"></a></h3>
-<pre class="idl highlight def"><span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrstageboundspoint"><code>VRStageBoundsPoint</code></dfn> {
+<pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①③">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrstageboundspoint"><code>VRStageBoundsPoint</code></dfn> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double④"><span class="kt">double</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="double" href="#dom-vrstageboundspoint-x" id="ref-for-dom-vrstageboundspoint-x">x</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double⑤"><span class="kt">double</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="double" href="#dom-vrstageboundspoint-z" id="ref-for-dom-vrstageboundspoint-z">z</a>;
 };
@@ -1901,7 +1901,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
     <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="VRStageBoundsPoint" data-dfn-type="attribute" data-export="" id="dom-vrstageboundspoint-x"><code>x</code></dfn> and <dfn class="dfn-paneled idl-code" data-dfn-for="VRStageBoundsPoint" data-dfn-type="attribute" data-export="" id="dom-vrstageboundspoint-z"><code>z</code></dfn> values of a <code class="idl"><a data-link-type="idl" href="#vrstageboundspoint" id="ref-for-vrstageboundspoint①">VRStageBoundsPoint</a></code> describe the offset from the <a data-link-type="dfn" href="#vrstagebounds-stage" id="ref-for-vrstagebounds-stage②">stage</a> origin along the X and Z axes respectively of the point, given in meters.</p>
     <h2 class="heading settled" data-level="11" id="events"><span class="secno">11. </span><span class="content">Events</span><a class="self-link" href="#events"></a></h2>
     <h3 class="heading settled" data-level="11.1" id="vrdeviceevent-interface"><span class="secno">11.1. </span><span class="content">VRDeviceEvent</span><a class="self-link" href="#vrdeviceevent-interface"></a></h3>
-<pre class="idl highlight def">[<dfn class="nv idl-code" data-dfn-for="VRDeviceEvent" data-dfn-type="constructor" data-export="" data-lt="VRDeviceEvent(type, eventInitDict)" id="dom-vrdeviceevent-vrdeviceevent"><code>Constructor</code><a class="self-link" href="#dom-vrdeviceevent-vrdeviceevent"></a></dfn>(<a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString①"><span class="kt">DOMString</span></a> <dfn class="nv idl-code" data-dfn-for="VRDeviceEvent/VRDeviceEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrdeviceevent-vrdeviceevent-type-eventinitdict-type"><code>type</code><a class="self-link" href="#dom-vrdeviceevent-vrdeviceevent-type-eventinitdict-type"></a></dfn>, <a class="n" data-link-type="idl-name" href="#dictdef-vrdeviceeventinit" id="ref-for-dictdef-vrdeviceeventinit">VRDeviceEventInit</a> <dfn class="nv idl-code" data-dfn-for="VRDeviceEvent/VRDeviceEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrdeviceevent-vrdeviceevent-type-eventinitdict-eventinitdict"><code>eventInitDict</code><a class="self-link" href="#dom-vrdeviceevent-vrdeviceevent-type-eventinitdict-eventinitdict"></a></dfn>)]
+<pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①④">Exposed</a>=<span class="n">Window</span>, <dfn class="nv idl-code" data-dfn-for="VRDeviceEvent" data-dfn-type="constructor" data-export="" data-lt="VRDeviceEvent(type, eventInitDict)" id="dom-vrdeviceevent-vrdeviceevent"><code>Constructor</code><a class="self-link" href="#dom-vrdeviceevent-vrdeviceevent"></a></dfn>(<a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString①"><span class="kt">DOMString</span></a> <dfn class="nv idl-code" data-dfn-for="VRDeviceEvent/VRDeviceEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrdeviceevent-vrdeviceevent-type-eventinitdict-type"><code>type</code><a class="self-link" href="#dom-vrdeviceevent-vrdeviceevent-type-eventinitdict-type"></a></dfn>, <a class="n" data-link-type="idl-name" href="#dictdef-vrdeviceeventinit" id="ref-for-dictdef-vrdeviceeventinit">VRDeviceEventInit</a> <dfn class="nv idl-code" data-dfn-for="VRDeviceEvent/VRDeviceEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrdeviceevent-vrdeviceevent-type-eventinitdict-eventinitdict"><code>eventInitDict</code><a class="self-link" href="#dom-vrdeviceevent-vrdeviceevent-type-eventinitdict-eventinitdict"></a></dfn>)]
 <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrdeviceevent"><code>VRDeviceEvent</code></dfn> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#event" id="ref-for-event">Event</a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrdevice" id="ref-for-vrdevice①⑨">VRDevice</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRDevice" href="#dom-vrdeviceevent-device" id="ref-for-dom-vrdeviceevent-device">device</a>;
 };
@@ -1912,7 +1912,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
 </pre>
     <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRDeviceEvent" data-dfn-type="attribute" data-export="" id="dom-vrdeviceevent-device"><code>device</code></dfn> The <code class="idl"><a data-link-type="idl" href="#vrdevice" id="ref-for-vrdevice②①">VRDevice</a></code> associated with this event.</p>
     <h3 class="heading settled" data-level="11.2" id="vrsessionevent-interface"><span class="secno">11.2. </span><span class="content">VRSessionEvent</span><a class="self-link" href="#vrsessionevent-interface"></a></h3>
-<pre class="idl highlight def">[<dfn class="nv idl-code" data-dfn-for="VRSessionEvent" data-dfn-type="constructor" data-export="" data-lt="VRSessionEvent(type, eventInitDict)" id="dom-vrsessionevent-vrsessionevent"><code>Constructor</code><a class="self-link" href="#dom-vrsessionevent-vrsessionevent"></a></dfn>(<a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString②"><span class="kt">DOMString</span></a> <dfn class="nv idl-code" data-dfn-for="VRSessionEvent/VRSessionEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrsessionevent-vrsessionevent-type-eventinitdict-type"><code>type</code><a class="self-link" href="#dom-vrsessionevent-vrsessionevent-type-eventinitdict-type"></a></dfn>, <a class="n" data-link-type="idl-name" href="#dictdef-vrsessioneventinit" id="ref-for-dictdef-vrsessioneventinit">VRSessionEventInit</a> <dfn class="nv idl-code" data-dfn-for="VRSessionEvent/VRSessionEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrsessionevent-vrsessionevent-type-eventinitdict-eventinitdict"><code>eventInitDict</code><a class="self-link" href="#dom-vrsessionevent-vrsessionevent-type-eventinitdict-eventinitdict"></a></dfn>)]
+<pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①⑤">Exposed</a>=<span class="n">Window</span>, <dfn class="nv idl-code" data-dfn-for="VRSessionEvent" data-dfn-type="constructor" data-export="" data-lt="VRSessionEvent(type, eventInitDict)" id="dom-vrsessionevent-vrsessionevent"><code>Constructor</code><a class="self-link" href="#dom-vrsessionevent-vrsessionevent"></a></dfn>(<a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString②"><span class="kt">DOMString</span></a> <dfn class="nv idl-code" data-dfn-for="VRSessionEvent/VRSessionEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrsessionevent-vrsessionevent-type-eventinitdict-type"><code>type</code><a class="self-link" href="#dom-vrsessionevent-vrsessionevent-type-eventinitdict-type"></a></dfn>, <a class="n" data-link-type="idl-name" href="#dictdef-vrsessioneventinit" id="ref-for-dictdef-vrsessioneventinit">VRSessionEventInit</a> <dfn class="nv idl-code" data-dfn-for="VRSessionEvent/VRSessionEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrsessionevent-vrsessionevent-type-eventinitdict-eventinitdict"><code>eventInitDict</code><a class="self-link" href="#dom-vrsessionevent-vrsessionevent-type-eventinitdict-eventinitdict"></a></dfn>)]
 <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrsessionevent"><code>VRSessionEvent</code></dfn> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#event" id="ref-for-event①">Event</a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrsession" id="ref-for-vrsession⑦">VRSession</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRSession" href="#dom-vrsessionevent-session" id="ref-for-dom-vrsessionevent-session">session</a>;
 };
@@ -1923,7 +1923,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
 </pre>
     <p><dfn class="dfn-paneled idl-code" data-dfn-for="VRSessionEvent" data-dfn-type="attribute" data-export="" id="dom-vrsessionevent-session"><code>session</code></dfn> The <code class="idl"><a data-link-type="idl" href="#vrsession" id="ref-for-vrsession⑨">VRSession</a></code> associated with this event.</p>
     <h3 class="heading settled" data-level="11.3" id="vrcoordinatesystemevent-interface"><span class="secno">11.3. </span><span class="content">VRCoordinateSystemEvent</span><a class="self-link" href="#vrcoordinatesystemevent-interface"></a></h3>
-<pre class="idl highlight def">[<dfn class="nv idl-code" data-dfn-for="VRCoordinateSystemEvent" data-dfn-type="constructor" data-export="" data-lt="VRCoordinateSystemEvent(type, eventInitDict)" id="dom-vrcoordinatesystemevent-vrcoordinatesystemevent"><code>Constructor</code><a class="self-link" href="#dom-vrcoordinatesystemevent-vrcoordinatesystemevent"></a></dfn>(<a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString③"><span class="kt">DOMString</span></a> <dfn class="nv idl-code" data-dfn-for="VRCoordinateSystemEvent/VRCoordinateSystemEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrcoordinatesystemevent-vrcoordinatesystemevent-type-eventinitdict-type"><code>type</code><a class="self-link" href="#dom-vrcoordinatesystemevent-vrcoordinatesystemevent-type-eventinitdict-type"></a></dfn>, <a class="n" data-link-type="idl-name" href="#dictdef-vrcoordinatesystemeventinit" id="ref-for-dictdef-vrcoordinatesystemeventinit">VRCoordinateSystemEventInit</a> <dfn class="nv idl-code" data-dfn-for="VRCoordinateSystemEvent/VRCoordinateSystemEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrcoordinatesystemevent-vrcoordinatesystemevent-type-eventinitdict-eventinitdict"><code>eventInitDict</code><a class="self-link" href="#dom-vrcoordinatesystemevent-vrcoordinatesystemevent-type-eventinitdict-eventinitdict"></a></dfn>)]
+<pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①⑥">Exposed</a>=<span class="n">Window</span>, <dfn class="nv idl-code" data-dfn-for="VRCoordinateSystemEvent" data-dfn-type="constructor" data-export="" data-lt="VRCoordinateSystemEvent(type, eventInitDict)" id="dom-vrcoordinatesystemevent-vrcoordinatesystemevent"><code>Constructor</code><a class="self-link" href="#dom-vrcoordinatesystemevent-vrcoordinatesystemevent"></a></dfn>(<a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString③"><span class="kt">DOMString</span></a> <dfn class="nv idl-code" data-dfn-for="VRCoordinateSystemEvent/VRCoordinateSystemEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrcoordinatesystemevent-vrcoordinatesystemevent-type-eventinitdict-type"><code>type</code><a class="self-link" href="#dom-vrcoordinatesystemevent-vrcoordinatesystemevent-type-eventinitdict-type"></a></dfn>, <a class="n" data-link-type="idl-name" href="#dictdef-vrcoordinatesystemeventinit" id="ref-for-dictdef-vrcoordinatesystemeventinit">VRCoordinateSystemEventInit</a> <dfn class="nv idl-code" data-dfn-for="VRCoordinateSystemEvent/VRCoordinateSystemEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-vrcoordinatesystemevent-vrcoordinatesystemevent-type-eventinitdict-eventinitdict"><code>eventInitDict</code><a class="self-link" href="#dom-vrcoordinatesystemevent-vrcoordinatesystemevent-type-eventinitdict-eventinitdict"></a></dfn>)]
 <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="vrcoordinatesystemevent"><code>VRCoordinateSystemEvent</code></dfn> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#event" id="ref-for-event②">Event</a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrcoordinatesystem" id="ref-for-vrcoordinatesystem④">VRCoordinateSystem</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRCoordinateSystem" href="#dom-vrcoordinatesystemevent-coordinatesystem" id="ref-for-dom-vrcoordinatesystemevent-coordinatesystem">coordinateSystem</a>;
 };
@@ -2313,6 +2313,11 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
     <a data-link-type="biblio">[promises-guide]</a> defines the following terms:
     <ul>
      <li><a href="https://www.w3.org/2001/tag/doc/promises-guide/#a-new-promise">a new promise</a>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[promises-guide-1]</a> defines the following terms:
+    <ul>
+     <li><a href="https://www.w3.org/2001/tag/doc/promises-guide/#a-new-promise">a new promise</a>
      <li><a href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise">reject</a>
      <li><a href="https://www.w3.org/2001/tag/doc/promises-guide/#resolve-promise">resolve</a>
     </ul>
@@ -2321,6 +2326,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
     <ul>
      <li><a href="https://heycam.github.io/webidl/#idl-DOMString">DOMString</a>
      <li><a href="https://heycam.github.io/webidl/#EnforceRange">EnforceRange</a>
+     <li><a href="https://heycam.github.io/webidl/#Exposed">Exposed</a>
      <li><a href="https://heycam.github.io/webidl/#idl-Float32Array">Float32Array</a>
      <li><a href="https://heycam.github.io/webidl/#idl-frozen-array">FrozenArray</a>
      <li><a href="https://heycam.github.io/webidl/#SameObject">SameObject</a>
@@ -2345,7 +2351,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
    <dd>Cameron McCormack; Boris Zbarsky; Tobie Langel. <a href="https://heycam.github.io/webidl/">Web IDL</a>. URL: <a href="https://heycam.github.io/webidl/">https://heycam.github.io/webidl/</a>
   </dl>
   <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
-<pre class="idl highlight def"><span class="kt">interface</span> <a class="nv" href="#vr"><code>VR</code></a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget④">EventTarget</a> {
+<pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①⑧">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#vr"><code>VR</code></a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget④">EventTarget</a> {
   // Methods
   <span class="kt">Promise</span>&lt;<span class="kt">sequence</span>&lt;<a class="n" data-link-type="idl-name" href="#vrdevice" id="ref-for-vrdevice①①⓪">VRDevice</a>>> <a class="nv idl-code" data-link-type="method" href="#dom-vr-getdevices" id="ref-for-dom-vr-getdevices①">getDevices</a>();
 
@@ -2354,7 +2360,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
   <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler" id="ref-for-eventhandler①①">EventHandler</a> <a class="nv idl-code" data-link-type="attribute" data-type="EventHandler" href="#dom-vr-ondevicedisconnect" id="ref-for-dom-vr-ondevicedisconnect①">ondevicedisconnect</a>;
 };
 
-<span class="kt">interface</span> <a class="nv" href="#vrdevice"><code>VRDevice</code></a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget①①">EventTarget</a> {
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①⑦">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#vrdevice"><code>VRDevice</code></a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget①①">EventTarget</a> {
   // Attributes
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString④"><span class="kt">DOMString</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="DOMString" href="#dom-vrdevice-devicename" id="ref-for-dom-vrdevice-devicename①">deviceName</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⑤"><span class="kt">boolean</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="boolean" href="#dom-vrdevice-isexternal" id="ref-for-dom-vrdevice-isexternal①">isExternal</a>;
@@ -2367,7 +2373,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
   <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler" id="ref-for-eventhandler②①">EventHandler</a> <a class="nv idl-code" data-link-type="attribute" data-type="EventHandler" href="#dom-vrdevice-ondeactivate" id="ref-for-dom-vrdevice-ondeactivate①">ondeactivate</a>;
 };
 
-<span class="kt">interface</span> <a class="nv" href="#vrsession"><code>VRSession</code></a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget②①">EventTarget</a> {
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed②①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#vrsession"><code>VRSession</code></a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget②①">EventTarget</a> {
   // Attributes
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrdevice" id="ref-for-vrdevice⑨①">VRDevice</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRDevice" href="#dom-vrsession-device" id="ref-for-dom-vrsession-device①">device</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrsessioncreateparameters" id="ref-for-vrsessioncreateparameters②">VRSessionCreateParameters</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRSessionCreateParameters" href="#dom-vrsession-createparameters" id="ref-for-dom-vrsession-createparameters①">createParameters</a>;
@@ -2395,19 +2401,19 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
   <span class="kt">required</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②①"><span class="kt">boolean</span></a> <a class="nv" data-default="true" data-type="boolean " href="#dom-vrsessioncreateparametersinit-exclusive"><code>exclusive</code></a> = <span class="kt">true</span>;
 };
 
-<span class="kt">interface</span> <a class="nv" href="#vrsessioncreateparameters"><code>VRSessionCreateParameters</code></a> {
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed③①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#vrsessioncreateparameters"><code>VRSessionCreateParameters</code></a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean③①"><span class="kt">boolean</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="boolean" href="#dom-vrsessioncreateparameters-exclusive" id="ref-for-dom-vrsessioncreateparameters-exclusive①">exclusive</a>;
 };
 
 <span class="kt">callback</span> <a class="nv" href="#callbackdef-vrframerequestcallback"><code>VRFrameRequestCallback</code></a> = <span class="kt">void</span> (<a class="n" data-link-type="idl-name" href="#vrpresentationframe" id="ref-for-vrpresentationframe④">VRPresentationFrame</a> <a class="nv" href="#dom-vrframerequestcallback-frame"><code>frame</code></a>);
 
-<span class="kt">interface</span> <a class="nv" href="#vrpresentationframe"><code>VRPresentationFrame</code></a> {
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed④①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#vrpresentationframe"><code>VRPresentationFrame</code></a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">FrozenArray</span>&lt;<a class="n" data-link-type="idl-name" href="#vrview" id="ref-for-vrview④">VRView</a>> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="FrozenArray<VRView>" href="#dom-vrpresentationframe-views" id="ref-for-dom-vrpresentationframe-views①">views</a>;
 
   <a class="n" data-link-type="idl-name" href="#vrdevicepose" id="ref-for-vrdevicepose②">VRDevicePose</a>? <a class="nv" href="#dom-vrpresentationframe-getdevicepose"><code>getDevicePose</code></a>(<a class="n" data-link-type="idl-name" href="#vrcoordinatesystem" id="ref-for-vrcoordinatesystem⑦">VRCoordinateSystem</a> <a class="nv" href="#dom-vrpresentationframe-getdevicepose-coordinatesystem-coordinatesystem"><code>coordinateSystem</code></a>);
 };
 
-<span class="kt">interface</span> <a class="nv" href="#vrview"><code>VRView</code></a> {
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑤①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#vrview"><code>VRView</code></a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#enumdef-vreye" id="ref-for-enumdef-vreye①">VREye</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VREye" href="#dom-vrview-eye" id="ref-for-dom-vrview-eye①">eye</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array⑤"><span class="kt">Float32Array</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array" href="#dom-vrview-projectionmatrix" id="ref-for-dom-vrview-projectionmatrix①">projectionMatrix</a>;
 
@@ -2419,25 +2425,25 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
   <a class="s" href="#dom-vreye-right"><code>"right"</code></a>
 };
 
-<span class="kt">interface</span> <a class="nv" href="#vrviewport"><code>VRViewport</code></a> {
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑥①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#vrviewport"><code>VRViewport</code></a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long" id="ref-for-idl-long②①"><span class="kt">long</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="long" href="#dom-vrviewport-x" id="ref-for-dom-vrviewport-x①">x</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long" id="ref-for-idl-long③①"><span class="kt">long</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="long" href="#dom-vrviewport-y" id="ref-for-dom-vrviewport-y①">y</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long" id="ref-for-idl-long④①"><span class="kt">long</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="long" href="#dom-vrviewport-width" id="ref-for-dom-vrviewport-width①">width</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long" id="ref-for-idl-long⑤①"><span class="kt">long</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="long" href="#dom-vrviewport-height" id="ref-for-dom-vrviewport-height①">height</a>;
 };
 
-<span class="kt">interface</span> <a class="nv" href="#vrdevicepose"><code>VRDevicePose</code></a> {
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑦①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#vrdevicepose"><code>VRDevicePose</code></a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array②①"><span class="kt">Float32Array</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array" href="#dom-vrdevicepose-posemodelmatrix" id="ref-for-dom-vrdevicepose-posemodelmatrix①">poseModelMatrix</a>;
 
   <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array③①"><span class="kt">Float32Array</span></a> <a class="nv" href="#dom-vrdevicepose-getviewmatrix"><code>getViewMatrix</code></a>(<a class="n" data-link-type="idl-name" href="#vrview" id="ref-for-vrview②①">VRView</a> <a class="nv" href="#dom-vrdevicepose-getviewmatrix-view-view"><code>view</code></a>);
 };
 
-<span class="kt">interface</span> <a class="nv" href="#vrlayer"><code>VRLayer</code></a> {};
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑧①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#vrlayer"><code>VRLayer</code></a> {};
 
 <span class="kt">typedef</span> (<a class="n" data-link-type="idl-name" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#webglrenderingcontext" id="ref-for-webglrenderingcontext①">WebGLRenderingContext</a> <span class="kt">or</span>
          <a class="n" data-link-type="idl-name" href="https://www.khronos.org/registry/webgl/specs/latest/2.0/#webgl2renderingcontext" id="ref-for-webgl2renderingcontext①">WebGL2RenderingContext</a>) <a class="nv" href="#typedefdef-vrwebglrenderingcontext"><code>VRWebGLRenderingContext</code></a>;
 
-[<a class="nv" href="#dom-vrwebgllayer-vrwebgllayer"><code>Constructor</code></a>(<a class="n" data-link-type="idl-name" href="#vrsession" id="ref-for-vrsession⑥①">VRSession</a> <a class="nv" href="#dom-vrwebgllayer-vrwebgllayer-session-context-layerinit-session"><code>session</code></a>,
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑨①">Exposed</a>=<span class="n">Window</span>, <a class="nv" href="#dom-vrwebgllayer-vrwebgllayer"><code>Constructor</code></a>(<a class="n" data-link-type="idl-name" href="#vrsession" id="ref-for-vrsession⑥①">VRSession</a> <a class="nv" href="#dom-vrwebgllayer-vrwebgllayer-session-context-layerinit-session"><code>session</code></a>,
              <a class="n" data-link-type="idl-name" href="#typedefdef-vrwebglrenderingcontext" id="ref-for-typedefdef-vrwebglrenderingcontext②">VRWebGLRenderingContext</a> <a class="nv" href="#dom-vrwebgllayer-vrwebgllayer-session-context-layerinit-context"><code>context</code></a>,
              <span class="kt">optional</span> <a class="n" data-link-type="idl-name" href="#dictdef-vrwebgllayerinit" id="ref-for-dictdef-vrwebgllayerinit②">VRWebGLLayerInit</a> <a class="nv" href="#dom-vrwebgllayer-vrwebgllayer-session-context-layerinit-layerinit"><code>layerInit</code></a>)]
 <span class="kt">interface</span> <a class="nv" href="#vrwebgllayer"><code>VRWebGLLayer</code></a> : <a class="n" data-link-type="idl-name" href="#vrlayer" id="ref-for-vrlayer③①">VRLayer</a> {
@@ -2475,7 +2481,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
     <span class="kt">Promise</span>&lt;<span class="kt">void</span>> <a class="nv" href="#dom-webglrenderingcontextbase-setcompatiblevrdevice"><code>setCompatibleVRDevice</code></a>(<a class="n" data-link-type="idl-name" href="#vrdevice" id="ref-for-vrdevice①⑧①">VRDevice</a> <a class="nv" href="#dom-webglrenderingcontextbase-setcompatiblevrdevice-device-device"><code>device</code></a>);
 };
 
-<span class="kt">interface</span> <a class="nv" href="#vrcoordinatesystem"><code>VRCoordinateSystem</code></a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget③①">EventTarget</a> {
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①⓪①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#vrcoordinatesystem"><code>VRCoordinateSystem</code></a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget③①">EventTarget</a> {
   <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array④①"><span class="kt">Float32Array</span></a>? <a class="nv" href="#dom-vrcoordinatesystem-gettransformto"><code>getTransformTo</code></a>(<a class="n" data-link-type="idl-name" href="#vrcoordinatesystem" id="ref-for-vrcoordinatesystem②①">VRCoordinateSystem</a> <a class="nv" href="#dom-vrcoordinatesystem-gettransformto-other-other"><code>other</code></a>);
 };
 
@@ -2485,21 +2491,21 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
   <a class="s" href="#dom-vrframeofreferencetype-stage"><code>"stage"</code></a>,
 };
 
-<span class="kt">interface</span> <a class="nv" href="#vrframeofreference"><code>VRFrameOfReference</code></a> : <a class="n" data-link-type="idl-name" href="#vrcoordinatesystem" id="ref-for-vrcoordinatesystem③①">VRCoordinateSystem</a> {
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①①①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#vrframeofreference"><code>VRFrameOfReference</code></a> : <a class="n" data-link-type="idl-name" href="#vrcoordinatesystem" id="ref-for-vrcoordinatesystem③①">VRCoordinateSystem</a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrstagebounds" id="ref-for-vrstagebounds②">VRStageBounds</a>? <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRStageBounds?" href="#dom-vrframeofreference-bounds" id="ref-for-dom-vrframeofreference-bounds③">bounds</a>;
   <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler" id="ref-for-eventhandler⑦①">EventHandler</a> <a class="nv idl-code" data-link-type="attribute" data-type="EventHandler" href="#dom-vrframeofreference-onboundschange" id="ref-for-dom-vrframeofreference-onboundschange①">onboundschange</a>;
 };
 
-<span class="kt">interface</span> <a class="nv" href="#vrstagebounds"><code>VRStageBounds</code></a> {
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①②①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#vrstagebounds"><code>VRStageBounds</code></a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">FrozenArray</span>&lt;<a class="n" data-link-type="idl-name" href="#vrstageboundspoint" id="ref-for-vrstageboundspoint②">VRStageBoundsPoint</a>> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="FrozenArray<VRStageBoundsPoint>" href="#dom-vrstagebounds-geometry" id="ref-for-dom-vrstagebounds-geometry②">geometry</a>;
 };
 
-<span class="kt">interface</span> <a class="nv" href="#vrstageboundspoint"><code>VRStageBoundsPoint</code></a> {
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①③①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#vrstageboundspoint"><code>VRStageBoundsPoint</code></a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double④①"><span class="kt">double</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="double" href="#dom-vrstageboundspoint-x" id="ref-for-dom-vrstageboundspoint-x①">x</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double⑤①"><span class="kt">double</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="double" href="#dom-vrstageboundspoint-z" id="ref-for-dom-vrstageboundspoint-z①">z</a>;
 };
 
-[<a class="nv" href="#dom-vrdeviceevent-vrdeviceevent"><code>Constructor</code></a>(<a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString①①"><span class="kt">DOMString</span></a> <a class="nv" href="#dom-vrdeviceevent-vrdeviceevent-type-eventinitdict-type"><code>type</code></a>, <a class="n" data-link-type="idl-name" href="#dictdef-vrdeviceeventinit" id="ref-for-dictdef-vrdeviceeventinit①">VRDeviceEventInit</a> <a class="nv" href="#dom-vrdeviceevent-vrdeviceevent-type-eventinitdict-eventinitdict"><code>eventInitDict</code></a>)]
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①④①">Exposed</a>=<span class="n">Window</span>, <a class="nv" href="#dom-vrdeviceevent-vrdeviceevent"><code>Constructor</code></a>(<a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString①①"><span class="kt">DOMString</span></a> <a class="nv" href="#dom-vrdeviceevent-vrdeviceevent-type-eventinitdict-type"><code>type</code></a>, <a class="n" data-link-type="idl-name" href="#dictdef-vrdeviceeventinit" id="ref-for-dictdef-vrdeviceeventinit①">VRDeviceEventInit</a> <a class="nv" href="#dom-vrdeviceevent-vrdeviceevent-type-eventinitdict-eventinitdict"><code>eventInitDict</code></a>)]
 <span class="kt">interface</span> <a class="nv" href="#vrdeviceevent"><code>VRDeviceEvent</code></a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#event" id="ref-for-event③">Event</a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrdevice" id="ref-for-vrdevice①⑨①">VRDevice</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRDevice" href="#dom-vrdeviceevent-device" id="ref-for-dom-vrdeviceevent-device①">device</a>;
 };
@@ -2508,7 +2514,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
   <span class="kt">required</span> <a class="n" data-link-type="idl-name" href="#vrdevice" id="ref-for-vrdevice②⓪①">VRDevice</a> <a class="nv" data-type="VRDevice " href="#dom-vrdeviceeventinit-device"><code>device</code></a>;
 };
 
-[<a class="nv" href="#dom-vrsessionevent-vrsessionevent"><code>Constructor</code></a>(<a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString②①"><span class="kt">DOMString</span></a> <a class="nv" href="#dom-vrsessionevent-vrsessionevent-type-eventinitdict-type"><code>type</code></a>, <a class="n" data-link-type="idl-name" href="#dictdef-vrsessioneventinit" id="ref-for-dictdef-vrsessioneventinit①">VRSessionEventInit</a> <a class="nv" href="#dom-vrsessionevent-vrsessionevent-type-eventinitdict-eventinitdict"><code>eventInitDict</code></a>)]
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①⑤①">Exposed</a>=<span class="n">Window</span>, <a class="nv" href="#dom-vrsessionevent-vrsessionevent"><code>Constructor</code></a>(<a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString②①"><span class="kt">DOMString</span></a> <a class="nv" href="#dom-vrsessionevent-vrsessionevent-type-eventinitdict-type"><code>type</code></a>, <a class="n" data-link-type="idl-name" href="#dictdef-vrsessioneventinit" id="ref-for-dictdef-vrsessioneventinit①">VRSessionEventInit</a> <a class="nv" href="#dom-vrsessionevent-vrsessionevent-type-eventinitdict-eventinitdict"><code>eventInitDict</code></a>)]
 <span class="kt">interface</span> <a class="nv" href="#vrsessionevent"><code>VRSessionEvent</code></a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#event" id="ref-for-event①①">Event</a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrsession" id="ref-for-vrsession⑦①">VRSession</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRSession" href="#dom-vrsessionevent-session" id="ref-for-dom-vrsessionevent-session①">session</a>;
 };
@@ -2517,7 +2523,7 @@ navigator<span class="p">.</span>vr<span class="p">.</span>getDevices<span class
   <span class="kt">required</span> <a class="n" data-link-type="idl-name" href="#vrsession" id="ref-for-vrsession⑧①">VRSession</a> <a class="nv" data-type="VRSession " href="#dom-vrsessioneventinit-session"><code>session</code></a>;
 };
 
-[<a class="nv" href="#dom-vrcoordinatesystemevent-vrcoordinatesystemevent"><code>Constructor</code></a>(<a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString③①"><span class="kt">DOMString</span></a> <a class="nv" href="#dom-vrcoordinatesystemevent-vrcoordinatesystemevent-type-eventinitdict-type"><code>type</code></a>, <a class="n" data-link-type="idl-name" href="#dictdef-vrcoordinatesystemeventinit" id="ref-for-dictdef-vrcoordinatesystemeventinit①">VRCoordinateSystemEventInit</a> <a class="nv" href="#dom-vrcoordinatesystemevent-vrcoordinatesystemevent-type-eventinitdict-eventinitdict"><code>eventInitDict</code></a>)]
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①⑥①">Exposed</a>=<span class="n">Window</span>, <a class="nv" href="#dom-vrcoordinatesystemevent-vrcoordinatesystemevent"><code>Constructor</code></a>(<a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString③①"><span class="kt">DOMString</span></a> <a class="nv" href="#dom-vrcoordinatesystemevent-vrcoordinatesystemevent-type-eventinitdict-type"><code>type</code></a>, <a class="n" data-link-type="idl-name" href="#dictdef-vrcoordinatesystemeventinit" id="ref-for-dictdef-vrcoordinatesystemeventinit①">VRCoordinateSystemEventInit</a> <a class="nv" href="#dom-vrcoordinatesystemevent-vrcoordinatesystemevent-type-eventinitdict-eventinitdict"><code>eventInitDict</code></a>)]
 <span class="kt">interface</span> <a class="nv" href="#vrcoordinatesystemevent"><code>VRCoordinateSystemEvent</code></a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#event" id="ref-for-event②①">Event</a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#vrcoordinatesystem" id="ref-for-vrcoordinatesystem④①">VRCoordinateSystem</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="VRCoordinateSystem" href="#dom-vrcoordinatesystemevent-coordinatesystem" id="ref-for-dom-vrcoordinatesystemevent-coordinatesystem①">coordinateSystem</a>;
 };

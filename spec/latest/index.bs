@@ -124,7 +124,7 @@ VR {#vr-interface}
 ----
 
 <pre class="idl">
-interface VR : EventTarget {
+[Exposed=Window] interface VR : EventTarget {
   // Methods
   Promise&lt;sequence&lt;VRDevice&gt;&gt; getDevices();
 
@@ -146,7 +146,7 @@ VRDevice {#vrdevice-interface}
 ---------
 
 <pre class="idl">
-interface VRDevice : EventTarget {
+[Exposed=Window] interface VRDevice : EventTarget {
   // Attributes
   readonly attribute DOMString deviceName;
   readonly attribute boolean isExternal;
@@ -217,7 +217,7 @@ VRSession {#vrsession-interface}
 ---------
 
 <pre class="idl">
-interface VRSession : EventTarget {
+[Exposed=Window] interface VRSession : EventTarget {
   // Attributes
   readonly attribute VRDevice device;
   readonly attribute VRSessionCreateParameters createParameters;
@@ -290,7 +290,7 @@ dictionary VRSessionCreateParametersInit {
   required boolean exclusive = true;
 };
 
-interface VRSessionCreateParameters {
+[Exposed=Window] interface VRSessionCreateParameters {
   readonly attribute boolean exclusive;
 };
 </pre>
@@ -353,7 +353,7 @@ VRPresentationFrame {#vrpresentationframe-interface}
 -------------------
 
 <pre class="idl">
-interface VRPresentationFrame {
+[Exposed=Window] interface VRPresentationFrame {
   readonly attribute FrozenArray&lt;VRView&gt; views;
 
   VRDevicePose? getDevicePose(VRCoordinateSystem coordinateSystem);
@@ -373,7 +373,7 @@ VRView {#vrview-interface}
 ------
 
 <pre class="idl">
-interface VRView {
+[Exposed=Window] interface VRView {
   readonly attribute VREye eye;
   readonly attribute Float32Array projectionMatrix;
 
@@ -398,7 +398,7 @@ VRViewport {#vrviewport-interface}
 ------
 
 <pre class="idl">
-interface VRViewport {
+[Exposed=Window] interface VRViewport {
   readonly attribute long x;
   readonly attribute long y;
   readonly attribute long width;
@@ -428,7 +428,7 @@ VRDevicePose {#vrdevicepose-interface}
 -------------
 
 <pre class="idl">
-interface VRDevicePose {
+[Exposed=Window] interface VRDevicePose {
   readonly attribute Float32Array poseModelMatrix;
 
   Float32Array getViewMatrix(VRView view);
@@ -448,7 +448,7 @@ VRLayer {#vrlayer-interface}
 -------
 
 <pre class="idl">
-interface VRLayer {};
+[Exposed=Window] interface VRLayer {};
 </pre>
 
 A {{VRLayer}} defines a source of bitmap images and a description of how the image is to be rendered in the {{VRDevice}}. Initially only one type of layer, the {{VRWebGLLayer}}, is defined but future revisions of the spec may extend the available layer types.
@@ -460,7 +460,7 @@ VRWebGLLayer {#vrwebgllayer-interface}
 typedef (WebGLRenderingContext or
          WebGL2RenderingContext) VRWebGLRenderingContext;
 
-[Constructor(VRSession session,
+[Exposed=Window, Constructor(VRSession session,
              VRWebGLRenderingContext context,
              optional VRWebGLLayerInit layerInit)]
 interface VRWebGLLayer : VRLayer {
@@ -562,7 +562,7 @@ VRCoordinateSystem {#vrcoordinatesystem-interface}
 ------------------
 
 <pre class="idl">
-interface VRCoordinateSystem : EventTarget {
+[Exposed=Window] interface VRCoordinateSystem : EventTarget {
   Float32Array? getTransformTo(VRCoordinateSystem other);
 };
 </pre>
@@ -579,7 +579,7 @@ enum VRFrameOfReferenceType {
   "stage",
 };
 
-interface VRFrameOfReference : VRCoordinateSystem {
+[Exposed=Window] interface VRFrameOfReference : VRCoordinateSystem {
   readonly attribute VRStageBounds? bounds;
   attribute EventHandler onboundschange;
 };
@@ -593,7 +593,7 @@ VRStageBounds {#vrstagebounds-interface}
 -------------
 
 <pre class="idl">
-interface VRStageBounds {
+[Exposed=Window] interface VRStageBounds {
   readonly attribute FrozenArray&lt;VRStageBoundsPoint&gt; geometry;
 };
 </pre>
@@ -608,7 +608,7 @@ VRStageBoundsPoint {#vrstageboundspoint-interface}
 ------------------
 
 <pre class="idl">
-interface VRStageBoundsPoint {
+[Exposed=Window] interface VRStageBoundsPoint {
   readonly attribute double x;
   readonly attribute double z;
 };
@@ -623,7 +623,7 @@ VRDeviceEvent {#vrdeviceevent-interface}
 -------
 
 <pre class="idl">
-[Constructor(DOMString type, VRDeviceEventInit eventInitDict)]
+[Exposed=Window, Constructor(DOMString type, VRDeviceEventInit eventInitDict)]
 interface VRDeviceEvent : Event {
   readonly attribute VRDevice device;
 };
@@ -640,7 +640,7 @@ VRSessionEvent {#vrsessionevent-interface}
 --------------
 
 <pre class="idl">
-[Constructor(DOMString type, VRSessionEventInit eventInitDict)]
+[Exposed=Window, Constructor(DOMString type, VRSessionEventInit eventInitDict)]
 interface VRSessionEvent : Event {
   readonly attribute VRSession session;
 };
@@ -657,7 +657,7 @@ VRCoordinateSystemEvent {#vrcoordinatesystemevent-interface}
 -----------------------
 
 <pre class="idl">
-[Constructor(DOMString type, VRCoordinateSystemEventInit eventInitDict)]
+[Exposed=Window, Constructor(DOMString type, VRCoordinateSystemEventInit eventInitDict)]
 interface VRCoordinateSystemEvent : Event {
   readonly attribute VRCoordinateSystem coordinateSystem;
 };
