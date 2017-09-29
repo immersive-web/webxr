@@ -1176,7 +1176,7 @@ Possible extra rowspan handling
 		}
 	}
 </style>
-  <meta content="Bikeshed version aa82ed4ababc6275b796a6e8bae93f32d8a46d2d" name="generator">
+  <meta content="Bikeshed version 5834a15f311a639c0b59ff2edbf3a060391d15ff" name="generator">
   <link href="https://w3c.github.io/webvr/" rel="canonical">
 <style>/* style-md-lists */
 
@@ -1424,7 +1424,7 @@ pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebVR</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2017-09-07">7 September 2017</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2017-10-02">2 October 2017</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1437,10 +1437,10 @@ pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em
      <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:kgilbert@mozilla.com">Kearwood Gilbert</a> (<a class="p-org org" href="https://mozilla.org/">Mozilla</a>)
      <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:cvan@mozilla.com">Chris Van Wiemeersch</a> (<a class="p-org org" href="https://mozilla.org/">Mozilla</a>)
      <dt>Participate:
-     <dd><span><a href="https://github.com/w3c/webvr/issues/new">File an issue</a> (<a href="https://github.com/w3c/webvr/issues">open issues</a>)</span>
-     <dd><span><a href="https://lists.w3.org/Archives/Public/public-webvr/">Mailing list archive</a></span>
-     <dd><span><a href="irc://irc.w3.org:6665/">W3C’s #webvr IRC</a></span>
-     <dd><span></span>
+     <dd><a href="https://github.com/w3c/webvr/issues/new">File an issue</a> (<a href="https://github.com/w3c/webvr/issues">open issues</a>)
+     <dd><a href="https://lists.w3.org/Archives/Public/public-webvr/">Mailing list archive</a>
+     <dd><a href="irc://irc.w3.org:6665/">W3C’s #webvr IRC</a>
+     <dd>
     </dl>
    </div>
    <div data-fill-with="warning"></div>
@@ -1549,8 +1549,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    </ol>
   </nav>
   <main>
-   <p><b style="color: red; font-size: 1.3em">Deprecated API</b></p>
-   <p><b>The version of the WebVR API represented in this document is does not represent the final shape of the API. While the API is being finalized support for this version may temporarily be available in some browsers but is expected to be replaced eventually.</b></p>
+   <p><b>Development of this version of the WebVR API has halted in favor of being replaced by a newer variant of the API. See latest specification draft <a href="https://w3c.github.io/webvr/spec/latest/">here</a>. Several browsers will continue to support this version of the API in the meantime.</b></p>
    <h2 class="heading settled" data-level="1" id="intro"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#intro"></a></h2>
    <p>Hardware that enables Virtual Reality applications requires high-precision, low-latency interfaces to deliver an acceptable experience.
 Other interfaces, such as device orientation events, can be repurposed to surface VR input but doing so dilutes the interface’s original
@@ -2384,7 +2383,7 @@ navigator<span class="p">.</span>getVRDisplays<span class="p">().</span>then<spa
    <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>. March 1997. Best Current Practice. URL: <a href="https://tools.ietf.org/html/rfc2119">https://tools.ietf.org/html/rfc2119</a>
    <dt id="biblio-webidl">[WebIDL]
-   <dd>Cameron McCormack; Boris Zbarsky; Tobie Langel. <a href="https://heycam.github.io/webidl/">Web IDL</a>. URL: <a href="https://heycam.github.io/webidl/">https://heycam.github.io/webidl/</a>
+   <dd>Cameron McCormack; Boris Zbarsky; Tobie Langel. <a href="https://heycam.github.io/webidl/">Web IDL</a>. 15 December 2016. ED. URL: <a href="https://heycam.github.io/webidl/">https://heycam.github.io/webidl/</a>
   </dl>
   <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
 <pre class="idl highlight def"><span class="kt">interface</span> <a class="nv" href="#vrdisplay"><code>VRDisplay</code></a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget①">EventTarget</a> {

@@ -36,9 +36,7 @@ urlPrefix: https://www.w3.org/TR/html5/
 </pre>
 
 
-<b style="color: red; font-size: 1.3em">Deprecated API</b>
-
-<b>The version of the WebVR API represented in this document is does not represent the final shape of the API. While the API is being finalized support for this version may temporarily be available in some browsers but is expected to be replaced eventually.</b>
+<b>Development of this version of the WebVR API has halted in favor of being replaced by a newer variant of the API. See latest specification draft <a href="https://w3c.github.io/webvr/spec/latest/">here</a>. Several browsers will continue to support this version of the API in the meantime.</b>
 
 # Introduction # {#intro}
 
