@@ -723,7 +723,7 @@ dictionary VRWebGLLayerInit {
   boolean stencil = false;
   boolean alpha = true;
   boolean multiview = false;
-  [EnforceRange] double framebufferScaleFactor;
+  double framebufferScaleFactor;
 };
 
 typedef (WebGLRenderingContext or
@@ -764,7 +764,7 @@ enum VRFrameOfReferenceType {
 
 dictionary VRFrameOfReferenceOptions {
   boolean disableStageEmulation = false;
-  [EnforceRange] double stageEmulationHeight = 0.0;
+  double stageEmulationHeight = 0.0;
 };
 
 [SecureContext, Exposed=Window] interface VRFrameOfReference : VRCoordinateSystem {
