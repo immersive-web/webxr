@@ -44,7 +44,7 @@ The basic steps any WebVR application will go through are:
 
  1. Request a VR device.
  1. If a device is available, application advertises VR functionality to the user.
- 1. Request a VR session from the device in response to a [user-activation event](https://html.spec.whatwg.org/multipage/interaction.html#activation).
+ 1. Request an exclusive VR session from the device in response to a [user-activation event](https://html.spec.whatwg.org/multipage/interaction.html#activation).
  1. Use the session to run a render loop that produces graphical frames to be displayed on the VR device.
  1. Continue producing frames until the user indicates that they wish to exit VR mode.
  1. End the VR session.
@@ -55,7 +55,7 @@ The first thing that any VR-enabled page will want to do is request a `VRDevice`
 
 `navigator.vr.requestDevice` returns a [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that resolves to a `VRDevice` if one is available. If no `VRDevice` is available, it will resolve to null. The promise will be rejected if an error occurs, such as the the page not having the appropriate permissions to access VR capabilities.
 
-A `VRDevice` represents a physical unit of VR hardware that can present imagery to the user somehow, referred to here as a "VR hardware device". On desktop clients this will usually be a headset peripheral; on mobile clients it may represent the mobile device itself in conjunction with a viewer harness (e.g., Google Cardboard/Daydream or Samsung GearVR). It may also represent devices without stereo-presentation capabilities but with more advanced tracking, such as ARCore/ARKit-compatible devices.
+A `VRDevice` represents a physical unit of VR hardware that can present imagery to the user somehow, referred to here as a "VR hardware device". On desktop clients this will usually be a headset peripheral; on mobile clients it may represent the mobile device itself in conjunction with a viewer harness (e.g., Google Cardboard/Daydream or Samsung Gear VR). It may also represent devices without stereo-presentation capabilities but with more advanced tracking, such as ARCore/ARKit-compatible devices.
 
 ```js
 function checkForVR() {
@@ -72,7 +72,7 @@ function checkForVR() {
 
 Future revisions of the API may add filter criteria to `navigator.vr.requestDevice`.
 
-> **Non-normative Note:** If there are multiple VR devices available, the UA will need to pick which one to return. The UA is allowed to use any criteria it wishes to select which device is returned, including settings UI that allows users to manage device priority. Calling `navigator.vr.requestDevice` should not trigger device selection UI, however, as this would cause many sites to display VR-specific dialogs early in the document lifecycle without and user activation.
+> **Non-normative Note:** If there are multiple VR devices available, the UA will need to pick which one to return. The UA is allowed to use any criteria it wishes to select which device is returned, including settings UI that allows users to manage device priority. Calling `navigator.vr.requestDevice` should not trigger device-selection UI, however, as this would cause many sites to display VR-specific dialogs early in the document lifecycle without and user activation.
 
 It's possible that even if no VR device is available initially, one may become available while the application is running, or that a previously available device becomes unavailable. This will be most common with PC peripherals that can be connected or disconnected at any time. Pages can listen to the `devicechange` event emitted on `navigator.vr` to respond to changes in device availability after the page loads. (VR devices already available when the page loads will not cause a `devicechange` event to be fired.)
 
