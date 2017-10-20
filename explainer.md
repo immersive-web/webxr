@@ -40,7 +40,7 @@ VR provides an interesting canvas for artists looking to explore the possibiliti
 
 ## Lifetime of a VR web app
 
-The basic steps any WebVR application will go through are:
+The basic steps most WebVR applications will go through are:
 
  1. Request a VR device.
  1. If a device is available, application advertises VR functionality to the user.
@@ -72,7 +72,7 @@ function checkForVR() {
 
 Future revisions of the API may add filter criteria to `navigator.vr.requestDevice`.
 
-> **Non-normative Note:** If there are multiple VR devices available, the UA will need to pick which one to return. The UA is allowed to use any criteria it wishes to select which device is returned, including settings UI that allows users to manage device priority. Calling `navigator.vr.requestDevice` should not trigger device-selection UI, however, as this would cause many sites to display VR-specific dialogs early in the document lifecycle without and user activation.
+> **Non-normative Note:** If there are multiple VR devices available, the UA will need to pick which one to return. The UA is allowed to use any criteria it wishes to select which device is returned, including settings UI that allows users to manage device priority. Calling `navigator.vr.requestDevice` should not trigger device-selection UI, however, as this would cause many sites to display VR-specific dialogs early in the document lifecycle without user activation.
 
 It's possible that even if no VR device is available initially, one may become available while the application is running, or that a previously available device becomes unavailable. This will be most common with PC peripherals that can be connected or disconnected at any time. Pages can listen to the `devicechange` event emitted on `navigator.vr` to respond to changes in device availability after the page loads. (VR devices already available when the page loads will not cause a `devicechange` event to be fired.)
 
