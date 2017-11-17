@@ -126,7 +126,7 @@ VR {#vr-interface}
 <pre class="idl">
 [SecureContext, Exposed=Window] interface VR : EventTarget {
   // Methods
-  Promise&lt;VRDevice&gt; requestDevice();
+  Promise&lt;VRDevice?&gt; requestDevice();
 
   // Events
   attribute EventHandler ondevicechange;
@@ -135,6 +135,26 @@ VR {#vr-interface}
 
 <dfn method for="VR">requestDevice()</dfn>
 Return a Promise which resolves to an available {{VRDevice}}.
+
+Calling {{VR/requestDevice()}} should not trigger device-selection UI as this would cause many sites to display VR-specific dialogs early in the document lifecycle without user activation.
+
+Note: If there are multiple VR devices available, the UA will need to pick which one to return. The UA is allowed to use any criteria it wishes to select which device is returned, including settings UI that allows users to manage device priority.
+
+<div class="example">
+The following code finds an available {{VRDevice}}.
+
+<pre highlight="js">
+navigator.vr.requestDevice().then(device => {
+  // Resolves to a VRDevice if one is available, or to null otherwise.
+  if (device) {
+    onVRAvailable(device);
+  }
+}).catch(error => {
+  // An error occurred while requesting a VRDevice.
+  console.error('Unable to request a VR device: ', error);
+});
+</pre>
+</div>
 
 <dfn attribute for="VR">ondevicechange</dfn> is an <a>Event handler IDL attribute</a> for the {{devicechange}} event type.
 
@@ -185,29 +205,10 @@ In order to set or retrieve the [=active session=] a page must <dfn>request a se
 
 When the <dfn method for="VRDevice">supportsSession()</dfn> method is invoked it MUST return <a>a new Promise</a> |promise| and run the following steps <a>in parallel</a>:
 
- 1. 
  1. If the requested [=session description=] is supported by the device, <a>resolve</a> |promise|.
  1. Else <a>reject</a> |promise|.
 
 <dfn attribute for="VRDevice">ondeactivate</dfn> is an <a>Event handler IDL attribute</a> for the {{deactivate}} event type.
-
-<div class="example">
-The following code finds the first available {{VRDevice}}.
-
-<pre highlight="js">
-let vrDevice;
-
-navigator.vr.getDevices().then((devices) => {
-  // Use the first device in the array if one is available. If multiple
-  // devices are present, you may want to present the user with a way to
-  // select which device to use.
-  if (devices.length > 0) {
-    vrDevice = devices[0];
-  }
-});
-</pre>
-</div>
-
 
 Session {#session}
 =======
