@@ -53,7 +53,7 @@ The basic steps most WebVR applications will go through are:
 
 The first thing that any VR-enabled page will want to do is request a `VRDevice` and, if one is available, advertise VR functionality to the user. (For example, by adding a button to the page that the user can click to start VR content.)
 
-`navigator.vr.requestDevice` returns a [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that resolves to a `VRDevice` if one is available. If no `VRDevice` is available, it will resolve to null. The promise will be rejected if an error occurs, such as the the page not having the appropriate permissions to access VR capabilities.
+`navigator.vr.requestDevice` returns a [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that resolves to a `VRDevice` if one is available. If no `VRDevice` is available, it will resolve to null. The promise will be rejected if an error occurs, such as the page not having the appropriate permissions to access VR capabilities.
 
 A `VRDevice` represents a physical unit of VR hardware that can present imagery to the user somehow, referred to here as a "VR hardware device". On desktop clients this will usually be a headset peripheral; on mobile clients it may represent the mobile device itself in conjunction with a viewer harness (e.g., Google Cardboard/Daydream or Samsung Gear VR). It may also represent devices without stereo-presentation capabilities but with more advanced tracking, such as ARCore/ARKit-compatible devices.
 
@@ -137,7 +137,7 @@ function beginVRSession() {
 ```
 Once the session has started, some setup must be done to prepare for rendering.
 - A `VRFrameOfReference` must be created to define the coordinate system in which the `VRDevicePose` objects will be defined. See the Advanced Functionality section for more details about frames of reference.
-- The depth range of the session should be set to something appropriate for the application. This range will be used in the construction of the projection matricies provided by `VRPresentationFrame`.
+- The depth range of the session should be set to something appropriate for the application. This range will be used in the construction of the projection matrices provided by `VRPresentationFrame`.
 - A `VRLayer` must be created and assigned to the `VRSession`'s `baseLayer` attribute. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.)
 
 ```js
@@ -194,7 +194,7 @@ function setupWebGLLayer() {
 }
 ```
 
-**VR Centric:** The app's primary use case is VR, and as such it doesn't mind initializing resources in a VR-centric fashion, which may include asking users to select a headset as soon as the app starts. An example would be a game which is dependent on VR presentation and input. These types of applications can to avoid the need to call `setCompatibleVRDevice` and the possible context loss that it may trigger by passing the `VRDevice` that the context will be used with as a context creation argument.
+**VR Centric:** The app's primary use case is VR, and as such it doesn't mind initializing resources in a VR-centric fashion, which may include asking users to select a headset as soon as the app starts. An example would be a game which is dependent on VR presentation and input. These types of applications can avoid the need to call `setCompatibleVRDevice` and the possible context loss that it may trigger by passing the `VRDevice` that the context will be used with as a context creation argument.
 
 ```js
 let gl = glCanvas.getContext("webgl", { compatibleVRDevice: vrDevice });
@@ -256,7 +256,7 @@ function drawScene(view, pose) {
 
 ### Handling suspended sessions
 
-The UA may temporarily "suspend" a session at any time. While suspended a session has restricted or throttled access to the `VRDevice` state and may process frames slowly or not at all. Suspended sessions can be resonably be expected to be resumed at some point, usually when the user has finished performing whatever action triggered the suspension in the first place.
+The UA may temporarily "suspend" a session at any time. While suspended a session has restricted or throttled access to the `VRDevice` state and may process frames slowly or not at all. Suspended sessions can be reasonably be expected to be resumed at some point, usually when the user has finished performing whatever action triggered the suspension in the first place.
 
 The UA may suspend a session if allowing the page to continue reading the headset position represents a security or privacy risk (like when the user is entering a password or URL with a virtual keyboard, in which case the head motion may infer the user's input), or if other content is obscuring the page's output. Additionally, non-exclusive sessions are suspended while an exclusive session is active.
 
@@ -320,7 +320,7 @@ A `VRPresentationContext` can only be supplied imagery by a `VRSession`, though 
 
 ### Mirroring
 
-On desktop devices, or any device which has an external display connected to it, it's frequently desirable to show what the user in the headset is seeing on the exernal display. This is usually referred to as mirroring.
+On desktop devices, or any device which has an external display connected to it, it's frequently desirable to show what the user in the headset is seeing on the external display. This is usually referred to as mirroring.
 
 In order to mirror WebVR content to the page, developers provide a `VRPresentationContext` as the `outputContext` in the `VRSessionCreationOptions` of an exclusive session. Once the session has started any content displayed on the headset will then be mirrored into the canvas associated with the `outputContext`. The `outputContext` remains bound to the session until the session has ended, and cannot be used with multiple `VRSession`s simultaneously.
 
@@ -444,7 +444,7 @@ function onBoundsUpdate() {
 }
 ```
 
-Changes to the bounds while a session is active should be a relatively rare occurance, but it can be monitored by listening for the frame of reference's `boundschange` event.
+Changes to the bounds while a session is active should be a relatively rare occurrence, but it can be monitored by listening for the frame of reference's `boundschange` event.
 
 ```js
 vrFrameOfRef.addEventListener('boundschange', onBoundsUpdate);
@@ -472,7 +472,7 @@ vrSession.requestFrameOfReference("stage", { disableStageEmulation: true })
     });
 ```
 
-Some experiences that use a `stage` frame of reference may assume that the user will be sitting, kneeling, or assuming some pose other than standing for the majority of the experience, such as a racing game or a meditation application. To accomodate these types of non-standing `stage` experiences a preferred height can also be provided to the `requestFrameOfReference()` options dictionary via the `stageEmulationHeight` option, given in meters. When `stageEmulationHeight` is not `0` it must be used in favor of UA provided default values while emulating.
+Some experiences that use a `stage` frame of reference may assume that the user will be sitting, kneeling, or assuming some pose other than standing for the majority of the experience, such as a racing game or a meditation application. To accommodate these types of non-standing `stage` experiences a preferred height can also be provided to the `requestFrameOfReference()` options dictionary via the `stageEmulationHeight` option, given in meters. When `stageEmulationHeight` is not `0` it must be used in favor of UA provided default values while emulating.
 
 ```js
 // Get a stage frame of reference, emulating one defaulting to 1.2 meters high
@@ -580,7 +580,7 @@ function onDrawFrame() {
 
 ### Responding to a reset pose
 
-Most VR systems have a mechanism for allowing the user to reset which direction is "forward." For security and comfort reasons the WebVR API has no mechanism to trigger a pose reset programatically, but it can still be useful to know when it happens. Pages may want to take advantage of the visual discontinuity to reposition the user or other elements in the scene into a more natural position for the new orientation. Pages may also want to use the opportunity to clear or reset any additional transforms that have been applied if no longer needed.
+Most VR systems have a mechanism for allowing the user to reset which direction is "forward." For security and comfort reasons the WebVR API has no mechanism to trigger a pose reset programmatically, but it can still be useful to know when it happens. Pages may want to take advantage of the visual discontinuity to reposition the user or other elements in the scene into a more natural position for the new orientation. Pages may also want to use the opportunity to clear or reset any additional transforms that have been applied if no longer needed.
 
 A page can be notified when a pose reset happens by listening for the 'resetpose' event from the 'VRSession'.
 
