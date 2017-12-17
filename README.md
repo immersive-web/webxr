@@ -2,30 +2,32 @@
 
 WebXR is driving support for accessing virtual reality (VR) and augmented reality (AR) devices, including sensors and head-mounted displays on the Web.
 
-This is currently the repository for the [WebVR Community Group](https://www.w3.org/community/webvr/) and the [WebXR Specification](https://immersive-web.github.io/webxr/). We have a [charter](https://w3c.github.io/webvr/charter/) (in progress).
+This is currently the repository for the [WebVR Community Group](https://www.w3.org/community/webvr/) and the [WebXR Device API Specification](https://immersive-web.github.io/webxr/). We have a [charter](https://immersive-web.github.io/webxr/charter/) (in progress).
 
 The specification has recently undergone a name change, so expect to see multiple references to "WebVR" sprinkled throughout.
 
 
 ## Specifications
 
-* [WebVR API Specification](https://w3c.github.io/webvr/): main specification for JavaScript API for accessing VR displays.
-* [Gamepad API Specification](https://w3c.github.io/gamepad/), introduces a low-level JS API interface for accessing gamepad devices.
-* [Gamepad Extensions API Specification](https://w3c.github.io/gamepad/extensions.html): extends the Gamepad API to enable access to more advanced device capabilities.
+* [WebXR Device API Specification](https://immersive-web.github.io/webxr/): Main specification for JavaScript API for accessing VR and AR devices, including sensors and head-mounted displays.
+* [Legacy WebVR API Specification](https://immersive-web.github.io/webvr/): Legacy WebVR API 1.1 specification for JavaScript API for accessing VR displays. Development of the WebVR API has halted in favor of being replaced the WebXR Device API. Several browsers will continue to support this version of the API in the meantime.
+* [Gamepad API Specification](https://w3c.github.io/gamepad/): Introduces a low-level JS API interface for accessing gamepad devices.
+* [Gamepad Extensions API Specification](https://w3c.github.io/gamepad/extensions.html): Extends the Gamepad API to enable access to more advanced device capabilities.
 
 
 ## Relevant Links
 
 * [WebVR Community Group](https://www.w3.org/community/webvr/)
-* [WebVR Specification](https://w3c.github.io/webvr/)
-* [WebVR Charter](https://w3c.github.io/webvr/charter/)
+* [WebXR Device API Specification](https://immersive-web.github.io/webxr/)
+* [Legacy WebVR API Specification](https://immersive-web.github.io/webvr/)
+* [WebXR Charter](https://immersive-web.github.io/webxr/charter/)
 
 
 ## Communication
 
-* [W3C Community Group: `webvr`](http://www.w3.org/community/webvr/)
-  * [`public-webvr` mailing list](http://lists.w3.org/Archives/Public/public-webvr/)
-* [GitHub issues list: `webvr`](https://github.com/w3c/webvr/issues)
+* [WebVR Community Group](http://www.w3.org/community/webvr/)
+* [`public-webvr` mailing list](http://lists.w3.org/Archives/Public/public-webvr/)
+* [GitHub issues list: `webxr`](https://github.com/immersive-web/webxr/issues)
 * [WebVR Slack chat](https://webvr-slack.herokuapp.com/)
 
 
