@@ -496,7 +496,7 @@ xrSession.requestFrameOfReference("stage", { stageEmulationHeight: 1.2 })
 
 ### Multiview rendering
 
-Developers may optionally take advantage of the [WEBGL_multiview extension](https://www.khronos.org/registry/webgl/extensions/proposals/WEBGL_multiview/) to both WebGL 1.0 and WebGL 2.0 for optimized multiview rendering. The WEBGL_multiview extension must be successfully queried from the supplied context prior to the creation of the `XRWebGLLayer` or it will fall back to using a framebuffer that is not multiview-aware. Additionally, the UA may choose to not honor the multiview request for any reason, which will also fall back to using a framebuffer that is not multiview-aware. As such, developers must query the `XRWebGLLayer.multiview` property after the `XRWebGLLayer` is constructed and respond accordingly.
+Developers may optionally take advantage of the [WEBGL_multiview extension](https://www.khronos.org/registry/webgl/extensions/WEBGL_multiview/) to both WebGL 1.0 and WebGL 2.0 for optimized multiview rendering. The WEBGL_multiview extension must be successfully queried from the supplied context prior to the creation of the `XRWebGLLayer` or it will fall back to using a framebuffer that is not multiview-aware. Additionally, the UA may choose to not honor the multiview request for any reason, which will also fall back to using a framebuffer that is not multiview-aware. As such, developers must query the `XRWebGLLayer.multiview` property after the `XRWebGLLayer` is constructed and respond accordingly.
 
 When `XRWebGLLayer.multiview` is false:
 - The `XRWebGLLayer`'s `framebuffer` will be created in a side-by-side configuration.
