@@ -1440,7 +1440,7 @@ pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebXR Device API</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2018-01-03">3 January 2018</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2018-01-04">4 January 2018</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1462,7 +1462,7 @@ pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em
    <div data-fill-with="warning"></div>
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" src="https://licensebuttons.net/p/zero/1.0/80x15.png"></a> To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 3 January 2018,
+In addition, as of 4 January 2018,
 the editors have made this specification available under the <a href="http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 Parts of this work may be from another specification document.  If so, those parts are instead covered by the license of that specification document. </p>
@@ -1640,7 +1640,9 @@ Parts of this work may be from another specification document.  If so, those par
       <li data-md="">
        <p><a data-link-type="dfn" href="#enumerate-xr-devices" id="ref-for-enumerate-xr-devices">Enumerate XR devices</a>.</p>
       <li data-md="">
-       <p><a data-link-type="dfn" href="#select-a-default-xr-device" id="ref-for-select-a-default-xr-device①">Select a default XR device</a> from the <a data-link-type="dfn" href="#list-of-xr-devices" id="ref-for-list-of-xr-devices⑧">list of XR devices</a>.</p>
+       <p>If the <a data-link-type="dfn" href="#list-of-xr-devices" id="ref-for-list-of-xr-devices⑧">list of XR devices</a> is empty, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise" id="ref-for-reject-promise">reject</a> <var>promise</var> with a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notfounderror" id="ref-for-notfounderror">NotFoundError</a></code> and abort these steps.</p>
+      <li data-md="">
+       <p><a data-link-type="dfn" href="#select-a-default-xr-device" id="ref-for-select-a-default-xr-device①">Select a default XR device</a> from the <a data-link-type="dfn" href="#list-of-xr-devices" id="ref-for-list-of-xr-devices⑨">list of XR devices</a>.</p>
       <li data-md="">
        <p><a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#resolve-promise" id="ref-for-resolve-promise">Resolve</a> <var>promise</var> with the <a data-link-type="dfn" href="#default-device" id="ref-for-default-device⑤">default device</a>.</p>
      </ol>
@@ -1682,7 +1684,7 @@ Parts of this work may be from another specification document.  If so, those par
       <li data-md="">
        <p>Let <var>device</var> be the target <code class="idl"><a data-link-type="idl" href="#xrdevice" id="ref-for-xrdevice⑧">XRDevice</a></code> object.</p>
       <li data-md="">
-       <p>If the <var>options</var> are not <a data-link-type="dfn" href="#supported-by-the-device" id="ref-for-supported-by-the-device">supported by the device</a> <var>device</var>, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise" id="ref-for-reject-promise">reject</a> <var>promise</var> with <code>null</code>.</p>
+       <p>If the <var>options</var> are not <a data-link-type="dfn" href="#supported-by-the-device" id="ref-for-supported-by-the-device">supported by the device</a> <var>device</var>, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise" id="ref-for-reject-promise①">reject</a> <var>promise</var> with <code>null</code>.</p>
       <li data-md="">
        <p>Else <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#resolve-promise" id="ref-for-resolve-promise①">resolve</a> <var>promise</var> with <code>null</code>.</p>
      </ol>
@@ -1693,13 +1695,13 @@ Parts of this work may be from another specification document.  If so, those par
       <li data-md="">
        <p>Let <var>device</var> be the target <code class="idl"><a data-link-type="idl" href="#xrdevice" id="ref-for-xrdevice⑨">XRDevice</a></code> object.</p>
       <li data-md="">
-       <p>If the <var>options</var> are not <a data-link-type="dfn" href="#supported-by-the-device" id="ref-for-supported-by-the-device①">supported by the device</a> <var>device</var>, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise" id="ref-for-reject-promise①">reject</a> <var>promise</var> with a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror">NotSupportedError</a></code> and abort these steps.</p>
+       <p>If the <var>options</var> are not <a data-link-type="dfn" href="#supported-by-the-device" id="ref-for-supported-by-the-device①">supported by the device</a> <var>device</var>, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise" id="ref-for-reject-promise②">reject</a> <var>promise</var> with a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror">NotSupportedError</a></code> and abort these steps.</p>
       <li data-md="">
        <p>Let <var>exclusive</var> be the <code class="idl"><a data-link-type="idl" href="#dom-xrsessioncreationoptions-exclusive" id="ref-for-dom-xrsessioncreationoptions-exclusive">exclusive</a></code> attribute of the <var>options</var> argument.</p>
       <li data-md="">
-       <p>If <var>exclusive</var> is <code>true</code> and <var>device</var>’s <a data-link-type="dfn" href="#exclusive-session" id="ref-for-exclusive-session">exclusive session</a> is not <code>null</code>, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise" id="ref-for-reject-promise②">reject</a> <var>promise</var> with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror">InvalidStateError</a></code> and abort these steps.</p>
+       <p>If <var>exclusive</var> is <code>true</code> and <var>device</var>’s <a data-link-type="dfn" href="#exclusive-session" id="ref-for-exclusive-session">exclusive session</a> is not <code>null</code>, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise" id="ref-for-reject-promise③">reject</a> <var>promise</var> with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror">InvalidStateError</a></code> and abort these steps.</p>
       <li data-md="">
-       <p>If <var>exclusive</var> is <code>true</code> and the algorithm is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/interaction.html#triggered-by-user-activation" id="ref-for-triggered-by-user-activation">triggered by user activation</a>, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise" id="ref-for-reject-promise③">reject</a> <var>promise</var> with a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#securityerror" id="ref-for-securityerror">SecurityError</a></code> and abort these steps.</p>
+       <p>If <var>exclusive</var> is <code>true</code> and the algorithm is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/interaction.html#triggered-by-user-activation" id="ref-for-triggered-by-user-activation">triggered by user activation</a>, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise" id="ref-for-reject-promise④">reject</a> <var>promise</var> with a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#securityerror" id="ref-for-securityerror">SecurityError</a></code> and abort these steps.</p>
       <li data-md="">
        <p>Let <var>session</var> be a new <code class="idl"><a data-link-type="idl" href="#xrsession" id="ref-for-xrsession②">XRSession</a></code>.</p>
       <li data-md="">
@@ -2137,7 +2139,7 @@ xrDevice<span class="p">.</span>requestSession<span class="p">({</span> exclusiv
       <li data-md="">
        <p>Let <var>context</var> be the target <code class="idl"><a data-link-type="idl" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#webglrenderingcontextbase" id="ref-for-webglrenderingcontextbase②">WebGLRenderingContextBase</a></code> object.</p>
       <li data-md="">
-       <p>If <var>context</var>’s <a data-link-type="dfn" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#webgl-context-lost-flag" id="ref-for-webgl-context-lost-flag">WebGL context lost flag</a> is set, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise" id="ref-for-reject-promise④">reject</a> <var>promise</var> with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②">InvalidStateError</a></code> and abort these abort these steps.</p>
+       <p>If <var>context</var>’s <a data-link-type="dfn" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#webgl-context-lost-flag" id="ref-for-webgl-context-lost-flag">WebGL context lost flag</a> is set, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise" id="ref-for-reject-promise⑤">reject</a> <var>promise</var> with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②">InvalidStateError</a></code> and abort these abort these steps.</p>
       <li data-md="">
        <p>If <var>context</var>’s <a data-link-type="dfn" href="#compatible-xr-device" id="ref-for-compatible-xr-device⑥">compatible XR device</a> is <var>device</var>, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#resolve-promise" id="ref-for-resolve-promise④">resolve</a> <var>promise</var> and abort these steps.</p>
       <li data-md="">
@@ -2154,7 +2156,7 @@ xrDevice<span class="p">.</span>requestSession<span class="p">({</span> exclusiv
         <li data-md="">
          <p>Force <var>context</var> to be lost and <a data-link-type="dfn" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#CONTEXT_LOST" id="ref-for-CONTEXT_LOST">handle the context loss</a> as described by the WebGL specification.</p>
         <li data-md="">
-         <p>If the <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#canceled-flag" id="ref-for-canceled-flag">canceled flag</a> of the "webglcontextlost" event fired in the previous step was not set, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise" id="ref-for-reject-promise⑤">reject</a> <var>promise</var> with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror">AbortError</a></code> and abort these steps.</p>
+         <p>If the <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#canceled-flag" id="ref-for-canceled-flag">canceled flag</a> of the "webglcontextlost" event fired in the previous step was not set, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise" id="ref-for-reject-promise⑥">reject</a> <var>promise</var> with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror">AbortError</a></code> and abort these steps.</p>
         <li data-md="">
          <p><a data-link-type="dfn" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#restore-the-drawing-buffer" id="ref-for-restore-the-drawing-buffer">Restore the context</a> on a <a data-link-type="dfn" href="#compatible-graphics-adapter" id="ref-for-compatible-graphics-adapter⑥">compatible graphics adapter</a> for <var>device</var>.</p>
         <li data-md="">
@@ -2637,6 +2639,7 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
      <li><a href="https://heycam.github.io/webidl/#Exposed">Exposed</a>
      <li><a href="https://heycam.github.io/webidl/#idl-Float32Array">Float32Array</a>
      <li><a href="https://heycam.github.io/webidl/#invalidstateerror">InvalidStateError</a>
+     <li><a href="https://heycam.github.io/webidl/#notfounderror">NotFoundError</a>
      <li><a href="https://heycam.github.io/webidl/#notsupportederror">NotSupportedError</a>
      <li><a href="https://heycam.github.io/webidl/#SameObject">SameObject</a>
      <li><a href="https://heycam.github.io/webidl/#SecureContext">SecureContext</a>
@@ -2891,7 +2894,7 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
   <aside class="dfn-panel" data-for="list-of-xr-devices">
    <b><a href="#list-of-xr-devices">#list-of-xr-devices</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-list-of-xr-devices">4.1. XR</a> <a href="#ref-for-list-of-xr-devices①">(2)</a> <a href="#ref-for-list-of-xr-devices②">(3)</a> <a href="#ref-for-list-of-xr-devices③">(4)</a> <a href="#ref-for-list-of-xr-devices④">(5)</a> <a href="#ref-for-list-of-xr-devices⑤">(6)</a> <a href="#ref-for-list-of-xr-devices⑥">(7)</a> <a href="#ref-for-list-of-xr-devices⑦">(8)</a> <a href="#ref-for-list-of-xr-devices⑧">(9)</a>
+    <li><a href="#ref-for-list-of-xr-devices">4.1. XR</a> <a href="#ref-for-list-of-xr-devices①">(2)</a> <a href="#ref-for-list-of-xr-devices②">(3)</a> <a href="#ref-for-list-of-xr-devices③">(4)</a> <a href="#ref-for-list-of-xr-devices④">(5)</a> <a href="#ref-for-list-of-xr-devices⑤">(6)</a> <a href="#ref-for-list-of-xr-devices⑥">(7)</a> <a href="#ref-for-list-of-xr-devices⑦">(8)</a> <a href="#ref-for-list-of-xr-devices⑧">(9)</a> <a href="#ref-for-list-of-xr-devices⑨">(10)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="default-device">

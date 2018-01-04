@@ -189,6 +189,7 @@ NOTE: The user agent is allowed to use any criteria it wishes to [=select a defa
 The page can <dfn>request a device</dfn> by calling the <dfn method for="XR">requestDevice()</dfn> method on the {{Navigator/xr}} object. When invoked it MUST return [=a new Promise=] |promise| and run the following steps [=in parallel=]:
 
   1. [=Enumerate XR devices=].
+  1. If the [=list of XR devices=] is empty, [=reject=] |promise| with a {{NotFoundError}} and abort these steps.
   1. [=Select a default XR device=] from the [=list of XR devices=].
   1. [=Resolve=] |promise| with the [=default device=].
 

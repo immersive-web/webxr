@@ -63,7 +63,7 @@ The basic steps most WebXR applications will go through are:
 
 The first thing that any XR-enabled page will want to do is request an `XRDevice` and, if one is available, advertise VR functionality to the user. (For example, by adding a button to the page that the user can click to start XR content.)
 
-`navigator.xr.requestDevice` returns a [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that resolves to an `XRDevice` if one is available. If no `XRDevice` is available, it will resolve to null. The promise will be rejected if an error occurs, such as the page not having the appropriate permissions to access VR capabilities.
+`navigator.xr.requestDevice` returns a [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that resolves to an `XRDevice` if one is available. If no `XRDevice` is available, it will reject with a `NotFoundError`. The promise will also be rejected if an error occurs, such as the page not having the appropriate permissions to access VR capabilities.
 
 A `XRDevice` represents a physical unit of XR hardware that can present imagery to the user somehow, referred to here as an "XR hardware device". On desktop clients this will usually be a headset peripheral; on mobile clients it may represent the mobile device itself in conjunction with a viewer harness (e.g., Google Cardboard/Daydream or Samsung Gear VR). It may also represent devices without stereo-presentation capabilities but with more advanced tracking, such as ARCore/ARKit-compatible devices.
 
