@@ -70,12 +70,15 @@ A `XRDevice` represents a physical unit of XR hardware that can present imagery 
 ```js
 function checkForXR() {
   navigator.xr.requestDevice().then(device => {
-    if (device) {
-      onXRAvailable(device);
-    }
+    onXRAvailable(device);
   }, err => {
-    // An error occurred while requesting an XRDevice.
-    console.error('Unable to request an XR device:', err);
+    if (err instanceof NotFoundError) {
+      // No XRDevices available.
+      console.error('No XR devices available:', err);
+    } else {
+      // An error occurred while requesting an XRDevice.
+      console.error('Requesting XR device failed:', err);
+    }
   });
 }
 ```
