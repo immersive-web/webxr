@@ -1176,7 +1176,7 @@ Possible extra rowspan handling
 		}
 	}
 </style>
-  <meta content="Bikeshed version bbd6a9c4064dd454886bb3e0c74f0a19865c3c74" name="generator">
+  <meta content="Bikeshed version 2b79dbafbd71fe3f8f4e2b9171e40a0bd49a639c" name="generator">
   <link href="https://immersive-web.github.io/webxr/" rel="canonical">
 <style>
   .unstable::before {
@@ -1440,7 +1440,7 @@ pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebXR Device API</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2018-01-04">4 January 2018</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2018-01-11">11 January 2018</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1462,7 +1462,7 @@ pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em
    <div data-fill-with="warning"></div>
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" src="https://licensebuttons.net/p/zero/1.0/80x15.png"></a> To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 4 January 2018,
+In addition, as of 11 January 2018,
 the editors have made this specification available under the <a href="http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 Parts of this work may be from another specification document.  If so, those parts are instead covered by the license of that specification document. </p>
@@ -2095,7 +2095,7 @@ xrDevice<span class="p">.</span>requestSession<span class="p">({</span> exclusiv
     <a class="n" data-link-type="idl-name" href="#xrdevice" id="ref-for-xrdevice①⑧">XRDevice</a> <dfn class="nv dfn-paneled idl-code" data-default="null" data-dfn-for="WebGLContextAttributes" data-dfn-type="dict-member" data-export="" data-type="XRDevice " id="dom-webglcontextattributes-compatiblexrdevice"><code>compatibleXRDevice</code></dfn> = <span class="kt">null</span>;
 };
 
-<span class="kt">partial</span> <span class="kt">interface</span> <a class="nv idl-code" data-link-type="interface" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#webglrenderingcontextbase" id="ref-for-webglrenderingcontextbase">WebGLRenderingContextBase</a> {
+<span class="kt">partial</span> <span class="kt">interface</span> <span class="kt">mixin</span> <a class="nv idl-code" data-link-type="interface" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#webglrenderingcontextbase" id="ref-for-webglrenderingcontextbase">WebGLRenderingContextBase</a> {
     <span class="kt">Promise</span>&lt;<span class="kt">void</span>> <a class="nv idl-code" data-link-type="method" href="#dom-webglrenderingcontextbase-setcompatiblexrdevice" id="ref-for-dom-webglrenderingcontextbase-setcompatiblexrdevice">setCompatibleXRDevice</a>(<a class="n" data-link-type="idl-name" href="#xrdevice" id="ref-for-xrdevice①⑨">XRDevice</a> <dfn class="nv idl-code" data-dfn-for="WebGLRenderingContextBase/setCompatibleXRDevice(device)" data-dfn-type="argument" data-export="" id="dom-webglrenderingcontextbase-setcompatiblexrdevice-device-device"><code>device</code><a class="self-link" href="#dom-webglrenderingcontextbase-setcompatiblexrdevice-device-device"></a></dfn>);
 };
 </pre>
@@ -2821,7 +2821,7 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
     <a class="n" data-link-type="idl-name" href="#xrdevice" id="ref-for-xrdevice①⑧①">XRDevice</a> <a class="nv" data-default="null" data-type="XRDevice " href="#dom-webglcontextattributes-compatiblexrdevice"><code>compatibleXRDevice</code></a> = <span class="kt">null</span>;
 };
 
-<span class="kt">partial</span> <span class="kt">interface</span> <a class="nv idl-code" data-link-type="interface" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#webglrenderingcontextbase" id="ref-for-webglrenderingcontextbase③">WebGLRenderingContextBase</a> {
+<span class="kt">partial</span> <span class="kt">interface</span> <span class="kt">mixin</span> <a class="nv idl-code" data-link-type="interface" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#webglrenderingcontextbase" id="ref-for-webglrenderingcontextbase③">WebGLRenderingContextBase</a> {
     <span class="kt">Promise</span>&lt;<span class="kt">void</span>> <a class="nv idl-code" data-link-type="method" href="#dom-webglrenderingcontextbase-setcompatiblexrdevice" id="ref-for-dom-webglrenderingcontextbase-setcompatiblexrdevice②">setCompatibleXRDevice</a>(<a class="n" data-link-type="idl-name" href="#xrdevice" id="ref-for-xrdevice①⑨①">XRDevice</a> <a class="nv" href="#dom-webglrenderingcontextbase-setcompatiblexrdevice-device-device"><code>device</code></a>);
 };
 

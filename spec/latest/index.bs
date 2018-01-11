@@ -772,7 +772,7 @@ partial dictionary WebGLContextAttributes {
     XRDevice compatibleXRDevice = null;
 };
 
-partial interface WebGLRenderingContextBase {
+partial interface mixin WebGLRenderingContextBase {
     Promise&lt;void&gt; setCompatibleXRDevice(XRDevice device);
 };
 </pre>
