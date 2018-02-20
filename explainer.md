@@ -403,7 +403,9 @@ Beyond the core APIs described above, the WebXR Device API also exposes several 
 
 ### Orientation-only tracking
 
-A viewer for 360 photos or videos should not respond to head translation, since the source material is intended to be viewed from a single point. While some headsets naturally function this way (Daydream, Gear VR, Cardboard) it can be useful for app developers to specify that they don't want any positional tracking in the matrices they receive. (This may also provide power savings on some devices, since it may allow some sensors to be turned off.) That can be accomplished by requesting a "headModel" `XRFrameOfReference`.
+Some headsets (Daydream, Gear VR, Cardboard), are naturally limited to only tracking a user's head rotation. This is known as "3 Degree of Freedom" tracking, or "3DoF". For this type of device, a small amount of simulated translation is usually applied to the returned matrices by estimating the motion of the user's neck based on the device rotation. If the translation portions of the matrices provided by an `XRDevicePose` do not reflect a real position in space, that must be indicated by setting the `emulatedPosition` attribute to `true`.
+
+For devices that are not naturally limited to orientation-only tracking, it can still be useful for app developers to explicitly specify that they don't want any positional tracking in the matrices they receive. This is primarily necessary when viewing 360 photos or videos, since the source material is intended to be viewed from a single point. (This may also provide power savings on some devices, since it may allow some sensors to be turned off.) That can be accomplished by requesting a "headModel" `XRFrameOfReference`.
 
 ```js
 xrSession.requestFrameOfReference("headModel").then((frameOfRef) => {
@@ -412,6 +414,8 @@ xrSession.requestFrameOfReference("headModel").then((frameOfRef) => {
 
 // Use xrFrameOfRef as detailed above.
 ```
+
+Any `XRDevicePose`s queried with a "headModel" `XRFrameOfReference` must have their `emulatedPosition` attributes set to `true`. Any `XRInputPose`s queried with a "headModel" `XRFrameOfReference` must provide positions relative to the head's emulated position, so that the input devices appear in the correct location from the user's point of view.
 
 ### Room-scale tracking and boundaries
 
@@ -686,10 +690,17 @@ dictionary XRSessionCreationOptions {
   attribute EventHandler onresetpose;
   attribute EventHandler onend;
 
+  attribute EventHandler onselect;
+  attribute EventHandler onselectstart;
+  attribute EventHandler onselectend;
+  attribute EventHandler oninputsourceschange;
+
   Promise<XRFrameOfReference> requestFrameOfReference(XRFrameOfReferenceType type, optional XRFrameOfReferenceOptions options);
 
   long requestAnimationFrame(XRFrameRequestCallback callback);
   void cancelAnimationFrame(long handle);
+
+  FrozenArray<XRInputSource> getInputSources();
 
   Promise<void> end();
 };
@@ -707,6 +718,7 @@ callback XRFrameRequestCallback = void (DOMHighResTimeStamp time, XRPresentation
   readonly attribute FrozenArray<XRView> views;
 
   XRDevicePose? getDevicePose(XRCoordinateSystem coordinateSystem);
+  XRInputPose? getInputPose(XRInputSource inputSource, XRCoordinateSystem coordinateSystem);
 };
 
 enum XREye {
@@ -727,6 +739,7 @@ enum XREye {
 };
 
 [SecureContext, Exposed=Window] interface XRDevicePose {
+  readonly attribute boolean emulatedPosition;
   readonly attribute Float32Array poseModelMatrix;
 
   Float32Array getViewMatrix(XRView view);
@@ -806,17 +819,35 @@ dictionary XRFrameOfReferenceOptions {
 };
 
 //
-// Events
+// Input
 //
 
-[SecureContext, Exposed=Window, Constructor(DOMString type, XRDeviceEventInit eventInitDict)]
-interface XRDeviceEvent : Event {
-  readonly attribute XRDevice device;
+enum XRHandedness {
+  "",
+  "left",
+  "right"
 };
 
-dictionary XRDeviceEventInit : EventInit {
-  required XRDevice device;
+enum XRPointerOrigin {
+  "head",
+  "hand",
+  "screen"
 };
+
+interface XRInputSource {
+  readonly attribute VRHandedness handedness;
+  readonly attribute XRPointerOrigin pointerOrigin;
+};
+
+interface XRInputPose {
+  readonly attribute boolean emulatedPosition;
+  readonly attribute Float32Array? gripMatrix;
+  readonly attribute Float32Array? pointerMatrix;
+};
+
+//
+// Events
+//
 
 [SecureContext, Exposed=Window, Constructor(DOMString type, XRSessionEventInit eventInitDict)]
 interface XRSessionEvent : Event {
@@ -835,6 +866,18 @@ interface XRCoordinateSystemEvent : Event {
 
 dictionary XRCoordinateSystemEventInit : EventInit {
   required XRCoordinateSystem coordinateSystem;
+};
+
+[SecureContext, Exposed=Window,
+ Constructor(DOMString type, XRInputSourceEventInit eventInitDict)]
+interface XRInputSourceEvent : Event {
+  readonly attribute XRPresentationFrame frame;
+  readonly attribute XRInputSource inputSource;
+};
+
+dictionary XRInputSourceEventInit : EventInit {
+  required XRPresentationFrame frame;
+  required XRInputSource inputSource;
 };
 
 //
