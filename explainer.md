@@ -397,6 +397,134 @@ function checkMagicWindowSupport() {
 }
 ```
 
+## Input
+
+XR hardware provides a wide variety of input mechanisms, ranging from single state buttons to fully tracked controllers with multiple buttons, joysticks, triggers, or touchpads. While the intent is to eventually support the full range of available hardware, for the initial version of the WebXR Device API the focus is on enabling a more universal "point and click" style system that can be supported in some capacity by any known XR device and in magic window mode.
+
+In this model every input source has a ray that indicates what is being pointed at, called the "Pointer Ray", and reports when the primary action for that device has been triggered, surfaced as a "select" event. When the select event is fired the XR application can use the pointer ray of the input source that generated the event to determine what the user was pointing at and respond accordingly.
+
+### Enumerating input sources
+
+Calling the `getInputSources()` function on an `XRSession` will return a list of all currently available `XRInputSource`s. An `XRInputSource` may represent a tracked controller, inputs built into the headset itself, or more ephemeral input mechanims like tracking of hand gestures. When input sources are added to or removed from the list of available input sources the `inputsourceschange` event will be fired on the `XRSession` object to indicate that any cached copies of the list should be refreshed.
+
+```js
+// Get the current list of input sources.
+let xrInputSources = xrSession.getInputSources();
+
+// Update the list of input sources if it ever changes.
+xrSession.addEventListener('inputsourceschange', (ev) => {
+  xrInputSources = xrSession.getInputSources();
+});
+```
+
+### Input poses
+
+Each input source can queried a `XRInputPose` using the `getInputPose()` function of any `XRPresentationFrame`. Getting the pose requires passing in the `XRInputSource` you want the pose for, as well as the `XRFrameOfReference` the pose values should be given in, just like `getDevicePose()`. Similar to `getDevicePose()` the requested pose may return `null` in cases where tracking has been lost.
+
+If an input source can be tracked the `XRInputPose`'s `gripMatrix` will indicate the device's position and orientation. This will be `null` if the input source isn't trackable. The `gripMatrix` is a transform into a space where if the user was holding a straight rod in their hand it would be aligned with the negative Z axis (forward) and the origin rests at their palm. This enables developers to properly render a virtual object held in the user's hand. For example, a sword would be positioned so that the blade points directly down the negative Z axis and the center of the handle is at the origin.
+
+An input source will also provide its preferred pointing ray, which is defined as a ray originating at `[0, 0, 0]` and extending down the negative Z axis, transformed bt the `pointerMatrix` attribute of an `XRInputPose` object. `pointerMatrix` will never be `null`. It's value will differ based on the type of input source that produces it, which is represented by the `pointerOrigin` attribute:
+
+  * `'head'` indicates the pointer ray will originate at the user's head and follow the direction they are looking. (This is commonly referred to as a "gaze input" device.)
+  * `'hand'` indicates that the pointer ray originates from a handheld device, and represents the device's preferred targeting ray. The exact orientation of the ray relative to the device should follow platform-specific guidelines if there are any. In the absence of platform-specific guidance, the pointer ray should most likely point in the same direction as the user's index finger if it was outstretched while holding the controller.
+  * `'screen'` indicates that the input source was an interaction with the 2D canvas of a non-exclusive session, such as a mouse click or touch event. In this case the pointing ray will originate at the point that was clicked on the canvas, projected onto the near clipping plane (defined by the `depthNear` attribute of the `XRSession`) and extending out into the scene along that projected vector. `'screen'` input sources can only be returned by a `select`, `selectstart`, or `selectend` event.
+
+```js
+// Loop over every input source and get their pose for the current frame.
+for (let inputSource of xrInputSources) {
+  let inputPose = xrFrame.getInputPose(inputSource, xrFrameOfRef);
+
+  // Check to see if the pose is valid
+  if (inputPose) {
+    // Render a visualization of the input source (see next section).
+    RenderInputSource(inputSource, inputPose);
+
+    // Highlight any objects that the pointing ray intersects with.
+    // Presumes the use of a fictionalized rendering library.
+    let hoveredObject = scene.getObjectIntersectingRay(inputPose.pointerMatrix);
+    if (hoveredObject) {
+      renderer.drawHighlight(hoveredObject);
+    }
+  }
+}
+```
+
+In some cases tracked input sources cannot accurately track their position in space, and provides an estimated position based on the sensor data available to it. This is the case, for example, for the Daydream and GearVR 3DoF controllers, which use an arm model to approximate controller position based on rotation. In these cases the `emulatedPosition` attribute of the `XRInputPose` should be set to `true` to indicate that the translational components of the pose matrices may not be accurate.
+
+### Rendering input sources
+
+Most applications will want to visually represent the input sources somehow. The appropriate type of visualization to be used depends on the value of the `pointerOrigin` attribute:
+
+  * `'head'`: A cursor should be drawn at some distance down the pointer ray, ideally at the depth of the first surface it intersects with, so the user can identify what will be interacted with when a select event is fired. It's not appropriate to draw a controller or ray in this case, since they may obscure the user's vision or be difficult to visually converge on.
+  * `'hand'`: If the `gripMatrix` in not `null` an application-appropriate controller model should be drawn using that matrix as the transform. If appropriate for the experience, the a visualization of the pointer ray and a cursor as described in the `'head'` should also be drawn.
+
+`getInputSources()` will never return input sources with a `pointerOrigin` of `screen`, so they do not need to be accounted for when rendering.
+
+```js
+// Render a visualization of the input source.
+// Presumes the use of a fictionalized rendering library.
+function RenderInputSource(inputSource, inputPose) {
+  // If the input source is a handheld device with a valid gripMatrix, render
+  // a controller mesh using the gripMatrix as a 
+  if (inputSource.pointerOrigin == "hand" && inputPose.gripMatrix) {
+    let controllerMesh = getControllerMesh();
+    renderer.drawMeshWithTransform(controllerMesh, inputPose.gripMatrix);
+  }
+
+  // Draw a cursor.
+  let cursorPosition = scene.getIntersectionPoint(inputPose.pointerMatrix);
+  if (cursorPosition) {
+    renderer.drawCursor(cursorPosition);
+  }
+}
+```
+
+### Selection event handling
+
+The initial version of the WebXR Device API spec is limited to only recognizing when an input source's primary action has occurred. The primary action differs based on the hardware, and may indicate (but is not limited to):
+
+  * Pressing a trigger
+  * Clicking a touchpad
+  * Tapping a button
+  * Making a hand gesture
+  * Speaking a command
+  * Clicking or touching a canvas.
+
+Three events are fired on the `XRSession` related to these primary actions: `selectstart`, `selectend`, and `select`.
+
+A `selectstart` event indicates that the primary action has been initiated. It will most commonly be associated with pressing a button or trigger. If `preventDefault()` is called on a `selectstart` event the associated `selectend` and `select` events will not fire for this interaction.
+
+A `selectend` event indicates that the primary action has ended. It will most commonly be associated with releasing a button or trigger. If `preventDefault()` is called on a `selectend` event the associated `selecte` event will not fire for this interaction.
+
+A `select` event indicates that a primary action has been completed without being cancelled. `select` events are considered to be [triggered by user activation](https://html.spec.whatwg.org/multipage/interaction.html#triggered-by-user-activation) and as such can be used to begin playing media or other trusted interactions.
+
+For primary actions that are instantaneous without a clear start and end point (such as a verbal command), all three events should still fire in the sequence `selectstart`, `selectend`, `select` to allow developers the opportunity to cancel the interaction.
+
+All three events are `XRInputSourceEvent` events. When fired the event's `inputSource` attribute must contain the `XRInputSource` that produced the event. The event's `frame` attribute must contain a valid `XRPresentationFrame` that can be used to query the input and device poses at the time the selection event occured. The `XRPresentationFrame`'s `views` array must be empty.
+
+In most cases applications will only need to listen for the `select` event for basic interactions like clicking on buttons.
+
+```js
+function onSessionStarted(session) {
+  session.addEventListener("select", onSelect);
+
+  // Remainder of session initialization logic.
+}
+
+function onSelect(event) {
+  let inputPose = event.frame.getInputPose(event.inputSource, xrFrameOfRef);
+  if (inputPose) {
+    // Ray cast into scene with the pointer to determine if anything was hit.
+    let selectedObject = scene.getObjectIntersectingRay(inputPose.pointerPoseMatrix);
+    if (selectedObject) {
+      selectedObject.onSelect();
+    }
+  }
+}
+```
+
+`selectstart` and `selectend` can be useful for handling dragging, painting, or other continuous motions.
+
 ## Advanced functionality
 
 Beyond the core APIs described above, the WebXR Device API also exposes several options for taking greater advantage of the XR hardware's capabilities.
@@ -835,14 +963,14 @@ enum XRPointerOrigin {
 };
 
 interface XRInputSource {
-  readonly attribute VRHandedness handedness;
+  readonly attribute XRHandedness handedness;
   readonly attribute XRPointerOrigin pointerOrigin;
 };
 
 interface XRInputPose {
   readonly attribute boolean emulatedPosition;
+  readonly attribute Float32Array pointerMatrix;
   readonly attribute Float32Array? gripMatrix;
-  readonly attribute Float32Array? pointerMatrix;
 };
 
 //
