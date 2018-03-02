@@ -224,9 +224,6 @@ XRDevice {#xrdevice-interface}
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRDevice : EventTarget {
-  // Attributes
-  readonly attribute boolean external;
-
   // Methods
   Promise&lt;void&gt; supportsSession(optional XRSessionCreationOptions options);
   Promise&lt;XRSession&gt; requestSession(optional XRSessionCreationOptions options);
@@ -238,10 +235,6 @@ An {{XRDevice}} represents a physical unit of XR hardware that can present image
 Each {{XRDevice}} has a <dfn>supports exclusive</dfn> value, which is a boolean which MUST be set to <code>true</code> if the device can support exclusive sessions and <code>false</code> if it cannot.
 
 Each {{XRDevice}} has an <dfn>exclusive session</dfn>, which MUST be initially <code>null</code>, and a <dfn>list of non-exclusive sessions</dfn>, which MUST be initially empty.
-
-The <dfn attribute for="XRDevice">external</dfn> attribute SHOULD be <code>true</code> if the {{XRDevice}} hardware has a separate physical display from the system's main display and <code>false</code> otherwise.
-
-NOTE: A headset connected to a desktop PC would typically set {{external}} to <code>true</code> since the PC monitor would be considered the primary display. A mobile phone used in a harness or a standalone device would set {{external}} to <code>false</code>.
 
 <div class="algorithm" data-algorithm="supports-session">
 
