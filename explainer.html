@@ -1,0 +1,1743 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>body {
+  max-width: 980px;
+  border: 1px solid #ddd;
+  outline: 1300px solid #fff;
+  margin: 16px auto;
+}
+
+body .markdown-body
+{
+  padding: 45px;
+}
+
+@font-face {
+  font-family: fontawesome-mini;
+  src: url(data:font/woff;charset=utf-8;base64,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) format('woff');
+}
+
+@font-face {
+  font-family: octicons-anchor;
+  src: url(data:font/woff;charset=utf-8;base64,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) format('woff');
+}
+
+.markdown-body {
+  font-family: sans-serif;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  color: #333333;
+  overflow: hidden;
+  font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+.markdown-body a {
+  background: transparent;
+}
+
+.markdown-body a:active,
+.markdown-body a:hover {
+  outline: 0;
+}
+
+.markdown-body b,
+.markdown-body strong {
+  font-weight: bold;
+}
+
+.markdown-body mark {
+  background: #ff0;
+  color: #000;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.markdown-body sub,
+.markdown-body sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+.markdown-body sup {
+  top: -0.5em;
+}
+.markdown-body sub {
+  bottom: -0.25em;
+}
+
+.markdown-body h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+
+.markdown-body img {
+  border: 0;
+}
+
+.markdown-body hr {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  height: 0;
+}
+
+.markdown-body pre {
+  overflow: auto;
+}
+
+.markdown-body code,
+.markdown-body kbd,
+.markdown-body pre,
+.markdown-body samp {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+
+.markdown-body input {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+}
+
+.markdown-body html input[disabled] {
+  cursor: default;
+}
+
+.markdown-body input {
+  line-height: normal;
+}
+
+.markdown-body input[type="checkbox"] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.markdown-body table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.markdown-body td,
+.markdown-body th {
+  padding: 0;
+}
+
+.markdown-body .codehilitetable {
+  border: 0;
+  border-spacing: 0;
+}
+
+.markdown-body .codehilitetable tr {
+  border: 0;
+}
+
+.markdown-body .codehilitetable pre,
+.markdown-body .codehilitetable div.codehilite {
+  margin: 0;
+}
+
+.markdown-body .linenos,
+.markdown-body .code,
+.markdown-body .codehilitetable td {
+  border: 0;
+  padding: 0;
+}
+
+.markdown-body td:not(.linenos) .linenodiv {
+  padding: 0 !important;
+}
+
+.markdown-body .code {
+  width: 100%;
+}
+
+.markdown-body .linenos div pre,
+.markdown-body .linenodiv pre,
+.markdown-body .linenodiv {
+  border: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  -webkit-border-top-left-radius: 3px;
+  -webkit-border-bottom-left-radius: 3px;
+  -moz-border-radius-topleft: 3px;
+  -moz-border-radius-bottomleft: 3px;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+.markdown-body .code div pre,
+.markdown-body .code div {
+  border: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  -webkit-border-top-right-radius: 3px;
+  -webkit-border-bottom-right-radius: 3px;
+  -moz-border-radius-topright: 3px;
+  -moz-border-radius-bottomright: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.markdown-body * {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.markdown-body input {
+  font: 13px Helvetica, arial, freesans, clean, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+  line-height: 1.4;
+}
+
+.markdown-body a {
+  color: #4183c4;
+  text-decoration: none;
+}
+
+.markdown-body a:hover,
+.markdown-body a:focus,
+.markdown-body a:active {
+  text-decoration: underline;
+}
+
+.markdown-body hr {
+  height: 0;
+  margin: 15px 0;
+  overflow: hidden;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.markdown-body hr:before,
+.markdown-body hr:after {
+  display: table;
+  content: " ";
+}
+
+.markdown-body hr:after {
+  clear: both;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  line-height: 1.1;
+}
+
+.markdown-body h1 {
+  font-size: 30px;
+}
+
+.markdown-body h2 {
+  font-size: 21px;
+}
+
+.markdown-body h3 {
+  font-size: 16px;
+}
+
+.markdown-body h4 {
+  font-size: 14px;
+}
+
+.markdown-body h5 {
+  font-size: 12px;
+}
+
+.markdown-body h6 {
+  font-size: 11px;
+}
+
+.markdown-body blockquote {
+  margin: 0;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-body ol ol,
+.markdown-body ul ol {
+  list-style-type: lower-roman;
+}
+
+.markdown-body ul ul ol,
+.markdown-body ul ol ol,
+.markdown-body ol ul ol,
+.markdown-body ol ol ol {
+  list-style-type: lower-alpha;
+}
+
+.markdown-body dd {
+  margin-left: 0;
+}
+
+.markdown-body code,
+.markdown-body pre,
+.markdown-body samp {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 12px;
+}
+
+.markdown-body pre {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-body kbd {
+  background-color: #e7e7e7;
+  background-image: -moz-linear-gradient(#fefefe, #e7e7e7);
+  background-image: -webkit-linear-gradient(#fefefe, #e7e7e7);
+  background-image: linear-gradient(#fefefe, #e7e7e7);
+  background-repeat: repeat-x;
+  border-radius: 2px;
+  border: 1px solid #cfcfcf;
+  color: #000;
+  padding: 3px 5px;
+  line-height: 10px;
+  font: 11px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  display: inline-block;
+}
+
+.markdown-body>*:first-child {
+  margin-top: 0 !important;
+}
+
+.markdown-body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+.markdown-body .headeranchor-link {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+  padding-right: 6px;
+  padding-left: 30px;
+  margin-left: -30px;
+}
+
+.markdown-body .headeranchor-link:focus {
+  outline: none;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  position: relative;
+  margin-top: 1em;
+  margin-bottom: 16px;
+  font-weight: bold;
+  line-height: 1.4;
+}
+
+.markdown-body h1 .headeranchor,
+.markdown-body h2 .headeranchor,
+.markdown-body h3 .headeranchor,
+.markdown-body h4 .headeranchor,
+.markdown-body h5 .headeranchor,
+.markdown-body h6 .headeranchor {
+  display: none;
+  color: #000;
+  vertical-align: middle;
+}
+
+.markdown-body h1:hover .headeranchor-link,
+.markdown-body h2:hover .headeranchor-link,
+.markdown-body h3:hover .headeranchor-link,
+.markdown-body h4:hover .headeranchor-link,
+.markdown-body h5:hover .headeranchor-link,
+.markdown-body h6:hover .headeranchor-link {
+  height: 1em;
+  padding-left: 8px;
+  margin-left: -30px;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.markdown-body h1:hover .headeranchor-link .headeranchor,
+.markdown-body h2:hover .headeranchor-link .headeranchor,
+.markdown-body h3:hover .headeranchor-link .headeranchor,
+.markdown-body h4:hover .headeranchor-link .headeranchor,
+.markdown-body h5:hover .headeranchor-link .headeranchor,
+.markdown-body h6:hover .headeranchor-link .headeranchor {
+  display: inline-block;
+}
+
+.markdown-body h1 {
+  padding-bottom: 0.3em;
+  font-size: 2.25em;
+  line-height: 1.2;
+  border-bottom: 1px solid #eee;
+}
+
+.markdown-body h2 {
+  padding-bottom: 0.3em;
+  font-size: 1.75em;
+  line-height: 1.225;
+  border-bottom: 1px solid #eee;
+}
+
+.markdown-body h3 {
+  font-size: 1.5em;
+  line-height: 1.43;
+}
+
+.markdown-body h4 {
+  font-size: 1.25em;
+}
+
+.markdown-body h5 {
+  font-size: 1em;
+}
+
+.markdown-body h6 {
+  font-size: 1em;
+  color: #777;
+}
+
+.markdown-body p,
+.markdown-body blockquote,
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body dl,
+.markdown-body table,
+.markdown-body pre,
+.markdown-body .admonition {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.markdown-body hr {
+  height: 4px;
+  padding: 0;
+  margin: 16px 0;
+  background-color: #e7e7e7;
+  border: 0 none;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 2em;
+}
+
+.markdown-body ul ul,
+.markdown-body ul ol,
+.markdown-body ol ol,
+.markdown-body ol ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-body li>p {
+  margin-top: 16px;
+}
+
+.markdown-body dl {
+  padding: 0;
+}
+
+.markdown-body dl dt {
+  padding: 0;
+  margin-top: 16px;
+  font-size: 1em;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.markdown-body dl dd {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+
+.markdown-body blockquote {
+  padding: 0 15px;
+  color: #777;
+  border-left: 4px solid #ddd;
+}
+
+.markdown-body blockquote>:first-child {
+  margin-top: 0;
+}
+
+.markdown-body blockquote>:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body table {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  word-break: normal;
+  word-break: keep-all;
+}
+
+.markdown-body table th {
+  font-weight: bold;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  padding: 6px 13px;
+  border: 1px solid #ddd;
+}
+
+.markdown-body table tr {
+  background-color: #fff;
+  border-top: 1px solid #ccc;
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+.markdown-body img {
+  max-width: 100%;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.markdown-body code,
+.markdown-body samp {
+  padding: 0;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(0,0,0,0.04);
+  border-radius: 3px;
+}
+
+.markdown-body code:before,
+.markdown-body code:after {
+  letter-spacing: -0.2em;
+  content: "\00a0";
+}
+
+.markdown-body pre>code {
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+  word-break: normal;
+  white-space: pre;
+  background: transparent;
+  border: 0;
+}
+
+.markdown-body .codehilite {
+  margin-bottom: 16px;
+}
+
+.markdown-body .codehilite pre,
+.markdown-body pre {
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f7f7f7;
+  border-radius: 3px;
+}
+
+.markdown-body .codehilite pre {
+  margin-bottom: 0;
+  word-break: normal;
+}
+
+.markdown-body pre {
+  word-wrap: normal;
+}
+
+.markdown-body pre code {
+  display: inline;
+  max-width: initial;
+  padding: 0;
+  margin: 0;
+  overflow: initial;
+  line-height: inherit;
+  word-wrap: normal;
+  background-color: transparent;
+  border: 0;
+}
+
+.markdown-body pre code:before,
+.markdown-body pre code:after {
+  content: normal;
+}
+
+/* Admonition */
+.markdown-body .admonition {
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  position: relative;
+  border-radius: 3px;
+  border: 1px solid #e0e0e0;
+  border-left: 6px solid #333;
+  padding: 10px 10px 10px 30px;
+}
+
+.markdown-body .admonition table {
+  color: #333;
+}
+
+.markdown-body .admonition p {
+  padding: 0;
+}
+
+.markdown-body .admonition-title {
+  font-weight: bold;
+  margin: 0;
+}
+
+.markdown-body .admonition>.admonition-title {
+  color: #333;
+}
+
+.markdown-body .attention>.admonition-title {
+  color: #a6d796;
+}
+
+.markdown-body .caution>.admonition-title {
+  color: #d7a796;
+}
+
+.markdown-body .hint>.admonition-title {
+  color: #96c6d7;
+}
+
+.markdown-body .danger>.admonition-title {
+  color: #c25f77;
+}
+
+.markdown-body .question>.admonition-title {
+  color: #96a6d7;
+}
+
+.markdown-body .note>.admonition-title {
+  color: #d7c896;
+}
+
+.markdown-body .admonition:before,
+.markdown-body .attention:before,
+.markdown-body .caution:before,
+.markdown-body .hint:before,
+.markdown-body .danger:before,
+.markdown-body .question:before,
+.markdown-body .note:before {
+  font: normal normal 16px fontawesome-mini;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  line-height: 1.5;
+  color: #333;
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding-top: 10px;
+  padding-left: 10px;
+}
+
+.markdown-body .admonition:before {
+  content: "\f056\00a0";
+  color: 333;
+}
+
+.markdown-body .attention:before {
+  content: "\f058\00a0";
+  color: #a6d796;
+}
+
+.markdown-body .caution:before {
+  content: "\f06a\00a0";
+  color: #d7a796;
+}
+
+.markdown-body .hint:before {
+  content: "\f05a\00a0";
+  color: #96c6d7;
+}
+
+.markdown-body .danger:before {
+  content: "\f057\00a0";
+  color: #c25f77;
+}
+
+.markdown-body .question:before {
+  content: "\f059\00a0";
+  color: #96a6d7;
+}
+
+.markdown-body .note:before {
+  content: "\f040\00a0";
+  color: #d7c896;
+}
+
+.markdown-body .admonition::after {
+  content: normal;
+}
+
+.markdown-body .attention {
+  border-left: 6px solid #a6d796;
+}
+
+.markdown-body .caution {
+  border-left: 6px solid #d7a796;
+}
+
+.markdown-body .hint {
+  border-left: 6px solid #96c6d7;
+}
+
+.markdown-body .danger {
+  border-left: 6px solid #c25f77;
+}
+
+.markdown-body .question {
+  border-left: 6px solid #96a6d7;
+}
+
+.markdown-body .note {
+  border-left: 6px solid #d7c896;
+}
+
+.markdown-body .admonition>*:first-child {
+  margin-top: 0 !important;
+}
+
+.markdown-body .admonition>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* progress bar*/
+.markdown-body .progress {
+  display: block;
+  width: 300px;
+  margin: 10px 0;
+  height: 24px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #ededed;
+  position: relative;
+  box-shadow: inset -1px 1px 3px rgba(0, 0, 0, .1);
+}
+
+.markdown-body .progress-label {
+  position: absolute;
+  text-align: center;
+  font-weight: bold;
+  width: 100%; margin: 0;
+  line-height: 24px;
+  color: #333;
+  text-shadow: 1px 1px 0 #fefefe, -1px -1px 0 #fefefe, -1px 1px 0 #fefefe, 1px -1px 0 #fefefe, 0 1px 0 #fefefe, 0 -1px 0 #fefefe, 1px 0 0 #fefefe, -1px 0 0 #fefefe, 1px 1px 2px #000;
+  -webkit-font-smoothing: antialiased !important;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.markdown-body .progress-bar {
+  height: 24px;
+  float: left;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #96c6d7;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), inset 0 -1px 0 rgba(0, 0, 0, .1);
+  background-size: 30px 30px;
+  background-image: -webkit-linear-gradient(
+    135deg, rgba(255, 255, 255, .4) 27%,
+    transparent 27%,
+    transparent 52%, rgba(255, 255, 255, .4) 52%,
+    rgba(255, 255, 255, .4) 77%,
+    transparent 77%, transparent
+  );
+  background-image: -moz-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, .4) 27%, transparent 27%,
+    transparent 52%, rgba(255, 255, 255, .4) 52%,
+    rgba(255, 255, 255, .4) 77%, transparent 77%,
+    transparent
+  );
+  background-image: -ms-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, .4) 27%, transparent 27%,
+    transparent 52%, rgba(255, 255, 255, .4) 52%,
+    rgba(255, 255, 255, .4) 77%, transparent 77%,
+    transparent
+  );
+  background-image: -o-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, .4) 27%, transparent 27%,
+    transparent 52%, rgba(255, 255, 255, .4) 52%,
+    rgba(255, 255, 255, .4) 77%, transparent 77%,
+    transparent
+  );
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, .4) 27%, transparent 27%,
+    transparent 52%, rgba(255, 255, 255, .4) 52%,
+    rgba(255, 255, 255, .4) 77%, transparent 77%,
+    transparent
+  );
+}
+
+.markdown-body .progress-100plus .progress-bar {
+  background-color: #a6d796;
+}
+
+.markdown-body .progress-80plus .progress-bar {
+  background-color: #c6d796;
+}
+
+.markdown-body .progress-60plus .progress-bar {
+  background-color: #d7c896;
+}
+
+.markdown-body .progress-40plus .progress-bar {
+  background-color: #d7a796;
+}
+
+.markdown-body .progress-20plus .progress-bar {
+  background-color: #d796a6;
+}
+
+.markdown-body .progress-0plus .progress-bar {
+  background-color: #c25f77;
+}
+
+.markdown-body .candystripe-animate .progress-bar{
+  -webkit-animation: animate-stripes 3s linear infinite;
+  -moz-animation: animate-stripes 3s linear infinite;
+  animation: animate-stripes 3s linear infinite;
+}
+
+@-webkit-keyframes animate-stripes {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 60px 0;
+  }
+}
+
+@-moz-keyframes animate-stripes {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 60px 0;
+  }
+}
+
+@keyframes animate-stripes {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 60px 0;
+  }
+}
+
+.markdown-body .gloss .progress-bar {
+  box-shadow:
+    inset 0 4px 12px rgba(255, 255, 255, .7),
+    inset 0 -12px 0 rgba(0, 0, 0, .05);
+}
+
+/* Multimarkdown Critic Blocks */
+.markdown-body .critic_mark {
+  background: #ff0;
+}
+
+.markdown-body .critic_delete {
+  color: #c82829;
+  text-decoration: line-through;
+}
+
+.markdown-body .critic_insert {
+  color: #718c00 ;
+  text-decoration: underline;
+}
+
+.markdown-body .critic_comment {
+  color: #8e908c;
+  font-style: italic;
+}
+
+.markdown-body .headeranchor {
+  font: normal normal 16px octicons-anchor;
+  line-height: 1;
+  display: inline-block;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.headeranchor:before {
+  content: '\f05c';
+}
+
+.markdown-body .task-list-item {
+  list-style-type: none;
+}
+
+.markdown-body .task-list-item+.task-list-item {
+  margin-top: 3px;
+}
+
+.markdown-body .task-list-item input {
+  margin: 0 4px 0.25em -20px;
+  vertical-align: middle;
+}
+
+/* Media */
+@media only screen and (min-width: 480px) {
+  .markdown-body {
+    font-size:14px;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .markdown-body {
+    font-size:16px;
+  }
+}
+
+@media print {
+  .markdown-body * {
+    background: transparent !important;
+    color: black !important;
+    filter:none !important;
+    -ms-filter: none !important;
+  }
+
+  .markdown-body {
+    font-size:12pt;
+    max-width:100%;
+    outline:none;
+    border: 0;
+  }
+
+  .markdown-body a,
+  .markdown-body a:visited {
+    text-decoration: underline;
+  }
+
+  .markdown-body .headeranchor-link {
+    display: none;
+  }
+
+  .markdown-body a[href]:after {
+    content: " (" attr(href) ")";
+  }
+
+  .markdown-body abbr[title]:after {
+    content: " (" attr(title) ")";
+  }
+
+  .markdown-body .ir a:after,
+  .markdown-body a[href^="javascript:"]:after,
+  .markdown-body a[href^="#"]:after {
+    content: "";
+  }
+
+  .markdown-body pre {
+    white-space: pre;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .markdown-body pre,
+  .markdown-body blockquote {
+    border: 1px solid #999;
+    padding-right: 1em;
+    page-break-inside: avoid;
+  }
+
+  .markdown-body .progress,
+  .markdown-body .progress-bar {
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  .markdown-body .progress {
+    border: 1px solid #ddd;
+  }
+
+  .markdown-body .progress-bar {
+    height: 22px;
+    border-right: 1px solid #ddd;
+  }
+
+  .markdown-body tr,
+  .markdown-body img {
+    page-break-inside: avoid;
+  }
+
+  .markdown-body img {
+    max-width: 100% !important;
+  }
+
+  .markdown-body p,
+  .markdown-body h2,
+  .markdown-body h3 {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .markdown-body h2,
+  .markdown-body h3 {
+    page-break-after: avoid;
+  }
+}
+</style><title>explainer</title></head><body><article class="markdown-body"><h1 id="webxr-device-api-explained"><a name="user-content-webxr-device-api-explained" href="#webxr-device-api-explained" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>WebXR Device API Explained</h1>
+<h2 id="what-is-webxr"><a name="user-content-what-is-webxr" href="#what-is-webxr" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>What is WebXR?</h2>
+<p>The <a href="https://immersive-web.github.io/webxr/">WebXR Device API</a> provides access to input and output capabilities commonly associated with Virtual Reality (VR) and Augmented Reality (AR) hardware like <a href="https://vr.google.com/daydream/">Google’s Daydream</a>, the <a href="https://www3.oculus.com/rift/">Oculus Rift</a>, the <a href="http://www.samsung.com/global/galaxy/gear-vr/">Samsung Gear VR</a>, the <a href="https://www.htcvive.com/">HTC Vive</a>, and <a href="https://developer.microsoft.com/en-us/windows/mixed-reality">Windows Mixed Reality headsets</a>. More simply put, it lets you create Virtual Reality and Augmented Reality web sites that you can view with the appropriate hardware like a VR headset or AR-enabled phone.</p>
+<h3 id="ooh-so-like-johnny-mnemonic-where-the-internet-is-all-90s-cgi"><a name="user-content-ooh-so-like-johnny-mnemonic-where-the-internet-is-all-90s-cgi" href="#ooh-so-like-johnny-mnemonic-where-the-internet-is-all-90s-cgi" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Ooh, so like <em>Johnny Mnemonic</em> where the Internet is all ’90s CGI?</h3>
+<p>Nope, not even slightly. And why do you even want that? That’s a terrible UX.</p>
+<p>WebXR, at least initially, is aimed at letting you create VR/AR experiences that are embedded in the web that we know and love today. It’s explicitly not about creating a browser that you use completely in VR (although it could work well in an environment like that).</p>
+<h3 id="whats-the-x-in-xr-mean"><a name="user-content-whats-the-x-in-xr-mean" href="#whats-the-x-in-xr-mean" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>What&rsquo;s the X in XR mean?</h3>
+<p>There&rsquo;s a lot of &ldquo;_____ Reality&rdquo; buzzwords flying around today. Virtual Reality, Augmented Reality, Mixed Reality&hellip; it can be hard to keep track, even though there&rsquo;s a lot of similarities between them. This API aims to provide foundational elements with which to do all of the above. And since we don&rsquo;t want to be limited to just one facet of VR or AR (or anything in between) we use &ldquo;X&rdquo; not as part of an acronym but as an algebraic variable of sorts to indicate &ldquo;Your Reality Here&rdquo;. We&rsquo;ve also heard it called &ldquo;Extended Reality&rdquo; and &ldquo;Cross Reality&rdquo;, which seem fine too, but really the X is whatever you want it to be!</p>
+<h3 id="is-this-api-affiliated-with-openxr"><a name="user-content-is-this-api-affiliated-with-openxr" href="#is-this-api-affiliated-with-openxr" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Is this API affiliated with OpenXR?</h3>
+<p>Khronos&rsquo; upcoming <a href="https://www.khronos.org/openxr">OpenXR API</a> does cover the same basic capabilities as the WebXR Device API for native applictions. As such it may seem like WebXR and OpenXR have a relationship like WebGL and OpenGL, where the web API is a near 1:1 mapping of the native API. This is <strong>not</strong> the case with WebXR and OpenXR, as they are distinct APIs being developed by different standards bodies.</p>
+<p>That said, given the shared subject matter many of the same concepts are represented by both APIs in different ways and we do expect that once OpenXR becomes publically available it will be reasonable to implement WebXR&rsquo;s feature set using OpenXR as one of multiple possible native backends.</p>
+<h3 id="goals"><a name="user-content-goals" href="#goals" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Goals</h3>
+<p>Enable XR applications on the web by allowing pages to do the following:</p>
+<ul>
+<li>Detect available VR/AR devices.</li>
+<li>Query the devices capabilities.</li>
+<li>Poll the device’s position and orientation.</li>
+<li>Display imagery on the device at the appropriate frame rate.</li>
+</ul>
+<h3 id="non-goals"><a name="user-content-non-goals" href="#non-goals" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Non-goals</h3>
+<ul>
+<li>Define how a Virtual Reality or Augmented Reality browser would work.</li>
+<li>Expose every feature of every piece of VR/AR hardware.</li>
+<li>Build “<a href="https://en.wikipedia.org/wiki/Metaverse">The Metaverse</a>.”</li>
+</ul>
+<p>Also, while input is an important part of the full XR experience it&rsquo;s a large enough topic that it should be handled separately, and thus will not be covered in-depth by this document. It&rsquo;s worth noting, however, that it may be necessary to have a basic understanding of how input will be handled in order for the WebXR spec to be complete.</p>
+<h2 id="use-cases"><a name="user-content-use-cases" href="#use-cases" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Use cases</h2>
+<p>Given the marketing of early XR hardware to gamers, one may naturally assume that this API will primarily be used for development of games. While that’s certainly something we expect to see given the history of the WebGL API, which is tightly related, we’ll probably see far more “long tail”-style content than large-scale games. Broadly, XR content on the web will likely cover areas that do not cleanly fit into the app-store models being used as the primary distribution methods by all the major VR/AR hardware providers, or where the content itself is not permitted by the store guidelines. Some high level examples are:</p>
+<h3 id="video"><a name="user-content-video" href="#video" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Video</h3>
+<p>360° and 3D video are areas of immense interest (for example, see <a href="http://abcnews.go.com/US/fullpage/abc-news-vr-virtual-reality-news-stories-33768357">ABC’s 360° video coverage</a>), and the web has proven massively effective at distributing video in the past. An XR-enabled video player would, upon detecting the presence of XR hardware, show a “View in VR” button, similar to the “Fullscreen” buttons present in today’s video players. When the user clicks that button, a video would render in the headset and respond to natural head movement. Traditional 2D video could also be presented in the headset as though the user is sitting in front of a theater-sized screen, providing a more immersive experience.</p>
+<h3 id="objectdata-visualization"><a name="user-content-objectdata-visualization" href="#objectdata-visualization" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Object/data visualization</h3>
+<p>Sites can provide easy 3D visualizations through WebXR, often as a progressive improvement to their more traditional rendering. Viewing 3D models (e.g., <a href="https://sketchfab.com/">SketchFab</a>), architectural previsualizations, medical imaging, mapping, and <a href="http://graphics.wsj.com/3d-nasdaq/">basic data visualization</a> can all be more impactful, easier to understand, and convey an accurate sense of scale in VR and AR. For those use cases, few users would justify installing a native app, especially when web content is simply a link or a click away.</p>
+<p>Home shopping applications (e.g., <a href="https://matterport.com/try/">Matterport</a>) serve as particularly effective demonstrations of this. Depending on device capabilities, sites can scale all the way from a simple photo carousel to an interactive 3D model on screen to viewing the walkthrough in VR, giving users the impression of actually being present in the house. The ability for this to be a low-friction experience for users is a huge asset for both users and developers, since they don’t need to convince users to install a heavy (and possibly malicious) executable before hand.</p>
+<h3 id="artistic-experiences"><a name="user-content-artistic-experiences" href="#artistic-experiences" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Artistic experiences</h3>
+<p>VR provides an interesting canvas for artists looking to explore the possibilities of a new medium. Shorter, abstract, and highly experimental experiences are often poor fits for an app-store model, where the perceived overhead of downloading and installing a native executable may be disproportionate to the content delivered. The web’s transient nature makes these types of applications more appealing, since they provide a frictionless way of viewing the experience. Artists can also more easily attract people to the content and target the widest range of devices and platforms with a single code base.</p>
+<h2 id="lifetime-of-a-vr-web-app"><a name="user-content-lifetime-of-a-vr-web-app" href="#lifetime-of-a-vr-web-app" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Lifetime of a VR web app</h2>
+<p>The basic steps most WebXR applications will go through are:</p>
+<ol>
+<li>Request an XR device.</li>
+<li>If a device is available, application advertises XR functionality to the user.</li>
+<li>Request an exclusive XR session from the device in response to a <a href="https://html.spec.whatwg.org/multipage/interaction.html#activation">user-activation event</a>.</li>
+<li>Use the session to run a render loop that produces graphical frames to be displayed on the XR device.</li>
+<li>Continue producing frames until the user indicates that they wish to exit XR mode.</li>
+<li>End the XR session.</li>
+</ol>
+<h3 id="acquiring-a-device"><a name="user-content-acquiring-a-device" href="#acquiring-a-device" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Acquiring a Device</h3>
+<p>The first thing that any XR-enabled page will want to do is request an <code>XRDevice</code> and, if one is available, advertise XR functionality to the user. (For example, by adding a button to the page that the user can click to start XR content.)</p>
+<p><code>navigator.xr.requestDevice</code> returns a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"><code>Promise</code></a> that resolves to an <code>XRDevice</code> if one is available. If no <code>XRDevice</code> is available, it will reject with a &ldquo;NotFoundError&rdquo;. The promise will also be rejected with an appropriate error if an error occurs during the device query. For example, if the page does not have the appropriate permissions to access XR capabilities it would reject with a &ldquo;NotAllowedError&rdquo;.</p>
+<p>A <code>XRDevice</code> represents a physical unit of XR hardware that can present imagery to the user somehow, referred to here as an &ldquo;XR hardware device&rdquo;. On desktop clients this will usually be a headset peripheral; on mobile clients it may represent the mobile device itself in conjunction with a viewer harness (e.g., Google Cardboard/Daydream or Samsung Gear VR). It may also represent devices without stereo-presentation capabilities but with more advanced tracking, such as ARCore/ARKit-compatible devices.</p>
+<pre><code class="js">function checkForXR() {
+  navigator.xr.requestDevice().then(device =&gt; {
+    onXRAvailable(device);
+  }, err =&gt; {
+    if (err.name === 'NotFoundError') {
+      // No XRDevices available.
+      console.error('No XR devices available:', err);
+    } else {
+      // An error occurred while requesting an XRDevice.
+      console.error('Requesting XR device failed:', err);
+    }
+  });
+}
+</code></pre>
+
+<p>Future revisions of the API may add filter criteria to <code>navigator.xr.requestDevice</code>.</p>
+<blockquote>
+<p><strong>Non-normative Note:</strong> If there are multiple XR devices available, the UA will need to pick which one to return. The UA is allowed to use any criteria it wishes to select which device is returned, including settings UI that allows users to manage device priority. Calling <code>navigator.xr.requestDevice</code> should not trigger device-selection UI, however, as this would cause many sites to display XR-specific dialogs early in the document lifecycle without user activation.</p>
+</blockquote>
+<p>It&rsquo;s possible that even if no XR device is available initially, one may become available while the application is running, or that a previously available device becomes unavailable. This will be most common with PC peripherals that can be connected or disconnected at any time. Pages can listen to the <code>devicechange</code> event emitted on <code>navigator.xr</code> to respond to changes in device availability after the page loads. (XR devices already available when the page loads will not cause a <code>devicechange</code> event to be fired.)</p>
+<pre><code class="js">navigator.xr.addEventListener('devicechange', checkForXR);
+</code></pre>
+
+<h3 id="sessions"><a name="user-content-sessions" href="#sessions" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Sessions</h3>
+<p>A <code>XRDevice</code> indicates only the availability of an XR device. In order to do anything that involves the device&rsquo;s presentation or tracking capabilities, the application will need to request an <code>XRSession</code> from the <code>XRDevice</code>.</p>
+<p>Sessions can be created with one of two levels of access:</p>
+<p><strong>Exclusive Access</strong>: Requested with the <code>exclusive: true</code> dictionary argument. Exclusive sessions present content directly to the <code>XRDevice</code>, enabling immersive presentation. Only one exclusive session per XR hardware device is allowed at a time across the entire UA. Exclusive sessions must be created within a user gesture event or within another callback that has been explicitly indicated to allow exclusive session creation.</p>
+<p><strong>Non-Exclusive Access</strong>: The default mode, but can be explicitly requested with the <code>exclusive: false</code> dictionary argument. Non-exclusive sessions do not have the ability to display immersive content on the <code>XRDevice</code> but are able to access device tracking information and use it to render content on the page. This technique, where a scene rendered to the page is responsive to device movement, is sometimes referred to as &ldquo;Magic Window&rdquo; mode. It&rsquo;s especially useful for mobile devices, where moving the device can be used to look around a scene. Devices like Tango phones and tablets with 6DoF tracking capabilities may expose them via non-exclusive sessions even if the hardware is not capable of immersive, stereo presentation. Any non-exclusive sessions are suspended when an exclusive session is active. Non-exclusive sessions are not required to be created within a user gesture event.</p>
+<h3 id="detecting-and-advertising-xr-mode"><a name="user-content-detecting-and-advertising-xr-mode" href="#detecting-and-advertising-xr-mode" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Detecting and advertising XR mode</h3>
+<p>If an <code>XRDevice</code> is available and able to create an exclusive session, the application will usually want to add some UI to trigger activation of &ldquo;XR Presentation Mode&rdquo;, where the application can begin sending imagery to the device. Testing to see if the device supports the capabilities the application needs is done via the <code>supportsSession</code> call, which takes a dictionary of the desired functionality and returns a promise which resolves if the device can create a session which supporting those properties and rejects otherwise. Querying for support this way is necessary because it allows the application to detect what XR features are available without actually engaging the sensors or beginning presentation, which can incur significant power or performance overhead on some systems and may have side effects such as launching a status tray or storefront.</p>
+<p>In the following examples we will focus on using exclusive sessions, and cover non-exclusive session use in the <a href="#non-exclusive-sessions-magic-windows"><code>Advanced Functionality</code></a> section. With that in mind, we ask here if the <code>XRDevice</code> supports sessions with <code>exclusive</code> access (the default), since we want the ability to display imagery on the headset.</p>
+<pre><code class="js">let xrDevice = null;
+
+async function onXRAvailable(device) {
+  xrDevice = device;
+
+  // Most (but not all) XRDevices are capable of granting exclusive access to
+  // the device, which is necessary to show imagery in a headset. If the device
+  // has that capability the page will want to add an &quot;Enter VR&quot; button (similar
+  // to &quot;Enter Fullscreen&quot;) that triggers the page to begin showing imagery on
+  // the headset.
+  xrDevice.supportsSession({ exclusive: true }).then(() =&gt; {
+    var enterXrBtn = document.createElement(&quot;button&quot;);
+    enterXrBtn.innerHTML = &quot;Enter VR&quot;;
+    enterXrBtn.addEventListener(&quot;click&quot;, beginXRSession);
+    document.body.appendChild(enterVrBtn);
+  }).catch((reason) =&gt; {
+    console.log(&quot;Session not supported: &quot; + reason);
+  });
+}
+</code></pre>
+
+<h3 id="beginning-an-xr-session"><a name="user-content-beginning-an-xr-session" href="#beginning-an-xr-session" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Beginning an XR session</h3>
+<p>Clicking the button in the previous sample will attempt to acquire an <code>XRSession</code> by callling <code>XRDevice</code>&lsquo;s <code>requestSession()</code> method. This returns a promise that resolves to an <code>XRSession</code> upon success. When requesting a session, the capabilities that the returned session must have are passed in via a dictionary, exactly like the <code>supportsSession</code> call. If <code>supportsSession</code> resolved for a given dictionary, then calling <code>requestSession</code> with the same dictionary values should be reasonably expected to succeed, barring external factors (such as <code>requestSession</code> not being called in a user gesture for an exclusive session.) The UA is ultimately responsible for determining if it can honor the request.</p>
+<p><pre><code class="js">function beginXRSession() {
+  // requestSession must be called within a user gesture event
+  // like click or touch when requesting exclusive access.
+  xrDevice.requestSession({ exclusive: true })
+      .then(onSessionStarted)
+      .catch(err =&gt; {
+        // May fail for a variety of reasons. Probably just want to
+        // render the scene normally without any tracking at this point.
+        window.requestAnimationFrame(onDrawFrame);
+      });
+}
+</code></pre><br />
+Once the session has started, some setup must be done to prepare for rendering.<br />
+- A <code>XRFrameOfReference</code> must be created to define the coordinate system in which the <code>XRDevicePose</code> objects will be defined. See the Advanced Functionality section for more details about frames of reference.<br />
+- The depth range of the session should be set to something appropriate for the application. This range will be used in the construction of the projection matrices provided by <code>XRPresentationFrame</code>.<br />
+- A <code>XRLayer</code> must be created and assigned to the <code>XRSession</code>&lsquo;s <code>baseLayer</code> attribute. (<code>baseLayer</code> because future versions of the spec will likely enable multiple layers, at which point this would act like the <code>firstChild</code> attribute of a DOM element.)</p>
+<pre><code class="js">let xrSession = null;
+let xrFrameOfRef = null;
+
+function onSessionStarted(session) {
+  // Store the session for use later.
+  xrSession = session;
+
+  // The depth range of the scene should be set so that the projection
+  // matrices returned by the session are correct.
+  xrSession.depthNear = 0.1;
+  xrSession.depthFar = 100.0;
+
+  // The `XRFrameOfReference` provides the coordinate system in which
+  // `getViewMatrix()` and the `poseModelMatrix` are defined. For more
+  // information on this see the `Advanced functionality` section
+  xrSession.requestFrameOfReference(&quot;headModel&quot;)
+    .then((frameOfRef) =&gt; {
+      xrFrameOfRef = frameOfRef;
+    })
+    .then(setupWebGLLayer) // Create a compatible XRWebGLLayer.
+    .then(() =&gt; {
+      // Start the render loop
+      xrSession.requestAnimationFrame(onDrawFrame);
+    });
+}
+</code></pre>
+
+<h3 id="setting-up-an-xrlayer"><a name="user-content-setting-up-an-xrlayer" href="#setting-up-an-xrlayer" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Setting up an XRLayer</h3>
+<p>The content to present to the device is defined by an <code>XRLayer</code>. In the initial version of the spec only one layer type, <code>XRWebGLLayer</code>, is defined and only one layer can be used at a time. This is set via the <code>XRSession</code>&lsquo;s <code>baseLayer</code> attribute. Future iterations of the spec will define new types of <code>XRLayer</code>s. For example: a new layer type would be added to enable use with any new graphics APIs that get added to the browser. The ability to use multiple layers at once and have them composited by the UA will likely also be added in a future API revision.</p>
+<p>In order for a WebGL canvas to be used with an <code>XRWebGLLayer</code>, its context must be <em>compatible</em> with the <code>XRDevice</code>. This can mean different things for different environments. For example, on a desktop computer this may mean the context must be created against the graphics adapter that the <code>XRDevice</code> is physically plugged into. On most mobile devices though, that&rsquo;s not a concern and so the context will always be compatible. In either case, the WebXR application must take steps to ensure WebGL context compatibility before using it with an <code>XRWebGLLayer</code>.</p>
+<p>When it comes to ensuring canvas compatibility there&rsquo;s two broad categories that apps will fall under.</p>
+<p><strong>XR Enhanced:</strong> The app can take advantage of XR hardware, but it&rsquo;s used as a progressive enhancement rather than a core part of the experience. Most users will probably not interact with the app&rsquo;s XR features, and as such asking them to make XR-centric decisions early in the app lifetime would be confusing and inappropriate. An example would be a news site with an embedded 360 photo gallery or video. (We expect the large majority of early WebXR content to fall into this category.)</p>
+<p>This style of application should call <code>WebGLRenderingContextBase</code>&lsquo;s <code>setCompatibleXRDevice()</code> method with the <code>XRDevice</code> in question. This will set a compatibility bit on the context that allows it to be used. Contexts without the compatibility bit will fail when attempting to create an <code>XRLayer</code> with them. In the event that a context is not already compatible with the <code>XRDevice</code> the <a href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14.13">context will be lost and attempt to recreate itself</a> using the compatible graphics adapter. It is the page&rsquo;s responsibility to handle WebGL context loss properly, recreating any necessary WebGL resources in response. If the context loss is not handled by the page, the promise returned by <code>setCompatibleXRDevice</code> will fail. The promise may also fail for a variety of other reasons, such as the context being actively used by a different, incompatible <code>XRDevice</code>.</p>
+<pre><code class="js">let glCanvas = document.createElement(&quot;canvas&quot;);
+let gl = glCanvas.getContext(&quot;webgl&quot;);
+
+function setupWebGLLayer() {
+  // Make sure the canvas context we want to use is compatible with the device.
+  return gl.setCompatibleXRDevice(xrDevice).then(() =&gt; {
+    // The content that will be shown on the device is defined by the session's
+    // baseLayer.
+    xrSession.baseLayer = new XRWebGLLayer(xrSession, gl);
+  });
+}
+</code></pre>
+
+<p><strong>XR Centric:</strong> The app&rsquo;s primary use case is displaying XR content, and as such it doesn&rsquo;t mind initializing resources in an XR-centric fashion, which may include asking users to select a headset as soon as the app starts. An example would be a game which is dependent on XR presentation and input. These types of applications can avoid the need to call <code>setCompatibleXRDevice</code> and the possible context loss that it may trigger by passing the <code>XRDevice</code> that the context will be used with as a context creation argument.</p>
+<pre><code class="js">let gl = glCanvas.getContext(&quot;webgl&quot;, { compatibleXRDevice: xrDevice });
+</code></pre>
+
+<p>Ensuring context compatibility with an <code>XRDevice</code> through either method may have side effects on other graphics resources in the page, such as causing the entire user agent to switch from rendering using an integrated GPU to a discrete GPU.</p>
+<h3 id="main-render-loop"><a name="user-content-main-render-loop" href="#main-render-loop" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Main render loop</h3>
+<p>The WebXR Device API provides information about the current frame to be rendered via the <code>XRPresentationFrame</code> object which developers must examine each frame. The <code>XRDevicePose</code> contains the information about all views which must be rendered and targets into which this rendering must be done.</p>
+<p><code>XRWebGLLayer</code> objects are not updated automatically. To present new frames, developers must use <code>XRSession</code>&lsquo;s <code>requestAnimationFrame()</code> method. When the callback function is run, it is passed both a timestamp and an <code>XRPresentationFrame</code> containing fresh rendering data that must be used to draw into the <code>XRWebGLLayer</code>&lsquo;s <code>framebuffer</code> during the callback. (Timestamp is given for compatibility with <code>window.requestAnimationFrame()</code>. Reserved for future use and will be <code>0</code> until that time.) This framebuffer is created by the UA and behaves similarly to a canvas&rsquo;s default framebuffer. Using <code>framebufferTexture2D</code>, <code>framebufferRenderbuffer</code>, <code>getFramebufferAttachmentParameter</code>, and <code>getRenderbufferParameter</code> will all generate an INVALID_OPERATION error. Additionally, outside of an <code>XRSession</code>&lsquo;s <code>requestAnimationFrame()</code> callback the framebuffer will be considered incomplete, reporting FRAMEBUFFER_UNSUPPORTED when calling <code>checkFramebufferStatus</code>. Attempts to draw to it, clear it, or read from to generate an INVALID_FRAMEBUFFER_OPERATION error as indicated by the WebGL specification.</p>
+<p>Once drawn to, the XR device will continue displaying the contents of the <code>XRWebGLLayer</code> framebuffer, potentially reprojected to match head motion, regardless of whether or not the page continues processing new frames. Potentially future spec iterations could enable additional types of layers, such as video layers, that could automatically be synchronized to the device&rsquo;s refresh rate.</p>
+<p>To get view matrices or the <code>poseModelMatrix</code> for each presentation frame, developers must call <code>getDevicePose()</code> and provide an <code>XRCoordinateSystem</code> to specify the coordinate system in which these matrices should be defined. Unless the &ldquo;headModel&rdquo; <code>XRFrameOfReference</code> is being used, this function is not guaranteed to return a value. For example, the most common frame of reference, &ldquo;eyeLevel&rdquo;, will fail to return a <code>viewMatrix</code> or a <code>poseModelMatrix</code> under tracking loss conditions. In that case, the page will need to decide how to respond. It may wish to re-render the scene using an older pose, fade the scene out to prevent disorientation, fall back to a &ldquo;headModel&rdquo; <code>XRFrameOfReference</code>, or simply not update. For more information on this see the <a href="#orientation-only-tracking"><code>Advanced functionality</code></a> section.</p>
+<pre><code class="js">function onDrawFrame(xrFrame) {
+  // Do we have an active session?
+  if (xrSession) {
+    let pose = xrFrame.getDevicePose(xrFrameOfRef);
+    gl.bindFramebuffer(xrSession.baseLayer.framebuffer);
+
+    for (let view of xrFrame.views) {
+      let viewport = view.getViewport();
+      gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+      drawScene(view, pose);
+    }
+
+    // Request the next animation callback
+    xrSession.requestAnimationFrame(onDrawFrame);
+  } else {
+    // No session available, so render a default mono view.
+    gl.viewport(0, 0, glCanvas.width, glCanvas.height);
+    drawScene();
+
+    // Request the next window callback
+    window.requestAnimationFrame(onDrawFrame);
+  }
+}
+
+function drawScene(view, pose) {
+  let viewMatrix = null;
+  let projectionMatrix = null;
+  if (view) {
+    viewMatrix = pose.getViewMatrix(view);
+    projectionMatrix = view.projectionMatrix;
+  } else {
+    viewMatrix = defaultViewMatrix;
+    projectionMatrix = defaultProjectionMatrix;
+  }
+
+  // Set uniforms as appropriate for shaders being used
+
+  // Draw Scene
+}
+</code></pre>
+
+<h3 id="handling-suspended-sessions"><a name="user-content-handling-suspended-sessions" href="#handling-suspended-sessions" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Handling suspended sessions</h3>
+<p>The UA may temporarily &ldquo;suspend&rdquo; a session at any time. While suspended a session has restricted or throttled access to the <code>XRDevice</code> state and may process frames slowly or not at all. Suspended sessions can be reasonably be expected to be resumed at some point, usually when the user has finished performing whatever action triggered the suspension in the first place.</p>
+<p>The UA may suspend a session if allowing the page to continue reading the headset position represents a security or privacy risk (like when the user is entering a password or URL with a virtual keyboard, in which case the head motion may infer the user&rsquo;s input), or if other content is obscuring the page&rsquo;s output. Additionally, non-exclusive sessions are suspended while an exclusive session is active.</p>
+<p>While suspended the page may either refresh the XR device at a slower rate or not at all, and poses queried from the device may be less accurate. If the user is wearing a headset the UA is expected to present a tracked environment (a scene which remains responsive to user&rsquo;s head motion) when the page is being throttled to prevent user discomfort.</p>
+<p>The application should continue requesting and drawing frames while suspended, but should not depend on them being processed at the normal XR hardware device framerate. The UA may use these frames as part of it&rsquo;s tracked environment or page composition, though they may be partially occluded, blurred, or otherwise manipulated. Additionally, poses queried while the session is suspended may not accurately reflect the XR hardware device&rsquo;s physical pose.</p>
+<p>Some applications may wish to respond to session suspension by halting game logic, purposefully obscuring content, or pausing media. To do so, the application should listen for the <code>blur</code> and <code>focus</code> events from the <code>XRSession</code>. For example, a 360 media player would do this to pause the video/audio whenever the UA has obscured it.</p>
+<pre><code class="js">xrSession.addEventListener('blur', xrSessionEvent =&gt; {
+  pauseMedia();
+  // Allow the render loop to keep running, but just keep rendering the last frame.
+  // Render loop may not run at full framerate.
+});
+
+xrSession.addEventListener('focus', xrSessionEvent =&gt; {
+  resumeMedia();
+});
+</code></pre>
+
+<h3 id="ending-the-xr-session"><a name="user-content-ending-the-xr-session" href="#ending-the-xr-session" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Ending the XR session</h3>
+<p>A <code>XRSession</code> is &ldquo;ended&rdquo; when it is no longer expected to be used. An ended session object becomes detached and all operations on the object will fail. Ended sessions cannot be restored, and if a new active session is needed it must be requested from <code>XRDevice.requestSession()</code>.</p>
+<p>To manually end a session the application calls <code>XRSession</code>&lsquo;s <code>end()</code> method. This returns a promise that, when resolved, indicates that presentation to the XR hardware device by that session has stopped. Once the session has ended any continued animation the application&rsquo;s requires should be done using <code>window.requestAnimationFrame()</code>.</p>
+<pre><code class="js">function endXRSession() {
+  // Do we have an active session?
+  if (xrSession) {
+    // End the XR session now.
+    xrSession.end().then(onSessionEnd);
+  }
+}
+
+// Restore the page to normal after exclusive access has been released.
+function onSessionEnd() {
+  xrSession = null;
+
+  // Ending the session stops executing callbacks passed to the XRSession's
+  // requestAnimationFrame(). To continue rendering, use the window's
+  // requestAnimationFrame() function.
+  window.requestAnimationFrame(onDrawFrame);
+}
+</code></pre>
+
+<p>The UA may end a session at any time for a variety of reasons. For example: The user may forcibly end presentation via a gesture to the UA, other native applications may take exclusive access of the XR hardware device, or the XR hardware device may become disconnected from the system. Well behaved applications should monitor the <code>end</code> event on the <code>XRSession</code> to detect when that happens.</p>
+<pre><code class="js">xrSession.addEventListener('end', onSessionEnd);
+</code></pre>
+
+<p>If the UA needs to halt use of a session temporarily the session should be suspended instead of ended. (See previous section.)</p>
+<h2 id="rendering-to-the-page"><a name="user-content-rendering-to-the-page" href="#rendering-to-the-page" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Rendering to the Page</h2>
+<p>There are a couple of scenarios in which developers may want to present content rendered with the WebXR Device API on the page instead of (or in addition to) a headset: Mirroring and &ldquo;Magic Window&rdquo;. Both methods display WebXR content on the page via a Canvas element with an <code>XRPresentationContext</code>. Like a <code>WebGLRenderingContext</code>, developers acquire an <code>XRPresentationContext</code> by calling the <code>HTMLCanvasElement</code> or <code>OffscreenCanvas</code> <code>getContext()</code> method with the context id of &ldquo;xrpresent&rdquo;. The returned <code>XRPresentationContext</code> is permenantly bound to the canvas.</p>
+<p>A <code>XRPresentationContext</code> can only be supplied imagery by an <code>XRSession</code>, though the exact behavior depends on the scenario in which it&rsquo;s being used.</p>
+<h3 id="mirroring"><a name="user-content-mirroring" href="#mirroring" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Mirroring</h3>
+<p>On desktop devices, or any device which has an external display connected to it, it&rsquo;s frequently desirable to show what the user in the headset is seeing on the external display. This is usually referred to as mirroring.</p>
+<p>In order to mirror WebXR content to the page, developers provide an <code>XRPresentationContext</code> as the <code>outputContext</code> in the <code>XRSessionCreationOptions</code> of an exclusive session. Once the session has started any content displayed on the headset will then be mirrored into the canvas associated with the <code>outputContext</code>. The <code>outputContext</code> remains bound to the session until the session has ended, and cannot be used with multiple <code>XRSession</code>s simultaneously.</p>
+<p>When mirroring only one eye&rsquo;s content will be shown, and it should be shown without any distortion to correct for headset optics. The UA may choose to crop the image shown, display it at a lower resolution than originally rendered, and the mirror may be multiple frames behind the image shown in the headset. The mirror may include or exclude elements added by the underlying XR system (such as visualizations of room boundaries) at the UA&rsquo;s discretion. Pages should not rely on a particular timing or presentation of mirrored content, it&rsquo;s really just for the benefit of bystanders or demo operators.</p>
+<p>The UA may also choose to ignore the <code>outputCanvas</code> on systems where mirroring is inappropriate, such as devices without an external display to mirror to like mobile or all-in-one systems.</p>
+<pre><code class="js">function beginXRSession() {
+  let mirrorCanvas = document.createElement('canvas');
+  let mirrorCtx = mirrorCanvas.getContext('xrpresent');
+  document.body.appendChild(mirrorCanvas);
+
+  xrDevice.requestSession({ exclusive: true, outputContext: mirrorCtx })
+      .then(onSessionStarted)
+      .catch((reason) =&gt; { console.log(&quot;requestSession failed: &quot; + reason); });
+}
+</code></pre>
+
+<h3 id="non-exclusive-sessions-magic-windows"><a name="user-content-non-exclusive-sessions-magic-windows" href="#non-exclusive-sessions-magic-windows" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Non-exclusive sessions (&ldquo;Magic Windows&rdquo;)</h3>
+<p>There are several scenarios where it&rsquo;s beneficial to render a scene whose view is controlled by device tracking within a 2D page. For example:</p>
+<ul>
+<li>Using phone rotation to view panoramic content.</li>
+<li>Taking advantage of 6DoF tracking on devices (like <a href="https://get.google.com/tango/">Tango</a> phones) with no associated headset.</li>
+<li>Making use of head-tracking features for devices like <a href="http://zspace.com/">zSpace</a> systems.</li>
+</ul>
+<p>These scenarios can make use of non-exclusive sessions to render tracked content to the page. While <code>deviceorientation</code> events can be used to facilitate the first case the other two need the additional tracking support that WebXR provides. Also, using a non-exclusive session also enables content to use a single rendering path for both magic window and immersive presentation modes and makes switching between magic window content and immersive presentation of that content easier.</p>
+<p>Similar to mirroring, to make use of this mode an <code>XRPresentationContext</code> is provided as the <code>outputContext</code> at session creation time with a non-exclusive session. At that point content rendered to the <code>XRSession</code>&lsquo;s <code>baseLayer</code> will be rendered to the canvas associated with the <code>outputContext</code>. The UA is also allowed to composite in additional content if desired. In the future, if multiple <code>XRLayers</code> are used their composited result will be what is displayed in the <code>outputContext</code>. Requests to create a non-exclusive session without an output context will be rejected.</p>
+<p>Exclusive and non-exclusive sessions can use the same render loop, but there are some differences in behavior to be aware of. The sessions may run their render loops at at different rates. During exclusive sessions the UA runs the rendering loop at the <code>XRDevice</code>&lsquo;s native refresh rate. During non-exclusive sessions the UA runs the rendering loop at the refresh rate of page (aligned with <code>window.requestAnimationFrame</code>.) The method of computation of <code>XRView</code> projection and view matrices also differs between exclusive and non-exclusive sessions, with non-exclusive sessions taking into account the output canvas dimensions and possibly the position of the users head in relation to the canvas if that can be determined.</p>
+<p>Most instances of non-exclusive sessions will only provide a single <code>XRView</code> to be rendered, but UA may request multiple views be rendered if, for example, it&rsquo;s detected that that output medium of the page supports stereo rendering. As a result pages should always draw every <code>XRView</code> provided by the <code>XRPresentationFrame</code> regardless of what type of session has been requested.</p>
+<p>UAs may have different restrictions on non-exclusive contexts that don&rsquo;t apply to exclusive contexts. For instance, a different set of <code>XRFrameOfReference</code> types may be available with a non-exclusive session versus an exclusive session.</p>
+<pre><code class="js">let magicWindowCanvas = document.createElement('canvas');
+let magicWindowCtx = magicWindowCanvas.getContext('xrpresent');
+document.body.appendChild(magicWindowCanvas);
+
+function beginMagicWindowXRSession() {
+  // Request a non-exclusive session for magic window rendering.
+  xrDevice.requestSession({ outputContext: magicWindowCtx })
+      .then(OnSessionStarted)
+      .catch((reason) =&gt; { console.log(&quot;requestSession failed: &quot; + reason); });
+}
+</code></pre>
+
+<p>The UA may reject requests for a non-exclusive sessions for a variety of reasons, such as the inability of the underlying hardware to provide tracking data without actively rendering to the device. Pages should be designed to robustly handle the inability to acquire non-exclusive sessions. <code>XRDevice.supportsSession()</code> can be used if a page wants to test for non-exclusive session support before attempting to create the <code>XRSession</code>.</p>
+<pre><code class="js">function checkMagicWindowSupport() {
+  // Check to see if the UA can support a non-exclusive sessions with the given output context.
+  return xrDevice.supportsSession({ outputContext: magicWindowCtx })
+      .then(() =&gt; { console.log(&quot;Magic Window content is supported!&quot;); })
+      .catch((reason) =&gt; { console.log(&quot;Magic Window content is not supported: &quot; + reason); });
+}
+</code></pre>
+
+<h2 id="advanced-functionality"><a name="user-content-advanced-functionality" href="#advanced-functionality" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Advanced functionality</h2>
+<p>Beyond the core APIs described above, the WebXR Device API also exposes several options for taking greater advantage of the XR hardware&rsquo;s capabilities.</p>
+<h3 id="orientation-only-tracking"><a name="user-content-orientation-only-tracking" href="#orientation-only-tracking" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Orientation-only tracking</h3>
+<p>A viewer for 360 photos or videos should not respond to head translation, since the source material is intended to be viewed from a single point. While some headsets naturally function this way (Daydream, Gear VR, Cardboard) it can be useful for app developers to specify that they don&rsquo;t want any positional tracking in the matrices they receive. (This may also provide power savings on some devices, since it may allow some sensors to be turned off.) That can be accomplished by requesting a &ldquo;headModel&rdquo; <code>XRFrameOfReference</code>.</p>
+<pre><code class="js">xrSession.requestFrameOfReference(&quot;headModel&quot;).then((frameOfRef) =&gt; {
+  xrFrameOfRef = frameOfRef;
+});
+
+// Use xrFrameOfRef as detailed above.
+</code></pre>
+
+<h3 id="room-scale-tracking-and-boundaries"><a name="user-content-room-scale-tracking-and-boundaries" href="#room-scale-tracking-and-boundaries" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Room-scale tracking and boundaries</h3>
+<p>Some XR devices have been configured with details about the area they are being used in, including things like where the floor is and what boundaries of the safe space is so that it can be communicated to the user in XR. It can be beneficial to render the virtual scene so that it lines up with the users physical space for added immersion, especially ensuring that the virtual floor and the physical floor align. This is frequently called &ldquo;room scale&rdquo; or &ldquo;standing space&rdquo;. It helps the user feel grounded in the virtual space. WebXR refers to this type of bounded, floor-relative play space as a &ldquo;stage&rdquo;. Applications can take advantage of that space by creating a stage <code>XRFrameOfReference</code>. This will report values relative to the floor, ideally at the center of the room. (In other words the users physical floor is at Y = 0.) Not all <code>XRDevices</code> will support this mode, however. <code>requestFrameOfReference</code> will reject the promise in that case.</p>
+<pre><code class="js">// Try to get a frame of reference where the floor is at Y = 0
+xrSession.requestFrameOfReference(&quot;stage&quot;).then((frameOfRef) =&gt; {
+  // Will always succeed due to stage emulation. See the section titled
+  // &quot;Emulated stage frame of reference&quot; for details.
+  xrFrameOfRef = frameOfRef;
+});
+
+// Use xrFrameOfRef as detailed above, but render the floor of the virtual space at Y = 0;
+</code></pre>
+
+<p>When using a stage <code>XRFrameOfReference</code> the device will frequently have a configured &ldquo;safe area&rdquo; that the user can move around in without fear of bumping into real world objects. WebXR can communicate the rough boundaries of this space via the <code>XRFrameOfReference.bounds</code> attribute. It provides a polygonal boundary given in the &lsquo;geometry&rsquo; point array, which represents a loop of points at the edges of the safe space. The points are given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The shape it describes is not guaranteed to be convex. The values reported are relative to the stage origin, but do not necessarily contain it. The <code>bounds</code> attribute is null if the bounds are unavailable for the current frame of reference.</p>
+<p>If the <code>bounds</code> are available the application should try to ensure that all content the user needs to interact with can be reached while staying inside the described bounds geometry.</p>
+<pre><code class="js">// Demonstrated here using a fictional 3D library to simplify the example code.
+function onBoundsUpdate() {
+  if (xrFrameOfRef.bounds) {
+    // Visualize the bounds geometry as 2 meter high quads
+    boundsMesh.clear();
+    let pointCount = xrFrameOfRef.bounds.geometry.length;
+    for (let i = 0; i &lt; pointCount - 1; ++i) {
+      let pointA = xrFrameOfRef.bounds.geometry[i];
+      let pointB = xrFrameOfRef.bounds.geometry[i+1];
+      boundsMesh.addQuad(
+          pointA.x, 0, pointA.z, // Quad Corner 1
+          pointB.x, 2.0, pointB.z) // Quad Corner 2
+    }
+    // Close the loop
+    let pointA = xrFrameOfRef.bounds.geometry[pointCount-1];
+    let pointB = xrFrameOfRef.bounds.geometry[0];
+    boundsMesh.addQuad(
+          pointA.x, 0, pointA.z, // Quad Corner 1
+          pointB.x, 2.0, pointB.z) // Quad Corner 2
+  } else {
+    // No bounds geometry to visualize
+    boundsMesh.clear();
+  }
+}
+</code></pre>
+
+<p>Changes to the bounds while a session is active should be a relatively rare occurrence, but it can be monitored by listening for the frame of reference&rsquo;s <code>boundschange</code> event.</p>
+<pre><code class="js">xrFrameOfRef.addEventListener('boundschange', onBoundsUpdate);
+</code></pre>
+
+<h3 id="emulated-stage-frame-of-reference"><a name="user-content-emulated-stage-frame-of-reference" href="#emulated-stage-frame-of-reference" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Emulated stage frame of reference</h3>
+<p>Often times content designed to be used with a <code>stage</code> <code>XRFrameOfReference</code> (that is, the physical floor is at Y=0) can still be used with headsets that don&rsquo;t have appropriate knowledge of the user&rsquo;s physical space. For example the headset may only support 3DoF tracking, or 6DoF tracking without floor detection. In these case as a matter of developer convenience an emulated <code>stage</code> frame of reference is provided by default as a fallback.</p>
+<p>An emulated <code>stage</code> frame or reference is functionally identical to an <code>eyeLevel</code> frame of reference with an offset applied along the Y axis to place the user&rsquo;s head at an estimated height. The default estimated height is determined by the UA, and can be an aritrary or user configurable value. If the platform APIs provide a user configured height that should be taken into consideration when determining the emulated height. Note that the floor&rsquo;s location will almost certainly not match up with the user&rsquo;s physical floor when using <code>stage</code> emulation, the intent is just to get it &ldquo;close enough&rdquo; that the user doesn&rsquo;t overtly feel like they are stuck in the ground or floating. No bounds are reported for an emulated <code>stage</code>.</p>
+<p>Using an emulated <code>stage</code> as a fallback prevents the need for additional state tracking and matrix transforms on the developer&rsquo;s part in order to render the same content on a wide range of devices. To detect if the stage is using an emulated height or not after creation developers can check the <code>XRFrameOfReference</code>&lsquo;s <code>emulatedHeight</code> attribute. A non-zero value indicates that the <code>stage</code> is being emulated.</p>
+<p>If the system is capable of providing native <code>stage</code> tracking it must do so instead of providing an emulated <code>stage</code> frame of reference. Some applications may require a non-emulated <code>stage</code>, however, so the application is allowed to opt-out of emulation by setting the <code>disableStageEmulation</code> dictionary option to <code>true</code> when calling <code>requestFrameOfReference()</code>. </p>
+<pre><code class="js">// Get a native stage frame of reference if one is available, fail otherwise.
+xrSession.requestFrameOfReference(&quot;stage&quot;, { disableStageEmulation: true })
+    .then((frameOfRef) =&gt; {
+      xrFrameOfRef = frameOfRef;
+    }).catch(() =&gt; {
+      // No stage frame of reference available for this device. Fall back to
+      // using a different frame of reference type of provide an appropriate
+      // error to the user.
+    });
+</code></pre>
+
+<p>Some experiences that use a <code>stage</code> frame of reference may assume that the user will be sitting, kneeling, or assuming some pose other than standing for the majority of the experience, such as a racing game or a meditation application. To accommodate these types of non-standing <code>stage</code> experiences a preferred height can also be provided to the <code>requestFrameOfReference()</code> options dictionary via the <code>stageEmulationHeight</code> option, given in meters. When <code>stageEmulationHeight</code> is not <code>0</code> it must be used in favor of UA provided default values while emulating.</p>
+<pre><code class="js">// Get a stage frame of reference, emulating one defaulting to 1.2 meters high
+// if necessary.
+xrSession.requestFrameOfReference(&quot;stage&quot;, { stageEmulationHeight: 1.2 })
+    .then((frameOfRef) =&gt; {
+      // Will always succeed.
+      xrFrameOfRef = frameOfRef;
+    });
+</code></pre>
+
+<h3 id="multiview-rendering"><a name="user-content-multiview-rendering" href="#multiview-rendering" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Multiview rendering</h3>
+<p>Developers may optionally take advantage of the <a href="https://www.khronos.org/registry/webgl/extensions/WEBGL_multiview/">WEBGL_multiview extension</a> to both WebGL 1.0 and WebGL 2.0 for optimized multiview rendering. The WEBGL_multiview extension must be successfully queried from the supplied context prior to the creation of the <code>XRWebGLLayer</code> or it will fall back to using a framebuffer that is not multiview-aware. Additionally, the UA may choose to not honor the multiview request for any reason, which will also fall back to using a framebuffer that is not multiview-aware. As such, developers must query the <code>XRWebGLLayer.multiview</code> property after the <code>XRWebGLLayer</code> is constructed and respond accordingly.</p>
+<p>When <code>XRWebGLLayer.multiview</code> is false:<br />
+- The <code>XRWebGLLayer</code>&lsquo;s <code>framebuffer</code> will be created in a side-by-side configuration.<br />
+- Calling <code>XRView.getViewport()</code> with this type of <code>XRWebGLLayer</code> will return a different <code>XRViewport</code> for each <code>XRView</code>.</p>
+<p>When <code>XRWebGLLayer.multiview</code> is true:<br />
+- The UA may decide to back the framebuffer with a texture array, side-by-side texture or another implementation of the UA&rsquo;s choosing. This implementation decision must not have any impact how developers author their shaders or setup the WebGL context for rendering.<br />
+- Calling <code>XRView.getViewport()</code> with this type of <code>XRWebGLLayer</code> will return the same <code>XRViewport</code> for all <code>XRView</code>s.</p>
+<pre><code class="js">function setupWebGLLayer() {
+  return gl.setCompatibleXRDevice(xrDevice).then(() =&gt; {
+    // XRWebGLLayer allows for the optional use of the WEBGL_multiview extension
+    xrSession.baseLayer = new XRWebGLLayer(xrSession, gl, { multiview: true });
+  });
+}
+
+function onDrawFrame(xrFrame) {
+  // Do we have an active session?
+  if (xrSession) {
+    let pose = xrFrame.getDevicePose(xrFrameOfRef);
+    gl.bindFramebuffer(xrSession.baseLayer.framebuffer);
+
+    if (xrSession.baseLayer.multiview) {
+      // When using the `WEBGL_multiview` extension, all `XRView`s return the
+      // same value from `getViewport()`, so it only needs to be called once.
+      let viewport = xrFrame.views[0].getViewport(xrSession.baseLayer);
+      gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+      drawMultiviewScene(xrFrame.views, pose);
+    } else {
+      for (let view of xrFrame.views) {
+        let viewport = view.getViewport(xrSession.baseLayer);
+        gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+        drawScene(view, pose);
+      }
+    }
+
+    // Request the next animation callback
+    xrSession.requestAnimationFrame(onDrawFrame);
+
+  } else {
+    // No session available, so render a default mono view.
+    gl.viewport(0, 0, glCanvas.width, glCanvas.height);
+    drawScene();
+
+    // Request the next window callback
+    window.requestAnimationFrame(onDrawFrame);
+  }
+}
+
+function drawMultiviewScene(views, pose) {
+  for (let view of views) {
+    let viewMatrix = pose.getViewMatrix(view);
+    let projectionMatrix = view.projectionMatrix;
+
+    // Set uniforms as appropriate for shaders being used
+  }
+
+  // Draw Scene
+}
+</code></pre>
+
+<h3 id="high-quality-rendering"><a name="user-content-high-quality-rendering" href="#high-quality-rendering" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>High quality rendering</h3>
+<p>While in exclusive sessions, the UA is responsible for providing a framebuffer that is correctly optimized for presentation to the <code>XRSession</code> in each <code>XRPresentationFrame</code>. Developers can optionally request either the buffer size or viewport size be scaled, though the UA may not respect the request. Even when the UA honors the scaling requests, the result is not guaranteed to be the exact percentage requested.</p>
+<p>The first scaling mechanism is done by specifying a <code>framebufferScaleFactor</code> at <code>XRWebGLLayer</code> creation time. In response, the UA may create a framebuffer that is based on the requested percentage of the maximum size supported by the <code>XRDevice</code>. On some platforms such as Daydream, the UA may set the default value of <code>framebufferScaleFactor</code> to be less 1.0 for performance reasons. Developers explicitly wishing to use the full resolution on these devices can do so by requesting the <code>framebufferScaleFactor</code> be set to 1.0.</p>
+<pre><code class="js">function setupWebGLLayer() {
+  return gl.setCompatibleXRDevice(xrDevice).then(() =&gt; {
+    xrSession.baseLayer = new XRWebGLLayer(xrSession, gl, { framebufferScaleFactor: 0.8 });
+  });
+</code></pre>
+
+<p>The second scaling mechanism is to request a scaled viewport into the <code>XRWebGLLayer</code>&lsquo;s <code>framebuffer</code>. For example, under times of heavy load the developer may choose to temporarily render fewer pixels. To do so, developers should call <code>XRWebGLLayer.requestViewportScaling()</code> and supply a value between 0.0 and 1.0. The UA may then respond by changing the <code>XRWebGLLayer</code>&lsquo;s <code>framebuffer</code> and/or the <code>XRViewport</code> values in future XR frames. It is worth noting that the UA may change the viewports for reasons other than developer request, and that not all UAs will respect requested viewport changes; as such, developers must always query the viewport values on each XR frame.</p>
+<pre><code class="js">function onDrawFrame() {
+  // Draw the current frame
+
+  // In response to a performance dip, request the viewport be restricted
+  // to a percentage (ex: 50%) of the layer's actual buffer. This change
+  // will apply to subsequent rendering frames
+  layer.requestViewportScaling(0.5);
+
+  // Register for next frame callback
+  xrSession.requestAnimationFrame(onDrawFrame);
+}
+</code></pre>
+
+<h3 id="responding-to-a-reset-pose"><a name="user-content-responding-to-a-reset-pose" href="#responding-to-a-reset-pose" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Responding to a reset pose</h3>
+<p>Many XR systems have a mechanism for allowing the user to reset which direction is &ldquo;forward.&rdquo; For security and comfort reasons the WebXR Device API has no mechanism to trigger a pose reset programmatically, but it can still be useful to know when it happens. Pages may want to take advantage of the visual discontinuity to reposition the user or other elements in the scene into a more natural position for the new orientation. Pages may also want to use the opportunity to clear or reset any additional transforms that have been applied if no longer needed.</p>
+<p>A page can be notified when a pose reset happens by listening for the &lsquo;resetpose&rsquo; event from the &lsquo;XRSession&rsquo;.</p>
+<pre><code class="js">xrSession.addEventListener('resetpose', xrSessionEvent =&gt; {
+  // For an app that allows artificial Yaw rotation, this would be a perfect
+  // time to reset that.
+  resetYawTransform();
+});
+</code></pre>
+
+<h2 id="appendix-a-i-dont-understand-why-this-is-a-new-api-why-cant-we-use"><a name="user-content-appendix-a-i-dont-understand-why-this-is-a-new-api-why-cant-we-use" href="#appendix-a-i-dont-understand-why-this-is-a-new-api-why-cant-we-use" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Appendix A: I don’t understand why this is a new API. Why can’t we use…</h2>
+<h3 id="deviceorientation-events"><code>DeviceOrientation</code> Events</h3>
+<p>The data provided by an <code>XRDevicePose</code> instance is similar to the data provided by <code>DeviceOrientationEvent</code>, with some key differences:</p>
+<ul>
+<li>It’s an explicit polling interface, which ensures that new input is available for each frame. The event-driven <code>DeviceOrientation</code> data may skip a frame, or may deliver two updates in a single frame, which can lead to disruptive, jittery motion in an XR application.</li>
+<li><code>DeviceOrientation</code> events do not provide positional data, which is a key feature of high-end XR hardware.</li>
+<li>More can be assumed about the intended use case of <code>XRDevice</code> data, so optimizations such as motion prediction can be applied.</li>
+<li><code>DeviceOrientation</code> events are typically not available on desktops.</li>
+</ul>
+<p>That being said, however, for some simple XR devices (e.g., Cardboard) <code>DeviceOrientation</code> events provide enough data to create a basic <a href="https://en.wikipedia.org/wiki/Polyfill">polyfill</a> of the WebXR Device API, as demonstrated by <a href="https://twitter.com/borismus">Boris Smus</a>’ wonderful <a href="https://github.com/borismus/webvr-polyfill"><code>webvr-polyfill</code> project</a>. This provides an approximation of a native implementation, allowing developers to experiment with the API even when unsupported by the user’s browser. While useful for testing and compatibility, such pure-JavaScript implementations miss out on the ability to take advantage of XR-specific optimizations available on some mobile devices (e.g., Google Daydream-ready phones or Samsung Gear VR’s compatible device lineup). A native implementation on mobile can provide a much better experience with lower latency, less jitter, and higher graphics performance than can a <code>DeviceOrientation</code>-based one.</p>
+<h3 id="websockets"><a name="user-content-websockets" href="#websockets" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>WebSockets</h3>
+<p>A local <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API">WebSocket</a> service could be set up to relay headset poses to the browser. Some early VR experiments with the browser tried this route, and some tracking devices (most notably <a href="https://www.leapmotion.com/">Leap Motion</a>) have built their JavaScript SDKs around this concept. Unfortunately, this has proven to be a high-latency route. A key element of a good XR experience is low latency. For head mounted displays, ideally, the movement of your head should result in an update on the device (referred to as “motion-to-photons time”) in 20ms or fewer. The browser’s rendering pipeline already makes hitting this goal difficult, and adding additional overhead for communication over WebSockets only exaggerates the problem. Additionally, using such a method requires users to install a separate service, likely as a native app, on their machine, eroding away much of the benefit of having access to the hardware via the browser. It also falls down on mobile where there’s no clear way for users to install such a service.</p>
+<h3 id="the-gamepad-api"><a name="user-content-the-gamepad-api" href="#the-gamepad-api" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>The Gamepad API</h3>
+<p>Some people have suggested that we try to expose XR data through the <a href="https://w3c.github.io/gamepad/">Gamepad API</a>, which seems like it should provide enough flexibility through an unbounded number of potential axes. While it would be technically possible, there are a few properties of the API that currently make it poorly suited for this use.</p>
+<ul>
+<li>Axes are normalized to always report data in a <code>[-1, 1]</code> range. That may work sufficiently for orientation reporting, but when reporting position or acceleration, you would have to choose an arbitrary mapping of the normalized range to a physical one (i.e., <code>1.0</code> is equal to 2 meters or similar). But that forces developers to make assumptions about the capabilities of future XR hardware, and the mapping makes for error-prone and unintuitive interpretation of the data.</li>
+<li>Axes are not explicitly associated with any given input, making it difficult for users to remember if axis <code>0</code> is a component of devices’ position, orientation, acceleration, etc.</li>
+<li>XR device capabilities can differ significantly, and the Gamepad API currently doesn’t provide a way to communicate a device’s features and its optical properties.</li>
+<li>Gamepad features such as buttons have no clear meaning when describing an XR headset and its periphery.</li>
+</ul>
+<p>There is a related effort to expose motion-sensing controllers through the Gamepad API by adding a <code>pose</code> attribute and some other related properties. Although these additions would make the API more accommodating for headsets, we feel that it’s best for developers to have a separation of concerns such that devices exposed by the Gamepad API can be reasonably assumed to be gamepad-like and devices exposed by the WebXR Device API can be reasonably assumed to be headset-like.</p>
+<h3 id="these-alternatives-dont-account-for-presentation"><a name="user-content-these-alternatives-dont-account-for-presentation" href="#these-alternatives-dont-account-for-presentation" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>These alternatives don’t account for presentation</h3>
+<p>It’s important to realize that all of the alternative solutions offer no method of displaying imagery on the headset itself, with the exception of Cardboard-like devices where you can simply render a fullscreen split view. Even so, that doesn’t take into account how to communicate the projection or distortion necessary for an accurate image. Without a reliable presentation method the ability to query inputs from a headset becomes far less valuable.</p>
+<h2 id="appendix-b-proposed-idl"><a name="user-content-appendix-b-proposed-idl" href="#appendix-b-proposed-idl" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Appendix B: Proposed IDL</h2>
+<pre><code class="webidl">//
+// Navigator
+//
+
+partial interface Navigator {
+  readonly attribute XR xr;
+};
+
+[SecureContext, Exposed=Window] interface XR : EventTarget {
+  attribute EventHandler ondevicechange;
+  Promise&lt;XRDevice&gt; requestDevice();
+};
+
+//
+// Device
+//
+
+[SecureContext, Exposed=Window] interface XRDevice : EventTarget {
+  readonly attribute boolean external;
+
+  Promise&lt;void&gt; supportsSession(optional XRSessionCreationOptions parameters);
+  Promise&lt;XRSession&gt; requestSession(optional XRSessionCreationOptions parameters);
+};
+
+//
+// Session
+//
+
+dictionary XRSessionCreationOptions {
+  boolean exclusive = false;
+  XRPresentationContext outputContext;
+};
+
+[SecureContext, Exposed=Window] interface XRSession : EventTarget {
+  readonly attribute XRDevice device;
+  readonly attribute boolean exclusive;
+  readonly attribute XRPresentationContext outputContext;
+
+  attribute double depthNear;
+  attribute double depthFar;
+
+  attribute XRLayer baseLayer;
+
+  attribute EventHandler onblur;
+  attribute EventHandler onfocus;
+  attribute EventHandler onresetpose;
+  attribute EventHandler onend;
+
+  Promise&lt;XRFrameOfReference&gt; requestFrameOfReference(XRFrameOfReferenceType type, optional XRFrameOfReferenceOptions options);
+
+  long requestAnimationFrame(XRFrameRequestCallback callback);
+  void cancelAnimationFrame(long handle);
+
+  Promise&lt;void&gt; end();
+};
+
+// Timestamp is passed as part of the callback to make the signature compatible
+// with the window's FrameRequestCallback.
+callback XRFrameRequestCallback = void (DOMHighResTimeStamp time, XRPresentationFrame frame);
+
+//
+// Frame, Device Pose, and Views
+//
+
+[SecureContext, Exposed=Window] interface XRPresentationFrame {
+  readonly attribute XRSession session;
+  readonly attribute FrozenArray&lt;XRView&gt; views;
+
+  XRDevicePose? getDevicePose(XRCoordinateSystem coordinateSystem);
+};
+
+enum XREye {
+  &quot;left&quot;,
+  &quot;right&quot;
+};
+
+[SecureContext, Exposed=Window] interface XRView {
+  readonly attribute XREye eye;
+  readonly attribute Float32Array projectionMatrix;
+};
+
+[SecureContext, Exposed=Window] interface XRViewport {
+  readonly attribute long x;
+  readonly attribute long y;
+  readonly attribute long width;
+  readonly attribute long height;
+};
+
+[SecureContext, Exposed=Window] interface XRDevicePose {
+  readonly attribute Float32Array poseModelMatrix;
+
+  Float32Array getViewMatrix(XRView view);
+};
+
+//
+// Layers
+//
+
+[SecureContext, Exposed=Window] interface XRLayer {};
+
+dictionary XRWebGLLayerInit {
+  boolean antialias = true;
+  boolean depth = true;
+  boolean stencil = false;
+  boolean alpha = true;
+  boolean multiview = false;
+  double framebufferScaleFactor;
+};
+
+typedef (WebGLRenderingContext or
+         WebGL2RenderingContext) XRWebGLRenderingContext;
+
+[SecureContext, Exposed=Window,
+ Constructor(XRSession session,
+             XRWebGLRenderingContext context,
+             optional XRWebGLLayerInit layerInit)]
+interface XRWebGLLayer : XRLayer {
+  readonly attribute XRWebGLRenderingContext context;
+  readonly attribute boolean antialias;
+  readonly attribute boolean depth;
+  readonly attribute boolean stencil;
+  readonly attribute boolean alpha;
+  readonly attribute boolean multiview;
+
+  readonly attribute unsigned long framebufferWidth;
+  readonly attribute unsigned long framebufferHeight;
+  readonly attribute WebGLFramebuffer framebuffer;
+
+  XRViewport? getViewport(XRView view);
+  void requestViewportScaling(double viewportScaleFactor);
+};
+
+//
+// Coordinate Systems
+//
+
+[SecureContext, Exposed=Window] interface XRCoordinateSystem : EventTarget {
+  Float32Array? getTransformTo(XRCoordinateSystem other);
+};
+
+enum XRFrameOfReferenceType {
+  &quot;headModel&quot;,
+  &quot;eyeLevel&quot;,
+  &quot;stage&quot;,
+};
+
+dictionary XRFrameOfReferenceOptions {
+  boolean disableStageEmulation = false;
+  double stageEmulationHeight = 0.0;
+};
+
+[SecureContext, Exposed=Window] interface XRFrameOfReference : XRCoordinateSystem {
+  readonly attribute XRStageBounds? bounds;
+  readonly attribute double emulatedHeight;
+
+  attribute EventHandler onboundschange;
+};
+
+[SecureContext, Exposed=Window] interface XRStageBounds {
+  readonly attribute FrozenArray&lt;XRStageBoundsPoint&gt; geometry;
+};
+
+[SecureContext, Exposed=Window] interface XRStageBoundsPoint {
+  readonly attribute double x;
+  readonly attribute double z;
+};
+
+//
+// Events
+//
+
+[SecureContext, Exposed=Window, Constructor(DOMString type, XRDeviceEventInit eventInitDict)]
+interface XRDeviceEvent : Event {
+  readonly attribute XRDevice device;
+};
+
+dictionary XRDeviceEventInit : EventInit {
+  required XRDevice device;
+};
+
+[SecureContext, Exposed=Window, Constructor(DOMString type, XRSessionEventInit eventInitDict)]
+interface XRSessionEvent : Event {
+  readonly attribute XRSession session;
+};
+
+dictionary XRSessionEventInit : EventInit {
+  required XRSession session;
+};
+
+[SecureContext, Exposed=Window,
+ Constructor(DOMString type, XRCoordinateSystemEventInit eventInitDict)]
+interface XRCoordinateSystemEvent : Event {
+  readonly attribute XRCoordinateSystem coordinateSystem;
+};
+
+dictionary XRCoordinateSystemEventInit : EventInit {
+  required XRCoordinateSystem coordinateSystem;
+};
+
+//
+// WebGL
+//
+partial dictionary WebGLContextAttributes {
+    XRDevice compatibleXRDevice = null;
+};
+
+partial interface WebGLRenderingContextBase {
+    Promise&lt;void&gt; setCompatibleXRDevice(XRDevice device);
+};
+
+//
+// RenderingContext
+//
+[SecureContext, Exposed=Window] interface XRPresentationContext {
+  readonly attribute HTMLCanvasElement canvas;
+};
+</code></pre></article></body></html>

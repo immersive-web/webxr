@@ -1176,7 +1176,7 @@ Possible extra rowspan handling
 		}
 	}
 </style>
-  <meta content="Bikeshed version 66a76cd06d4fa9e491630583356008a71a166760" name="generator">
+  <meta content="Bikeshed version 5afc3ab5248efd53ff0fd6d61ad878a3dc5a357a" name="generator">
   <link href="https://immersive-web.github.io/webxr/" rel="canonical">
 <style>
   /* Re-add this once there are actually stable sections of the spec */
@@ -1441,7 +1441,7 @@ pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebXR Device API</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2018-03-02">2 March 2018</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2018-03-07">7 March 2018</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1463,7 +1463,7 @@ pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em
    <div data-fill-with="warning"></div>
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" src="https://licensebuttons.net/p/zero/1.0/80x15.png"></a> To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 2 March 2018,
+In addition, as of 7 March 2018,
 the editors have made this specification available under the <a href="http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 Parts of this work may be from another specification document.  If so, those parts are instead covered by the license of that specification document. </p>
@@ -1953,27 +1953,12 @@ xrDevice<span class="p">.</span>requestSession<span class="p">({</span> exclusiv
 [<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#SecureContext" id="ref-for-SecureContext⑨">SecureContext</a>, <a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑧">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="xrview"><code>XRView</code></dfn> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#enumdef-xreye" id="ref-for-enumdef-xreye">XREye</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="XREye" href="#dom-xrview-eye" id="ref-for-dom-xrview-eye">eye</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array①"><span class="kt">Float32Array</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array" href="#dom-xrview-projectionmatrix" id="ref-for-dom-xrview-projectionmatrix">projectionMatrix</a>;
-
-  <a class="n" data-link-type="idl-name" href="#xrviewport" id="ref-for-xrviewport">XRViewport</a>? <a class="nv idl-code" data-link-type="method" href="#dom-xrview-getviewport" id="ref-for-dom-xrview-getviewport">getViewport</a>(<a class="n" data-link-type="idl-name" href="#xrlayer" id="ref-for-xrlayer①">XRLayer</a> <dfn class="nv idl-code" data-dfn-for="XRView/getViewport(layer)" data-dfn-type="argument" data-export="" id="dom-xrview-getviewport-layer-layer"><code>layer</code><a class="self-link" href="#dom-xrview-getviewport-layer-layer"></a></dfn>);
 };
 </pre>
     <p>An <code class="idl"><a data-link-type="idl" href="#xrview" id="ref-for-xrview①">XRView</a></code> describes a single <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="view">view</dfn> into an XR scene. Each <a data-link-type="dfn" href="#view" id="ref-for-view">view</a> corresponds to a display or portion of a display used by an XR device to present imagery to the user. They are used to retrieve all the information necessary to render content that is well aligned to the <a data-link-type="dfn" href="#view" id="ref-for-view①">view</a>'s physical output properties, including the field of view, eye offset, and other optical properties.</p>
     <p>Many HMDs will request that content render two <a data-link-type="dfn" href="#view" id="ref-for-view②">views</a>, one for the left eye and one for the right, while most magic window devices will only request one <a data-link-type="dfn" href="#view" id="ref-for-view③">view</a>. However, no guarantee is made about the number of <a data-link-type="dfn" href="#view" id="ref-for-view④">views</a> any XR device uses, nor is the number of <a data-link-type="dfn" href="#view" id="ref-for-view⑤">views</a> required to be constant for the duration of an <code class="idl"><a data-link-type="idl" href="#xrsession" id="ref-for-xrsession①⑧">XRSession</a></code>. For example: A magic window device may request two views if it is capable of stereo output, but may revert to requesting a single view for performance reasons if the stereo output mode is turned off. Similarly, HMDs may request more than two views to facilitate a wide field of view or displays of different pixel density. <a data-link-type="dfn" href="#view" id="ref-for-view⑥">Views</a> may cover overlapping regions of the user’s vision and the order is not guaranteed.</p>
     <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="XRView" data-dfn-type="attribute" data-export="" id="dom-xrview-eye"><code>eye</code></dfn> attribute describes which eye this view is expected to be shown to. This attribute’s primary purpose is to ensure that prerendered stereo content can present the correct portion of the content to the correct eye. If the view does not have an intrinsicly associated eye (the display is monoscopic, for example) this attribute MUST be set to <code>"left"</code>.</p>
     <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="XRView" data-dfn-type="attribute" data-export="" id="dom-xrview-projectionmatrix"><code>projectionMatrix</code></dfn> attribute provides a <a data-link-type="dfn" href="#matrix" id="ref-for-matrix">matrix</a> describing the projection to be used for the view’s rendering. It is <b>strongly recommended</b> that applications use this matrix without modification. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.</p>
-    <p><code class="idl"><a data-link-type="idl" href="#dom-xrview-getviewport" id="ref-for-dom-xrview-getviewport①">getViewport()</a></code> queries the <code class="idl"><a data-link-type="idl" href="#xrviewport" id="ref-for-xrviewport①">XRViewport</a></code> content for this view should be rendered to for the passed <code class="idl"><a data-link-type="idl" href="#xrlayer" id="ref-for-xrlayer②">XRLayer</a></code>.</p>
-    <div class="algorithm" data-algorithm="get-viewport">
-     <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="XRView" data-dfn-type="method" data-export="" id="dom-xrview-getviewport"><code>getViewport(<var>layer</var>)</code></dfn> method, when invoked, MUST run the following steps:</p>
-     <ol>
-      <li data-md="">
-       <p>Let <var>view</var> be the target <code class="idl"><a data-link-type="idl" href="#xrview" id="ref-for-xrview②">XRView</a></code>.</p>
-      <li data-md="">
-       <p>If <var>layer</var> was created with a different <code class="idl"><a data-link-type="idl" href="#xrsession" id="ref-for-xrsession①⑨">XRSession</a></code> than the one that produced <var>view</var> return <code>null</code></p>
-      <li data-md="">
-       <p>???</p>
-     </ol>
-    </div>
-    <p class="issue" id="issue-333dc236"><a class="self-link" href="#issue-333dc236"></a> Not sure how to best describe remainder of steps here. Seems like deferring to the layer for viewport logic is best.</p>
     <h3 class="heading settled" data-level="8.2" id="xrviewport-interface"><span class="secno">8.2. </span><span class="content">XRViewport</span><a class="self-link" href="#xrviewport-interface"></a></h3>
 <pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#SecureContext" id="ref-for-SecureContext①⓪">SecureContext</a>, <a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑨">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="xrviewport"><code>XRViewport</code></dfn> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long" id="ref-for-idl-long②"><span class="kt">long</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="long" href="#dom-xrviewport-x" id="ref-for-dom-xrviewport-x">x</a>;
@@ -1982,17 +1967,17 @@ xrDevice<span class="p">.</span>requestSession<span class="p">({</span> exclusiv
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long" id="ref-for-idl-long⑤"><span class="kt">long</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="long" href="#dom-xrviewport-height" id="ref-for-dom-xrviewport-height">height</a>;
 };
 </pre>
-    <p>An <code class="idl"><a data-link-type="idl" href="#xrviewport" id="ref-for-xrviewport②">XRViewport</a></code> object describes a <dfn data-dfn-type="dfn" data-noexport="" id="viewport">viewport<a class="self-link" href="#viewport"></a></dfn>, or rectangular region, of a graphics surface. The <dfn class="dfn-paneled idl-code" data-dfn-for="XRViewport" data-dfn-type="attribute" data-export="" id="dom-xrviewport-x"><code>x</code></dfn> and <dfn class="dfn-paneled idl-code" data-dfn-for="XRViewport" data-dfn-type="attribute" data-export="" id="dom-xrviewport-y"><code>y</code></dfn> attributes define an offset from the surface origin and the <dfn class="dfn-paneled idl-code" data-dfn-for="XRViewport" data-dfn-type="attribute" data-export="" id="dom-xrviewport-width"><code>width</code></dfn> and <dfn class="dfn-paneled idl-code" data-dfn-for="XRViewport" data-dfn-type="attribute" data-export="" id="dom-xrviewport-height"><code>height</code></dfn> attributes define the rectangular dimensions of the viewport.</p>
+    <p>An <code class="idl"><a data-link-type="idl" href="#xrviewport" id="ref-for-xrviewport">XRViewport</a></code> object describes a <dfn data-dfn-type="dfn" data-noexport="" id="viewport">viewport<a class="self-link" href="#viewport"></a></dfn>, or rectangular region, of a graphics surface. The <dfn class="dfn-paneled idl-code" data-dfn-for="XRViewport" data-dfn-type="attribute" data-export="" id="dom-xrviewport-x"><code>x</code></dfn> and <dfn class="dfn-paneled idl-code" data-dfn-for="XRViewport" data-dfn-type="attribute" data-export="" id="dom-xrviewport-y"><code>y</code></dfn> attributes define an offset from the surface origin and the <dfn class="dfn-paneled idl-code" data-dfn-for="XRViewport" data-dfn-type="attribute" data-export="" id="dom-xrviewport-width"><code>width</code></dfn> and <dfn class="dfn-paneled idl-code" data-dfn-for="XRViewport" data-dfn-type="attribute" data-export="" id="dom-xrviewport-height"><code>height</code></dfn> attributes define the rectangular dimensions of the viewport.</p>
     <p>The exact interpretation of the viewport values depends on the conventions of the graphics API the viewport is associated with:</p>
     <ul>
      <li data-md="">
       <p>When used with a <code class="idl"><a data-link-type="idl" href="#xrwebgllayer" id="ref-for-xrwebgllayer①">XRWebGLLayer</a></code> the <code class="idl"><a data-link-type="idl" href="#dom-xrviewport-x" id="ref-for-dom-xrviewport-x①">x</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-xrviewport-y" id="ref-for-dom-xrviewport-y①">y</a></code> attributes specify the lower left corner of the viewport rectangle, in pixels, with the viewport rectangle extending <code class="idl"><a data-link-type="idl" href="#dom-xrviewport-width" id="ref-for-dom-xrviewport-width①">width</a></code> pixels to the right of <code class="idl"><a data-link-type="idl" href="#dom-xrviewport-x" id="ref-for-dom-xrviewport-x②">x</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-xrviewport-height" id="ref-for-dom-xrviewport-height①">height</a></code> pixels above <code class="idl"><a data-link-type="idl" href="#dom-xrviewport-y" id="ref-for-dom-xrviewport-y②">y</a></code>. The values can be passed to the <a data-link-type="dfn" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14.4" id="ref-for-5.14.4">WebGL viewport</a> function directly.</p>
     </ul>
-    <div class="example" id="example-84bf5b91">
-     <a class="self-link" href="#example-84bf5b91"></a> The following code sets the <a data-link-type="dfn" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14.4" id="ref-for-5.14.4①">WebGL viewport</a> for an <code class="idl"><a data-link-type="idl" href="#xrwebgllayer" id="ref-for-xrwebgllayer②">XRWebGLLayer</a></code>'s framebuffer using an <code class="idl"><a data-link-type="idl" href="#xrviewport" id="ref-for-xrviewport③">XRViewport</a></code> retrieved from an <code class="idl"><a data-link-type="idl" href="#xrview" id="ref-for-xrview③">XRView</a></code>. 
+    <div class="example" id="example-5c33f750">
+     <a class="self-link" href="#example-5c33f750"></a> The following code sets the <a data-link-type="dfn" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14.4" id="ref-for-5.14.4①">WebGL viewport</a> for an <code class="idl"><a data-link-type="idl" href="#xrwebgllayer" id="ref-for-xrwebgllayer②">XRWebGLLayer</a></code>'s framebuffer using an <code class="idl"><a data-link-type="idl" href="#xrviewport" id="ref-for-xrviewport①">XRViewport</a></code> retrieved from an <code class="idl"><a data-link-type="idl" href="#xrview" id="ref-for-xrview②">XRView</a></code>. 
 <pre class="highlight">xrSession<span class="p">.</span>requestAnimationFrame<span class="p">((</span>time<span class="p">,</span> xrFrame<span class="p">)</span> <span class="p">=></span> <span class="p">{</span>
   <span class="kd">let</span> xrView <span class="o">=</span> xrFrame<span class="p">.</span>views<span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-  <span class="kd">let</span> xrViewport <span class="o">=</span> xrView<span class="p">.</span>getViewport<span class="p">(</span>xrWebGLLayer<span class="p">);</span>
+  <span class="kd">let</span> xrViewport <span class="o">=</span> xrWebGLLayer<span class="p">.</span>getViewport<span class="p">(</span>xrView<span class="p">);</span>
 
   gl<span class="p">.</span>bindFramebuffer<span class="p">(</span>xrWebGLLayer<span class="p">.</span>framebuffer<span class="p">);</span>
   gl<span class="p">.</span>viewport<span class="p">(</span>xrViewport<span class="p">.</span>x<span class="p">,</span> xrViewport<span class="p">.</span>y<span class="p">,</span> xrViewport<span class="p">.</span>width<span class="p">,</span> xrViewport<span class="p">.</span>height<span class="p">);</span>
@@ -2009,17 +1994,17 @@ xrDevice<span class="p">.</span>requestSession<span class="p">({</span> exclusiv
 <pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#SecureContext" id="ref-for-SecureContext①①">SecureContext</a>, <a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①⓪">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="xrdevicepose"><code>XRDevicePose</code></dfn> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array③"><span class="kt">Float32Array</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array" href="#dom-xrdevicepose-posemodelmatrix" id="ref-for-dom-xrdevicepose-posemodelmatrix">poseModelMatrix</a>;
 
-  <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array④"><span class="kt">Float32Array</span></a> <a class="nv idl-code" data-link-type="method" href="#dom-xrdevicepose-getviewmatrix" id="ref-for-dom-xrdevicepose-getviewmatrix">getViewMatrix</a>(<a class="n" data-link-type="idl-name" href="#xrview" id="ref-for-xrview④">XRView</a> <dfn class="nv idl-code" data-dfn-for="XRDevicePose/getViewMatrix(view)" data-dfn-type="argument" data-export="" id="dom-xrdevicepose-getviewmatrix-view-view"><code>view</code><a class="self-link" href="#dom-xrdevicepose-getviewmatrix-view-view"></a></dfn>);
+  <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array④"><span class="kt">Float32Array</span></a> <a class="nv idl-code" data-link-type="method" href="#dom-xrdevicepose-getviewmatrix" id="ref-for-dom-xrdevicepose-getviewmatrix">getViewMatrix</a>(<a class="n" data-link-type="idl-name" href="#xrview" id="ref-for-xrview③">XRView</a> <dfn class="nv idl-code" data-dfn-for="XRDevicePose/getViewMatrix(view)" data-dfn-type="argument" data-export="" id="dom-xrdevicepose-getviewmatrix-view-view"><code>view</code><a class="self-link" href="#dom-xrdevicepose-getviewmatrix-view-view"></a></dfn>);
 };
 </pre>
     <p>An <code class="idl"><a data-link-type="idl" href="#xrdevicepose" id="ref-for-xrdevicepose①">XRDevicePose</a></code> describes the position and orientation of an <code class="idl"><a data-link-type="idl" href="#xrdevice" id="ref-for-xrdevice①⑤">XRDevice</a></code> relative to the <code class="idl"><a data-link-type="idl" href="#xrcoordinatesystem" id="ref-for-xrcoordinatesystem③">XRCoordinateSystem</a></code> it was queried with. It also describes the view and projection matrices that should be used by the application to render a frame of an XR scene.</p>
     <p><dfn class="dfn-paneled idl-code" data-dfn-for="XRDevicePose" data-dfn-type="attribute" data-export="" id="dom-xrdevicepose-posemodelmatrix"><code>poseModelMatrix</code></dfn></p>
-    <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="XRDevicePose" data-dfn-type="method" data-export="" id="dom-xrdevicepose-getviewmatrix"><code>getViewMatrix(view)</code></dfn> method returns a <a data-link-type="dfn" href="#matrix" id="ref-for-matrix①">matrix</a> describing the view transform to be used when rendering the passed <code class="idl"><a data-link-type="idl" href="#xrview" id="ref-for-xrview⑤">XRView</a></code>. The matrices represent the inverse of the model matrix of the associated viewpoint.</p>
+    <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="XRDevicePose" data-dfn-type="method" data-export="" id="dom-xrdevicepose-getviewmatrix"><code>getViewMatrix(view)</code></dfn> method returns a <a data-link-type="dfn" href="#matrix" id="ref-for-matrix①">matrix</a> describing the view transform to be used when rendering the passed <code class="idl"><a data-link-type="idl" href="#xrview" id="ref-for-xrview④">XRView</a></code>. The matrices represent the inverse of the model matrix of the associated viewpoint.</p>
     <h2 class="heading settled" data-level="10" id="layers"><span class="secno">10. </span><span class="content">Layers</span><a class="self-link" href="#layers"></a></h2>
     <h3 class="heading settled" data-level="10.1" id="xrlayer-interface"><span class="secno">10.1. </span><span class="content">XRLayer</span><a class="self-link" href="#xrlayer-interface"></a></h3>
 <pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#SecureContext" id="ref-for-SecureContext①②">SecureContext</a>, <a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="xrlayer"><code>XRLayer</code></dfn> {};
 </pre>
-    <p>An <code class="idl"><a data-link-type="idl" href="#xrlayer" id="ref-for-xrlayer③">XRLayer</a></code> defines a source of bitmap images and a description of how the image is to be rendered in the <code class="idl"><a data-link-type="idl" href="#xrdevice" id="ref-for-xrdevice①⑥">XRDevice</a></code>. Initially only one type of layer, the <code class="idl"><a data-link-type="idl" href="#xrwebgllayer" id="ref-for-xrwebgllayer③">XRWebGLLayer</a></code>, is defined but future revisions of the spec may extend the available layer types.</p>
+    <p>An <code class="idl"><a data-link-type="idl" href="#xrlayer" id="ref-for-xrlayer①">XRLayer</a></code> defines a source of bitmap images and a description of how the image is to be rendered in the <code class="idl"><a data-link-type="idl" href="#xrdevice" id="ref-for-xrdevice①⑥">XRDevice</a></code>. Initially only one type of layer, the <code class="idl"><a data-link-type="idl" href="#xrwebgllayer" id="ref-for-xrwebgllayer③">XRWebGLLayer</a></code>, is defined but future revisions of the spec may extend the available layer types.</p>
     <h3 class="heading settled" data-level="10.2" id="xrwebgllayer-interface"><span class="secno">10.2. </span><span class="content">XRWebGLLayer</span><a class="self-link" href="#xrwebgllayer-interface"></a></h3>
 <pre class="idl highlight def"><span class="kt">typedef</span> (<a class="n" data-link-type="idl-name" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#webglrenderingcontext" id="ref-for-webglrenderingcontext">WebGLRenderingContext</a> <span class="kt">or</span>
          <a class="n" data-link-type="idl-name" href="https://www.khronos.org/registry/webgl/specs/latest/2.0/#webgl2renderingcontext" id="ref-for-webgl2renderingcontext">WebGL2RenderingContext</a>) <dfn class="nv dfn-paneled idl-code" data-dfn-type="typedef" data-export="" id="typedefdef-xrwebglrenderingcontext"><code>XRWebGLRenderingContext</code></dfn>;
@@ -2033,10 +2018,10 @@ xrDevice<span class="p">.</span>requestSession<span class="p">({</span> exclusiv
   <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double⑥"><span class="kt">double</span></a> <dfn class="nv idl-code" data-dfn-for="XRWebGLLayerInit" data-dfn-type="dict-member" data-export="" data-type="double " id="dom-xrwebgllayerinit-framebufferscalefactor"><code>framebufferScaleFactor</code><a class="self-link" href="#dom-xrwebgllayerinit-framebufferscalefactor"></a></dfn>;
 };
 
-[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#SecureContext" id="ref-for-SecureContext①③">SecureContext</a>, <a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①②">Exposed</a>=<span class="n">Window</span>, <a class="nv idl-code" data-link-type="constructor" href="#dom-xrwebgllayer-xrwebgllayer" id="ref-for-dom-xrwebgllayer-xrwebgllayer">Constructor</a>(<a class="n" data-link-type="idl-name" href="#xrsession" id="ref-for-xrsession②⓪">XRSession</a> <dfn class="nv idl-code" data-dfn-for="XRWebGLLayer/XRWebGLLayer(session, context, layerInit)" data-dfn-type="argument" data-export="" id="dom-xrwebgllayer-xrwebgllayer-session-context-layerinit-session"><code>session</code><a class="self-link" href="#dom-xrwebgllayer-xrwebgllayer-session-context-layerinit-session"></a></dfn>,
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#SecureContext" id="ref-for-SecureContext①③">SecureContext</a>, <a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①②">Exposed</a>=<span class="n">Window</span>, <a class="nv idl-code" data-link-type="constructor" href="#dom-xrwebgllayer-xrwebgllayer" id="ref-for-dom-xrwebgllayer-xrwebgllayer">Constructor</a>(<a class="n" data-link-type="idl-name" href="#xrsession" id="ref-for-xrsession①⑨">XRSession</a> <dfn class="nv idl-code" data-dfn-for="XRWebGLLayer/XRWebGLLayer(session, context, layerInit)" data-dfn-type="argument" data-export="" id="dom-xrwebgllayer-xrwebgllayer-session-context-layerinit-session"><code>session</code><a class="self-link" href="#dom-xrwebgllayer-xrwebgllayer-session-context-layerinit-session"></a></dfn>,
              <a class="n" data-link-type="idl-name" href="#typedefdef-xrwebglrenderingcontext" id="ref-for-typedefdef-xrwebglrenderingcontext">XRWebGLRenderingContext</a> <dfn class="nv idl-code" data-dfn-for="XRWebGLLayer/XRWebGLLayer(session, context, layerInit)" data-dfn-type="argument" data-export="" id="dom-xrwebgllayer-xrwebgllayer-session-context-layerinit-context"><code>context</code><a class="self-link" href="#dom-xrwebgllayer-xrwebgllayer-session-context-layerinit-context"></a></dfn>,
              <span class="kt">optional</span> <a class="n" data-link-type="idl-name" href="#dictdef-xrwebgllayerinit" id="ref-for-dictdef-xrwebgllayerinit">XRWebGLLayerInit</a> <dfn class="nv idl-code" data-dfn-for="XRWebGLLayer/XRWebGLLayer(session, context, layerInit)" data-dfn-type="argument" data-export="" id="dom-xrwebgllayer-xrwebgllayer-session-context-layerinit-layerinit"><code>layerInit</code><a class="self-link" href="#dom-xrwebgllayer-xrwebgllayer-session-context-layerinit-layerinit"></a></dfn>)]
-<span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="xrwebgllayer"><code>XRWebGLLayer</code></dfn> : <a class="n" data-link-type="idl-name" href="#xrlayer" id="ref-for-xrlayer④">XRLayer</a> {
+<span class="kt">interface</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="interface" data-export="" id="xrwebgllayer"><code>XRWebGLLayer</code></dfn> : <a class="n" data-link-type="idl-name" href="#xrlayer" id="ref-for-xrlayer②">XRLayer</a> {
   // Attributes
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#typedefdef-xrwebglrenderingcontext" id="ref-for-typedefdef-xrwebglrenderingcontext①">XRWebGLRenderingContext</a> <dfn class="nv dfn-paneled idl-code" data-dfn-for="XRWebGLLayer" data-dfn-type="attribute" data-export="" data-readonly="" data-type="XRWebGLRenderingContext" id="dom-xrwebgllayer-context"><code>context</code></dfn>;
 
@@ -2051,6 +2036,7 @@ xrDevice<span class="p">.</span>requestSession<span class="p">({</span> exclusiv
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long①"><span class="kt">unsigned</span> <span class="kt">long</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="unsigned long" href="#dom-xrwebgllayer-framebufferheight" id="ref-for-dom-xrwebgllayer-framebufferheight">framebufferHeight</a>;
 
   // Methods
+  <a class="n" data-link-type="idl-name" href="#xrviewport" id="ref-for-xrviewport②">XRViewport</a>? <a class="nv idl-code" data-link-type="method" href="#dom-xrwebgllayer-getviewport" id="ref-for-dom-xrwebgllayer-getviewport">getViewport</a>(<a class="n" data-link-type="idl-name" href="#xrview" id="ref-for-xrview⑤">XRView</a> <dfn class="nv idl-code" data-dfn-for="XRWebGLLayer/getViewport(view)" data-dfn-type="argument" data-export="" id="dom-xrwebgllayer-getviewport-view-view"><code>view</code><a class="self-link" href="#dom-xrwebgllayer-getviewport-view-view"></a></dfn>);
   <span class="kt">void</span> <a class="nv idl-code" data-link-type="method" href="#dom-xrwebgllayer-requestviewportscaling" id="ref-for-dom-xrwebgllayer-requestviewportscaling">requestViewportScaling</a>(<a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double⑦"><span class="kt">double</span></a> <dfn class="nv idl-code" data-dfn-for="XRWebGLLayer/requestViewportScaling(viewportScaleFactor)" data-dfn-type="argument" data-export="" id="dom-xrwebgllayer-requestviewportscaling-viewportscalefactor-viewportscalefactor"><code>viewportScaleFactor</code><a class="self-link" href="#dom-xrwebgllayer-requestviewportscaling-viewportscalefactor-viewportscalefactor"></a></dfn>);
 };
 </pre>
@@ -2090,6 +2076,18 @@ xrDevice<span class="p">.</span>requestSession<span class="p">({</span> exclusiv
      </ol>
     </div>
     <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="XRWebGLLayer" data-dfn-type="attribute" data-export="" id="dom-xrwebgllayer-framebufferwidth"><code>framebufferWidth</code></dfn> and <dfn class="dfn-paneled idl-code" data-dfn-for="XRWebGLLayer" data-dfn-type="attribute" data-export="" id="dom-xrwebgllayer-framebufferheight"><code>framebufferHeight</code></dfn> attributes return the width and height of the <a data-link-type="dfn" href="#swap-chain" id="ref-for-swap-chain②">swap chain</a>'s backbuffer, respectively.</p>
+    <p><code class="idl"><a data-link-type="idl" href="#dom-xrwebgllayer-getviewport" id="ref-for-dom-xrwebgllayer-getviewport①">getViewport()</a></code> queries the <code class="idl"><a data-link-type="idl" href="#xrviewport" id="ref-for-xrviewport③">XRViewport</a></code> the given <code class="idl"><a data-link-type="idl" href="#xrview" id="ref-for-xrview⑥">XRView</a></code> should use when rendering to the layer.</p>
+    <div class="algorithm" data-algorithm="get-viewport">
+     <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="XRWebGLLayer" data-dfn-type="method" data-export="" id="dom-xrwebgllayer-getviewport"><code>getViewport(<var>view</var>)</code></dfn> method, when invoked, MUST run the following steps:</p>
+     <ol>
+      <li data-md="">
+       <p>Let <var>view</var> be the target <code class="idl"><a data-link-type="idl" href="#xrview" id="ref-for-xrview⑦">XRView</a></code>.</p>
+      <li data-md="">
+       <p>If <var>layer</var> was created with a different <code class="idl"><a data-link-type="idl" href="#xrsession" id="ref-for-xrsession②⓪">XRSession</a></code> than the one that produced <var>view</var> return <code>null</code></p>
+      <li data-md="">
+       <p>???</p>
+     </ol>
+    </div>
     <p><dfn class="dfn-paneled idl-code" data-dfn-for="XRWebGLLayer" data-dfn-type="method" data-export="" id="dom-xrwebgllayer-requestviewportscaling"><code>requestViewportScaling(viewportScaleFactor)</code></dfn></p>
     <p class="issue" id="issue-9d80d63c"><a class="self-link" href="#issue-9d80d63c"></a> Document what it means when a context <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="supports-multiview">supports multiview</dfn>.</p>
     <p class="issue" id="issue-bb06cca0"><a class="self-link" href="#issue-bb06cca0"></a> Document what an <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="opaque">opaque</dfn> framebuffer is.</p>
@@ -2480,7 +2478,7 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
    <li><a href="#dom-xrpresentationframe-getdevicepose">getDevicePose(coordinateSystem)</a><span>, in §6.1</span>
    <li><a href="#dom-xrcoordinatesystem-gettransformto">getTransformTo(other)</a><span>, in §7.1</span>
    <li><a href="#dom-xrdevicepose-getviewmatrix">getViewMatrix(view)</a><span>, in §9.2</span>
-   <li><a href="#dom-xrview-getviewport">getViewport(layer)</a><span>, in §8.1</span>
+   <li><a href="#dom-xrwebgllayer-getviewport">getViewport(view)</a><span>, in §10.2</span>
    <li><a href="#dom-xrframeofreferencetype-headmodel">"headModel"</a><span>, in §7.2</span>
    <li><a href="#dom-xrframeofreferencetype-headmodel">headModel</a><span>, in §7.2</span>
    <li><a href="#dom-xrviewport-height">height</a><span>, in §8.2</span>
@@ -2710,7 +2708,7 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
 
   <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double⑧"><span class="kt">double</span></a> <a class="nv" data-type="double" href="#dom-xrsession-depthnear"><code>depthNear</code></a>;
   <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double①①"><span class="kt">double</span></a> <a class="nv" data-type="double" href="#dom-xrsession-depthfar"><code>depthFar</code></a>;
-  <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#xrlayer" id="ref-for-xrlayer⑤">XRLayer</a> <a class="nv" data-type="XRLayer" href="#dom-xrsession-baselayer"><code>baseLayer</code></a>;
+  <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#xrlayer" id="ref-for-xrlayer③">XRLayer</a> <a class="nv" data-type="XRLayer" href="#dom-xrsession-baselayer"><code>baseLayer</code></a>;
 
   // Methods
   <span class="kt">Promise</span>&lt;<a class="n" data-link-type="idl-name" href="#xrframeofreference" id="ref-for-xrframeofreference④">XRFrameOfReference</a>> <a class="nv idl-code" data-link-type="method" href="#dom-xrsession-requestframeofreference" id="ref-for-dom-xrsession-requestframeofreference①">requestFrameOfReference</a>(<a class="n" data-link-type="idl-name" href="#enumdef-xrframeofreferencetype" id="ref-for-enumdef-xrframeofreferencetype②">XRFrameOfReferenceType</a> <a class="nv" href="#dom-xrsession-requestframeofreference-type-options-type"><code>type</code></a>, <span class="kt">optional</span> <a class="n" data-link-type="idl-name" href="#dictdef-xrframeofreferenceoptions" id="ref-for-dictdef-xrframeofreferenceoptions①">XRFrameOfReferenceOptions</a> <a class="nv" href="#dom-xrsession-requestframeofreference-type-options-options"><code>options</code></a>);
@@ -2730,7 +2728,7 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
 <span class="kt">callback</span> <a class="nv" href="#callbackdef-xrframerequestcallback"><code>XRFrameRequestCallback</code></a> = <span class="kt">void</span> (<a class="n" data-link-type="idl-name" href="http://www.w3.org/TR/hr-time/#domhighrestimestamp" id="ref-for-domhighrestimestamp①">DOMHighResTimeStamp</a> <a class="nv" href="#dom-xrframerequestcallback-time"><code>time</code></a>, <a class="n" data-link-type="idl-name" href="#xrpresentationframe" id="ref-for-xrpresentationframe⑤">XRPresentationFrame</a> <a class="nv" href="#dom-xrframerequestcallback-frame"><code>frame</code></a>);
 
 [<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#SecureContext" id="ref-for-SecureContext④①">SecureContext</a>, <a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed③①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#xrpresentationframe"><code>XRPresentationFrame</code></a> {
-  <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">FrozenArray</span>&lt;<a class="n" data-link-type="idl-name" href="#xrview" id="ref-for-xrview⑥">XRView</a>> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="FrozenArray<XRView>" href="#dom-xrpresentationframe-views" id="ref-for-dom-xrpresentationframe-views①">views</a>;
+  <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">FrozenArray</span>&lt;<a class="n" data-link-type="idl-name" href="#xrview" id="ref-for-xrview⑧">XRView</a>> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="FrozenArray<XRView>" href="#dom-xrpresentationframe-views" id="ref-for-dom-xrpresentationframe-views①">views</a>;
 
   <a class="n" data-link-type="idl-name" href="#xrdevicepose" id="ref-for-xrdevicepose②">XRDevicePose</a>? <a class="nv idl-code" data-link-type="method" href="#dom-xrpresentationframe-getdevicepose" id="ref-for-dom-xrpresentationframe-getdevicepose①">getDevicePose</a>(<a class="n" data-link-type="idl-name" href="#xrcoordinatesystem" id="ref-for-xrcoordinatesystem⑦">XRCoordinateSystem</a> <a class="nv" href="#dom-xrpresentationframe-getdevicepose-coordinatesystem-coordinatesystem"><code>coordinateSystem</code></a>);
 };
@@ -2774,8 +2772,6 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
 [<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#SecureContext" id="ref-for-SecureContext⑨①">SecureContext</a>, <a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑧①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#xrview"><code>XRView</code></a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#enumdef-xreye" id="ref-for-enumdef-xreye①">XREye</a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="XREye" href="#dom-xrview-eye" id="ref-for-dom-xrview-eye①">eye</a>;
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array①①"><span class="kt">Float32Array</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array" href="#dom-xrview-projectionmatrix" id="ref-for-dom-xrview-projectionmatrix①">projectionMatrix</a>;
-
-  <a class="n" data-link-type="idl-name" href="#xrviewport" id="ref-for-xrviewport④">XRViewport</a>? <a class="nv idl-code" data-link-type="method" href="#dom-xrview-getviewport" id="ref-for-dom-xrview-getviewport②">getViewport</a>(<a class="n" data-link-type="idl-name" href="#xrlayer" id="ref-for-xrlayer①①">XRLayer</a> <a class="nv" href="#dom-xrview-getviewport-layer-layer"><code>layer</code></a>);
 };
 
 [<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#SecureContext" id="ref-for-SecureContext①⓪①">SecureContext</a>, <a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑨①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#xrviewport"><code>XRViewport</code></a> {
@@ -2788,7 +2784,7 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
 [<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#SecureContext" id="ref-for-SecureContext①①①">SecureContext</a>, <a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①⓪①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#xrdevicepose"><code>XRDevicePose</code></a> {
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array③①"><span class="kt">Float32Array</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="Float32Array" href="#dom-xrdevicepose-posemodelmatrix" id="ref-for-dom-xrdevicepose-posemodelmatrix①">poseModelMatrix</a>;
 
-  <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array④①"><span class="kt">Float32Array</span></a> <a class="nv idl-code" data-link-type="method" href="#dom-xrdevicepose-getviewmatrix" id="ref-for-dom-xrdevicepose-getviewmatrix①">getViewMatrix</a>(<a class="n" data-link-type="idl-name" href="#xrview" id="ref-for-xrview④①">XRView</a> <a class="nv" href="#dom-xrdevicepose-getviewmatrix-view-view"><code>view</code></a>);
+  <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-Float32Array" id="ref-for-idl-Float32Array④①"><span class="kt">Float32Array</span></a> <a class="nv idl-code" data-link-type="method" href="#dom-xrdevicepose-getviewmatrix" id="ref-for-dom-xrdevicepose-getviewmatrix①">getViewMatrix</a>(<a class="n" data-link-type="idl-name" href="#xrview" id="ref-for-xrview③①">XRView</a> <a class="nv" href="#dom-xrdevicepose-getviewmatrix-view-view"><code>view</code></a>);
 };
 
 [<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#SecureContext" id="ref-for-SecureContext①②①">SecureContext</a>, <a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①①①">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#xrlayer"><code>XRLayer</code></a> {};
@@ -2805,10 +2801,10 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
   <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double⑥①"><span class="kt">double</span></a> <a class="nv" data-type="double " href="#dom-xrwebgllayerinit-framebufferscalefactor"><code>framebufferScaleFactor</code></a>;
 };
 
-[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#SecureContext" id="ref-for-SecureContext①③①">SecureContext</a>, <a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①②①">Exposed</a>=<span class="n">Window</span>, <a class="nv idl-code" data-link-type="constructor" href="#dom-xrwebgllayer-xrwebgllayer" id="ref-for-dom-xrwebgllayer-xrwebgllayer①">Constructor</a>(<a class="n" data-link-type="idl-name" href="#xrsession" id="ref-for-xrsession②⓪①">XRSession</a> <a class="nv" href="#dom-xrwebgllayer-xrwebgllayer-session-context-layerinit-session"><code>session</code></a>,
+[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#SecureContext" id="ref-for-SecureContext①③①">SecureContext</a>, <a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①②①">Exposed</a>=<span class="n">Window</span>, <a class="nv idl-code" data-link-type="constructor" href="#dom-xrwebgllayer-xrwebgllayer" id="ref-for-dom-xrwebgllayer-xrwebgllayer①">Constructor</a>(<a class="n" data-link-type="idl-name" href="#xrsession" id="ref-for-xrsession①⑨①">XRSession</a> <a class="nv" href="#dom-xrwebgllayer-xrwebgllayer-session-context-layerinit-session"><code>session</code></a>,
              <a class="n" data-link-type="idl-name" href="#typedefdef-xrwebglrenderingcontext" id="ref-for-typedefdef-xrwebglrenderingcontext②">XRWebGLRenderingContext</a> <a class="nv" href="#dom-xrwebgllayer-xrwebgllayer-session-context-layerinit-context"><code>context</code></a>,
              <span class="kt">optional</span> <a class="n" data-link-type="idl-name" href="#dictdef-xrwebgllayerinit" id="ref-for-dictdef-xrwebgllayerinit①">XRWebGLLayerInit</a> <a class="nv" href="#dom-xrwebgllayer-xrwebgllayer-session-context-layerinit-layerinit"><code>layerInit</code></a>)]
-<span class="kt">interface</span> <a class="nv" href="#xrwebgllayer"><code>XRWebGLLayer</code></a> : <a class="n" data-link-type="idl-name" href="#xrlayer" id="ref-for-xrlayer④①">XRLayer</a> {
+<span class="kt">interface</span> <a class="nv" href="#xrwebgllayer"><code>XRWebGLLayer</code></a> : <a class="n" data-link-type="idl-name" href="#xrlayer" id="ref-for-xrlayer②①">XRLayer</a> {
   // Attributes
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#typedefdef-xrwebglrenderingcontext" id="ref-for-typedefdef-xrwebglrenderingcontext①①">XRWebGLRenderingContext</a> <a class="nv" data-readonly="" data-type="XRWebGLRenderingContext" href="#dom-xrwebgllayer-context"><code>context</code></a>;
 
@@ -2823,6 +2819,7 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
   <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long①①"><span class="kt">unsigned</span> <span class="kt">long</span></a> <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="unsigned long" href="#dom-xrwebgllayer-framebufferheight" id="ref-for-dom-xrwebgllayer-framebufferheight①">framebufferHeight</a>;
 
   // Methods
+  <a class="n" data-link-type="idl-name" href="#xrviewport" id="ref-for-xrviewport②①">XRViewport</a>? <a class="nv idl-code" data-link-type="method" href="#dom-xrwebgllayer-getviewport" id="ref-for-dom-xrwebgllayer-getviewport②">getViewport</a>(<a class="n" data-link-type="idl-name" href="#xrview" id="ref-for-xrview⑤①">XRView</a> <a class="nv" href="#dom-xrwebgllayer-getviewport-view-view"><code>view</code></a>);
   <span class="kt">void</span> <a class="nv idl-code" data-link-type="method" href="#dom-xrwebgllayer-requestviewportscaling" id="ref-for-dom-xrwebgllayer-requestviewportscaling①">requestViewportScaling</a>(<a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double⑦①"><span class="kt">double</span></a> <a class="nv" href="#dom-xrwebgllayer-requestviewportscaling-viewportscalefactor-viewportscalefactor"><code>viewportScaleFactor</code></a>);
 };
 
@@ -2867,7 +2864,6 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
    <div class="issue"> Document effects when we <span>blur the session</span><a href="#issue-5edd6583"> ↵ </a></div>
    <div class="issue"> Document how to <span>poll the device pose</span><a href="#issue-cdb417b3"> ↵ </a></div>
    <div class="issue"> This needs to be broken up a bit more and more clearly decribe things such as the frame lifecycle.<a href="#issue-88218c4e"> ↵ </a></div>
-   <div class="issue"> Not sure how to best describe remainder of steps here. Seems like deferring to the layer for viewport logic is best.<a href="#issue-333dc236"> ↵ </a></div>
    <div class="issue"> Document what it means when a context <span>supports multiview</span>.<a href="#issue-9d80d63c"> ↵ </a></div>
    <div class="issue"> Document what an <span>opaque</span> framebuffer is.<a href="#issue-bb06cca0"> ↵ </a></div>
    <div class="issue"> Document the creation of a <span>swap chain</span>.<a href="#issue-fbb18bd5"> ↵ </a></div>
@@ -3029,8 +3025,8 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
     <li><a href="#ref-for-xrsession④">5.2. XRSession</a> <a href="#ref-for-xrsession⑤">(2)</a> <a href="#ref-for-xrsession⑥">(3)</a> <a href="#ref-for-xrsession⑦">(4)</a> <a href="#ref-for-xrsession⑧">(5)</a> <a href="#ref-for-xrsession⑨">(6)</a> <a href="#ref-for-xrsession①⓪">(7)</a> <a href="#ref-for-xrsession①①">(8)</a>
     <li><a href="#ref-for-xrsession①②">5.3. Animation Frames</a> <a href="#ref-for-xrsession①③">(2)</a> <a href="#ref-for-xrsession①④">(3)</a> <a href="#ref-for-xrsession①⑤">(4)</a> <a href="#ref-for-xrsession①⑥">(5)</a>
     <li><a href="#ref-for-xrsession①⑦">6.1. XRPresentationFrame</a>
-    <li><a href="#ref-for-xrsession①⑧">8.1. XRView</a> <a href="#ref-for-xrsession①⑨">(2)</a>
-    <li><a href="#ref-for-xrsession②⓪">10.2. XRWebGLLayer</a>
+    <li><a href="#ref-for-xrsession①⑧">8.1. XRView</a>
+    <li><a href="#ref-for-xrsession①⑨">10.2. XRWebGLLayer</a> <a href="#ref-for-xrsession②⓪">(2)</a>
     <li><a href="#ref-for-xrsession②①">10.3. WebGL Context Compatiblity</a>
     <li><a href="#ref-for-xrsession②②">12.1. XRSessionEvent</a> <a href="#ref-for-xrsession②③">(2)</a> <a href="#ref-for-xrsession②④">(3)</a>
     <li><a href="#ref-for-xrsession②⑤">12.3. Event Types</a> <a href="#ref-for-xrsession②⑥">(2)</a> <a href="#ref-for-xrsession②⑦">(3)</a> <a href="#ref-for-xrsession②⑧">(4)</a> <a href="#ref-for-xrsession②⑨">(5)</a> <a href="#ref-for-xrsession③⓪">(6)</a> <a href="#ref-for-xrsession③①">(7)</a>
@@ -3336,9 +3332,10 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
    <b><a href="#xrview">#xrview</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-xrview">6.1. XRPresentationFrame</a>
-    <li><a href="#ref-for-xrview①">8.1. XRView</a> <a href="#ref-for-xrview②">(2)</a>
-    <li><a href="#ref-for-xrview③">8.2. XRViewport</a>
-    <li><a href="#ref-for-xrview④">9.2. XRDevicePose</a> <a href="#ref-for-xrview⑤">(2)</a>
+    <li><a href="#ref-for-xrview①">8.1. XRView</a>
+    <li><a href="#ref-for-xrview②">8.2. XRViewport</a>
+    <li><a href="#ref-for-xrview③">9.2. XRDevicePose</a> <a href="#ref-for-xrview④">(2)</a>
+    <li><a href="#ref-for-xrview⑤">10.2. XRWebGLLayer</a> <a href="#ref-for-xrview⑥">(2)</a> <a href="#ref-for-xrview⑦">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="view">
@@ -3359,17 +3356,11 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
     <li><a href="#ref-for-dom-xrview-projectionmatrix">8.1. XRView</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-xrview-getviewport">
-   <b><a href="#dom-xrview-getviewport">#dom-xrview-getviewport</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-xrview-getviewport">8.1. XRView</a> <a href="#ref-for-dom-xrview-getviewport①">(2)</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="xrviewport">
    <b><a href="#xrviewport">#xrviewport</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-xrviewport">8.1. XRView</a> <a href="#ref-for-xrviewport①">(2)</a>
-    <li><a href="#ref-for-xrviewport②">8.2. XRViewport</a> <a href="#ref-for-xrviewport③">(2)</a>
+    <li><a href="#ref-for-xrviewport">8.2. XRViewport</a> <a href="#ref-for-xrviewport①">(2)</a>
+    <li><a href="#ref-for-xrviewport②">10.2. XRWebGLLayer</a> <a href="#ref-for-xrviewport③">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-xrviewport-x">
@@ -3426,9 +3417,8 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
    <b><a href="#xrlayer">#xrlayer</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-xrlayer">5.2. XRSession</a>
-    <li><a href="#ref-for-xrlayer①">8.1. XRView</a> <a href="#ref-for-xrlayer②">(2)</a>
-    <li><a href="#ref-for-xrlayer③">10.1. XRLayer</a>
-    <li><a href="#ref-for-xrlayer④">10.2. XRWebGLLayer</a>
+    <li><a href="#ref-for-xrlayer①">10.1. XRLayer</a>
+    <li><a href="#ref-for-xrlayer②">10.2. XRWebGLLayer</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="typedefdef-xrwebglrenderingcontext">
@@ -3542,6 +3532,12 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
    <b><a href="#dom-xrwebgllayer-framebufferheight">#dom-xrwebgllayer-framebufferheight</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-xrwebgllayer-framebufferheight">10.2. XRWebGLLayer</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-xrwebgllayer-getviewport">
+   <b><a href="#dom-xrwebgllayer-getviewport">#dom-xrwebgllayer-getviewport</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-xrwebgllayer-getviewport">10.2. XRWebGLLayer</a> <a href="#ref-for-dom-xrwebgllayer-getviewport①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-xrwebgllayer-requestviewportscaling">

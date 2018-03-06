@@ -226,14 +226,14 @@ Once drawn to, the XR device will continue displaying the contents of the `XRWeb
 To get view matrices or the `poseModelMatrix` for each presentation frame, developers must call `getDevicePose()` and provide an `XRCoordinateSystem` to specify the coordinate system in which these matrices should be defined. Unless the "headModel" `XRFrameOfReference` is being used, this function is not guaranteed to return a value. For example, the most common frame of reference, "eyeLevel", will fail to return a `viewMatrix` or a `poseModelMatrix` under tracking loss conditions. In that case, the page will need to decide how to respond. It may wish to re-render the scene using an older pose, fade the scene out to prevent disorientation, fall back to a "headModel" `XRFrameOfReference`, or simply not update. For more information on this see the [`Advanced functionality`](#orientation-only-tracking) section.
 
 ```js
-function onDrawFrame(xrFrame) {
+function onDrawFrame(timestamp, xrFrame) {
   // Do we have an active session?
   if (xrSession) {
     let pose = xrFrame.getDevicePose(xrFrameOfRef);
     gl.bindFramebuffer(xrSession.baseLayer.framebuffer);
 
     for (let view of xrFrame.views) {
-      let viewport = view.getViewport(xrSession.baseLayer);
+      let viewport = xrSession.baseLayer.getViewport(view);
       gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
       drawScene(view, pose);
     }
@@ -503,11 +503,11 @@ Developers may optionally take advantage of the [WEBGL_multiview extension](http
 
 When `XRWebGLLayer.multiview` is false:
 - The `XRWebGLLayer`'s `framebuffer` will be created in a side-by-side configuration.
-- Calling `XRView.getViewport()` with this type of `XRWebGLLayer` will return a different `XRViewport` for each `XRView`.
+- Calling `XRWebGLLayer.getViewport()` will return a different `XRViewport` for each `XRView`.
 
 When `XRWebGLLayer.multiview` is true:
 - The UA may decide to back the framebuffer with a texture array, side-by-side texture or another implementation of the UA's choosing. This implementation decision must not have any impact how developers author their shaders or setup the WebGL context for rendering.
-- Calling `XRView.getViewport()` with this type of `XRWebGLLayer` will return the same `XRViewport` for all `XRView`s.
+- Calling `XRWebGLLayer.getViewport()` will return the same `XRViewport` for all `XRView`s.
 
 ```js
 function setupWebGLLayer() {
@@ -526,12 +526,12 @@ function onDrawFrame(xrFrame) {
     if (xrSession.baseLayer.multiview) {
       // When using the `WEBGL_multiview` extension, all `XRView`s return the
       // same value from `getViewport()`, so it only needs to be called once.
-      let viewport = xrFrame.views[0].getViewport(xrSession.baseLayer);
+      let viewport = xrSession.baseLayer.getViewport(xrFrame.views[0]);
       gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
       drawMultiviewScene(xrFrame.views, pose);
     } else {
       for (let view of xrFrame.views) {
-        let viewport = view.getViewport(xrSession.baseLayer);
+        let viewport = xrSession.baseLayer.getViewport(view);
         gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
         drawScene(view, pose);
       }
@@ -713,8 +713,6 @@ enum XREye {
 [SecureContext, Exposed=Window] interface XRView {
   readonly attribute XREye eye;
   readonly attribute Float32Array projectionMatrix;
-
-  XRViewport? getViewport(XRLayer layer);
 };
 
 [SecureContext, Exposed=Window] interface XRViewport {
@@ -764,6 +762,7 @@ interface XRWebGLLayer : XRLayer {
   readonly attribute unsigned long framebufferHeight;
   readonly attribute WebGLFramebuffer framebuffer;
 
+  XRViewport? getViewport(XRView view);
   void requestViewportScaling(double viewportScaleFactor);
 };
 

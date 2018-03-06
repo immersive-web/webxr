@@ -592,8 +592,6 @@ enum XREye {
 [SecureContext, Exposed=Window] interface XRView {
   readonly attribute XREye eye;
   readonly attribute Float32Array projectionMatrix;
-
-  XRViewport? getViewport(XRLayer layer);
 };
 </pre>
 
@@ -604,20 +602,6 @@ Many HMDs will request that content render two [=views=], one for the left eye a
 The <dfn attribute for="XRView">eye</dfn> attribute describes which eye this view is expected to be shown to. This attribute's primary purpose is to ensure that prerendered stereo content can present the correct portion of the content to the correct eye. If the view does not have an intrinsicly associated eye (the display is monoscopic, for example) this attribute MUST be set to <code>"left"</code>.
 
 The <dfn attribute for="XRView">projectionMatrix</dfn> attribute provides a [=matrix=] describing the projection to be used for the view's rendering. It is <b>strongly recommended</b> that applications use this matrix without modification. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
-
-{{getViewport()}} queries the {{XRViewport}} content for this view should be rendered to for the passed {{XRLayer}}.
-
-<div class="algorithm" data-algorithm="get-viewport">
-
-The <dfn method for="XRView">getViewport(|layer|)</dfn> method, when invoked, MUST run the following steps:
-
-  1. Let |view| be the target {{XRView}}.
-  1. If |layer| was created with a different {{XRSession}} than the one that produced |view| return <code>null</code>
-  1. ???
-
-</div>
-
-ISSUE: Not sure how to best describe remainder of steps here. Seems like deferring to the layer for viewport logic is best.
 
 XRViewport {#xrviewport-interface}
 ------
@@ -643,7 +627,7 @@ The following code sets the [=WebGL viewport=] for an {{XRWebGLLayer}}'s framebu
 <pre highlight="js">
 xrSession.requestAnimationFrame((time, xrFrame) => {
   let xrView = xrFrame.views[0];
-  let xrViewport = xrView.getViewport(xrWebGLLayer);
+  let xrViewport = xrWebGLLayer.getViewport(xrView);
 
   gl.bindFramebuffer(xrWebGLLayer.framebuffer);
   gl.viewport(xrViewport.x, xrViewport.y, xrViewport.width, xrViewport.height);
@@ -726,6 +710,7 @@ interface XRWebGLLayer : XRLayer {
   readonly attribute unsigned long framebufferHeight;
 
   // Methods
+  XRViewport? getViewport(XRView view);
   void requestViewportScaling(double viewportScaleFactor);
 };
 </pre>
@@ -753,6 +738,18 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
 </div>
 
 The <dfn attribute for="XRWebGLLayer">framebufferWidth</dfn> and <dfn attribute for="XRWebGLLayer">framebufferHeight</dfn> attributes return the width and height of the [=swap chain=]'s backbuffer, respectively.
+
+{{getViewport()}} queries the {{XRViewport}} the given {{XRView}} should use when rendering to the layer.
+
+<div class="algorithm" data-algorithm="get-viewport">
+
+The <dfn method for="XRWebGLLayer">getViewport(|view|)</dfn> method, when invoked, MUST run the following steps:
+
+  1. Let |view| be the target {{XRView}}.
+  1. If |layer| was created with a different {{XRSession}} than the one that produced |view| return <code>null</code>
+  1. ???
+
+</div>
 
 <dfn method for="XRWebGLLayer">requestViewportScaling(viewportScaleFactor)</dfn>
 
