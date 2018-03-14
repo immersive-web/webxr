@@ -361,7 +361,7 @@ There are several scenarios where it's beneficial to render a scene whose view i
  - Taking advantage of 6DoF tracking on devices (like [Tango](https://get.google.com/tango/) phones) with no associated headset.
  - Making use of head-tracking features for devices like [zSpace](http://zspace.com/) systems.
 
-These scenarios can make use of non-exclusive sessions to render tracked content to the page. While `deviceorientation` events can be used to facilitate the first case the other two need the additional tracking support that WebXR provides. Also, using a non-exclusive session also enables content to use a single rendering path for both magic window and immersive presentation modes and makes switching between magic window content and immersive presentation of that content easier.
+These scenarios can make use of non-exclusive sessions to render tracked content to the page. Using a non-exclusive session also enables content to use a single rendering path for both magic window and immersive presentation modes and makes switching between magic window content and immersive presentation of that content easier.
 
 Similar to mirroring, to make use of this mode an `XRPresentationContext` is provided as the `outputContext` at session creation time with a non-exclusive session. At that point content rendered to the `XRSession`'s `baseLayer` will be rendered to the canvas associated with the `outputContext`. The UA is also allowed to composite in additional content if desired. In the future, if multiple `XRLayers` are used their composited result will be what is displayed in the `outputContext`. Requests to create a non-exclusive session without an output context will be rejected.
 
@@ -608,14 +608,14 @@ xrSession.addEventListener('resetpose', xrSessionEvent => {
 ## Appendix A: I don’t understand why this is a new API. Why can’t we use…
 
 ### `DeviceOrientation` Events
-The data provided by an `XRDevicePose` instance is similar to the data provided by `DeviceOrientationEvent`, with some key differences:
+The data provided by an `XRDevicePose` instance is similar to the data provided by the non-standard `DeviceOrientationEvent`, with some key differences:
 
 * It’s an explicit polling interface, which ensures that new input is available for each frame. The event-driven `DeviceOrientation` data may skip a frame, or may deliver two updates in a single frame, which can lead to disruptive, jittery motion in an XR application.
 * `DeviceOrientation` events do not provide positional data, which is a key feature of high-end XR hardware.
 * More can be assumed about the intended use case of `XRDevice` data, so optimizations such as motion prediction can be applied.
 * `DeviceOrientation` events are typically not available on desktops.
 
-That being said, however, for some simple XR devices (e.g., Cardboard) `DeviceOrientation` events provide enough data to create a basic [polyfill](https://en.wikipedia.org/wiki/Polyfill) of the WebXR Device API, as demonstrated by [Boris Smus](https://twitter.com/borismus)’ wonderful [`webvr-polyfill` project](https://github.com/borismus/webvr-polyfill). This provides an approximation of a native implementation, allowing developers to experiment with the API even when unsupported by the user’s browser. While useful for testing and compatibility, such pure-JavaScript implementations miss out on the ability to take advantage of XR-specific optimizations available on some mobile devices (e.g., Google Daydream-ready phones or Samsung Gear VR’s compatible device lineup). A native implementation on mobile can provide a much better experience with lower latency, less jitter, and higher graphics performance than can a `DeviceOrientation`-based one.
+It should be noted that `DeviceOrientation` events have not been standardized, have behavioral differences between browser, and there are ongoing efforts to change or remove the API. This makes it difficult for developers to rely on for a use case where accurate tracking is necessary to prevent user discomfort.
 
 ### WebSockets
 A local [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) service could be set up to relay headset poses to the browser. Some early VR experiments with the browser tried this route, and some tracking devices (most notably [Leap Motion](https://www.leapmotion.com/)) have built their JavaScript SDKs around this concept. Unfortunately, this has proven to be a high-latency route. A key element of a good XR experience is low latency. For head mounted displays, ideally, the movement of your head should result in an update on the device (referred to as “motion-to-photons time”) in 20ms or fewer. The browser’s rendering pipeline already makes hitting this goal difficult, and adding additional overhead for communication over WebSockets only exaggerates the problem. Additionally, using such a method requires users to install a separate service, likely as a native app, on their machine, eroding away much of the benefit of having access to the hardware via the browser. It also falls down on mobile where there’s no clear way for users to install such a service.
