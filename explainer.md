@@ -32,8 +32,6 @@ Enable XR applications on the web by allowing pages to do the following:
 * Expose every feature of every piece of VR/AR hardware.
 * Build “[The Metaverse](https://en.wikipedia.org/wiki/Metaverse).”
 
-Also, while input is an important part of the full XR experience it's a large enough topic that it should be handled separately, and thus will not be covered in-depth by this document. It's worth noting, however, that it may be necessary to have a basic understanding of how input will be handled in order for the WebXR spec to be complete.
-
 ## Use cases
 Given the marketing of early XR hardware to gamers, one may naturally assume that this API will primarily be used for development of games. While that’s certainly something we expect to see given the history of the WebGL API, which is tightly related, we’ll probably see far more “long tail”-style content than large-scale games. Broadly, XR content on the web will likely cover areas that do not cleanly fit into the app-store models being used as the primary distribution methods by all the major VR/AR hardware providers, or where the content itself is not permitted by the store guidelines. Some high level examples are:
 
@@ -401,7 +399,7 @@ function checkMagicWindowSupport() {
 
 XR hardware provides a wide variety of input mechanisms, ranging from single state buttons to fully tracked controllers with multiple buttons, joysticks, triggers, or touchpads. While the intent is to eventually support the full range of available hardware, for the initial version of the WebXR Device API the focus is on enabling a more universal "point and click" style system that can be supported in some capacity by any known XR device and in magic window mode.
 
-In this model every input source has a ray that indicates what is being pointed at, called the "Pointer Ray", and reports when the primary action for that device has been triggered, surfaced as a "select" event. When the select event is fired the XR application can use the pointer ray of the input source that generated the event to determine what the user was pointing at and respond accordingly.
+In this model every input source has a ray that indicates what is being pointed at, called the "Pointer Ray", and reports when the primary action for that device has been triggered, surfaced as a "select" event. When the select event is fired the XR application can use the pointer ray of the input source that generated the event to determine what the user was pointing at and respond accordingly. Additionally, if the input source represents a tracked device a "Grip" matrix will also be provided to indicate where a mesh should be rendered to align with the physical device.
 
 ### Enumerating input sources
 
@@ -419,7 +417,7 @@ xrSession.addEventListener('inputsourceschange', (ev) => {
 
 ### Input poses
 
-Each input source can queried a `XRInputPose` using the `getInputPose()` function of any `XRPresentationFrame`. Getting the pose requires passing in the `XRInputSource` you want the pose for, as well as the `XRFrameOfReference` the pose values should be given in, just like `getDevicePose()`. Similar to `getDevicePose()` the requested pose may return `null` in cases where tracking has been lost.
+Each input source can queried a `XRInputPose` using the `getInputPose()` function of any `XRPresentationFrame`. Getting the pose requires passing in the `XRInputSource` you want the pose for, as well as the `XRCoordinateSystem` the pose values should be given in, just like `getDevicePose()`. Similar to `getDevicePose()` the requested pose may return `null` in cases where tracking has been lost.
 
 If an input source can be tracked the `XRInputPose`'s `gripMatrix` will indicate the device's position and orientation. This will be `null` if the input source isn't trackable. The `gripMatrix` is a transform into a space where if the user was holding a straight rod in their hand it would be aligned with the negative Z axis (forward) and the origin rests at their palm. This enables developers to properly render a virtual object held in the user's hand. For example, a sword would be positioned so that the blade points directly down the negative Z axis and the center of the handle is at the origin.
 
@@ -427,7 +425,7 @@ An input source will also provide its preferred pointing ray, which is defined a
 
   * `'head'` indicates the pointer ray will originate at the user's head and follow the direction they are looking. (This is commonly referred to as a "gaze input" device.)
   * `'hand'` indicates that the pointer ray originates from a handheld device, and represents the device's preferred targeting ray. The exact orientation of the ray relative to the device should follow platform-specific guidelines if there are any. In the absence of platform-specific guidance, the pointer ray should most likely point in the same direction as the user's index finger if it was outstretched while holding the controller.
-  * `'screen'` indicates that the input source was an interaction with the 2D canvas of a non-exclusive session, such as a mouse click or touch event. In this case the pointing ray will originate at the point that was clicked on the canvas, projected onto the near clipping plane (defined by the `depthNear` attribute of the `XRSession`) and extending out into the scene along that projected vector. `'screen'` input sources can only be returned by a `select`, `selectstart`, or `selectend` event.
+  * `'screen'` indicates that the input source was an interaction with the 2D canvas of a non-exclusive session, such as a mouse click or touch event. See [Magic Window Input](#magic_window_input) for more details.
 
 ```js
 // Loop over every input source and get their pose for the current frame.
@@ -457,8 +455,7 @@ Most applications will want to visually represent the input sources somehow. The
 
   * `'head'`: A cursor should be drawn at some distance down the pointer ray, ideally at the depth of the first surface it intersects with, so the user can identify what will be interacted with when a select event is fired. It's not appropriate to draw a controller or ray in this case, since they may obscure the user's vision or be difficult to visually converge on.
   * `'hand'`: If the `gripMatrix` in not `null` an application-appropriate controller model should be drawn using that matrix as the transform. If appropriate for the experience, the a visualization of the pointer ray and a cursor as described in the `'head'` should also be drawn.
-
-`getInputSources()` will never return input sources with a `pointerOrigin` of `screen`, so they do not need to be accounted for when rendering.
+  * `screen`: Input sources originating from the screen are generated by a mouse, touch, or stylus. In all cases the point of origin of the pointer ray is obvious and no visualization is needed.
 
 ```js
 // Render a visualization of the input source.
@@ -471,10 +468,15 @@ function RenderInputSource(inputSource, inputPose) {
     renderer.drawMeshWithTransform(controllerMesh, inputPose.gripMatrix);
   }
 
-  // Draw a cursor.
-  let cursorPosition = scene.getIntersectionPoint(inputPose.pointerMatrix);
-  if (cursorPosition) {
-    renderer.drawCursor(cursorPosition);
+  if (inputSource.pointerOrigin != "screen") {
+    // Draw a pointer ray.
+    renderer.drawPointerRayWithTransform(inputPose.pointerMatrix);
+
+    // Draw a cursor.
+    let cursorPosition = scene.getIntersectionPoint();
+    if (cursorPosition) {
+      renderer.drawCursor(cursorPosition);
+    }
   }
 }
 ```
@@ -492,13 +494,13 @@ The initial version of the WebXR Device API spec is limited to only recognizing 
 
 Three events are fired on the `XRSession` related to these primary actions: `selectstart`, `selectend`, and `select`.
 
-A `selectstart` event indicates that the primary action has been initiated. It will most commonly be associated with pressing a button or trigger. If `preventDefault()` is called on a `selectstart` event the associated `selectend` and `select` events will not fire for this interaction.
+A `selectstart` event indicates that the primary action has been initiated. It will most commonly be associated with pressing a button or trigger.
 
-A `selectend` event indicates that the primary action has ended. It will most commonly be associated with releasing a button or trigger. If `preventDefault()` is called on a `selectend` event the associated `selecte` event will not fire for this interaction.
+A `selectend` event indicates that the primary action has ended. It will most commonly be associated with releasing a button or trigger.
 
-A `select` event indicates that a primary action has been completed without being cancelled. `select` events are considered to be [triggered by user activation](https://html.spec.whatwg.org/multipage/interaction.html#triggered-by-user-activation) and as such can be used to begin playing media or other trusted interactions.
+A `select` event indicates that a primary action has been completed. `select` events are considered to be [triggered by user activation](https://html.spec.whatwg.org/multipage/interaction.html#triggered-by-user-activation) and as such can be used to begin playing media or other trusted interactions.
 
-For primary actions that are instantaneous without a clear start and end point (such as a verbal command), all three events should still fire in the sequence `selectstart`, `selectend`, `select` to allow developers the opportunity to cancel the interaction.
+For primary actions that are instantaneous without a clear start and end point (such as a verbal command), all three events should still fire in the sequence `selectstart`, `selectend`, `select`.
 
 All three events are `XRInputSourceEvent` events. When fired the event's `inputSource` attribute must contain the `XRInputSource` that produced the event. The event's `frame` attribute must contain a valid `XRPresentationFrame` that can be used to query the input and device poses at the time the selection event occured. The `XRPresentationFrame`'s `views` array must be empty.
 
@@ -524,6 +526,14 @@ function onSelect(event) {
 ```
 
 `selectstart` and `selectend` can be useful for handling dragging, painting, or other continuous motions.
+
+### Magic Window Input
+
+When using a non-exclusive session, pointer events on the canvas that created the `outputContext` passed during the session request are monitored. `XRInputSource`s are generated is response to allow unified input handling with exclusive mode controller or gaze input.
+
+When the canvas receives a `pointerdown` event an `XRInputSource` is created with a `pointerOrigin` of `'screen'` and added to the array returned by `getInputSources()`. A `selectstart` event is then fired on the session with the new `XRInputSource`. The `XRInputSource`'s pointing ray should be updated with every `pointermove` event the canvas receives until a `pointerup` event is received. A `selectend` event is then fired on the session and the `XRInputSource` is removed from the array returned by `getInputSources()`. When the canvas receives a `click` event a `select` event is fired on the session with the appropriate `XRInputSource`.
+
+For each of these events the `XRInputSource`'s pointing ray must be updated to originate at the point that was interacted with on the canvas, projected onto the near clipping plane (defined by the `depthNear` attribute of the `XRSession`) and extending out into the scene along that projected vector.
 
 ## Advanced functionality
 
