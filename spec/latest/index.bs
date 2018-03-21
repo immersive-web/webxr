@@ -48,6 +48,9 @@ urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/2.0/
     type: interface; text: WebGL2RenderingContext
 urlPrefix: https://drafts.fxtf.org/geometry/
     type: interface; text: DOMMatrix
+urlPrefix: https://w3c.github.io/orientation-sensor/; spec: ORIENTATION-SENSOR
+    type: interface; text: AbsoluteOrientationSensor
+    type: interface; text: RelativeOrientationSensor
 
 spec: ECMAScript; urlPrefix: https://tc39.github.io/ecma262/#
     type: interface
@@ -92,7 +95,9 @@ spec: Feature Policy; urlPrefix: https://wicg.github.io/feature-policy/#
 Introduction {#intro}
 =============
 
-Hardware that enables Virtual Reality (VR) and Augmented Reality (AR) applications requires high-precision, low-latency interfaces to deliver an acceptable experience. Other interfaces, such as device orientation events, can be repurposed to surface input from these devices but doing so dilutes the interface's original intent and often does not provide the precision necessary for high-quality immersive experiences. The WebXR Device API provides purpose-built interfaces to VR/AR hardware to allow developers to build compelling, comfortable immersive experiences.
+<p class=non-normative>
+Hardware that enables Virtual Reality (VR) and Augmented Reality (AR) applications requires high-precision, low-latency interfaces to deliver an acceptable experience. Other interfaces, such as the {{RelativeOrientationSensor}} and {{AbsoluteOrientationSensor}}, can be repurposed to surface input from these devices to polyfill the WebXR Device API. The WebXR Device API provides purpose-built interfaces to VR/AR hardware to allow developers to build compelling, comfortable immersive experiences.
+</p>
 
 Terminology {#terminology}
 ===========

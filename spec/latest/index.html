@@ -1178,7 +1178,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 66a76cd06d4fa9e491630583356008a71a166760" name="generator">
   <link href="https://immersive-web.github.io/webxr/" rel="canonical">
-  <meta content="a930996aa2d11231b1973bbeacd66d5095507ebf" name="document-revision">
+  <meta content="966eaec48b49ee210240291288e81ca515e78537" name="document-revision">
 <style>
   /* Re-add this once there are actually stable sections of the spec */
   /*.unstable::before {
@@ -1558,6 +1558,7 @@ Parts of this work may be from another specification document.  If so, those par
      <a href="#references"><span class="secno"></span> <span class="content">References</span></a>
      <ol class="toc">
       <li><a href="#normative"><span class="secno"></span> <span class="content">Normative References</span></a>
+      <li><a href="#informative"><span class="secno"></span> <span class="content">Informative References</span></a>
      </ol>
     <li><a href="#idl-index"><span class="secno"></span> <span class="content">IDL Index</span></a>
     <li><a href="#issues-index"><span class="secno"></span> <span class="content">Issues Index</span></a>
@@ -1568,7 +1569,7 @@ Parts of this work may be from another specification document.  If so, those par
    <p><b>The version of the WebXR Device API represented in this document is incomplete and changing rapidly. Do not implement it at this time.</b></p>
    <section class="unstable">
     <h2 class="heading settled" data-level="1" id="intro"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#intro"></a></h2>
-    <p>Hardware that enables Virtual Reality (VR) and Augmented Reality (AR) applications requires high-precision, low-latency interfaces to deliver an acceptable experience. Other interfaces, such as device orientation events, can be repurposed to surface input from these devices but doing so dilutes the interface’s original intent and often does not provide the precision necessary for high-quality immersive experiences. The WebXR Device API provides purpose-built interfaces to VR/AR hardware to allow developers to build compelling, comfortable immersive experiences.</p>
+    <p class="non-normative"> Hardware that enables Virtual Reality (VR) and Augmented Reality (AR) applications requires high-precision, low-latency interfaces to deliver an acceptable experience. Other interfaces, such as the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/orientation-sensor/#relativeorientationsensor" id="ref-for-relativeorientationsensor">RelativeOrientationSensor</a></code> and <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/orientation-sensor/#absoluteorientationsensor" id="ref-for-absoluteorientationsensor">AbsoluteOrientationSensor</a></code>, can be repurposed to surface input from these devices to polyfill the WebXR Device API. The WebXR Device API provides purpose-built interfaces to VR/AR hardware to allow developers to build compelling, comfortable immersive experiences. </p>
     <h2 class="heading settled" data-level="2" id="terminology"><span class="secno">2. </span><span class="content">Terminology</span><a class="self-link" href="#terminology"></a></h2>
     <p>This document uses the acronym <b>XR</b> throughout to refer to the spectrum of hardware, applications, and techniques used for Virtual Reality, Augmented Reality, and other related technologies. Examples include, but are not limited to:</p>
     <ul>
@@ -2629,6 +2630,12 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
      <li><a href="https://html.spec.whatwg.org/multipage/interaction.html#triggered-by-user-activation">triggered by user activation</a>
     </ul>
    <li>
+    <a data-link-type="biblio">[orientation-sensor]</a> defines the following terms:
+    <ul>
+     <li><a href="https://w3c.github.io/orientation-sensor/#absoluteorientationsensor">AbsoluteOrientationSensor</a>
+     <li><a href="https://w3c.github.io/orientation-sensor/#relativeorientationsensor">RelativeOrientationSensor</a>
+    </ul>
+   <li>
     <a data-link-type="biblio">[promises-guide]</a> defines the following terms:
     <ul>
      <li><a href="https://www.w3.org/2001/tag/doc/promises-guide/#a-new-promise">a new promise</a>
@@ -2669,6 +2676,11 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
    <dd>S. Bradner. <a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>. March 1997. Best Current Practice. URL: <a href="https://tools.ietf.org/html/rfc2119">https://tools.ietf.org/html/rfc2119</a>
    <dt id="biblio-webidl">[WebIDL]
    <dd>Cameron McCormack; Boris Zbarsky; Tobie Langel. <a href="https://heycam.github.io/webidl/">Web IDL</a>. 15 December 2016. ED. URL: <a href="https://heycam.github.io/webidl/">https://heycam.github.io/webidl/</a>
+  </dl>
+  <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
+  <dl>
+   <dt id="biblio-orientation-sensor">[ORIENTATION-SENSOR]
+   <dd>Mikhail Pozdnyakov; et al. <a href="https://www.w3.org/TR/orientation-sensor/">Orientation Sensor</a>. 18 October 2017. WD. URL: <a href="https://www.w3.org/TR/orientation-sensor/">https://www.w3.org/TR/orientation-sensor/</a>
   </dl>
   <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
 <pre class="idl highlight def">[<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#SecureContext" id="ref-for-SecureContext①⑦">SecureContext</a>, <a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①⑥">Exposed</a>=<span class="n">Window</span>] <span class="kt">interface</span> <a class="nv" href="#xr"><code>XR</code></a> : <a class="n" data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget④">EventTarget</a> {
