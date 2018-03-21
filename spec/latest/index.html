@@ -1176,8 +1176,9 @@ Possible extra rowspan handling
 		}
 	}
 </style>
-  <meta content="Bikeshed version 5afc3ab5248efd53ff0fd6d61ad878a3dc5a357a" name="generator">
+  <meta content="Bikeshed version 66a76cd06d4fa9e491630583356008a71a166760" name="generator">
   <link href="https://immersive-web.github.io/webxr/" rel="canonical">
+  <meta content="a930996aa2d11231b1973bbeacd66d5095507ebf" name="document-revision">
 <style>
   /* Re-add this once there are actually stable sections of the spec */
   /*.unstable::before {
@@ -1441,7 +1442,7 @@ pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebXR Device API</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2018-03-07">7 March 2018</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2018-03-21">21 March 2018</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1463,7 +1464,7 @@ pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em
    <div data-fill-with="warning"></div>
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" src="https://licensebuttons.net/p/zero/1.0/80x15.png"></a> To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 7 March 2018,
+In addition, as of 21 March 2018,
 the editors have made this specification available under the <a href="http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 Parts of this work may be from another specification document.  If so, those parts are instead covered by the license of that specification document. </p>
@@ -1645,7 +1646,7 @@ Parts of this work may be from another specification document.  If so, those par
       <li data-md="">
        <p><a data-link-type="dfn" href="#select-a-default-xr-device" id="ref-for-select-a-default-xr-device①">Select a default XR device</a> from the <a data-link-type="dfn" href="#list-of-xr-devices" id="ref-for-list-of-xr-devices⑨">list of XR devices</a>.</p>
       <li data-md="">
-       <p><a data-link-type="dfn" href="https://w3c.github.io/FileAPI/#blob-url-resolve" id="ref-for-blob-url-resolve">Resolve</a> <var>promise</var> with the <a data-link-type="dfn" href="#default-device" id="ref-for-default-device⑤">default device</a>.</p>
+       <p><a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#resolve-promise" id="ref-for-resolve-promise">Resolve</a> <var>promise</var> with the <a data-link-type="dfn" href="#default-device" id="ref-for-default-device⑤">default device</a>.</p>
      </ol>
     </div>
     <p>Calling <code class="idl"><a data-link-type="idl" href="#dom-xr-requestdevice" id="ref-for-dom-xr-requestdevice①">requestDevice()</a></code> MUST NOT trigger device-selection UI as this would cause many sites to display XR-specific dialogs early in the document lifecycle without user activation.</p>
@@ -1682,7 +1683,7 @@ Parts of this work may be from another specification document.  If so, those par
       <li data-md="">
        <p>If the <var>options</var> are not <a data-link-type="dfn" href="#supported-by-the-device" id="ref-for-supported-by-the-device">supported by the device</a> <var>device</var>, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise" id="ref-for-reject-promise①">reject</a> <var>promise</var> with <code>null</code>.</p>
       <li data-md="">
-       <p>Else <a data-link-type="dfn" href="https://w3c.github.io/FileAPI/#blob-url-resolve" id="ref-for-blob-url-resolve①">resolve</a> <var>promise</var> with <code>null</code>.</p>
+       <p>Else <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#resolve-promise" id="ref-for-resolve-promise①">resolve</a> <var>promise</var> with <code>null</code>.</p>
      </ol>
     </div>
     <div class="algorithm" data-algorithm="request-session">
@@ -1707,7 +1708,7 @@ Parts of this work may be from another specification document.  If so, those par
       <li data-md="">
        <p>Else append <var>session</var> to <var>device</var>’s <a data-link-type="dfn" href="#list-of-non-exclusive-sessions" id="ref-for-list-of-non-exclusive-sessions">list of non-exclusive sessions</a>.</p>
       <li data-md="">
-       <p><a data-link-type="dfn" href="https://w3c.github.io/FileAPI/#blob-url-resolve" id="ref-for-blob-url-resolve②">Resolve</a> <var>promise</var> with <var>session</var>.</p>
+       <p><a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#resolve-promise" id="ref-for-resolve-promise②">Resolve</a> <var>promise</var> with <var>session</var>.</p>
      </ol>
     </div>
     <div class="example" id="example-c61b7d0e">
@@ -1816,7 +1817,7 @@ xrDevice<span class="p">.</span>requestSession<span class="p">({</span> exclusiv
       <li data-md="">
        <p><a data-link-type="dfn" href="#shut-down-the-session" id="ref-for-shut-down-the-session">Shut down</a> the target <code class="idl"><a data-link-type="idl" href="#xrsession" id="ref-for-xrsession①①">XRSession</a></code> object.</p>
       <li data-md="">
-       <p><a data-link-type="dfn" href="https://w3c.github.io/FileAPI/#blob-url-resolve" id="ref-for-blob-url-resolve③">Resolve</a> <var>promise</var>.</p>
+       <p><a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#resolve-promise" id="ref-for-resolve-promise③">Resolve</a> <var>promise</var>.</p>
      </ol>
     </div>
     <p><dfn class="dfn-paneled idl-code" data-dfn-for="XRSession" data-dfn-type="method" data-export="" data-lt="requestFrameOfReference(type, options)|requestFrameOfReference(type)" id="dom-xrsession-requestframeofreference"><code>requestFrameOfReference(type, options)</code></dfn></p>
@@ -2144,14 +2145,14 @@ xrDevice<span class="p">.</span>requestSession<span class="p">({</span> exclusiv
       <li data-md="">
        <p>If <var>context</var>’s <a data-link-type="dfn" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#webgl-context-lost-flag" id="ref-for-webgl-context-lost-flag">WebGL context lost flag</a> is set, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise" id="ref-for-reject-promise⑤">reject</a> <var>promise</var> with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror④">InvalidStateError</a></code> and abort these abort these steps.</p>
       <li data-md="">
-       <p>If <var>context</var>’s <a data-link-type="dfn" href="#compatible-xr-device" id="ref-for-compatible-xr-device⑥">compatible XR device</a> is <var>device</var>, <a data-link-type="dfn" href="https://w3c.github.io/FileAPI/#blob-url-resolve" id="ref-for-blob-url-resolve④">resolve</a> <var>promise</var> and abort these steps.</p>
+       <p>If <var>context</var>’s <a data-link-type="dfn" href="#compatible-xr-device" id="ref-for-compatible-xr-device⑥">compatible XR device</a> is <var>device</var>, <a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#resolve-promise" id="ref-for-resolve-promise④">resolve</a> <var>promise</var> and abort these steps.</p>
       <li data-md="">
        <p>If <var>context</var> was created on a <a data-link-type="dfn" href="#compatible-graphics-adapter" id="ref-for-compatible-graphics-adapter⑤">compatible graphics adapter</a> for <var>device</var>:</p>
        <ol>
         <li data-md="">
          <p>Set <var>context</var>’s <a data-link-type="dfn" href="#compatible-xr-device" id="ref-for-compatible-xr-device⑦">compatible XR device</a> to <var>device</var>.</p>
         <li data-md="">
-         <p><a data-link-type="dfn" href="https://w3c.github.io/FileAPI/#blob-url-resolve" id="ref-for-blob-url-resolve⑤">resolve</a> <var>promise</var> and abort these steps.</p>
+         <p><a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#resolve-promise" id="ref-for-resolve-promise⑤">Resolve</a> <var>promise</var> and abort these steps.</p>
        </ol>
       <li data-md="">
        <p>Queue a task to perform the following steps:</p>
@@ -2165,7 +2166,7 @@ xrDevice<span class="p">.</span>requestSession<span class="p">({</span> exclusiv
         <li data-md="">
          <p>Set <var>context</var>’s <a data-link-type="dfn" href="#compatible-xr-device" id="ref-for-compatible-xr-device⑧">compatible XR device</a> to <var>device</var>.</p>
         <li data-md="">
-         <p><a data-link-type="dfn" href="https://w3c.github.io/FileAPI/#blob-url-resolve" id="ref-for-blob-url-resolve⑥">Resolve</a> <var>promise</var>.</p>
+         <p><a data-link-type="dfn" href="https://www.w3.org/2001/tag/doc/promises-guide/#resolve-promise" id="ref-for-resolve-promise⑥">Resolve</a> <var>promise</var>.</p>
        </ol>
      </ol>
     </div>
@@ -2617,11 +2618,6 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
      <li><a href="https://wicg.github.io/feature-policy/#feature-name">feature name</a>
     </ul>
    <li>
-    <a data-link-type="biblio">[FileAPI]</a> defines the following terms:
-    <ul>
-     <li><a href="https://w3c.github.io/FileAPI/#blob-url-resolve">resolve</a>
-    </ul>
-   <li>
     <a data-link-type="biblio">[HTML]</a> defines the following terms:
     <ul>
      <li><a href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a>
@@ -2637,6 +2633,7 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
     <ul>
      <li><a href="https://www.w3.org/2001/tag/doc/promises-guide/#a-new-promise">a new promise</a>
      <li><a href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise">reject</a>
+     <li><a href="https://www.w3.org/2001/tag/doc/promises-guide/#resolve-promise">resolve</a>
     </ul>
    <li>
     <a data-link-type="biblio">[WebIDL]</a> defines the following terms:
@@ -2664,8 +2661,6 @@ glCanvas<span class="p">.</span>addEventListener<span class="p">(</span><span cl
   <dl>
    <dt id="biblio-dom">[DOM]
    <dd>Anne van Kesteren. <a href="https://dom.spec.whatwg.org/">DOM Standard</a>. Living Standard. URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
-   <dt id="biblio-fileapi">[FileAPI]
-   <dd>Marijn Kruisselbrink. <a href="https://www.w3.org/TR/FileAPI/">File API</a>. 26 October 2017. WD. URL: <a href="https://www.w3.org/TR/FileAPI/">https://www.w3.org/TR/FileAPI/</a>
    <dt id="biblio-html">[HTML]
    <dd>Anne van Kesteren; et al. <a href="https://html.spec.whatwg.org/multipage/">HTML Standard</a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-promises-guide">[PROMISES-GUIDE]

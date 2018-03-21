@@ -16,6 +16,8 @@ Editor: Brandon Jones, Google http://google.com/, bajones@google.com
 Editor: Nell Waliczek, Microsoft https://microsoft.com/, nell.waliczek@microsoft.com
 
 Abstract: This specification describes support for accessing virtual reality (VR) and augmented reality (AR) devices, including sensors and head-mounted displays, on the Web.
+
+Ignored Vars: layer
 </pre>
 
 <pre class="anchors">
@@ -192,7 +194,7 @@ The page can <dfn>request a device</dfn> by calling the <dfn method for="XR">req
   1. [=Enumerate XR devices=].
   1. If the [=list of XR devices=] is empty, [=reject=] |promise| with a {{NotFoundError}} and abort these steps.
   1. [=Select a default XR device=] from the [=list of XR devices=].
-  1. [=Resolve=] |promise| with the [=default device=].
+  1. [=/Resolve=] |promise| with the [=default device=].
 
 </div>
 
@@ -242,7 +244,7 @@ When the <dfn method for="XRDevice">supportsSession(|options|)</dfn> method is i
 
   1. Let |device| be the target {{XRDevice}} object.
   1. If the |options| are not [=supported by the device=] |device|, [=reject=] |promise| with <code>null</code>.
-  1. Else [=resolve=] |promise| with <code>null</code>.
+  1. Else [=/resolve=] |promise| with <code>null</code>.
 
 </div>
 
@@ -259,7 +261,7 @@ When the <dfn method for="XRDevice">requestSession(|options|)</dfn> method is in
   1. [=Initialize the session=] |session| with the [=session description=] given by |options|.
   1. If |exclusive| is <code>true</code> set the |device|'s [=exclusive session=] to |session|.
   1. Else append |session| to |device|'s [=list of non-exclusive sessions=].
-  1. [=Resolve=] |promise| with |session|.
+  1. [=/Resolve=] |promise| with |session|.
 
 </div>
 
@@ -374,7 +376,7 @@ When an {{XRSession}} is shut down the following steps are run:
 The <dfn method for="XRSession">end()</dfn> method provides a way to manually shut down a session. When invoked, it MUST return [=a new Promise=] |promise| and run the following steps [=in parallel=]:
 
   1. [=Shut down the session|Shut down=] the target {{XRSession}} object.
-  1. [=Resolve=] |promise|.
+  1. [=/Resolve=] |promise|.
 
 </div>
 
@@ -818,16 +820,16 @@ When the <dfn method for="WebGLRenderingContextBase">setCompatibleXRDevice(|devi
 
   1. Let |context| be the target {{WebGLRenderingContextBase}} object.
   1. If |context|'s [=WebGL context lost flag=] is set, [=reject=] |promise| with an {{InvalidStateError}} and abort these abort these steps.
-  1. If |context|'s [=compatible XR device=] is |device|, [=resolve=] |promise| and abort these steps.
+  1. If |context|'s [=compatible XR device=] is |device|, [=/resolve=] |promise| and abort these steps.
   1. If |context| was created on a [=compatible graphics adapter=] for |device|:
       1. Set |context|'s [=compatible XR device=] to |device|.
-      1. [=resolve=] |promise| and abort these steps.
+      1. [=/Resolve=] |promise| and abort these steps.
   1. Queue a task to perform the following steps:
       1. Force |context| to be lost and [=handle the context loss=] as described by the WebGL specification.
       1. If the [=canceled flag=] of the "webglcontextlost" event fired in the previous step was not set, [=reject=] |promise| with an {{AbortError}} and abort these steps.
       1. [=Restore the context=] on a [=compatible graphics adapter=] for |device|.
       1. Set |context|'s [=compatible XR device=] to |device|.
-      1. [=Resolve=] |promise|.
+      1. [=/Resolve=] |promise|.
 
 </div>
 
