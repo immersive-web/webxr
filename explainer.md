@@ -423,7 +423,7 @@ If an input source can be tracked the `XRInputPose`'s `gripMatrix` will indicate
 
 An input source will also provide its preferred pointing ray, which is defined as a ray originating at `[0, 0, 0]` and extending down the negative Z axis, transformed bt the `pointerMatrix` attribute of an `XRInputPose` object. `pointerMatrix` will never be `null`. It's value will differ based on the type of input source that produces it, which is represented by the `pointerOrigin` attribute:
 
-  * `'head'` indicates the pointer ray will originate at the user's head and follow the direction they are looking. (This is commonly referred to as a "gaze input" device.)
+  * `'head'` indicates the pointer ray will originate at the user's head and follow the direction they are looking. (This is commonly referred to as a "gaze input" device.) There should be at most one `'head'` input source per session.
   * `'hand'` indicates that the pointer ray originates from a handheld device, and represents the device's preferred targeting ray. The exact orientation of the ray relative to the device should follow platform-specific guidelines if there are any. In the absence of platform-specific guidance, the pointer ray should most likely point in the same direction as the user's index finger if it was outstretched while holding the controller.
   * `'screen'` indicates that the input source was an interaction with the 2D canvas of a non-exclusive session, such as a mouse click or touch event. See [Magic Window Input](#magic_window_input) for more details.
 
@@ -496,7 +496,7 @@ Three events are fired on the `XRSession` related to these primary actions: `sel
 
 A `selectstart` event indicates that the primary action has been initiated. It will most commonly be associated with pressing a button or trigger.
 
-A `selectend` event indicates that the primary action has ended. It will most commonly be associated with releasing a button or trigger.
+A `selectend` event indicates that the primary action has ended. It will most commonly be associated with releasing a button or trigger. A `selectend` event must also be fired if the input source is disconnected after a primary action has been initiated, or the primary action has otherwise been cancelled. In that case an associated `select` event will not be fired.
 
 A `select` event indicates that a primary action has been completed. `select` events are considered to be [triggered by user activation](https://html.spec.whatwg.org/multipage/interaction.html#triggered-by-user-activation) and as such can be used to begin playing media or other trusted interactions.
 
