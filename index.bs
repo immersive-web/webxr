@@ -697,15 +697,15 @@ enum XRHandedness {
   "right"
 };
 
-enum XRPointerOrigin {
-  "head",
-  "hand",
-  "screen"
+enum XRTargetRayMode {
+  "gazing",
+  "pointing",
+  "tapping"
 };
 
 interface XRInputSource {
   readonly attribute XRHandedness handedness;
-  readonly attribute XRPointerOrigin pointerOrigin;
+  readonly attribute XRTargetRayMode targetRayMode;
 };
 </pre>
 
@@ -717,7 +717,8 @@ XRInputPose {#xrinputpose-interface}
 <pre class="idl">
 interface XRInputPose {
   readonly attribute boolean emulatedPosition;
-  readonly attribute Float32Array pointerMatrix;
+  readonly attribute Float32Array targetRayOrigin;
+  readonly attribute Float32Array targetRayDirection;
   readonly attribute Float32Array? gripMatrix;
 };
 </pre>
