@@ -147,13 +147,13 @@ function beginXRSession() {
 }
 ```
 Once the session has started, some setup must be done to prepare for rendering.
-- A `XRFrameOfReference` must be created to define the coordinate system in which the `XRDevicePose` objects will be defined. See the Advanced Functionality section for more details about frames of reference.
+- An `XRCoordinateSystem` must be created to define the coordinate system in which the `XRDevicePose` objects will be defined. See the Advanced Functionality section for more details about frames of reference.
 - The depth range of the session should be set to something appropriate for the application. This range will be used in the construction of the projection matrices provided by `XRPresentationFrame`.
-- A `XRLayer` must be created and assigned to the `XRSession`'s `baseLayer` attribute. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.)
+- An `XRLayer` must be created and assigned to the `XRSession`'s `baseLayer` attribute. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.)
 
 ```js
 let xrSession = null;
-let xrFrameOfRef = null;
+let xrCoordSystem = null;
 
 function onSessionStarted(session) {
   // Store the session for use later.
@@ -164,12 +164,12 @@ function onSessionStarted(session) {
   xrSession.depthNear = 0.1;
   xrSession.depthFar = 100.0;
 
-  // The `XRFrameOfReference` provides the coordinate system in which
+  // The `XRCoordinateSystem` provides the coordinate system in which
   // `getViewMatrix()` and the `poseModelMatrix` are defined. For more
   // information on this see the `Advanced functionality` section
-  xrSession.requestFrameOfReference("headModel")
-    .then((frameOfRef) => {
-      xrFrameOfRef = frameOfRef;
+  xrSession.requestFrameOfReference("eyeLevel")
+    .then((coordSystem) => {
+      xrCoordSystem = coordSystem;
     })
     .then(setupWebGLLayer) // Create a compatible XRWebGLLayer.
     .then(() => {
@@ -221,13 +221,13 @@ The WebXR Device API provides information about the current frame to be rendered
 
 Once drawn to, the XR device will continue displaying the contents of the `XRWebGLLayer` framebuffer, potentially reprojected to match head motion, regardless of whether or not the page continues processing new frames. Potentially future spec iterations could enable additional types of layers, such as video layers, that could automatically be synchronized to the device's refresh rate.
 
-To get view matrices or the `poseModelMatrix` for each presentation frame, developers must call `getDevicePose()` and provide an `XRCoordinateSystem` to specify the coordinate system in which these matrices should be defined. Unless the "headModel" `XRFrameOfReference` is being used, this function is not guaranteed to return a value. For example, the most common frame of reference, "eyeLevel", will fail to return a `viewMatrix` or a `poseModelMatrix` under tracking loss conditions. In that case, the page will need to decide how to respond. It may wish to re-render the scene using an older pose, fade the scene out to prevent disorientation, fall back to a "headModel" `XRFrameOfReference`, or simply not update. For more information on this see the [`Advanced functionality`](#orientation-only-tracking) section.
+To get view matrices or the `poseModelMatrix` for each presentation frame, developers must call `getDevicePose()` and provide an `XRCoordinateSystem` to specify the coordinate system in which these matrices should be defined. Unless a `headModel` frame of reference is being used, this function is not guaranteed to return a value. For example, the most common frame of reference, `eyeLevel`, will fail to return a `viewMatrix` or a `poseModelMatrix` under tracking loss conditions. In that case, the page will need to decide how to respond. It may wish to re-render the scene using an older pose, fade the scene out to prevent disorientation, fall back to a `headModel` frame of reference, or simply not update. For more information on this see the [`Advanced functionality`](#orientation-only-tracking) section.
 
 ```js
 function onDrawFrame(timestamp, xrFrame) {
   // Do we have an active session?
   if (xrSession) {
-    let pose = xrFrame.getDevicePose(xrFrameOfRef);
+    let pose = xrFrame.getDevicePose(xrCoordSystem);
     gl.bindFramebuffer(xrSession.baseLayer.framebuffer);
 
     for (let view of xrFrame.views) {
@@ -369,7 +369,7 @@ Exclusive and non-exclusive sessions can use the same render loop, but there are
 
 Most instances of non-exclusive sessions will only provide a single `XRView` to be rendered, but UA may request multiple views be rendered if, for example, it's detected that that output medium of the page supports stereo rendering. As a result pages should always draw every `XRView` provided by the `XRPresentationFrame` regardless of what type of session has been requested.
 
-UAs may have different restrictions on non-exclusive contexts that don't apply to exclusive contexts. For instance, a different set of `XRFrameOfReference` types may be available with a non-exclusive session versus an exclusive session.
+UAs may have different restrictions on non-exclusive contexts that don't apply to exclusive contexts. For instance, a different set of frame of reference types may be available with a non-exclusive session versus an exclusive session.
 
 ```js
 let magicWindowCanvas = document.createElement('canvas');
@@ -430,7 +430,7 @@ An input source will also provide its preferred pointing ray, which is defined a
 ```js
 // Loop over every input source and get their pose for the current frame.
 for (let inputSource of xrInputSources) {
-  let inputPose = xrFrame.getInputPose(inputSource, xrFrameOfRef);
+  let inputPose = xrFrame.getInputPose(inputSource, xrCoordSystem);
 
   // Check to see if the pose is valid
   if (inputPose) {
@@ -514,7 +514,7 @@ function onSessionStarted(session) {
 }
 
 function onSelect(event) {
-  let inputPose = event.frame.getInputPose(event.inputSource, xrFrameOfRef);
+  let inputPose = event.frame.getInputPose(event.inputSource, xrCoordSystem);
   if (inputPose) {
     // Ray cast into scene with the pointer to determine if anything was hit.
     let selectedObject = scene.getObjectIntersectingRay(inputPose.pointerPoseMatrix);
@@ -543,54 +543,55 @@ Beyond the core APIs described above, the WebXR Device API also exposes several 
 
 Some headsets (Daydream, Gear VR, Cardboard), are naturally limited to only tracking a user's head rotation. This is known as "3 Degree of Freedom" tracking, or "3DoF". For this type of device, a small amount of simulated translation is usually applied to the returned matrices by estimating the motion of the user's neck based on the device rotation. If the translation portions of the matrices provided by an `XRDevicePose` do not reflect a real position in space, that must be indicated by setting the `emulatedPosition` attribute to `true`.
 
-For devices that are not naturally limited to orientation-only tracking, it can still be useful for app developers to explicitly specify that they don't want any positional tracking in the matrices they receive. This is primarily necessary when viewing 360 photos or videos, since the source material is intended to be viewed from a single point. (This may also provide power savings on some devices, since it may allow some sensors to be turned off.) That can be accomplished by requesting a "headModel" `XRFrameOfReference`.
+For devices that are not naturally limited to orientation-only tracking, it can still be useful for app developers to explicitly specify that they don't want any positional tracking in the matrices they receive. This is primarily necessary when viewing 360 photos or videos, since the source material is intended to be viewed from a single point. (This may also provide power savings on some devices, since it may allow some sensors to be turned off.) That can be accomplished by requesting a `headModel` frame of reference.
 
 ```js
-xrSession.requestFrameOfReference("headModel").then((frameOfRef) => {
-  xrFrameOfRef = frameOfRef;
+xrSession.requestFrameOfReference("headModel").then((coordSystem) => {
+  xrCoordSystem = coordSystem;
 });
 
-// Use xrFrameOfRef as detailed above.
+// Use xrCoordSystem as detailed above.
 ```
 
-Any `XRDevicePose`s queried with a "headModel" `XRFrameOfReference` must have their `emulatedPosition` attributes set to `true`. Any `XRInputPose`s queried with a "headModel" `XRFrameOfReference` must provide positions relative to the head's emulated position, so that the input devices appear in the correct location from the user's point of view.
+Any `XRDevicePose`s queried with a `headModel` frame of reference must have their `emulatedPosition` attributes set to `true`. Any `XRInputPose`s queried with a `headModel` frame of reference must provide positions relative to the head's emulated position, so that the input devices appear in the correct location from the user's point of view.
 
 ### Room-scale tracking and boundaries
 
-Some XR devices have been configured with details about the area they are being used in, including things like where the floor is and what boundaries of the safe space is so that it can be communicated to the user in XR. It can be beneficial to render the virtual scene so that it lines up with the users physical space for added immersion, especially ensuring that the virtual floor and the physical floor align. This is frequently called "room scale" or "standing space". It helps the user feel grounded in the virtual space. WebXR refers to this type of bounded, floor-relative play space as a "stage". Applications can take advantage of that space by creating a stage `XRFrameOfReference`. This will report values relative to the floor, ideally at the center of the room. (In other words the users physical floor is at Y = 0.) Not all `XRDevices` will support this mode, however. `requestFrameOfReference` will reject the promise in that case.
+Some XR devices have been configured with details about the area they are being used in, including things like where the floor is and what boundaries of the safe space is so that it can be communicated to the user in XR. It can be beneficial to render the virtual scene so that it lines up with the users physical space for added immersion, especially ensuring that the virtual floor and the physical floor align. This is frequently called "room scale" or "standing space". It helps the user feel grounded in the virtual space. WebXR refers to this type of bounded, floor-relative play space as a "stage". Applications can take advantage of that space by creating a `stage` frame of reference. This will report values relative to the floor, ideally at the center of the room. (In other words the users physical floor is at Y = 0.) Not all `XRDevices` will support this mode, however. `requestFrameOfReference` will reject the promise in that case.
 
 ```js
 // Try to get a frame of reference where the floor is at Y = 0
-xrSession.requestFrameOfReference("stage").then((frameOfRef) => {
+xrSession.requestFrameOfReference("stage").then((coordSystem) => {
   // Will always succeed due to stage emulation. See the section titled
   // "Emulated stage frame of reference" for details.
-  xrFrameOfRef = frameOfRef;
+  xrCoordSystem = coordSystem;
 });
 
-// Use xrFrameOfRef as detailed above, but render the floor of the virtual space at Y = 0;
+// Use xrCoordSystem as detailed above, but render the floor of the virtual space at Y = 0;
 ```
 
-When using a stage `XRFrameOfReference` the device will frequently have a configured "safe area" that the user can move around in without fear of bumping into real world objects. WebXR can communicate the rough boundaries of this space via the `XRFrameOfReference.bounds` attribute. It provides a polygonal boundary given in the 'geometry' point array, which represents a loop of points at the edges of the safe space. The points are given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The shape it describes is not guaranteed to be convex. The values reported are relative to the stage origin, but do not necessarily contain it. The `bounds` attribute is null if the bounds are unavailable for the current frame of reference.
+When using a `stage` frame of reference the device will frequently have a configured "safe area" that the user can move around in without fear of bumping into real world objects. WebXR can communicate the rough boundaries of this space via the `XRSession`'s `getStageBoundsGeometry()` function. It provides a polygonal boundary given as an array of `XRStageBoundsPoint`s which represents a loop of points at the edges of the safe space. The points are given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The shape it describes is not guaranteed to be convex. The values reported are relative to the `XRCoordinateSystem` passed into the call, and do not necessarily contain the origin of that coordinate system. The bounds are unavailable for the device or given `XRCoordinateSystem`, an empty array will be returned.
 
-If the `bounds` are available the application should try to ensure that all content the user needs to interact with can be reached while staying inside the described bounds geometry.
+If stage bounds are available the application should try to ensure that all content the user needs to interact with is placed within the described bounds geometry, otherwise it may be rendered inaccessible due to physical barriers in the users environment.
 
 ```js
 // Demonstrated here using a fictional 3D library to simplify the example code.
 function onBoundsUpdate() {
-  if (xrFrameOfRef.bounds) {
+  let bounds = xrSession.getStageBoundsGeometry(xrCoordSystem);
+  let pointCount = bounds.length;
+  if (pointCount) {
     // Visualize the bounds geometry as 2 meter high quads
     boundsMesh.clear();
-    let pointCount = xrFrameOfRef.bounds.geometry.length;
     for (let i = 0; i < pointCount - 1; ++i) {
-      let pointA = xrFrameOfRef.bounds.geometry[i];
-      let pointB = xrFrameOfRef.bounds.geometry[i+1];
+      let pointA = bounds[i];
+      let pointB = bounds[i+1];
       boundsMesh.addQuad(
           pointA.x, 0, pointA.z, // Quad Corner 1
           pointB.x, 2.0, pointB.z) // Quad Corner 2
     }
     // Close the loop
-    let pointA = xrFrameOfRef.bounds.geometry[pointCount-1];
-    let pointB = xrFrameOfRef.bounds.geometry[0];
+    let pointA = bounds[pointCount-1];
+    let pointB = bounds[0];
     boundsMesh.addQuad(
           pointA.x, 0, pointA.z, // Quad Corner 1
           pointB.x, 2.0, pointB.z) // Quad Corner 2
@@ -601,27 +602,25 @@ function onBoundsUpdate() {
 }
 ```
 
-Changes to the bounds while a session is active should be a relatively rare occurrence, but it can be monitored by listening for the frame of reference's `boundschange` event.
+Changes to the bounds while a session is active should be a relatively rare occurrence, but it can be monitored by listening for the session's `stageboundschange` event.
 
 ```js
-xrFrameOfRef.addEventListener('boundschange', onBoundsUpdate);
+xrSession.addEventListener('stageboundschange', onBoundsUpdate);
 ```
 
 ### Emulated stage frame of reference
 
-Often times content designed to be used with a `stage` `XRFrameOfReference` (that is, the physical floor is at Y=0) can still be used with headsets that don't have appropriate knowledge of the user's physical space. For example the headset may only support 3DoF tracking, or 6DoF tracking without floor detection. In these case as a matter of developer convenience an emulated `stage` frame of reference is provided by default as a fallback.
+Often times content designed to be used with a `stage` frame of reference (that is, the physical floor is at Y=0) can still be used with headsets that don't have appropriate knowledge of the user's physical space. For example the headset may only support 3DoF tracking, or 6DoF tracking without floor detection. In these case as a matter of developer convenience an emulated `stage` frame of reference is provided by default as a fallback, which prevents the need for additional state tracking and matrix transforms in order to render the same content on a wide range of devices.
 
 An emulated `stage` frame or reference is functionally identical to an `eyeLevel` frame of reference with an offset applied along the Y axis to place the user's head at an estimated height. The default estimated height is determined by the UA, and can be an aritrary or user configurable value. If the platform APIs provide a user configured height that should be taken into consideration when determining the emulated height. Note that the floor's location will almost certainly not match up with the user's physical floor when using `stage` emulation, the intent is just to get it "close enough" that the user doesn't overtly feel like they are stuck in the ground or floating. No bounds are reported for an emulated `stage`.
-
-Using an emulated `stage` as a fallback prevents the need for additional state tracking and matrix transforms on the developer's part in order to render the same content on a wide range of devices. To detect if the stage is using an emulated height or not after creation developers can check the `XRFrameOfReference`'s `emulatedHeight` attribute. A non-zero value indicates that the `stage` is being emulated.
 
 If the system is capable of providing native `stage` tracking it must do so instead of providing an emulated `stage` frame of reference. Some applications may require a non-emulated `stage`, however, so the application is allowed to opt-out of emulation by setting the `disableStageEmulation` dictionary option to `true` when calling `requestFrameOfReference()`. 
 
 ```js
 // Get a native stage frame of reference if one is available, fail otherwise.
 xrSession.requestFrameOfReference("stage", { disableStageEmulation: true })
-    .then((frameOfRef) => {
-      xrFrameOfRef = frameOfRef;
+    .then((coordSystem) => {
+      xrCoordSystem = coordSystem;
     }).catch(() => {
       // No stage frame of reference available for this device. Fall back to
       // using a different frame of reference type of provide an appropriate
@@ -635,9 +634,9 @@ Some experiences that use a `stage` frame of reference may assume that the user 
 // Get a stage frame of reference, emulating one defaulting to 1.2 meters high
 // if necessary.
 xrSession.requestFrameOfReference("stage", { stageEmulationHeight: 1.2 })
-    .then((frameOfRef) => {
+    .then((coordSystem) => {
       // Will always succeed.
-      xrFrameOfRef = frameOfRef;
+      xrCoordSystem = coordSystem;
     });
 ```   
 
@@ -664,7 +663,7 @@ function setupWebGLLayer() {
 function onDrawFrame(xrFrame) {
   // Do we have an active session?
   if (xrSession) {
-    let pose = xrFrame.getDevicePose(xrFrameOfRef);
+    let pose = xrFrame.getDevicePose(xrCoordSystem);
     gl.bindFramebuffer(xrSession.baseLayer.framebuffer);
 
     if (xrSession.baseLayer.multiview) {
@@ -833,12 +832,15 @@ dictionary XRSessionCreationOptions {
   attribute EventHandler onselectend;
   attribute EventHandler oninputsourceschange;
 
-  Promise<XRFrameOfReference> requestFrameOfReference(XRFrameOfReferenceType type, optional XRFrameOfReferenceOptions options);
+  attribute EventHandler onstageboundschange;
+
+  Promise<XRCoordinateSystem> requestFrameOfReference(XRFrameOfReferenceType type, optional XRFrameOfReferenceOptions options);
 
   long requestAnimationFrame(XRFrameRequestCallback callback);
   void cancelAnimationFrame(long handle);
 
   FrozenArray<XRInputSource> getInputSources();
+  FrozenArray<XRStageBoundsPoint> getStageBoundsGeometry(XRCoordinateSystem coordinateSystem);
 
   Promise<void> end();
 };
@@ -925,7 +927,7 @@ interface XRWebGLLayer : XRLayer {
 // Coordinate Systems
 //
 
-[SecureContext, Exposed=Window] interface XRCoordinateSystem : EventTarget {
+[SecureContext, Exposed=Window] interface XRCoordinateSystem {
   Float32Array? getTransformTo(XRCoordinateSystem other);
 };
 
@@ -938,17 +940,6 @@ enum XRFrameOfReferenceType {
 dictionary XRFrameOfReferenceOptions {
   boolean disableStageEmulation = false;
   double stageEmulationHeight = 0.0;
-};
-
-[SecureContext, Exposed=Window] interface XRFrameOfReference : XRCoordinateSystem {
-  readonly attribute XRStageBounds? bounds;
-  readonly attribute double emulatedHeight;
-
-  attribute EventHandler onboundschange;
-};
-
-[SecureContext, Exposed=Window] interface XRStageBounds {
-  readonly attribute FrozenArray<XRStageBoundsPoint> geometry;
 };
 
 [SecureContext, Exposed=Window] interface XRStageBoundsPoint {
@@ -994,16 +985,6 @@ interface XRSessionEvent : Event {
 
 dictionary XRSessionEventInit : EventInit {
   required XRSession session;
-};
-
-[SecureContext, Exposed=Window,
- Constructor(DOMString type, XRCoordinateSystemEventInit eventInitDict)]
-interface XRCoordinateSystemEvent : Event {
-  readonly attribute XRCoordinateSystem coordinateSystem;
-};
-
-dictionary XRCoordinateSystemEventInit : EventInit {
-  required XRCoordinateSystem coordinateSystem;
 };
 
 [SecureContext, Exposed=Window,
