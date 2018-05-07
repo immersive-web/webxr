@@ -19,6 +19,7 @@ The specification has recently undergone a name change, so expect to see multipl
 
 * [WebVR Community Group][3]
 * [WebXR Device API Specification][1]
+* [Immersive Web Early Adopters Guide][16]
 * [Legacy WebVR API Specification][2]
 * [WebXR Charter][4]
 
@@ -76,3 +77,4 @@ Per the [`LICENSE.md`](LICENSE.md) file:
 [13]: http://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
 [14]: https://www.w3.org/community/about/agreements/cla/
 [15]: https://www.w3.org/Consortium/Legal/2008/03-bsd-license.html
+[16]: https://immersive-web.github.io/webxr-reference/
