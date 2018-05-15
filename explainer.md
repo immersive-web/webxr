@@ -706,16 +706,30 @@ function drawMultiviewScene(views, pose) {
 }
 ```
 
-### High quality rendering
+### Controlling rendering quality
 
 While in exclusive sessions, the UA is responsible for providing a framebuffer that is correctly optimized for presentation to the `XRSession` in each `XRPresentationFrame`. Developers can optionally request either the buffer size or viewport size be scaled, though the UA may not respect the request. Even when the UA honors the scaling requests, the result is not guaranteed to be the exact percentage requested.
 
-The first scaling mechanism is done by specifying a `framebufferScaleFactor` at `XRWebGLLayer` creation time. In response, the UA may create a framebuffer that is based on the requested percentage of the maximum size supported by the `XRDevice`. On some platforms such as Daydream, the UA may set the default value of `framebufferScaleFactor` to be less 1.0 for performance reasons. Developers explicitly wishing to use the full resolution on these devices can do so by requesting the `framebufferScaleFactor` be set to 1.0.
+The first scaling mechanism is done by specifying a `framebufferScaleFactor` at `XRWebGLLayer` creation time. Each `XRDevice` has a default framebuffer size, which corresponds to a `framebufferScaleFactor` of `1.0`. This default size is determined by the UA and should represent a reasonable balance between rendering quality and performance. It may not be the 'native' size for the device (that is, a buffer which would match the native screen resolution 1:1 at point of highest magnification). For example, mobile platforms such as GearVR or Daydream frequently suggest using lower resolutions than their screens are capable of to ensure consistent performance.
+
+If the `framebufferScaleFactor` is set to a number higher or lower than `1.0` the UA should create a framebuffer that is the default resolution multiplied by the given scale factor. So a `framebufferScaleFactor` of `0.5` would specify a framebuffer with 50% the default height and width, and so on. The UA may clamp the scale factor however it sees fit, or may round it to a desired increment if needed (for example, fitting the buffer dimensions to powers of two if that is known to increase performance.)
 
 ```js
 function setupWebGLLayer() {
   return gl.setCompatibleXRDevice(xrDevice).then(() => {
+    // Create a WebGL layer with a slightly lower than default resolution.
     xrSession.baseLayer = new XRWebGLLayer(xrSession, gl, { framebufferScaleFactor: 0.8 });
+  });
+```
+
+In some cases the developer may want to ensure that their application is rendering at the 'native' size for the device. To do this the developer can query the scale factor that should be passed during layer creation with the `XRWebGLLayer.getNativeFramebufferScaleFactor()` function.
+
+```js
+function setupNativeScaleWebGLLayer() {
+  return gl.setCompatibleXRDevice(xrDevice).then(() => {
+    // Create a WebGL layer that matches the device's native resolution.
+    let nativeScaleFactor = XRWebGLLayer.getNativeFramebufferScaleFactor(xrSession);
+    xrSession.baseLayer = new XRWebGLLayer(xrSession, gl, { framebufferScaleFactor: nativeScaleFactor });
   });
 ```
 
@@ -919,6 +933,8 @@ interface XRWebGLLayer : XRLayer {
 
   XRViewport? getViewport(XRView view);
   void requestViewportScaling(double viewportScaleFactor);
+
+  static double getNativeFramebufferScaleFactor(XRSession session);
 };
 
 //
