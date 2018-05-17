@@ -425,7 +425,7 @@ If an input source can be tracked the `XRInputPose`'s `gripMatrix` will indicate
 
 The `gripMatrix` is a transform into a space where if the user was holding a straight rod in their hand it would be aligned with the negative Z axis (forward) and the origin rests at their palm. This enables developers to properly render a virtual object held in the user's hand. For example, a sword would be positioned so that the blade points directly down the negative Z axis and the center of the handle is at the origin.
 
-An input source will also provide its preferred target ray on its pose, which is defined as a ray originating at position `targetRayOrigin` and extending in the normalized direction `targetRayDirection`. `targetRayOrigin` or `targetRayDirection` will never be `null`. Their values will differ based on the type of input source that produces it, which is represented by the `targetRayMode` attribute:
+An input source will also provide its preferred target ray on its pose, which is defined as a ray originating at `[0, 0, 0]` and extending down the negative Z axis, transformed by the `targetRayMatrix` attribute of an `XRInputPose` object. `pointerMatrix` will never be `null`. Their values will differ based on the type of input source that produces it, which is represented by the `targetRayMode` attribute:
 
   * `'gazing'` indicates the target ray will originate at the user's head and follow the direction they are looking (this is commonly referred to as a "gaze input" device). While it may be possible for these devices to be tracked (and have a grip matrix), the head gaze is used for targeting. Example devices: 0DOF clicker, regular gamepad, voice command, tracked hands.
   * `'pointing'` indicates that the target ray originates from a handheld device and represents that the user is using that device for pointing. The exact orientation of the ray relative to the device should follow platform-specific guidelines if there are any. In the absence of platform-specific guidance, the target ray should most likely point in the same direction as the user's index finger if it was outstretched while holding the controller.
@@ -442,7 +442,7 @@ for (let inputSource of xrInputSources) {
     renderInputSource(session, inputSource, inputPose);
 
     // Highlight any objects that the target ray intersects with
-    let hoveredObject = scene.getObjectIntersectingRay(inputPose.targetRayOrigin, inputPose.targetRayDirection);
+    let hoveredObject = scene.getObjectIntersectingRay(inputPose.targetRayMatrix);
     if (hoveredObject) { 
       // Render a visualization of the object that is highlighted (see below).
       drawHighlightFrom(hovered, inputSource);
@@ -528,7 +528,7 @@ function onSelect(event) {
   let inputPose = event.frame.getInputPose(event.inputSource, xrFrameOfRef);
   if (inputPose) {
     // Ray cast into scene to determine if anything was hit.
-    let selectedObject = scene.getObjectIntersectingRay(inputPose.targetRayOrigin, inputPose.targetRayDirection);
+    let selectedObject = scene.getObjectIntersectingRay(inputPose.targetRayMatrix);
     if (selectedObject) {
       selectedObject.onSelect();
     }
@@ -588,12 +588,12 @@ function renderCursor(inputSource, inputPose) {
   // Only render a target ray if this was the most recently used input source.
   if (inputSource.targetRayMode == "pointing") {
     // Draw targeting rays for pointing devices only.
-    renderer.drawRay(inputPose.targetRayOrigin, inputPose.targetRayDirection);
+    renderer.drawRay(inputPose.targetRayMatrix);
   }
 
   if (inputSource.targetRayMode != "tapping") {
     // Draw a cursor for gazing and pointing devices only.
-    let cursorPosition = scene.getIntersectionPoint(inputPose.targetRayOrigin, inputPose.targetRayDirection);
+    let cursorPosition = scene.getIntersectionPoint(inputPose.targetRayMatrix);
     if (cursorPosition) {
       renderer.drawCursor(cursorPosition);
     }
@@ -627,7 +627,7 @@ function onSelectStart(event) {
     return;
 
   // Use the input source target ray to find a draggable object in the scene
-  let hitResult = scene.hitTest(inputPose.targetRayOrigin, inputPose.targetRayDirection)
+  let hitResult = scene.hitTest(inputPose.targetRayMatrix)
   if (hitResult && hitResult.draggable) {
     // Use the gripMatrix translation to drag the intersected object, rather than the target ray.
     activeDragInteraction = {
@@ -661,7 +661,7 @@ function onUpdateScene() {
 }
 ```
 
-The above sample is optimized for dragging items in the scene around using input sources that have a gripMatrix. It would also be possible to add further script logic to use the targetRay properties to position items in the world - this is left as an exercise for the reader.
+The above sample is optimized for dragging items in the scene around using input sources that have a gripMatrix. It would also be possible to add further script logic to use the target ray properties to position items in the world - this is left as an exercise for the reader.
 
 ### Magic Window Input
 
@@ -1115,8 +1115,7 @@ interface XRInputSource {
 
 interface XRInputPose {
   readonly attribute boolean emulatedPosition;
-  readonly attribute Float32Array targetRayOrigin;
-  readonly attribute Float32Array targetRayDirection;
+  readonly attribute Float32Array targetRayMatrix;
   readonly attribute Float32Array? gripMatrix;
 };
 
