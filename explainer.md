@@ -399,7 +399,7 @@ function checkMagicWindowSupport() {
 
 XR hardware provides a wide variety of input mechanisms, ranging from single state buttons to fully tracked controllers with multiple buttons, joysticks, triggers, or touchpads. While the intent is to eventually support the full range of available hardware, for the initial version of the WebXR Device API the focus is on enabling a more universal "point and click" style system that can be supported in some capacity by any known XR device and in magic window mode.
 
-In this model every input source has a ray that indicates what is being pointed at, called the "Target Ray", and reports when the primary action for that device has been triggered, surfaced as a "select" event. When the select event is fired the XR application can use the target ray of the input source that generated the event to determine what the user was attempting to interact with and respond accordingly. Additionally, if the input source represents a tracked device a "Grip" matrix will also be provided to indicate where a mesh should be rendered to align with the physical device.~~~
+In this model every input source has a ray that indicates what is being pointed at, called the "Target Ray", and reports when the primary action for that device has been triggered, surfaced as a "select" event. When the select event is fired the XR application can use the target ray of the input source that generated the event to determine what the user was attempting to interact with and respond accordingly. Additionally, if the input source represents a tracked device a "Grip" matrix will also be provided to indicate where a mesh should be rendered to align with the physical device.
 
 ### Enumerating input sources
 
@@ -421,11 +421,11 @@ The properties of an XRInputSource object are immutable. If a device can be mani
 
 Each input source can query a `XRInputPose` using the `getInputPose()` function of any `XRPresentationFrame`. Getting the pose requires passing in the `XRInputSource` you want the pose for, as well as the `XRCoordinateSystem` the pose values should be given in, just like `getDevicePose()`. `getInputPose()` may return `null` in cases where tracking has been lost (similar to `getDevicePose()`), or the given `XRInputSource` instance is no longer connected or available.
 
-If an input source can be tracked the `XRInputPose`'s `gripMatrix` will indicate the device's position and orientation. If only position or orientation is trackable (not both), the `gripMatrix` will return a transform matrix applying only the trackable pose. An example of this case is for physical hands on some AR devices, that only have a tracked position. The `gripMatrix` will be `null` if the input source isn't trackable. 
-
 The `gripMatrix` is a transform into a space where if the user was holding a straight rod in their hand it would be aligned with the negative Z axis (forward) and the origin rests at their palm. This enables developers to properly render a virtual object held in the user's hand. For example, a sword would be positioned so that the blade points directly down the negative Z axis and the center of the handle is at the origin.
 
-An input source will also provide its preferred target ray on its pose, which is defined as a ray originating at `[0, 0, 0]` and extending down the negative Z axis, transformed by the `targetRayMatrix` attribute of an `XRInputPose` object. `pointerMatrix` will never be `null`. Their values will differ based on the type of input source that produces it, which is represented by the `targetRayMode` attribute:
+If the input source has only 3DOF, the grip matrix may represent only a translation or rotation based on tracking capability. An example of this case is for physical hands on some AR devices which only have a tracked position. The `gripMatrix` will be `null` if the input source isn't trackable. 
+
+An input source will also provide its preferred target ray on its pose, which is defined as a ray originating at `[0, 0, 0]` and extending down the negative Z axis, transformed by the `targetRayMatrix` attribute of an `XRInputPose` object. `targetRayMatrix` will never be `null`. The value will differ based on the type of input source that produces it, which is represented by the `targetRayMode` attribute:
 
   * `'gazing'` indicates the target ray will originate at the user's head and follow the direction they are looking (this is commonly referred to as a "gaze input" device). While it may be possible for these devices to be tracked (and have a grip matrix), the head gaze is used for targeting. Example devices: 0DOF clicker, regular gamepad, voice command, tracked hands.
   * `'pointing'` indicates that the target ray originates from a handheld device and represents that the user is using that device for pointing. The exact orientation of the ray relative to the device should follow platform-specific guidelines if there are any. In the absence of platform-specific guidance, the target ray should most likely point in the same direction as the user's index finger if it was outstretched while holding the controller.
@@ -601,7 +601,7 @@ function renderCursor(inputSource, inputPose) {
 }
 ```
 
-### Complex input
+### Grabbing and dragging
 
 While the primary motivation of this input model is a compatible "target and click" interface, more complex interactions such as grabbing and dragging with input sources can also be achieved using only the `select` events.
 
