@@ -159,11 +159,6 @@ function onSessionStarted(session) {
   // Store the session for use later.
   xrSession = session;
 
-  // The depth range of the scene should be set so that the projection
-  // matrices returned by the session are correct.
-  xrSession.depthNear = 0.1;
-  xrSession.depthFar = 100.0;
-
   // The `XRFrameOfReference` provides the coordinate system in which
   // `getViewMatrix()` and the `poseModelMatrix` are defined. For more
   // information on this see the `Advanced functionality` section
@@ -763,6 +758,21 @@ xrSession.addEventListener('resetpose', xrSessionEvent => {
   // time to reset that.
   resetYawTransform();
 });
+```
+
+### Controlling depth precision
+
+The projection matrices given by the `XRView`s take into account not only the field of view of presentation medium but also the depth range for the scene, defined as a near and far plane. WebGL fragments rendered closer than the near plane or further than the far plane are discarded. By default the near plane is 0.1 meters away from the user's viewpoint and the far plane is 1000 meters away.
+
+Some scenes may benefit from changing that range to better fit the scene's content. For example, if all of the visible content in a scene is expected to remain within 100 meters of the user's viewpoint, and all content is expected to appear at least 1 meter away, reducing the range of the near and far plane to `[1, 100]` will lead to more accurate depth precision. This reduces the occurence of z fighting, an artifact which manifests as a flickery, shifting pattern when closely overlapping surfaces are rendered. Conversely, if the visible scene extends for long distances you'd want to set the far plane far enough away to cover the entire visible range to prevent clipping, with the tradeoff being that further draw distances increase the occurence of z fighting artifacts. The best practice is to always set the near and far planes to as tight of a range as your content will allow.
+
+To adjust the near and far plane distance, set the `XRSession`'s `depthNear` and `depthFar` values respectively. These values are given in meters and changes to them will take affect with the next `XRPresentationFrame` provided.
+
+```js
+// This reduces the depth range of the scene to [1, 100] meters.
+// The change will take effect on the next XRSession requestAnimationFrame callback.
+xrSession.depthNear = 1.0;
+xrSession.depthFar = 100.0;
 ```
 
 ## Appendix A: I don’t understand why this is a new API. Why can’t we use…
