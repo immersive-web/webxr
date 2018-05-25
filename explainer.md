@@ -130,7 +130,7 @@ In this sample, the `beginXRSession` function, which is assumed to be run by cli
 
 If `supportsSessionMode` resolved for a given mode, then requesting a session with the same mode should be reasonably expected to succeed, barring external factors (such as `requestSession` not being called in a user activation event for an immersive session.) The UA is ultimately responsible for determining if it can honor the request.
 
-Only one immersive session per XR hardware device is allowed at a time across the entire UA. All inline sessions are [suspended](#handling-suspended-sessions) when an immersive session is active. Inline sessions are not required to be created within a user activation event unless paired with another option that explicitly does require it.
+Only one immersive session per XR hardware device is allowed at a time across the entire UA. If an immersive session is requested and the UA already has an active immersive session or a pending request for an immersive session, then the new request must be rejected. All inline sessions are [suspended](#handling-suspended-sessions) when an immersive session is active. Inline sessions are not required to be created within a user activation event unless paired with another option that explicitly does require it. 
 
 Once the session has started, some setup must be done to prepare for rendering.
 - An `XRReferenceSpace` should be created to establish a space in which `XRViewerPose` data will be defined. See the [Spatial Tracking Explainer](spatial-tracking-explainer.md) for more information.
