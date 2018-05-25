@@ -763,71 +763,6 @@ xrSession.requestFrameOfReference("stage", { stageEmulationHeight: 1.2 })
       // Will always succeed.
       xrFrameOfRef = frameOfRef;
     });
-```   
-
-### Multiview rendering
-
-Developers may optionally take advantage of the [WEBGL_multiview extension](https://www.khronos.org/registry/webgl/extensions/WEBGL_multiview/) to both WebGL 1.0 and WebGL 2.0 for optimized multiview rendering. The WEBGL_multiview extension must be successfully queried from the supplied context prior to the creation of the `XRWebGLLayer` or it will fall back to using a framebuffer that is not multiview-aware. Additionally, the UA may choose to not honor the multiview request for any reason, which will also fall back to using a framebuffer that is not multiview-aware. As such, developers must query the `XRWebGLLayer.multiview` property after the `XRWebGLLayer` is constructed and respond accordingly.
-
-When `XRWebGLLayer.multiview` is false:
-- The `XRWebGLLayer`'s `framebuffer` will be created in a side-by-side configuration.
-- Calling `XRWebGLLayer.getViewport()` will return a different `XRViewport` for each `XRView`.
-
-When `XRWebGLLayer.multiview` is true:
-- The UA may decide to back the framebuffer with a texture array, side-by-side texture or another implementation of the UA's choosing. This implementation decision must not have any impact how developers author their shaders or setup the WebGL context for rendering.
-- Calling `XRWebGLLayer.getViewport()` will return the same `XRViewport` for all `XRView`s.
-
-```js
-function setupWebGLLayer() {
-  return gl.makeXRCompatible().then(() => {
-    // XRWebGLLayer allows for the optional use of the WEBGL_multiview extension
-    xrSession.baseLayer = new XRWebGLLayer(xrSession, gl, { multiview: true });
-  });
-}
-
-function onDrawFrame(xrFrame) {
-  // Do we have an active session?
-  if (xrSession) {
-    let pose = xrFrame.getDevicePose(xrFrameOfRef);
-    gl.bindFramebuffer(xrSession.baseLayer.framebuffer);
-
-    if (xrSession.baseLayer.multiview) {
-      // When using the `WEBGL_multiview` extension, all `XRView`s return the
-      // same value from `getViewport()`, so it only needs to be called once.
-      let viewport = xrSession.baseLayer.getViewport(xrFrame.views[0]);
-      gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
-      drawMultiviewScene(xrFrame.views, pose);
-    } else {
-      for (let view of xrFrame.views) {
-        let viewport = xrSession.baseLayer.getViewport(view);
-        gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
-        drawScene(view, pose);
-      }
-    }
-
-    // Request the next animation callback
-    xrSession.requestAnimationFrame(onDrawFrame);
-
-  } else {
-    // No session available, so render a default mono view.
-    gl.viewport(0, 0, glCanvas.width, glCanvas.height);
-    drawScene();
-
-    // Request the next window callback
-    window.requestAnimationFrame(onDrawFrame);
-  }
-}
-
-function drawMultiviewScene(views, pose) {
-  for (let view of views) {
-    let viewMatrix = pose.getViewMatrix(view);
-    let projectionMatrix = view.projectionMatrix;
-
-    // Set uniforms as appropriate for shaders being used
-  }
-
-  // Draw Scene
-}
 ```
 
 ### Controlling rendering quality
@@ -1070,7 +1005,6 @@ dictionary XRWebGLLayerInit {
   boolean depth = true;
   boolean stencil = false;
   boolean alpha = true;
-  boolean multiview = false;
   double framebufferScaleFactor = 1.0;
 };
 
@@ -1087,7 +1021,6 @@ interface XRWebGLLayer : XRLayer {
   readonly attribute boolean depth;
   readonly attribute boolean stencil;
   readonly attribute boolean alpha;
-  readonly attribute boolean multiview;
 
   readonly attribute unsigned long framebufferWidth;
   readonly attribute unsigned long framebufferHeight;
