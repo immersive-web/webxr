@@ -901,6 +901,29 @@ xrSession.addEventListener('resetpose', xrSessionEvent => {
 });
 ```
 
+### Page navigation
+
+WebXR applications can, like any web page, link to other pages. In the context of an exclusive `XRSession`, this is handled by setting `window.location` to the desired URL when the user performs some action. If the page being linked to is not XR-capable the user will either have to remove the XR device to view it or the page could be shown as a 2D page in a XR browser.
+
+If the page being navigated to is XR capable, however, it's frequently desirable to allow the developer to immediately create an exclusive `XRSession` for that page as well, so that the user feels as though they are navigating through a single continuous XR experience. This is triggered when a page initiates navigation without ending an active exclusive session first. When this happens, if the UA supports XR navigation and does not suppress the navigation for other reasons, the UA sets an internal "allow XR navigation" flag to true.
+
+In order for the next page to start presenting automatically when the UA allows XR navigation, pages can make a "deferred" session request. To create a deferred session request the option `{ waitForNavigate: true }` is passed into the `requestSession` call. If the UA's allow XR navigation flag is set, the request will be resolved when the page is ready to begin presenting. If the UA's allow XR navigation flag is not set, the request will reject immediately.
+
+Deferred sessions requests must be exclusive. If a non-exclusive deferred session request is made, the promise will immediately be rejected. Deferred session requests do not need to be made within a user gesture. Only one session request with the `waitForNavigate` option is allowed per page and subsequent requests using `waitForNavigate` will be rejected immediately. The UA's allow XR navigation flag must revert to false after all listeners for the `window`'s `load` event have fired.
+
+```js
+window.addEventListener('load', () => {
+  // Requests that a session be created if this page was navigated to while the
+  // previous page was viewing WebXR content.
+  xrDevice.requestSession({ exclusive: true, waitForNavigate: true }).then(OnSessionStarted);
+});
+```
+
+> **Non-normative Notes:**
+> - Pages should not rely exclusively on deferred session requests as a method for presenting XR content, since it is not guaranteed that they will be supported in all environments. An in-page button for starting XR should always be provided as a best practice.
+> - UAs may place additional restrictions on what conditions are considered XR navigable, such as restricting it to only same-origin URLs.
+> - The UA should provide a visual transition between the two pages. Additionally, if the UA cannot display pages in XR it is recommended that it should instruct the user to remove the headset once the UA switches to displaying a 2D page.
+
 ## Appendix A: I don’t understand why this is a new API. Why can’t we use…
 
 ### `DeviceOrientation` Events
@@ -962,6 +985,7 @@ partial interface Navigator {
 
 dictionary XRSessionCreationOptions {
   boolean exclusive = false;
+  boolean waitForNavigate = false;
   XRPresentationContext outputContext;
 };
 
