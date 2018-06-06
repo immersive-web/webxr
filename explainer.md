@@ -228,7 +228,7 @@ function onDrawFrame(timestamp, xrFrame) {
   // Do we have an active session?
   if (xrSession) {
     let pose = xrFrame.getDevicePose(xrFrameOfRef);
-    gl.bindFramebuffer(xrSession.baseLayer.framebuffer);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, xrSession.baseLayer.framebuffer);
 
     for (let view of xrFrame.views) {
       let viewport = xrSession.baseLayer.getViewport(view);
@@ -306,6 +306,8 @@ function endXRSession() {
 
 // Restore the page to normal after exclusive access has been released.
 function onSessionEnd() {
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
   xrSession = null;
 
   // Ending the session stops executing callbacks passed to the XRSession's
