@@ -913,6 +913,29 @@ xrSession.depthNear = 1.0;
 xrSession.depthFar = 100.0;
 ```
 
+### Handling non-opaque displays
+
+Some devices which support the WebXR Device API may use displays that are not fully opaque, or otherwise show the real world in some capacity. To determine how the display will blend rendered content with the real world, check the `XRSession`'s `worldBlendMode` attribute. It may currently be one of three values, and more may be added in the future if new display technology necessitates it:
+
+  - `opaque`: The world is not visible at all through this display. Transparent pixels in the `baseLayer` will appear black. This is the expected mode for most VR headsets.
+  - `additive`: The world is visible through the display and pixels in the `baseLayer` will be shown additively against it. Black pixels will appear fully transparent. Alpha values will modulate the intensity of the colors but cannot make a pixel opaque. This is the expected mode for devices like HoloLens or Magic Leap.
+  - `alpha-blend`: The world is visible through the display and pixels in the `baseLayer` will be blended with it according to the alpha value of the pixel. Pixels with an alpha value of 1.0 will be fully opaque and pixels with an alpha value of 0.0 will be fully transparent. This is the expected mode for devices which use passthrough video to show the world such as ARCore or ARKit enabled phones.
+
+When rendering content it's important to know how the content will appear on the display, as that may affect the techniques you use to render. For example, on an `additive` display is used that can only render additive light. This means that the color black appears as fully transparent and expensive graphical effects like shadows may not show up at all. Similarly, if the developer knows that the world will be visible they may choose to not render an opaque background.
+
+```js
+function drawScene() {
+  renderer.enableShadows(xrSession.worldBlendMode != 'additive');
+
+  // Only draw a background for the scene if the world is not visible.
+  if (xrSession.worldBlendMode == 'opaque') {
+    renderer.drawSkybox();
+  }
+
+  // Draw the reset of the scene.
+}
+```
+
 ## Appendix A: I don’t understand why this is a new API. Why can’t we use…
 
 ### `DeviceOrientation` Events
@@ -981,6 +1004,7 @@ dictionary XRSessionCreationOptions {
   readonly attribute XRDevice device;
   readonly attribute boolean exclusive;
   readonly attribute XRPresentationContext outputContext;
+  readonly attribute XRWorldBlendMode worldBlendMode;
 
   attribute double depthNear;
   attribute double depthFar;
@@ -1010,6 +1034,12 @@ dictionary XRSessionCreationOptions {
 // Timestamp is passed as part of the callback to make the signature compatible
 // with the window's FrameRequestCallback.
 callback XRFrameRequestCallback = void (DOMHighResTimeStamp time, XRFrame frame);
+
+enum XRWorldBlendMode {
+  "opaque",
+  "additive",
+  "alpha-blend",
+};
 
 //
 // Frame, Device Pose, and Views
