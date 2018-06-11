@@ -72,8 +72,8 @@ Per the [`LICENSE.md`](LICENSE.md) file:
 [8]: https://github.com/immersive-web/webxr/issues
 [9]: https://webvr-slack.herokuapp.com/
 [10]: https://github.com/tabatkins/bikeshed
-[11]: https://github.com/w3c/web-platform-tests
-[12]: https://github.com/w3c/web-platform-tests/issues/new
+[11]: https://github.com/web-platform-tests/wpt
+[12]: https://github.com/web-platform-tests/wpt/issues/new
 [13]: http://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
 [14]: https://www.w3.org/community/about/agreements/cla/
 [15]: https://www.w3.org/Consortium/Legal/2008/03-bsd-license.html
