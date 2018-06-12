@@ -148,7 +148,7 @@ function beginXRSession() {
 ```
 Once the session has started, some setup must be done to prepare for rendering.
 - A `XRFrameOfReference` must be created to define the coordinate system in which the `XRDevicePose` objects will be defined. See the Advanced Functionality section for more details about frames of reference.
-- The depth range of the session should be set to something appropriate for the application. This range will be used in the construction of the projection matrices provided by `XRPresentationFrame`.
+- The depth range of the session should be set to something appropriate for the application. This range will be used in the construction of the projection matrices provided by `XRFrame`.
 - A `XRLayer` must be created and assigned to the `XRSession`'s `baseLayer` attribute. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.)
 
 ```js
@@ -210,13 +210,13 @@ Ensuring context compatibility with an `XRDevice` through either method may have
 
 ### Main render loop
 
-The WebXR Device API provides information about the current frame to be rendered via the `XRPresentationFrame` object which developers must examine each frame. The `XRDevicePose` contains the information about all views which must be rendered and targets into which this rendering must be done.
+The WebXR Device API provides information about the current frame to be rendered via the `XRFrame` object which developers must examine each iteration of the render loop. The `XRDevicePose` contains the information about all views which must be rendered and targets into which this rendering must be done.
 
-`XRWebGLLayer` objects are not updated automatically. To present new frames, developers must use `XRSession`'s `requestAnimationFrame()` method. When the callback function is run, it is passed both a timestamp and an `XRPresentationFrame` containing fresh rendering data that must be used to draw into the `XRWebGLLayer`'s `framebuffer` during the callback. (Timestamp is given for compatibility with `window.requestAnimationFrame()`. Reserved for future use and will be `0` until that time.) This framebuffer is created by the UA and behaves similarly to a canvas's default framebuffer. Using `framebufferTexture2D`, `framebufferRenderbuffer`, `getFramebufferAttachmentParameter`, and `getRenderbufferParameter` will all generate an INVALID_OPERATION error. Additionally, outside of an `XRSession`'s `requestAnimationFrame()` callback the framebuffer will be considered incomplete, reporting FRAMEBUFFER_UNSUPPORTED when calling `checkFramebufferStatus`. Attempts to draw to it, clear it, or read from to generate an INVALID_FRAMEBUFFER_OPERATION error as indicated by the WebGL specification.
+`XRWebGLLayer` objects are not updated automatically. To present new frames, developers must use `XRSession`'s `requestAnimationFrame()` method. When the callback function is run, it is passed both a timestamp and an `XRFrame` containing fresh rendering data that must be used to draw into the `XRWebGLLayer`'s `framebuffer` during the callback. (Timestamp is given for compatibility with `window.requestAnimationFrame()`. Reserved for future use and will be `0` until that time.) This framebuffer is created by the UA and behaves similarly to a canvas's default framebuffer. Using `framebufferTexture2D`, `framebufferRenderbuffer`, `getFramebufferAttachmentParameter`, and `getRenderbufferParameter` will all generate an INVALID_OPERATION error. Additionally, outside of an `XRSession`'s `requestAnimationFrame()` callback the framebuffer will be considered incomplete, reporting FRAMEBUFFER_UNSUPPORTED when calling `checkFramebufferStatus`. Attempts to draw to it, clear it, or read from to generate an INVALID_FRAMEBUFFER_OPERATION error as indicated by the WebGL specification.
 
 Once drawn to, the XR device will continue displaying the contents of the `XRWebGLLayer` framebuffer, potentially reprojected to match head motion, regardless of whether or not the page continues processing new frames. Potentially future spec iterations could enable additional types of layers, such as video layers, that could automatically be synchronized to the device's refresh rate.
 
-To get view matrices or the `poseModelMatrix` for each presentation frame, developers must call `getDevicePose()` and provide an `XRCoordinateSystem` to specify the coordinate system in which these matrices should be defined. Unless the "head-model" `XRFrameOfReference` is being used, this function is not guaranteed to return a value. For example, the most common frame of reference, "eye-level", will fail to return a `viewMatrix` or a `poseModelMatrix` under tracking loss conditions. In that case, the page will need to decide how to respond. It may wish to re-render the scene using an older pose, fade the scene out to prevent disorientation, fall back to a "head-model" `XRFrameOfReference`, or simply not update. For more information on this see the [`Advanced functionality`](#orientation-only-tracking) section.
+To get view matrices or the `poseModelMatrix` for each `XRFrame`, developers must call `getDevicePose()` and provide an `XRCoordinateSystem` to specify the coordinate system in which these matrices should be defined. Unless the "head-model" `XRFrameOfReference` is being used, this function is not guaranteed to return a value. For example, the most common frame of reference, "eye-level", will fail to return a `viewMatrix` or a `poseModelMatrix` under tracking loss conditions. In that case, the page will need to decide how to respond. It may wish to re-render the scene using an older pose, fade the scene out to prevent disorientation, fall back to a "head-model" `XRFrameOfReference`, or simply not update. For more information on this see the [`Advanced functionality`](#orientation-only-tracking) section.
 
 ```js
 function onDrawFrame(timestamp, xrFrame) {
@@ -364,7 +364,7 @@ Similar to mirroring, to make use of this mode an `XRPresentationContext` is pro
 
 Exclusive and non-exclusive sessions can use the same render loop, but there are some differences in behavior to be aware of. The sessions may run their render loops at at different rates. During exclusive sessions the UA runs the rendering loop at the `XRDevice`'s native refresh rate. During non-exclusive sessions the UA runs the rendering loop at the refresh rate of page (aligned with `window.requestAnimationFrame`.) The method of computation of `XRView` projection and view matrices also differs between exclusive and non-exclusive sessions, with non-exclusive sessions taking into account the output canvas dimensions and possibly the position of the users head in relation to the canvas if that can be determined.
 
-Most instances of non-exclusive sessions will only provide a single `XRView` to be rendered, but UA may request multiple views be rendered if, for example, it's detected that that output medium of the page supports stereo rendering. As a result pages should always draw every `XRView` provided by the `XRPresentationFrame` regardless of what type of session has been requested.
+Most instances of non-exclusive sessions will only provide a single `XRView` to be rendered, but UA may request multiple views be rendered if, for example, it's detected that that output medium of the page supports stereo rendering. As a result pages should always draw every `XRView` provided by the `XRFrame` regardless of what type of session has been requested.
 
 UAs may have different restrictions on non-exclusive contexts that don't apply to exclusive contexts. For instance, a different set of `XRFrameOfReference` types may be available with a non-exclusive session versus an exclusive session.
 
@@ -416,7 +416,7 @@ The properties of an XRInputSource object are immutable. If a device can be mani
 
 ### Input poses
 
-Each input source can query a `XRInputPose` using the `getInputPose()` function of any `XRPresentationFrame`. Getting the pose requires passing in the `XRInputSource` you want the pose for, as well as the `XRCoordinateSystem` the pose values should be given in, just like `getDevicePose()`. `getInputPose()` may return `null` in cases where tracking has been lost (similar to `getDevicePose()`), or the given `XRInputSource` instance is no longer connected or available.
+Each input source can query a `XRInputPose` using the `getInputPose()` function of any `XRFrame`. Getting the pose requires passing in the `XRInputSource` you want the pose for, as well as the `XRCoordinateSystem` the pose values should be given in, just like `getDevicePose()`. `getInputPose()` may return `null` in cases where tracking has been lost (similar to `getDevicePose()`), or the given `XRInputSource` instance is no longer connected or available.
 
 The `gripMatrix` is a transform into a space where if the user was holding a straight rod in their hand it would be aligned with the negative Z axis (forward) and the origin rests at their palm. This enables developers to properly render a virtual object held in the user's hand. For example, a sword would be positioned so that the blade points directly down the negative Z axis and the center of the handle is at the origin.
 
@@ -510,7 +510,7 @@ A `select` event indicates that a primary action has been completed. `select` ev
 
 For primary actions that are instantaneous without a clear start and end point (such as a verbal command), all three events should still fire in the sequence `selectstart`, `selectend`, `select`.
 
-All three events are `XRInputSourceEvent` events. When fired the event's `inputSource` attribute must contain the `XRInputSource` that produced the event. The event's `frame` attribute must contain a valid `XRPresentationFrame` that can be used to query the input and device poses at the time the selection event occured. The `XRPresentationFrame`'s `views` array must be empty.
+All three events are `XRInputSourceEvent` events. When fired the event's `inputSource` attribute must contain the `XRInputSource` that produced the event. The event's `frame` attribute must contain a valid `XRFrame` that can be used to query the input and device poses at the time the selection event occured. The `XRFrame`'s `views` array must be empty.
 
 In most cases applications will only need to listen for the `select` event for basic interactions like clicking on buttons.
 
@@ -841,7 +841,7 @@ function drawMultiviewScene(views, pose) {
 
 ### Controlling rendering quality
 
-While in exclusive sessions, the UA is responsible for providing a framebuffer that is correctly optimized for presentation to the `XRSession` in each `XRPresentationFrame`. Developers can optionally request either the buffer size or viewport size be scaled, though the UA may not respect the request. Even when the UA honors the scaling requests, the result is not guaranteed to be the exact percentage requested.
+While in exclusive sessions, the UA is responsible for providing a framebuffer that is correctly optimized for presentation to the `XRSession` in each `XRFrame`. Developers can optionally request either the buffer size or viewport size be scaled, though the UA may not respect the request. Even when the UA honors the scaling requests, the result is not guaranteed to be the exact percentage requested.
 
 The first scaling mechanism is done by specifying a `framebufferScaleFactor` at `XRWebGLLayer` creation time. Each `XRDevice` has a default framebuffer size, which corresponds to a `framebufferScaleFactor` of `1.0`. This default size is determined by the UA and should represent a reasonable balance between rendering quality and performance. It may not be the 'native' size for the device (that is, a buffer which would match the native screen resolution 1:1 at point of highest magnification). For example, mobile platforms such as GearVR or Daydream frequently suggest using lower resolutions than their screens are capable of to ensure consistent performance.
 
@@ -904,7 +904,7 @@ The projection matrices given by the `XRView`s take into account not only the fi
 
 Some scenes may benefit from changing that range to better fit the scene's content. For example, if all of the visible content in a scene is expected to remain within 100 meters of the user's viewpoint, and all content is expected to appear at least 1 meter away, reducing the range of the near and far plane to `[1, 100]` will lead to more accurate depth precision. This reduces the occurence of z fighting, an artifact which manifests as a flickery, shifting pattern when closely overlapping surfaces are rendered. Conversely, if the visible scene extends for long distances you'd want to set the far plane far enough away to cover the entire visible range to prevent clipping, with the tradeoff being that further draw distances increase the occurence of z fighting artifacts. The best practice is to always set the near and far planes to as tight of a range as your content will allow.
 
-To adjust the near and far plane distance, set the `XRSession`'s `depthNear` and `depthFar` values respectively. These values are given in meters and changes to them will take affect with the next `XRPresentationFrame` provided.
+To adjust the near and far plane distance, set the `XRSession`'s `depthNear` and `depthFar` values respectively. These values are given in meters and changes to them will take affect with the next `XRFrame` provided.
 
 ```js
 // This reduces the depth range of the scene to [1, 100] meters.
@@ -1009,13 +1009,13 @@ dictionary XRSessionCreationOptions {
 
 // Timestamp is passed as part of the callback to make the signature compatible
 // with the window's FrameRequestCallback.
-callback XRFrameRequestCallback = void (DOMHighResTimeStamp time, XRPresentationFrame frame);
+callback XRFrameRequestCallback = void (DOMHighResTimeStamp time, XRFrame frame);
 
 //
 // Frame, Device Pose, and Views
 //
 
-[SecureContext, Exposed=Window] interface XRPresentationFrame {
+[SecureContext, Exposed=Window] interface XRFrame {
   readonly attribute XRSession session;
   readonly attribute FrozenArray<XRView> views;
 
@@ -1175,12 +1175,12 @@ dictionary XRCoordinateSystemEventInit : EventInit {
 [SecureContext, Exposed=Window,
  Constructor(DOMString type, XRInputSourceEventInit eventInitDict)]
 interface XRInputSourceEvent : Event {
-  readonly attribute XRPresentationFrame frame;
+  readonly attribute XRFrame frame;
   readonly attribute XRInputSource inputSource;
 };
 
 dictionary XRInputSourceEventInit : EventInit {
-  required XRPresentationFrame frame;
+  required XRFrame frame;
   required XRInputSource inputSource;
 };
 

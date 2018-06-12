@@ -418,7 +418,7 @@ Animation Frames {#animation-frames}
 ----------------
 
 <pre class="idl">
-callback XRFrameRequestCallback = void (DOMHighResTimeStamp time, XRPresentationFrame frame);
+callback XRFrameRequestCallback = void (DOMHighResTimeStamp time, XRFrame frame);
 </pre>
 
 Each {{XRFrameRequestCallback}} object has a <dfn for="XRFrameRequestCallback">cancelled</dfn> boolean initially set to <code>false</code>.
@@ -448,7 +448,7 @@ When the <dfn method for="XRSession">cancelAnimationFrame(|handle|)</dfn> method
 
 <div class="algorithm" data-algorithm="run-animation-frames">
 
-When the user agent is to <dfn>run the animation frame callbacks</dfn> for an {{XRSession}} |session| with a timestamp |now| and an {{XRPresentationFrame}} |frame|, it MUST run the following steps:
+When the user agent is to <dfn>run the animation frame callbacks</dfn> for an {{XRSession}} |session| with a timestamp |now| and an {{XRFrame}} |frame|, it MUST run the following steps:
 
   1. Let |callbacks| be a list of the entries in |session|'s [=list of animation frame callback=], in the order in which they were added to the list.
   1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
@@ -503,11 +503,11 @@ Then, the frame loop performs the following steps while the session is active:
 Frame Loop {#frame}
 ==========
 
-XRPresentationFrame {#xrpresentationframe-interface}
+XRFrame {#xrpresentationframe-interface}
 -------------------
 
 <pre class="idl">
-[SecureContext, Exposed=Window] interface XRPresentationFrame {
+[SecureContext, Exposed=Window] interface XRFrame {
   readonly attribute XRSession session;
   readonly attribute FrozenArray&lt;XRView&gt; views;
 
@@ -516,15 +516,15 @@ XRPresentationFrame {#xrpresentationframe-interface}
 };
 </pre>
 
-An {{XRPresentationFrame}} provides all the values needed to render a single frame of an XR scene to the {{XRDevice}}'s display. Applications can only aquire an {{XRPresentationFrame}} by calling {{XRSession/requestAnimationFrame()}} on an {{XRSession}} with an {{XRFrameRequestCallback}}. When the callback is called it will be passed an {{XRPresentationFrame}}.
+An {{XRFrame}} provides all the values needed to render a single frame of an XR scene to the {{XRDevice}}'s display. Applications can only aquire an {{XRFrame}} by calling {{XRSession/requestAnimationFrame()}} on an {{XRSession}} with an {{XRFrameRequestCallback}}. When the callback is called it will be passed an {{XRFrame}}.
 
-<dfn attribute for="XRPresentationFrame">session</dfn>
+<dfn attribute for="XRFrame">session</dfn>
 
-<dfn attribute for="XRPresentationFrame">views</dfn>
+<dfn attribute for="XRFrame">views</dfn>
 
-<dfn method for="XRPresentationFrame">getDevicePose(coordinateSystem)</dfn>
+<dfn method for="XRFrame">getDevicePose(coordinateSystem)</dfn>
 
-<dfn method for="XRPresentationFrame">getInputPose(inputSource, coordinateSystem)</dfn>
+<dfn method for="XRFrame">getInputPose(inputSource, coordinateSystem)</dfn>
 
 Coordinate Systems {#coordinatesystems}
 ==================
@@ -999,18 +999,18 @@ XRInputSourceEvent {#xrinputsourceevent-interface}
 <pre class="idl">
 [SecureContext, Exposed=Window, Constructor(DOMString type, XRInputSourceEventInit eventInitDict)]
 interface XRInputSourceEvent : Event {
-  readonly attribute XRPresentationFrame frame;
+  readonly attribute XRFrame frame;
   readonly attribute XRInputSource inputSource;
 };
 
 dictionary XRInputSourceEventInit : EventInit {
-  required XRPresentationFrame frame;
+  required XRFrame frame;
   required XRInputSource inputSource;
 };
 </pre>
 
 <dfn attribute for="XRInputSourceEvent">frame</dfn>
-An {{XRPresentationFrame}} that corresponds with the time that the event took place. This frame's {{XRPresentationFrame/views}} array MUST be empty.
+An {{XRFrame}} that corresponds with the time that the event took place. This frame's {{XRFrame/views}} array MUST be empty.
 
 <dfn attribute for="XRInputSourceEvent">inputSource</dfn>
 The {{XRInputSource}} that generated this event.
