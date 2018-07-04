@@ -122,7 +122,7 @@ async function onXRAvailable(device) {
     var enterXrBtn = document.createElement("button");
     enterXrBtn.innerHTML = "Enter VR";
     enterXrBtn.addEventListener("click", beginXRSession);
-    document.body.appendChild(enterVrBtn);
+    document.body.appendChild(enterXrBtn);
   }).catch((reason) => {
     console.log("Session not supported: " + reason);
   });
