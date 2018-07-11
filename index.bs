@@ -721,9 +721,9 @@ enum XRHandedness {
 };
 
 enum XRTargetRayMode {
-  "gazing",
-  "pointing",
-  "tapping"
+  "gaze",
+  "handheld",
+  "canvas"
 };
 
 interface XRInputSource {
