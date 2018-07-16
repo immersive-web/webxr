@@ -426,7 +426,7 @@ An input source will also provide its preferred target ray on its pose, which is
 
   * `'gaze'` indicates the target ray will originate at the user's head and follow the direction they are looking (this is commonly referred to as a "gaze input" device). While it may be possible for these devices to be tracked (and have a grip matrix), the head gaze is used for targeting. Example devices: 0DOF clicker, regular gamepad, voice command, tracked hands.
   * `'handheld'` indicates that the target ray originates from a handheld device and represents that the user is using that device for pointing. The exact orientation of the ray relative to the device should follow platform-specific guidelines if there are any. In the absence of platform-specific guidance, the target ray should most likely point in the same direction as the user's index finger if it was outstretched while holding the controller.
-  * `'canvas'` indicates that the input source was an interaction with the 2D canvas of a non-immersive session, such as a mouse click or touch event. See [Magic Window Input](#magic_window_input) for more details.
+  * `'screen'` indicates that the input source was an interaction with the canvas element associated with a non-immersive session's output context, such as a mouse click or touch event. See [Magic Window Input](#magic_window_input) for more details.
 
 ```js
 // Loop over every input source and get their pose for the current frame.
@@ -461,7 +461,7 @@ function onSessionStarted(session) {
   });
   session.addEventListener("inputsourceschange", ev => {
     // Choose an appropriate default from available inputSources, such as prioritizing based on the value of targetRayMode:
-    // 'canvas' over 'handheld' over 'gaze'.
+    // 'screen' over 'handheld' over 'gaze'.
     lastInputSource = computePreferredInputSource(session.getInputSources());
   });
 
@@ -533,7 +533,7 @@ function onSelect(event) {
 }
 ```
 
-Some input sources (such as those with a `targetRayMode` of `canvas`) will be only be added to the list of input sources whilst a primary action is occuring. In these cases, the `inputsourceschange` event will fire just prior to the `selectstart` event, then again when the input source is removed after the `selectend` event.
+Some input sources (such as those with a `targetRayMode` of `screen`) will be only be added to the list of input sources whilst a primary action is occuring. In these cases, the `inputsourceschange` event will fire just prior to the `selectstart` event, then again when the input source is removed after the `selectend` event.
 
 `selectstart` and `selectend` can be useful for handling dragging, painting, or other continuous motions.
 
@@ -563,7 +563,7 @@ Most applications will want to visually represent the input sources somehow. The
 
   * `'gaze'`: A cursor should be drawn at some distance down the target ray, ideally at the depth of the first surface it intersects with, so the user can identify what will be interacted with when a select event is fired. It's not appropriate to draw a controller or ray in this case, since they may obscure the user's vision or be difficult to visually converge on.
   * `'handheld'`: If the `gripMatrix` in not `null` an application-appropriate controller model should be drawn using that matrix as the transform. If appropriate for the experience, the a visualization of the target ray and a cursor as described in the `'gaze'` should also be drawn.
-  * `'canvas'`: In all cases the point of origin of the target ray is obvious and no visualization is needed.
+  * `'screen'`: In all cases the point of origin of the target ray is obvious and no visualization is needed.
 
 ```js
 // These methods presumes the use of a fictionalized rendering library.
@@ -588,7 +588,7 @@ function renderCursor(inputSource, inputPose) {
     renderer.drawRay(inputPose.targetRayMatrix);
   }
 
-  if (inputSource.targetRayMode != "canvas") {
+  if (inputSource.targetRayMode != 'screen') {
     // Draw a cursor for gazing and handheld devices only.
     let cursorPosition = scene.getIntersectionPoint(inputPose.targetRayMatrix);
     if (cursorPosition) {
@@ -664,7 +664,7 @@ The above sample is optimized for dragging items in the scene around using input
 
 When using a non-immersive session, pointer events on the canvas that created the `outputContext` passed during the session request are monitored. `XRInputSource`s are generated in response to allow unified input handling with immersive mode controller or gaze input.
 
-When the canvas receives a `pointerdown` event an `XRInputSource` is created with a `targetRayMode` of `'canvas'` and added to the array returned by `getInputSources()`. A `selectstart` event is then fired on the session with the new `XRInputSource`. The `XRInputSource`'s target ray should be updated with every `pointermove` event the canvas receives until a `pointerup` event is received. A `selectend` event is then fired on the session and the `XRInputSource` is removed from the array returned by `getInputSources()`. When the canvas receives a `click` event a `select` event is fired on the session with the appropriate `XRInputSource`.
+When the canvas receives a `pointerdown` event an `XRInputSource` is created with a `targetRayMode` of `'screen'` and added to the array returned by `getInputSources()`. A `selectstart` event is then fired on the session with the new `XRInputSource`. The `XRInputSource`'s target ray should be updated with every `pointermove` event the canvas receives until a `pointerup` event is received. A `selectend` event is then fired on the session and the `XRInputSource` is removed from the array returned by `getInputSources()`. When the canvas receives a `click` event a `select` event is fired on the session with the appropriate `XRInputSource`.
 
 For each of these events the `XRInputSource`'s target ray must be updated to originate at the point that was interacted with on the canvas, projected onto the near clipping plane (defined by the `depthNear` attribute of the `XRSession`) and extending out into the scene along that projected vector.
 
@@ -1165,7 +1165,7 @@ enum XRHandedness {
 enum XRTargetRayMode {
   "gaze",
   "handheld",
-  "canvas"
+  "screen"
 };
 
 interface XRInputSource {
