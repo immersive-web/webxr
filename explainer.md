@@ -425,7 +425,7 @@ If the input source has only 3DOF, the grip matrix may represent only a translat
 An input source will also provide its preferred target ray on its pose, which is defined as a ray originating at `[0, 0, 0]` and extending down the negative Z axis, transformed by the `targetRayMatrix` attribute of an `XRInputPose` object. `targetRayMatrix` will never be `null`. The value will differ based on the type of input source that produces it, which is represented by the `targetRayMode` attribute:
 
   * `'gaze'` indicates the target ray will originate at the user's head and follow the direction they are looking (this is commonly referred to as a "gaze input" device). While it may be possible for these devices to be tracked (and have a grip matrix), the head gaze is used for targeting. Example devices: 0DOF clicker, regular gamepad, voice command, tracked hands.
-  * `'handheld'` indicates that the target ray originates from a handheld device and represents that the user is using that device for pointing. The exact orientation of the ray relative to the device should follow platform-specific guidelines if there are any. In the absence of platform-specific guidance, the target ray should most likely point in the same direction as the user's index finger if it was outstretched while holding the controller.
+  * `'tracked-hand'` indicates that the target ray originates from either a handheld device or other hand-tracking mechanism and represents that the user is using their hands or the held device for pointing. The exact orientation of the ray relative to a given device should follow platform-specific guidelines if there are any. In the absence of platform-specific guidance or a physical device, the target ray should most likely point in the same direction as the user's index finger if it was outstretched.
   * `'screen'` indicates that the input source was an interaction with the canvas element associated with a non-immersive session's output context, such as a mouse click or touch event. See [Magic Window Input](#magic_window_input) for more details.
 
 ```js
@@ -448,7 +448,7 @@ for (let inputSource of xrInputSources) {
 }
 ```
 
-Some platforms may support both tracked and non-tracked input sources concurrently (such as a pair of tracked `'handheld'` 6DOF controllers plus a regular `'gaze'` clicker). Since `xrSession.getInputSources()` returns all connected input sources, an application should take into consideration the most recently used input sources when rendering UI hints, such as a cursor, ray or highlight.
+Some platforms may support both tracked and non-tracked input sources concurrently (such as a pair of tracked `'tracked-hand'` 6DOF controllers plus a regular `'gaze'` clicker). Since `xrSession.getInputSources()` returns all connected input sources, an application should take into consideration the most recently used input sources when rendering UI hints, such as a cursor, ray or highlight.
 
 ```js
 // Keep track of the last-used input source
@@ -461,7 +461,7 @@ function onSessionStarted(session) {
   });
   session.addEventListener("inputsourceschange", ev => {
     // Choose an appropriate default from available inputSources, such as prioritizing based on the value of targetRayMode:
-    // 'screen' over 'handheld' over 'gaze'.
+    // 'screen' over 'tracked-hand' over 'gaze'.
     lastInputSource = computePreferredInputSource(session.getInputSources());
   });
 
@@ -562,7 +562,7 @@ function onSelect(event) {
 Most applications will want to visually represent the input sources somehow. The appropriate type of visualization to be used depends on the value of the `targetRayMode` attribute:
 
   * `'gaze'`: A cursor should be drawn at some distance down the target ray, ideally at the depth of the first surface it intersects with, so the user can identify what will be interacted with when a select event is fired. It's not appropriate to draw a controller or ray in this case, since they may obscure the user's vision or be difficult to visually converge on.
-  * `'handheld'`: If the `gripMatrix` in not `null` an application-appropriate controller model should be drawn using that matrix as the transform. If appropriate for the experience, the a visualization of the target ray and a cursor as described in the `'gaze'` should also be drawn.
+  * `'tracked-hand'`: If the `gripMatrix` in not `null` an application-appropriate controller model should be drawn using that matrix as the transform. If appropriate for the experience, the a visualization of the target ray and a cursor as described in the `'gaze'` should also be drawn.
   * `'screen'`: In all cases the point of origin of the target ray is obvious and no visualization is needed.
 
 ```js
@@ -583,13 +583,13 @@ function renderInputSource(session, inputSource, inputPose) {
 // Presumes the use of a fictionalized rendering library.
 function renderCursor(inputSource, inputPose) {
   // Only render a target ray if this was the most recently used input source.
-  if (inputSource.targetRayMode == "handheld") {
-    // Draw targeting rays for handheld devices only.
+  if (inputSource.targetRayMode == "tracked-hand") {
+    // Draw targeting rays for tracked-hand devices only.
     renderer.drawRay(inputPose.targetRayMatrix);
   }
 
   if (inputSource.targetRayMode != 'screen') {
-    // Draw a cursor for gazing and handheld devices only.
+    // Draw a cursor for gazing and tracked-hand devices only.
     let cursorPosition = scene.getIntersectionPoint(inputPose.targetRayMatrix);
     if (cursorPosition) {
       renderer.drawCursor(cursorPosition);
@@ -1164,7 +1164,7 @@ enum XRHandedness {
 
 enum XRTargetRayMode {
   "gaze",
-  "handheld",
+  "tracked-hand",
   "screen"
 };
 
