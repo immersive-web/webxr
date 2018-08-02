@@ -1,4 +1,4 @@
-﻿# WebXR Device API Explained
+# WebXR Device API Explained
 
 ## What is WebXR?
 The [WebXR Device API](https://immersive-web.github.io/webxr/) provides access to input and output capabilities commonly associated with Virtual Reality (VR) and Augmented Reality (AR) hardware like [Google’s Daydream](https://vr.google.com/daydream/), the [Oculus Rift](https://www3.oculus.com/rift/), the [Samsung Gear VR](http://www.samsung.com/global/galaxy/gear-vr/), the [HTC Vive](https://www.htcvive.com/), and [Windows Mixed Reality headsets](https://developer.microsoft.com/en-us/windows/mixed-reality). More simply put, it lets you create Virtual Reality and Augmented Reality web sites that you can view with the appropriate hardware like a VR headset or AR-enabled phone.
@@ -714,7 +714,9 @@ xrSession.requestFrameOfReference("stage").then((frameOfRef) => {
 // Use xrFrameOfRef as detailed above, but render the floor of the virtual space at Y = 0;
 ```
 
-When using a stage `XRFrameOfReference` the device will frequently have a configured "safe area" that the user can move around in without fear of bumping into real world objects. WebXR can communicate the rough boundaries of this space via the `XRFrameOfReference.bounds` attribute. It provides a polygonal boundary given in the 'geometry' point array, which represents a loop of points at the edges of the safe space. The points are given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The shape it describes is not guaranteed to be convex. The values reported are relative to the stage origin, but do not necessarily contain it. The `bounds` attribute is null if the bounds are unavailable for the current frame of reference.
+When using a stage `XRFrameOfReference` the device will frequently have a configured "safe area" that the user can move around in without fear of bumping into real world objects. WebXR can communicate the rough boundaries of this space via the `XRFrameOfReference.bounds` attribute. It provides a polygonal boundary given in the `geometry` point array, which represents a loop of points at the edges of the safe space. The points are given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The shape it describes is not guaranteed to be convex. The values reported are relative to the stage origin, but do not necessarily contain it. The `bounds` attribute is null if the bounds are unavailable for the current frame of reference.
+
+Points in the `bounds.geometry` array must have a `y` value of `0` and a `w` value of `1`.
 
 If the `bounds` are available the application should try to ensure that all content the user needs to interact with can be reached while staying inside the described bounds geometry.
 
@@ -1155,12 +1157,7 @@ dictionary XRFrameOfReferenceOptions {
 };
 
 [SecureContext, Exposed=Window] interface XRStageBounds {
-  readonly attribute FrozenArray<XRStageBoundsPoint> geometry;
-};
-
-[SecureContext, Exposed=Window] interface XRStageBoundsPoint {
-  readonly attribute double x;
-  readonly attribute double z;
+  readonly attribute FrozenArray<DOMPointReadOnly> geometry;
 };
 
 //
