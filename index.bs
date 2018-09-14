@@ -355,6 +355,7 @@ enum XREnvironmentBlendMode {
   attribute EventHandler onresetpose;
   attribute EventHandler onend;
   attribute EventHandler onselect;
+  attribute EventHandler oninputsourceschange;
   attribute EventHandler onselectstart;
   attribute EventHandler onselectend;
 };
@@ -443,6 +444,8 @@ The <dfn attribute for="XRSession">onfocus</dfn> attribute is an [=Event handler
 The <dfn attribute for="XRSession">onresetpose</dfn> attribute is an [=Event handler IDL attribute=] for the {{resetpose}} event type.
 
 The <dfn attribute for="XRSession">onend</dfn> attribute is an [=Event handler IDL attribute=] for the {{end}} event type.
+
+The <dfn attribute for="XRSession">oninputsourceschange</dfn> attribute is an [=Event handler IDL attribute=] for the {{inputsourceschange}} event type.
 
 The <dfn attribute for="XRSession">onselectstart</dfn> attribute is an [=Event handler IDL attribute=] for the {{selectstart}} event type.
 
@@ -809,6 +812,8 @@ The <dfn attribute for="XRInputSource">targetRayMode</dfn> attribute describes t
   - <dfn enum-value for="XRTargetRayMode">tracked-pointer</dfn> indicates that the target ray originates from either a handheld device or other hand-tracking mechanism and represents that the user is using their hands or the held device for pointing.
   - <dfn enum-value for="XRTargetRayMode">screen</dfn> indicates that the input source was an interaction with the canvas element associated with a non-immersive session's output context, such as a mouse click or touch event.
 
+Note: Some input sources, like an {{XRInputSource}} with {{targetRayMode}} set to {{screen}}, will only be added to the session's [=list of active input sources=] immediately before the {{selectstart}} event, and removed from the session's [=list of active input sources=] immediately after the {{selectend}} event.
+
 XRRay {#xrray-interface}
 -----
 
@@ -1167,6 +1172,8 @@ A user agent MAY dispatch a <dfn event for="XRSession">focus</dfn> event on an {
 A user agent MUST dispatch a <dfn event for="XRSession">resetpose</dfn> event on an {{XRSession}} when the system resets the {{XRDevice}}'s position or orientation. The event MUST be of type {{XRSessionEvent}}.
 
 A user agent MUST dispatch a <dfn event for="XRSession">end</dfn> event on an {{XRSession}} when the session ends, either by the application or the user agent. The event MUST be of type {{XRSessionEvent}}.
+
+A user agent MUST dispatch a <dfn event for="XRSession">inputsourceschange</dfn> event on an {{XRSession}} when the session's [=list of active input sources=] has changed. The event MUST be of type {{XRSessionEvent}}.
 
 A user agent MUST dispatch a <dfn event for="XRSession">selectstart</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s begins its [=primary action=]. The event MUST be of type {{XRInputSourceEvent}}.
 
