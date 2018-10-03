@@ -28,7 +28,7 @@ The [WebXR Device API Specification][1] is the repository of the [Immersive Web 
 
 ## Relevant Links
 
-* [WebVR Community Group][3]
+* [Immersive Web Community Group][3]
 * [WebXR Device API Specification][1]
 * [Immersive Web Early Adopters Guide][16]
 * [Legacy WebVR API Specification][2]
@@ -66,11 +66,7 @@ to follow up later. Add the `type:untestable` or `type:missing-coverage` label a
 
 Per the [`LICENSE.md`](LICENSE.md) file:
 
-> All Reports in this Repository are licensed by Contributors under the [W3C Software and Document License][13].
->
-> Contributions to Specifications are made under the [W3C CLA][14].
->
-> Contributions to Test Suites are made under the [W3C 3-clause BSD License][15]
+> All documents in this Repository are licensed by contributors under the  [W3C Software and Document License](https://www.w3.org/Consortium/Legal/copyright-software).
 
 <!-- Links -->
 [1]: https://immersive-web.github.io/webxr/
