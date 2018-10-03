@@ -1,16 +1,16 @@
 <pre class="metadata">
 Shortname: webxr
 Title: WebXR Device API
-Group: immersiveweb
+Group: immersivewebwg
 Status: w3c/ED
 ED: https://immersive-web.github.io/webxr/
 Repository: immersive-web/webxr
 Level: 1
-Mailing List Archives: https://lists.w3.org/Archives/Public/public-webvr/
+Mailing List Archives: https://lists.w3.org/Archives/Public/public-immersive-web/
 
 !Participate: <a href="https://github.com/immersive-web/webxr/issues/new">File an issue</a> (<a href="https://github.com/immersive-web/webxr/issues">open issues</a>)
-!Participate: <a href="https://lists.w3.org/Archives/Public/public-webvr/">Mailing list archive</a>
-!Participate: <a href="irc://irc.w3.org:6665/">W3C's #webvr IRC</a>
+!Participate: <a href="https://lists.w3.org/Archives/Public/public-immersive-web/">Mailing list archive</a>
+!Participate: <a href="irc://irc.w3.org:6665/">W3C's #immersive-web IRC</a>
 
 Editor: Brandon Jones, Google http://google.com/, bajones@google.com
 Editor: Nell Waliczek, Amazon [Microsoft until 2018] https://amazon.com/, nhw@amazon.com
@@ -18,6 +18,13 @@ Editor: Nell Waliczek, Amazon [Microsoft until 2018] https://amazon.com/, nhw@am
 Abstract: This specification describes support for accessing virtual reality (VR) and augmented reality (AR) devices, including sensors and head-mounted displays, on the Web.
 
 Ignored Vars: layer
+
+Warning: custom
+Custom Warning Title: Unstable API
+Custom Warning Text:
+  <b>The version of the WebXR Device API represented in this document is incomplete and may change at any time.</b>
+  <p>While this specification is under development some concepts may be represented better by the <a href="https://github.com/w3c/webvr/blob/master/explainer.md">WebXR Device API Explainer</a>.</p>
+
 </pre>
 
 <pre class="anchors">
@@ -89,12 +96,6 @@ spec: Feature Policy; urlPrefix: https://wicg.github.io/feature-policy/#
  }
 </style>
 
-
-<b style="color: red; font-size: 1.3em">UNSTABLE API</b>
-
-<b>The version of the WebXR Device API represented in this document is incomplete and may change at any time.</b>
-
-While this specification is under development some concepts may be represented better by the <a href="https://github.com/w3c/webvr/blob/master/explainer.md">WebXR Device API Explainer</a>.
 
 <section class="unstable">
 
