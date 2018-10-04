@@ -23,7 +23,7 @@ Enable XR applications on the web by allowing pages to do the following:
 
 * Detect if XR capabilities are available.
 * Query the XR devices capabilities.
-* Poll the XR device and associate input device state.
+* Poll the XR device and associated input device state.
 * Display imagery on the XR device at the appropriate frame rate.
 
 ### Non-goals
@@ -63,7 +63,7 @@ The UA will identify an available physical unit of XR hardware that can present 
 
 > **Non-normative Note:** If there are multiple XR devices available, the UA will need to pick which one to expose. The UA is allowed to use any criteria it wishes to select which device is used, including settings UI that allows users to manage device priority. Calling `navigator.xr.supportsSession` or `navigator.xr.requestSession` should **not** trigger device-selection UI, however, as this would cause many sites to display XR-specific dialogs early in the document lifecycle without user activation.
 
-It's possible that even if no XR device is available initially, one may become available while the application is running, or that a previously available device becomes unavailable. This will be most common with PC peripherals that can be connected or disconnected at any time. Pages can listen to the `devicechange` event emitted on `navigator.xr` to respond to changes in device availability after the page loads. (XR devices already available when the page loads will not cause a `devicechange` event to be fired.)
+It's possible that even if no XR device is available initially, one may become available while the application is running, or that a previously available device becomes unavailable. This will be most common with PC peripherals that can be connected or disconnected at any time. Pages can listen to the `devicechange` event emitted on `navigator.xr` to respond to changes in device availability after the page loads. (XR devices already available when the page loads will not cause a `devicechange` event to be fired.) `devicechange` fires an event of type `Event`.
 
 ```js
 navigator.xr.addEventListener('devicechange', checkForXRSupport);
@@ -73,7 +73,7 @@ navigator.xr.addEventListener('devicechange', checkForXRSupport);
 
 The first thing that any XR-enabled page will want to do is query to determine if the type of XR content desired is supported by the current hardware and UA. If it is, the page can then advertise XR functionality to the user. (For example, by adding a button to the page that the user can click to start XR content.)
 
-Testing to see if the device supports the capabilities the application needs is done via the `navigator.xr.supportsSession` call, which takes a dictionary describing the desired functionality and returns a promise which resolves if the device can support those properties and rejects otherwise. Querying for support this way is necessary because it allows the application to detect what XR features are available without actually engaging the sensors or beginning presentation, which can incur significant power or performance overhead on some systems and may have side effects such as launching a status tray or storefront. Calling `navigator.xr.supportsSession` should also not interfere with any running XR applications on the system.
+Testing to see if the device supports the capabilities the application needs is done via the `navigator.xr.supportsSession` call, which takes a dictionary describing the desired functionality and returns a promise which resolves if the device can support those properties and rejects otherwise. Querying for support this way is necessary because it allows the application to detect what XR features are available without actually engaging the sensors or beginning presentation, which can incur significant power or performance overhead on some systems and may have side effects such as launching a status tray, launching a storefront, or terminating another application's access to XR hardware. Calling `navigator.xr.supportsSession` should also not interfere with any running XR applications on the system.
 
 There are two primary classes of XR content that can be displayed to the user:
 
@@ -184,7 +184,7 @@ let gl = glCanvas.getContext("webgl", { xrCompatible: true });
 
 Ensuring context compatibility with an XR device through either method may have side effects on other graphics resources in the page, such as causing the entire user agent to switch from rendering using an integrated GPU to a discrete GPU.
 
-If the system's underlying XR device changes (signaled by the `devicechange` event on the `navigator.xr` object) any previously set context compatibility bits will be cleared, and `makeXRCompatible` will need to be called again prior to using the context with a `XRWebGLLayer`.
+If the system's underlying XR device changes (signaled by the `devicechange` event on the `navigator.xr` object) any previously set context compatibility bits will be cleared, and `makeXRCompatible` will need to be called again prior to using the context with a `XRWebGLLayer`. Any active sessions will also be ended, and as a result new `XRSession`s with corresponding new `XRWebGLLayer`s will need to be created as well.
 
 ### Main render loop
 
@@ -294,7 +294,7 @@ function onSessionEnd() {
 }
 ```
 
-The UA may end a session at any time for a variety of reasons. For example: The user may forcibly end presentation via a gesture to the UA, other native applications may take exclusive access of the XR hardware device, or the XR hardware device may become disconnected from the system. Additionally, if the system's underlying XR device changes (signaled by the `devicechange` event on the `navigator.xr` object) any active `XRSession`s will be ended. Well behaved applications should monitor the `end` event on the `XRSession` to detect when the UA forces the session to end.
+The UA may end a session at any time for a variety of reasons. For example: The user may forcibly end presentation via a gesture to the UA, other native applications may take exclusive access of the XR hardware device, or the XR hardware device may become disconnected from the system. Additionally, if the system's underlying XR device changes (signaled by the `devicechange` event on the `navigator.xr` object) any active `XRSession`s will be ended. This applies to both Immersive and Non-immersive sessions. Well behaved applications should monitor the `end` event on the `XRSession` to detect when the UA forces the session to end.
 
 ```js
 xrSession.addEventListener('end', onSessionEnd);
