@@ -877,9 +877,9 @@ function onDrawFrame() {
 
 ### Responding to a reset pose
 
-Many XR systems have a mechanism for allowing the user to reset which direction is "forward." For security and comfort reasons the WebXR Device API has no mechanism to trigger a pose reset programmatically, but it can still be useful to know when it happens. Pages may want to take advantage of the visual discontinuity to reposition the user or other elements in the scene into a more natural position for the new orientation. Pages may also want to use the opportunity to clear or reset any additional transforms that have been applied if no longer needed.
+Many XR systems have a mechanism for allowing the user to reset which direction is "forward" or recenter the scene's origin at their current location. For security and comfort reasons the WebXR Device API has no mechanism to trigger a pose reset programmatically, but it can still be useful to know when it happens. Pages may want to take advantage of the visual discontinuity to reposition the user or other elements in the scene into a more natural position for the new orientation. Pages may also want to use the opportunity to clear or reset any additional transforms that have been applied if no longer needed.
 
-A page can be notified when a pose reset happens by listening for the 'resetpose' event from the 'XRSession'.
+A page can be notified when a pose reset happens by listening for the 'resetpose' event from the 'XRSession'. The exact behavior of a reset is platform specific, but in most cases it's expected that the origin and/or forward direction of all active coordinate systems will shift to be aligned to the users current physical location and orientation. The event must fire prior to any poses being delivered with the newly origin/direction, and all poses queried following the event must be relative to the reset origin/direction. 
 
 ```js
 xrSession.addEventListener('resetpose', xrSessionEvent => {
