@@ -130,7 +130,7 @@ In this sample, the `beginXRSession` function, which is assumed to be run by cli
 
 If `supportsSessionMode` resolved for a given mode, then requesting a session with the same mode should be reasonably expected to succeed, barring external factors (such as `requestSession` not being called in a user activation event for an immersive session.) The UA is ultimately responsible for determining if it can honor the request.
 
-Only one immersive session per XR hardware device is allowed at a time across the entire UA. All inline sessions are suspended when an immersive session is active. Inline sessions are not required to be created within a user activation event unless paired with another option that explicitly does require it.
+Only one immersive session per XR hardware device is allowed at a time across the entire UA. All inline sessions are [suspended](#handling-suspended-sessions) when an immersive session is active. Inline sessions are not required to be created within a user activation event unless paired with another option that explicitly does require it.
 
 Once the session has started, some setup must be done to prepare for rendering.
 - An `XRReferenceSpace` should be created to establish a space in which `XRViewerPose` data will be defined. See the [Spatial Tracking Explainer](spatial-tracking-explainer.md) for more information.
@@ -356,15 +356,15 @@ The UA may choose to present the immersive AR session's content via any type of 
 
 ## Rendering to the Page
 
-There are a couple of scenarios in which developers may want to present content rendered with the WebXR Device API on the page instead of (or in addition to) a headset: Mirroring and inline rendering. Both methods display WebXR content on the page via a Canvas element with an `XRPresentationContext`. Like a `WebGLRenderingContext`, developers acquire an `XRPresentationContext` by calling the `HTMLCanvasElement` or `OffscreenCanvas` `getContext()` method with the context id of "xrpresent". The returned `XRPresentationContext` is permenantly bound to the canvas.
+There are a couple of scenarios in which developers may want to present content rendered with the WebXR Device API on the page instead of (or in addition to) a headset: Mirroring and inline rendering. Both methods display WebXR content on the page via a Canvas element with an `XRPresentationContext`. Like a `WebGLRenderingContext`, developers acquire an `XRPresentationContext` by calling the `HTMLCanvasElement` or `OffscreenCanvas` `getContext()` method with the context id of "xrpresent". The returned `XRPresentationContext` is permanently bound to the canvas.
 
-A `XRPresentationContext` can only be supplied imagery by an `XRSession`, though the exact behavior depends on the scenario in which it's being used.
+An `XRPresentationContext` can only be supplied imagery by an `XRSession`, though the exact behavior depends on the scenario in which it's being used. The context is associated with a session by setting the `XRRenderState`'s `outputContext` to the desired `XRPresentationContext` object. An `XRPresentationContext` cannot be used with multiple `XRSession`s simultaneously, so when an `XRPresentationContext` is set as the `outputContext` for a session's `XRRenderState`, any session it was previously associated with will have it's `renderState.outputContext` set to `null`.
 
 ### Mirroring
 
 On desktop devices, or any device which has an external display connected to it, it's frequently desirable to show what the user in the headset is seeing on the external display. This is usually referred to as mirroring.
 
-In order to mirror WebXR content to the page, developers provide an `XRPresentationContext` as the `outputContext` in the `XRSessionCreationOptions` of an immersive session. Once the session has started any content displayed on the headset will then be mirrored into the canvas associated with the `outputContext`. The `outputContext` remains bound to the session until the session has ended, and cannot be used with multiple `XRSession`s simultaneously.
+In order to mirror WebXR content to the page, the session's `renderState.outputContext` must be set to a `XRPresentationContext`. Once a valid `outputContext` has been set any content displayed on the headset will then be mirrored into the canvas associated with the `outputContext`.
 
 When mirroring only one eye's content will be shown, and it should be shown without any distortion to correct for headset optics. The UA may choose to crop the image shown, display it at a lower resolution than originally rendered, and the mirror may be multiple frames behind the image shown in the headset. The mirror may include or exclude elements added by the underlying XR system (such as visualizations of room boundaries) at the UA's discretion. Pages should not rely on a particular timing or presentation of mirrored content, it's really just for the benefit of bystanders or demo operators.
 
@@ -376,8 +376,14 @@ function beginXRSession() {
   let mirrorCtx = mirrorCanvas.getContext('xrpresent');
   document.body.appendChild(mirrorCanvas);
 
-  navigator.xr.requestSession({ mode: 'immersive-vr', outputContext: mirrorCtx })
-      .then(onSessionStarted)
+  navigator.xr.requestSession({ mode: 'immersive-vr' })
+      .then((session) => {
+        // A mirror context isn't required to render, so it's not necessary to
+        // wait for the updateRenderState promise to resolve before continuing.
+        // It may mean that a frame is rendered which is not mirrored.
+        session.updateRenderState({ outputContext: mirrorCtx });
+        onSessionStarted(session);
+      })
       .catch((reason) => { console.log("requestSession failed: " + reason); });
 }
 ```
@@ -394,9 +400,11 @@ These scenarios can make use of inline sessions to render tracked content to the
 
 The [`RelativeOrientationSensor`](https://w3c.github.io/orientation-sensor/#relativeorientationsensor) and [`AbsoluteOrientationSensor`](https://w3c.github.io/orientation-sensor/#absoluteorientationsensor) interfaces (see [Motion Sensors Explainer](https://w3c.github.io/motion-sensors/)) can be used to polyfill the first case.
 
-Similar to mirroring, to make use of this mode an `XRPresentationContext` is provided as the `outputContext` at session creation time with an inline session. At that point content rendered to the `XRRenderState`'s `baseLayer` will be rendered to the canvas associated with the `outputContext`. The UA is also allowed to composite in additional content if desired. In the future, if multiple `XRLayers` are used their composited result will be what is displayed in the `outputContext`. Requests to create an inline session without an output context will be rejected.
+Similar to mirroring, to make use of this mode the  `XRRenderState`'s `outputContext` must be set. At that point content rendered to the `XRRenderState`'s `baseLayer` will be rendered to the canvas associated with the `outputContext`. The UA is also allowed to composite in additional content if desired. (In the future, if multiple `XRLayers` are used their composited result will be what is displayed in the `outputContext`.)
 
-Immersive and inline sessions can use the same render loop, but there are some differences in behavior to be aware of. The sessions may run their render loops at at different rates. During immersive sessions the UA runs the rendering loop at the XR device's native refresh rate. During inline sessions the UA runs the rendering loop at the refresh rate of the page (aligned with `window.requestAnimationFrame`.) The method of computation of `XRView` projection and view matrices also differs between immersive and inline sessions, with inline sessions taking into account the output canvas dimensions and possibly the position of the users head in relation to the canvas if that can be determined.
+Immersive and inline sessions can use the same render loop, but there are some differences in behavior to be aware of. Most importantly, inline sessions will not pump their render loop if they do not have a valid `outputContext`. Instead the session acts as though it has been [suspended](#handling-suspended-sessions) until a valid `outputContext` has been assigned.
+
+Immersive and inline sessions may run their render loops at at different rates. During immersive sessions the UA runs the rendering loop at the XR device's native refresh rate. During inline sessions the UA runs the rendering loop at the refresh rate of page (aligned with `window.requestAnimationFrame`.) The method of computation of `XRView` projection and view matrices also differs between immersive and inline sessions, with inline sessions taking into account the output canvas dimensions and possibly the position of the users head in relation to the canvas if that can be determined.
 
 Most instances of inline sessions will only provide a single `XRView` to be rendered, but UA may request multiple views be rendered if, for example, it's detected that that output medium of the page supports stereo rendering. As a result pages should always draw every `XRView` provided by the `XRFrame` regardless of what type of session has been requested.
 
@@ -409,8 +417,15 @@ document.body.appendChild(inlineCanvas);
 
 function beginInlineXRSession() {
   // Request an inline session in order to render to the page.
-  navigator.xr.requestSession({ outputContext: inlineCtx })
-      .then(OnSessionStarted)
+  navigator.xr.requestSession()
+      .then((session) => {
+        // Inline sessions must have an output context prior to rendering, so
+        // it's a good idea to wait until the outputContext is confirmed to have
+        // taken effect before rendering.
+        session.updateRenderState({ outputContext: inlineCtx }).then(() => {
+          onSessionStarted(session);
+        });
+      })
       .catch((reason) => { console.log("requestSession failed: " + reason); });
 }
 ```
@@ -576,12 +591,10 @@ enum XRSessionMode {
 
 dictionary XRSessionCreationOptions {
   XRSessionMode mode = "inline";
-  XRPresentationContext outputContext;
 };
 
 [SecureContext, Exposed=Window] interface XRSession : EventTarget {
   readonly attribute XRSessionMode mode;
-  readonly attribute XRPresentationContext outputContext;
   readonly attribute XREnvironmentBlendMode environmentBlendMode;
   readonly attribute XRRenderState renderState;
 
@@ -611,12 +624,14 @@ dictionary XRRenderStateInit {
   double depthNear;
   double depthFar;
   XRLayer? baseLayer;
+  XRPresentationContext outputContext
 };
 
 [SecureContext, Exposed=Window] interface XRRenderState {
   readonly attribute double depthNear;
   readonly attribute double depthFar;
   readonly attribute XRLayer? baseLayer;
+  readonly attribute XRPresentationContext outputContext;
 };
 
 //
