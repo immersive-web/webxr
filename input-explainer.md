@@ -25,7 +25,7 @@ The properties of an XRInputSource object are immutable. If a device can be mani
 
 ### Input poses
 
-Each input source can query a `XRInputPose` using the `getInputPose()` function of any `XRFrame`. Getting the pose requires passing in the `XRInputSource` you want the pose for, as well as the `XRFrameOfReference` the pose values should be given in, just like `getDevicePose()`. `getInputPose()` may return `null` in cases where tracking has been lost (similar to `getDevicePose()`), or the given `XRInputSource` instance is no longer connected or available.
+Each input source can query a `XRInputPose` using the `getInputPose()` function of any `XRFrame`. Getting the pose requires passing in the `XRInputSource` you want the pose for, as well as the `XRFrameOfReference` the pose values should be given in, just like `getViewerPose()`. `getInputPose()` may return `null` in cases where tracking has been lost (similar to `getViewerPose()`), or the given `XRInputSource` instance is no longer connected or available.
 
 The `gripMatrix` is a transform into a space where if the user was holding a straight rod in their hand it would be aligned with the negative Z axis (forward) and the origin rests at their palm. This enables developers to properly render a virtual object held in the user's hand. For example, a sword would be positioned so that the blade points directly down the negative Z axis and the center of the handle is at the origin.
 
@@ -122,7 +122,7 @@ A `select` event indicates that a primary action has been completed. `select` ev
 
 For primary actions that are instantaneous without a clear start and end point (such as a verbal command), all three events should still fire in the sequence `selectstart`, `selectend`, `select`.
 
-All three events are `XRInputSourceEvent` events. When fired the event's `inputSource` attribute must contain the `XRInputSource` that produced the event. The event's `frame` attribute must contain a valid `XRFrame` that can be used to query the input and device poses at the time the selection event occurred. The `XRFrame`'s `views` array must be empty.
+All three events are `XRInputSourceEvent` events. When fired the event's `inputSource` attribute must contain the `XRInputSource` that produced the event. The event's `frame` attribute must contain a valid `XRFrame` that can be used to query the input and device poses at the time the selection event occurred. The `XRViewerPose`'s `views` array must be empty.
 
 In most cases applications will only need to listen for the `select` event for basic interactions like clicking on buttons.
 
@@ -156,13 +156,13 @@ While most applications will wish to use a targeting ray from the input source p
 
 ```js
 function onSelect(event) {
-  // Use the device pose to create a ray from the head, regardless of whether controllers are connected.
-  let devicePose = event.frame.getDevicePose(xrFrameOfRef);
+  // Use the viewer pose to create a ray from the head, regardless of whether controllers are connected.
+  let viewerPose = event.frame.getViewerPose(xrFrameOfRef);
 
-  // Ray cast into scene with the device pose to determine if anything was hit.
+  // Ray cast into scene with the viewer pose to determine if anything was hit.
   // Assumes the use of a fictionalized math and scene library.
-  let rayOrigin = getTranslation(devicePose.poseModelMatrix);
-  let rayDirection = applyRotation(scene.forwardVector, devicePose.poseModelMatrix);
+  let rayOrigin = getTranslation(viewerPose.poseMatrix);
+  let rayDirection = applyRotation(scene.forwardVector, viewerPose.poseMatrix);
   let selectedObject = scene.getObjectIntersectingRay(rayOrigin, rayDirection);
   if (selectedObject) {
     selectedObject.onSelect();

@@ -5,7 +5,7 @@ This document is a subsection of the main WebXR Device API explainer document wh
 A big differentiating aspect of XR, as opposed to standard 3D rendering, is that users control the view of the experience via their body motion.  To make this possible, XR hardware needs to be capable of tracking the user's motion in 3D space.  Within the XR ecosystem there is a wide range of hardware form factors and capabilities which have historically only been available to developers through device-specific SDKs and app platforms. To ship software in a specific app store, developers optimize their experiences for specific VR hardware (HTC Vive, GearVR, Mirage Solo, etc) or AR hardware (HoloLens, ARKit, ARCore, etc).  WebXR  development is fundamentally different in that regard; the Web gives developers broader reach, with the consequence that they no longer have predictability about the capability of the hardware their experiences will be running on.
 
 ## Frames of Reference
-The wide range of hardware form factors makes it impractical and unscalable to expect developers to reason directly about the tracking technology their experience will be running on.  Instead, the WebXR Device API is designed to have developers think upfront about the mobility needs of the experience they are building which is communicated to the User Agent by explicitly requesting an appropriate `XRFrameOfReference`.  The `XRFrameOfReference` object acts as a substrate for the XR experience being built by establishing guarantees about supported motion and providing a coordinate system in which developers can retrieve `XRDevicePose` and view matrices.  The critical aspect to note is that the User Agent (or underlying platform) is responsible for providing consistently behaved lower-capability `XRFrameOfReference` objects even when running on a higher-capability tracking system. 
+The wide range of hardware form factors makes it impractical and unscalable to expect developers to reason directly about the tracking technology their experience will be running on.  Instead, the WebXR Device API is designed to have developers think upfront about the mobility needs of the experience they are building which is communicated to the User Agent by explicitly requesting an appropriate `XRFrameOfReference`.  The `XRFrameOfReference` object acts as a substrate for the XR experience being built by establishing guarantees about supported motion and providing a coordinate system in which developers can retrieve `XRViewerPose` and it's view matrices.  The critical aspect to note is that the User Agent (or underlying platform) is responsible for providing consistently behaved lower-capability `XRFrameOfReference` objects even when running on a higher-capability tracking system. 
 
 There are three types of frames of reference: `bounded`, `unbounded`, and `stationary`.  A bounded experience is one in which the user will move around their physical environment to fully interact, but will not need to travel beyond a fixed boundary defined by the XR hardware.  An unbounded experience is one in which a user is able to freely move around their physical environment and travel significant distances.  A stationary experience is one which does not require the user to move around in space, and includes "seated" or "standing" experiences.  Examples of each of these types of experiences can be found in the detailed sections below.
 
@@ -98,7 +98,7 @@ function onSessionStarted(session) {
 ### Stationary Frame of Reference
 A _stationary_ experience is one which does not require the user to move around in space.  This includes several categories of experiences that developers are commonly building today.  "Standing" experiences can be created by passing the `floor-level` subtype.  "Seated" experiences can be created by passing the `eye-level` subtype.  Orientation-only experiences such as 360 photo/video viewers can be created by passing the `position-disabled` subtype.
 
-It is important to note that `XRDevicePose` objects retrieved using the `floor-level` and `eye-level` subtypes may include position information as well as rotation information.  For example, hardware which does not support 6DOF tracking (ex: GearVR) may still use neck-modeling to improve user comfort. Similarly, a user may lean side-to-side on a device with 6DOF tracking (ex: HTC Vive).  It is important for user comfort that developers do not attempt to remove position data from these matrices and instead use the `position-disabled` subtype.  The result is that `floor-level` and `eye-level` experiences should be resilient to position changes despite not being dependent on receiving them.  
+It is important to note that `XRViewerPose` objects retrieved using the `floor-level` and `eye-level` subtypes may include position information as well as rotation information.  For example, hardware which does not support 6DOF tracking (ex: GearVR) may still use neck-modeling to improve user comfort. Similarly, a user may lean side-to-side on a device with 6DOF tracking (ex: HTC Vive).  It is important for user comfort that developers do not attempt to remove position data from these matrices and instead use the `position-disabled` subtype.  The result is that `floor-level` and `eye-level` experiences should be resilient to position changes despite not being dependent on receiving them.  
 
 #### Floor-level Subtype
 
@@ -153,7 +153,7 @@ function onSessionStarted(session) {
 
 #### Position-disabled Subtype
 
-The origin of this subtype will be initialized at a position near the user's head at the time of creation.  `XRDevicePose` objects retrieved with this subtype will have varying orientation values but will always report `x`, `y`, `z` values to be `0`.
+The origin of this subtype will be initialized at a position near the user's head at the time of creation.  `XRViewerPose` objects retrieved with this subtype will have varying orientation values but will always report `x`, `y`, `z` values to be `0`.
 
 Some example use cases: 
 * 360 photo/video viewer
@@ -180,7 +180,7 @@ function onSessionStarted(session) {
 ### Inline Sessions
 Inline sessions, by definition, do not require a user gesture or user permission to create, and as a result there must be strong limitations on the pose data that can be reported for privacy and security reasons.  Requests for an `XRBoundedFrameOfReference` or an `XRUnboundedFrameOfReference` will always be rejected on inline sessions.  Requests for `XRStationaryFrameOfReference` may succeed, but may also be rejected if the UA is unable provide any tracking information such as for an inline session on a desktop PC or a 2D browser window in a headset.
 
-Additionally, some inline experiences explicitly want tracking information disabled, such as a furniture viewer that will use pointer data to rotate the furniture.  Under both of these situations, there is no `XRFrameOfReference` needed.  Passing `null` as the `XRFrameOfReference` parameter to `getDevicePose()` or `getInputPose()` will return pose data whose values are based on the identity matrix.  Developers are then free to multiply in whatever transform they choose.
+Additionally, some inline experiences explicitly want tracking information disabled, such as a furniture viewer that will use pointer data to rotate the furniture.  Under both of these situations, there is no `XRFrameOfReference` needed.  Passing `null` as the `XRFrameOfReference` parameter to `getViewerPose()` or `getInputPose()` will return pose data whose values are based on the identity matrix.  Developers are then free to multiply in whatever transform they choose.
 
 ### Ensuring hardware compatibility
 Immersive sessions will always be able to provide a `XRStationaryFrameOfReference`, but may not support other `XRFrameOfReference` types due to hardware limitations.  Developers are strongly encouraged to follow the spirit of [progressive enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement) and provide a reasonable fallback behavior if their desired `XRBoundedFrameOfReference` or `XRUnboundedFrameOfReference` is unavailable.  In many cases it will be adequate for this fallback to behave similarly to an inline preview experience.
@@ -231,7 +231,7 @@ Additionally, XR hardware with orientation-only tracking may also provide an emu
 There are several circumstances in which developers may choose to relate content in different frames of reference.
 
 #### Inline to Immersive
-It is expected that developers will often choose to preview `immersive` experiences with a similar experience `inline`.  In this situation, users often expect to see the scene from the same perspective when they make the transition from `inline` to `immersive`. To accomplish this, developers should grab the `poseModelMatrix` of the last `XRDevicePose` retrieved using the `inline` session's `XRFrameOfReference` and apply this same transform content to be displayed in the `immersive` session's `XRFrameOfReference`.  The same logic applies in the reverse when exiting `immersive`.
+It is expected that developers will often choose to preview `immersive` experiences with a similar experience `inline`.  In this situation, users often expect to see the scene from the same perspective when they make the transition from `inline` to `immersive`. To accomplish this, developers should grab the `poseMatrix` of the last `XRViewerPose` retrieved using the `inline` session's `XRFrameOfReference` and apply this same transform content to be displayed in the `immersive` session's `XRFrameOfReference`.  The same logic applies in the reverse when exiting `immersive`.
 
 #### Unbounded to Bounded 
 When building an experience that is predominantly based on an `XRUnboundedFrameOfReference`, developers may occasionally choose to switch to an `XRBoundedFrameOfReference`.  For example, a whole-home renovation experience might choose to switch to a bounded frame of reference for reviewing a furniture selection library.  If necessary to continue displaying content belonging to the previous frame of reference, developers may use the `coordinateSystem.getTransformTo()` method to re-parent nearby virtual content to the new frame of reference.
@@ -327,7 +327,7 @@ partial interface XRSession {
 
 partial interface XRFrame {
   // Also listed in the main explainer.md
-  XRDevicePose? getDevicePose(optional XRFrameOfReference frameOfReference);
+  XRViewerPose? getViewerPose(optional XRFrameOfReference frameOfReference);
 
   // Also listed in input-explainer.md
   XRInputPose? getInputPose(XRInputSource inputSource, optional XRFrameOfReference frameOfReference);

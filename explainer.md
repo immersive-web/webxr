@@ -133,7 +133,7 @@ If `supportsSessionMode` resolved for a given mode, then requesting a session wi
 Only one immersive session per XR hardware device is allowed at a time across the entire UA. All inline sessions are suspended when an immersive session is active. Inline sessions are not required to be created within a user activation event unless paired with another option that explicitly does require it.
 
 Once the session has started, some setup must be done to prepare for rendering.
-- A `XRFrameOfReference` should be created to establish a coordinate system in which `XRDevicePose` data will be defined. See the [Spatial Tracking Explainer](spatial-tracking-explainer.md) for more information.
+- A `XRFrameOfReference` should be created to establish a coordinate system in which `XRViewerPose` data will be defined. See the [Spatial Tracking Explainer](spatial-tracking-explainer.md) for more information.
 - A `XRLayer` must be created and assigned to the `XRSession`'s `baseLayer` attribute. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.)
 - Then `XRSession.requestAnimationFrame` must be called to start the render loop pumping.
 
@@ -195,7 +195,7 @@ If the system's underlying XR device changes (signaled by the `devicechange` eve
 
 ### Main render loop
 
-The WebXR Device API provides information about the current frame to be rendered via the `XRFrame` object which developers must examine each iteration of the render loop. The `XRDevicePose` contains the information about all views which must be rendered and targets into which this rendering must be done.
+The WebXR Device API provides information about the current frame to be rendered via the `XRFrame` object which developers must examine each iteration of the render loop. From this object the frame's `XRViewerPose` can be queried, which contains the information about all the views which must be rendered in order for the scene to display correctly on the XR device.
 
 `XRWebGLLayer` objects are not updated automatically. To present new frames, developers must use `XRSession`'s `requestAnimationFrame()` method. When the callback function is run, it is passed both a timestamp and an `XRFrame` containing fresh rendering data that must be used to draw into the `XRWebGLLayer`s `framebuffer` during the callback.
 
@@ -205,19 +205,19 @@ The `XRWebGLLayer`s framebuffer is created by the UA and behaves similarly to a 
 
 Once drawn to, the XR device will continue displaying the contents of the `XRWebGLLayer` framebuffer, potentially reprojected to match head motion, regardless of whether or not the page continues processing new frames. Potentially future spec iterations could enable additional types of layers, such as video layers, that could automatically be synchronized to the device's refresh rate.
 
-To get view matrices or the `poseModelMatrix` for each `XRFrame`, developers must call `getDevicePose()` and provide an `XRFrameOfReference` in which these matrices should be returned. Due to the nature of XR tracking systems, this function is not guaranteed to return a value and developers will need to respond appropriately.  For more information about what situations will cause `getDevicePose()` to fail and recommended practices for handling the situation, refer to the [Spatial Tracking Explainer](spatial-tracking-explainer.md).
+To get view matrices or the `poseMatrix` for each `XRFrame`, developers must call `getViewerPose()` and provide an `XRFrameOfReference` in which these matrices should be returned. Due to the nature of XR tracking systems, this function is not guaranteed to return a value and developers will need to respond appropriately.  For more information about what situations will cause `getViewerPose()` to fail and recommended practices for handling the situation, refer to the [Spatial Tracking Explainer](spatial-tracking-explainer.md).
 
 ```js
 function onDrawFrame(timestamp, xrFrame) {
   // Do we have an active session?
   if (xrSession) {
-    let pose = xrFrame.getDevicePose(xrFrameOfRef);
+    let pose = xrFrame.getViewerPose(xrFrameOfRef);
     gl.bindFramebuffer(gl.FRAMEBUFFER, xrSession.baseLayer.framebuffer);
 
-    for (let view of xrFrame.views) {
+    for (let view of pose.views) {
       let viewport = xrSession.baseLayer.getViewport(view);
       gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
-      drawScene(view, pose);
+      drawScene(view);
     }
 
     // Request the next animation callback
@@ -232,11 +232,11 @@ function onDrawFrame(timestamp, xrFrame) {
   }
 }
 
-function drawScene(view, pose) {
+function drawScene(view) {
   let viewMatrix = null;
   let projectionMatrix = null;
   if (view) {
-    viewMatrix = pose.getViewMatrix(view);
+    viewMatrix = pose.viewMatrix;
     projectionMatrix = view.projectionMatrix;
   } else {
     viewMatrix = defaultViewMatrix;
@@ -499,7 +499,7 @@ function drawScene() {
 ## Appendix A: I don’t understand why this is a new API. Why can’t we use…
 
 ### `DeviceOrientation` Events
-The data provided by an `XRDevicePose` instance is similar to the data provided by the non-standard `DeviceOrientationEvent`, with some key differences:
+The data provided by an `XRViewerPose` instance is similar to the data provided by the non-standard `DeviceOrientationEvent`, with some key differences:
 
 * It’s an explicit polling interface, which ensures that new input is available for each frame. The event-driven `DeviceOrientation` data may skip a frame, or may deliver two updates in a single frame, which can lead to disruptive, jittery motion in an XR application.
 * `DeviceOrientation` events do not provide positional data, which is a key feature of high-end XR hardware.
@@ -594,10 +594,9 @@ enum XREnvironmentBlendMode {
 
 [SecureContext, Exposed=Window] interface XRFrame {
   readonly attribute XRSession session;
-  readonly attribute FrozenArray<XRView> views;
 
   // Also listed in the spatial-tracking-explainer.md
-  XRDevicePose? getDevicePose(optional XRFrameOfReference frameOfReference);
+  XRViewerPose? getViewerPose(optional XRFrameOfReference frameOfReference);
   XRInputPose? getInputPose(XRInputSource inputSource, optional XRFrameOfReference frameOfReference);
 };
 
@@ -609,6 +608,12 @@ enum XREye {
 [SecureContext, Exposed=Window] interface XRView {
   readonly attribute XREye eye;
   readonly attribute Float32Array projectionMatrix;
+  readonly attribute Float32Array viewMatrix;
+};
+
+[SecureContext, Exposed=Window] interface XRViewerPose {
+  readonly attribute Float32Array poseMatrix;
+  readonly attribute FrozenArray<XRView> views;
 };
 
 [SecureContext, Exposed=Window] interface XRViewport {
@@ -616,12 +621,6 @@ enum XREye {
   readonly attribute long y;
   readonly attribute long width;
   readonly attribute long height;
-};
-
-[SecureContext, Exposed=Window] interface XRDevicePose {
-  readonly attribute Float32Array poseModelMatrix;
-  
-  Float32Array getViewMatrix(XRView view);
 };
 
 //
