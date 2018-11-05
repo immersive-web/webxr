@@ -193,8 +193,12 @@ Each time the [=list of XR devices=] changes the user agent should <dfn>select a
   1. Let |oldDevice| be the current [=XR device=].
   1. If the [=list of XR devices=] is empty, set the [=XR device=] to <code>null</code>.
   1. If the [=list of XR devices=] contains one device set the [=XR device=] to that device.
-  1. If the [=list of XR devices=] contains multiple devices set the [=XR device=] to a device of the user agent's choosing.
-  1. If this is not the first time devices have been enumerated and |oldDevice| does not equal the [=XR device=] queue a task that fires a simple event named {{devicechange}} on the {{XR}} object.
+  1. If there are any active {{XRSession}}s and |oldDevice| is in the [=list of XR devices=], set the [=XR device=] to |oldDevice|.
+  1. Else set the [=XR device=] to a device of the user agent's choosing.
+  1. If this is the first time devices have been enumerated or |oldDevice| equals [=XR device=], abort these steps. 
+  1. [=Shut down the session|Shut down=] any active {{XRSession}}s.
+  1. Set the [=XR compatible=] boolean of all {{WebGLRenderingContextBase}} instances to <code>false</code>.
+  1. Queue a task that fires a simple event named {{devicechange}} on the {{XR}} object.
 
 </div>
 
@@ -204,8 +208,9 @@ NOTE: The user agent is allowed to use any criteria it wishes to [=select an XR 
 
 Any time an [=XR device=] is needed by an algorithm it can <dfn>ensure an XR device is selected</dfn> by running the following steps:
 
+  1. If [=XR device=] is not <code>null</code>, abort these steps. 
   1. [=Enumerate XR devices=].
-  1. [=Select an XR device=] from the [=list of XR devices=].
+  1. [=Select an XR device=].
 
 </div>
 
@@ -218,9 +223,9 @@ Each [=XR device=] has a <dfn>supports immersive</dfn> value, which is a boolean
 When the <dfn method for="XR">supportsSession(|options|)</dfn> method is invoked, it MUST return [=a new Promise=] |promise| and run the following steps [=in parallel=]:
 
   1. [=Ensure an XR device is selected=].
-  1. If [=XR device=] is <code>null</code>, [=reject=] |promise| with <code>null</code>.
+  1. If [=XR device=] is <code>null</code>, [=reject=] |promise| with a {{NotSupportedError}} and abort these stepss.
   1. If the |options| are not [=supported by the XR device=], [=reject=] |promise| with a {{NotSupportedError}} and abort these steps.
-  1. Else [=/resolve=] |promise| with <code>null</code>.
+  1. Else [=/resolve=] |promise|.
 
 </div>
 
@@ -258,7 +263,6 @@ xrDevice.requestSession({ immersive: true }).then((session) => {
 </pre>
 </div>
 
-ISSUE: Take permissions into account when calling {{XR/supportsSession()}} or {{XR/requestSession()}}.
 
 Session {#session}
 =======
