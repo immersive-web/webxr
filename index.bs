@@ -475,11 +475,13 @@ When the user agent is to run the animation frame callbacks for an {{XRSession}}
   1. Let |callbacks| be a list of the entries in |session|'s [=list of animation frame callback=], in the order in which they were added to the list.
   1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
   1. Set |session|'s [=processing frame=] to <code>true</code>.
+  1. Set |frame|'s [=active=] boolean to <code>true</code>.
   1. For each entry in |callbacks|, in order:
     1. If the entry's [=cancelled=] boolean is <code>true</code>, continue to the next entry.
     1. [=Invoke the Web IDL callback function=], passing |now| and |frame| as the  arguments
     1. If an exception is thrown, [=report the exception=].
   1. Set |session|'s [=processing frame=] to <code>false</code>.
+  1. Set |frame|'s [=active=] boolean to <code>false</code>.
 
 </div>
 
@@ -531,22 +533,43 @@ XRFrame {#xrpresentationframe-interface}
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRFrame {
   readonly attribute XRSession session;
-  readonly attribute FrozenArray&lt;XRView&gt; views;
 
-  XRDevicePose? getDevicePose(XRCoordinateSystem coordinateSystem);
-  XRInputPose? getInputPose(XRInputSource inputSource, XRCoordinateSystem coordinateSystem);
+  XRViewerPose? getViewerPose(XRFrameOfReference frameOfRef);
+  XRInputPose? getInputPose(XRInputSource inputSource, XRFrameOfReference frameOfRef);
 };
 </pre>
 
 An {{XRFrame}} provides all the values needed to render a single frame of an XR scene to the [=XR device=]'s display. Applications can only aquire an {{XRFrame}} by calling {{XRSession/requestAnimationFrame()}} on an {{XRSession}} with an {{XRFrameRequestCallback}}. When the callback is called it will be passed an {{XRFrame}}.
 
+Each {{XRFrame}} has a <dfn for="XRFRame">active</dfn> boolean which is initially set to <code>false</code>.
+
 The <dfn attribute for="XRFrame">session</dfn> attribute returns the {{XRSession}} that produced the {{XRFrame}}.
 
-<dfn attribute for="XRFrame">views</dfn>
+<div class="algorithm" data-algorithm="get-viewer-pose">
 
-<dfn method for="XRFrame">getDevicePose(coordinateSystem)</dfn>
+When the <dfn method for="XRFrame">getViewerPose(|frameOfRef|)</dfn> method is invoked, the user agent MUST run the following steps:
 
-<dfn method for="XRFrame">getInputPose(inputSource, coordinateSystem)</dfn>
+  1. If the {{XRFrame}}'s [=active=] boolean is <code>false</code>, throw a {{NotAllowedError}} and abort these steps.
+  1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
+  1. If |frameOfRef|'s [=XRFrameOfReference/session=] does not equal |session|, return <code>null</code> and abort these steps.
+  1. If the [=viewer=]'s pose cannot be determined relative to |frameOfRef|, return <code>null</code>
+  1. Return a new {{XRViewerPose}} describing the [=viewer=]'s pose relative to |frameOfRef|.
+
+</div>
+
+<div class="algorithm" data-algorithm="get-input-pose">
+
+When the <dfn method for="XRFrame">getInputPose(|inputSource|, |frameOfRef|)</dfn> method is invoked, the user agent MUST run the following steps:
+
+  1. If the {{XRFrame}}'s [=active=] boolean is <code>false</code>, throw a {{NotAllowedError}} and abort these steps.
+  1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
+  1. If |frameOfRef|'s [=XRFrameOfReference/session=] does not equal |session|, return <code>null</code> and abort these steps.
+  1. If |inputSource|'s pose cannot be determined relative to |frameOfRef|, return <code>null</code>
+  1. Return a new {{XRInputPose}} describing |inputSource|'s pose relative to |frameOfRef|.
+
+</div>
+
+ISSUE: The last two steps of the {{getViewerPose()}} and {{getInputPose()}} algorithms need to be expanded.
 
 Coordinate Systems {#coordinatesystems}
 ==================
@@ -675,6 +698,7 @@ enum XREye {
 [SecureContext, Exposed=Window] interface XRView {
   readonly attribute XREye eye;
   readonly attribute Float32Array projectionMatrix;
+  readonly attribute Float32Array viewMatrix;
 };
 </pre>
 
@@ -684,7 +708,10 @@ NOTE: Many HMDs will request that content render two [=views=], one for the left
 
 The <dfn attribute for="XRView">eye</dfn> attribute describes which eye this view is expected to be shown to. This attribute's primary purpose is to ensure that prerendered stereo content can present the correct portion of the content to the correct eye. If the view does not have an intrinsicly associated eye (the display is monoscopic, for example) this attribute MUST be set to {{XREye/"left"}}.
 
-The <dfn attribute for="XRView">projectionMatrix</dfn> attribute provides a [=matrix=] describing the projection to be used for the view's rendering. It is <b>strongly recommended</b> that applications use this matrix without modification. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
+The <dfn attribute for="XRView">projectionMatrix</dfn> attribute provides a [=matrix=] describing the projection to be used when rendering the [=view=]. It is <b>strongly recommended</b> that applications use this matrix without modification. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
+
+The <dfn attribute for="XRView">viewMatrix</dfn> attribute provides a [=matrix=]
+describing the view transform to be used  when rendering the [=view=]. The [=matrix=] represent the inverse of the model matrix of the associated viewpoint. It is <b>strongly recommended</b> that applications use this matrix without modification. Failure to use the provided view matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
 
 XRViewport {#xrviewport-interface}
 ------
@@ -730,24 +757,23 @@ WebXR provides various transforms in the form of <dfn lt="matrix">matrices</dfn>
 
 Translations specified by WebXR matrices are always given in meters.
 
-XRDevicePose {#xrdevicepose-interface}
+XRViewerPose {#xrviewerpose-interface}
 -------------
 
 <pre class="idl">
-[SecureContext, Exposed=Window] interface XRDevicePose {
-  readonly attribute Float32Array poseModelMatrix;
-
-  Float32Array getViewMatrix(XRView view);
+[SecureContext, Exposed=Window] interface XRViewerPose {
+  readonly attribute Float32Array poseMatrix;
+  readonly attribute FrozenArray&lt;XRView&gt; views;
 };
 </pre>
 
-An {{XRDevicePose}} describes the position and orientation of an [=XR device=] relative to the {{XRCoordinateSystem}} it was queried with. It also describes the view and projection matrices that should be used by the application to render a frame of an XR scene.
+An {{XRViewerPose}} describes the state of a <dfn>viewer</dfn> of the XR scene as tracked by the [=XR device=]. A [=viewer=] may represent a tracked piece of hardware, the observed position of a users head relative to the hardware, or some other means of computing a series of viewpoints into the XR scene. The {{XRViewerPose}} describes the position and orientation of the [=viewer=] relative to the {{XRFrameOfReference}} it was queried with, as well as an array of [=view=]s, which include view and projection matrices. These matrices should be used by the application when render a frame of an XR scene.
 
-The <dfn attribute for="XRDevicePose">poseModelMatrix</dfn> is a [=matrix=] describing the transform from the origin of the {{XRCoordinateSystem}} to the [=XR device=].
+The <dfn attribute for="XRViewerPose">poseMatrix</dfn> is a [=matrix=] describing the transform from the origin of the {{XRFrameOfReference}} the {{XRViewerPose}} was queried with to the [=viewer=].
 
-NOTE: The {{XRDevicePose/poseModelMatrix}} can be used to position graphical representations of the [=XR device=] for spectator views of the scene or multi-user interaction.
+NOTE: The {{XRViewerPose/poseMatrix}} can be used to position graphical representations of the [=viewer=] for spectator views of the scene or multi-user interaction.
 
-The <dfn method for="XRDevicePose">getViewMatrix(view)</dfn> method returns a [=matrix=] describing the view transform to be used when rendering the passed {{XRView}}. The matrices represent the inverse of the model matrix of the associated viewpoint.
+The <dfn attribute for="XRViewerPose">views</dfn> array is a sequence of {{XRView}}s describing the viewpoints of the XR scene, relative to the {{XRFrameOfReference}} the {{XRViewerPose}} was queried with, which must be rendered in order to display correctly on the [=XR device=]. Each {{XRView}} includes view and projection matrices, and can be used to query {{XRViewport}}s from layers when needed.
 
 Input {#input}
 =====
@@ -1106,7 +1132,7 @@ dictionary XRInputSourceEventInit : EventInit {
 </pre>
 
 <dfn attribute for="XRInputSourceEvent">frame</dfn>
-An {{XRFrame}} that corresponds with the time that the event took place. This frame's {{XRFrame/views}} array MUST be empty.
+An {{XRFrame}} that corresponds with the time that the event took place. Any {{XRViewerPose}} queried from this frame MUST have an empty {{XRViewerPose/views}} array.
 
 <dfn attribute for="XRInputSourceEvent">inputSource</dfn>
 The {{XRInputSource}} that generated this event.
