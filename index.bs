@@ -43,6 +43,7 @@ urlPrefix: https://www.w3.org/TR/html5/semantics-scripting.html
     type: interface; text: HTMLCanvasElement
 urlPrefix: https://www.w3.org/TR/html5/
     type: interface; text: Document
+    type: dfn; text: dispatch
 urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: typedef; text: uniformMatrix4fv
     type: interface; text: WebGLFramebuffer
@@ -553,7 +554,7 @@ When the <dfn method for="XRFrame">getViewerPose(|frameOfRef|)</dfn> method is i
   1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
   1. If |frameOfRef|'s [=XRFrameOfReference/session=] does not equal |session|, return <code>null</code> and abort these steps.
   1. If the [=viewer=]'s pose cannot be determined relative to |frameOfRef|, return <code>null</code>
-  1. Return a new {{XRViewerPose}} describing the [=viewer=]'s pose relative to |frameOfRef|.
+  1. Return a new {{XRViewerPose}} describing the [=viewer=]'s pose relative to the origin of |frameOfRef|.
 
 </div>
 
@@ -565,7 +566,7 @@ When the <dfn method for="XRFrame">getInputPose(|inputSource|, |frameOfRef|)</df
   1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
   1. If |frameOfRef|'s [=XRFrameOfReference/session=] does not equal |session|, return <code>null</code> and abort these steps.
   1. If |inputSource|'s pose cannot be determined relative to |frameOfRef|, return <code>null</code>
-  1. Return a new {{XRInputPose}} describing |inputSource|'s pose relative to |frameOfRef|.
+  1. Return a new {{XRInputPose}} describing |inputSource|'s pose relative to the origin of |frameOfRef|.
 
 </div>
 
@@ -773,7 +774,7 @@ The <dfn attribute for="XRViewerPose">poseMatrix</dfn> is a [=matrix=] describin
 
 NOTE: The {{XRViewerPose/poseMatrix}} can be used to position graphical representations of the [=viewer=] for spectator views of the scene or multi-user interaction.
 
-The <dfn attribute for="XRViewerPose">views</dfn> array is a sequence of {{XRView}}s describing the viewpoints of the XR scene, relative to the {{XRFrameOfReference}} the {{XRViewerPose}} was queried with, which must be rendered in order to display correctly on the [=XR device=]. Each {{XRView}} includes view and projection matrices, and can be used to query {{XRViewport}}s from layers when needed.
+The <dfn attribute for="XRViewerPose">views</dfn> array is a sequence of {{XRView}}s describing the viewpoints of the XR scene, relative to the {{XRFrameOfReference}} the {{XRViewerPose}} was queried with. Every [=view=] of the XR scene in the array must be rendered in order to display correctly on the [=XR device=]. Each {{XRView}} includes view and projection matrices, and can be used to query {{XRViewport}}s from layers when needed.
 
 Input {#input}
 =====
@@ -1136,6 +1137,17 @@ An {{XRFrame}} that corresponds with the time that the event took place. Any {{X
 
 <dfn attribute for="XRInputSourceEvent">inputSource</dfn>
 The {{XRInputSource}} that generated this event.
+
+<div class="algorithm" data-algorithm="fire-input-source-event">
+
+When the user agent fires an {{XRInputSourceEvent}} |event| it MUST run the following steps:
+
+  1. Let |frame| be |event|'s {{XRInputSourceEvent/frame}}. 
+  1. Set |frame|'s [=active=] boolean to <code>true</code>.
+  1. [=Dispatch=] |event|.
+  1. Set |frame|'s [=active=] boolean to <code>false</code>.
+
+</div>
 
 XRCoordinateSystemEvent {#xrcoordinatesystemevent-interface}
 -----------------------
