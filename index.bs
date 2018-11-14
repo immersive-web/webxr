@@ -251,21 +251,26 @@ navigator.xr.supportsSessionMode('immersive-vr').then(() => {
 </pre>
 </div>
 
-The {{XR}} object has an <dfn>active immersive session</dfn>, which MUST be initially <code>null</code>, and a <dfn>list of inline sessions</dfn>, which MUST be initially empty.
+The {{XR}} object has a <dfn>pending immersive session</dfn> boolean, which MUST be initially <code>false</code>, an <dfn>active immersive session</dfn>, which MUST be initially <code>null</code>, and a <dfn>list of inline sessions</dfn>, which MUST be initially empty.
 
 <div class="algorithm" data-algorithm="request-session">
 
 When the <dfn method for="XR">requestSession(|options|)</dfn> method is invoked, the user agent MUST return [=a new Promise=] |promise| and run the following steps [=in parallel=]:
 
+  1. Let |mode| be the {{XRSessionCreationOptions/mode}} attribute of the |options| argument.
+  1. Let |immersive| be a boolean set to <code>true</code> if |mode| is {{immersive-vr}} or {{immersive-ar}} and <code>false</code> otherwise.
+  1. If |immersive| is <code>true</code>: 
+    1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] in not <code>null</code>, [=reject=] |promise| with an {{InvalidStateError}} and abort these steps.
+    1. Set [=pending immersive session=] to be <code>true</code>.
   1. [=Ensure an XR device is selected=].
   1. If [=XR device=] is <code>null</code>, [=reject=] |promise| with <code>null</code>.
-  1. Let |mode| be the {{XRSessionCreationOptions/mode}} attribute of the |options| argument.
-  1. If |mode| is in not in [=XR device=]'s [=list of supported modes=], [=reject=] |promise| with a {{NotSupportedError}} and abort these steps.
-  1. If |mode| is {{immersive-vr}} or {{immersive-ar}} and the [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an {{InvalidStateError}} and abort these steps.
-  1. If |mode| is {{immersive-vr}} or {{immersive-ar}} and the algorithm is not [=triggered by user activation=], [=reject=] |promise| with a {{SecurityError}} and abort these steps.
+  1. Else if |mode| is in not in [=XR device=]'s [=list of supported modes=], [=reject=] |promise| with a {{NotSupportedError}}.
+  1. Else If |immersive| is <code>true</code> and the algorithm is not [=triggered by user activation=], [=reject=] |promise| with a {{SecurityError}} and abort these steps.
+  1. If |promise| was [=rejected=] and |immersive| is <code>true</code>, set [=pending immersive session=] to be <code>false</code>.
+  1. If |promise| was [=rejected=], abort these steps.
   1. Let |session| be a new {{XRSession}}.
   1. [=Initialize the session=] |session| with the [=session description=] given by |options|.
-  1. If |mode| is {{immersive-vr}} or {{immersive-ar}} set the [=active immersive session=] to |session|.
+  1. If |immersive| is <code>true</code> set the [=active immersive session=] to |session| and set [=pending immersive session=] to <code>false</code>.
   1. Else append |session| to the [=list of inline sessions=].
   1. [=/Resolve=] |promise| with |session|.
 
@@ -301,10 +306,12 @@ enum XRSessionMode {
 The {{XRSessionMode}} enum defines the modes that an {{XRSession}} can operate in.
 
   - A session mode of <dfn enum-value for="XRSessionMode">inline</dfn> indicates that the session's output will be shown as an element in the HTML document. {{inline}} session content MAY be displayed in mono or stereo and MAY allow for [=viewer=] tracking. User agents MUST allow {{inline}} sessions to be created for any [=XR device=].
-  - A session mode of <dfn enum-value for="XRSessionMode">immersive-vr</dfn> indicates that the session's output will be shown on the [=XR device=] hardware in a manner that occupies a significant portion of the user's vision. The {{environmentBlendMode}} MAY be {{opaque}} for {{immersive-vr}} sessions.
-  -  A session mode of <dfn enum-value for="XRSessionMode">immersive-ar</dfn> indicates that the session's output will be shown either on the [=XR device=] hardware in a manner that occupies a significant portion of the user's vision or fullscreen on hardware that does not occupy a significant portion of the user's vision. The {{environmentBlendMode}} MUST NOT be {{opaque}} for {{immersive-ar}} sessions.
+  - A session mode of <dfn enum-value for="XRSessionMode">immersive-vr</dfn> indicates that the session's output will be given [=exclusive access=] to the [=XR device=] display and that content <b>is not</b> intended to be integrated with the user's environment. The {{environmentBlendMode}} for {{immersive-vr}} sessions is expected to be {{opaque}} when possible, but MAY be {{additive}} if the hardware requires it.
+  -  A session mode of <dfn enum-value for="XRSessionMode">immersive-ar</dfn> indicates that the session's output will be given [=exclusive access=] to the [=XR device=] display and that content <b>is</b> intended to be integrated with the user's environment. The {{environmentBlendMode}} MUST NOT be {{opaque}} for {{immersive-ar}} sessions.
 
-An <dfn>immersive session</dfn> refers to either an {{immersive-vr}} or an {{immersive-ar}} session. [=Immersive sessions=] MUST provide some level of [=viewer=] tracking, and content MUST be shown at the proper scale relative to the user and/or the surrounding environment.
+An <dfn>immersive session</dfn> refers to either an {{immersive-vr}} or an {{immersive-ar}} session. [=Immersive sessions=] MUST provide some level of [=viewer=] tracking, and content MUST be shown at the proper scale relative to the user and/or the surrounding environment. Additionally, [=Immersive sessions=] MUST be given <dfn>exclusive access</dfn> to the [=XR device=], meaning that while the [=immersive session=] is not [=blurred=] the HTML document is not shown on the [=XR device=]'s display, nor is content from other applications shown.
+
+NOTE: Examples of ways [=exclusive access=] may be presented include stereo content displayed on a virtual reality or augmented reality headset, or augmented reality content displayed fullscreen on a mobile device.
 
 Issue: Document restrictions and capabilities of [=immersive session=]s.
 
@@ -1211,7 +1218,7 @@ The user agent MUST provide the following new events. Registration for and firin
 
 The user agent MAY fire a <dfn event for="XR">devicechange</dfn> event on the {{XR}} object to indicate that the availability of [=XR device=]s has been changed. The event MUST be of type {{Event}}.
 
-A user agent MAY dispatch a <dfn event for="XRSession">blur</dfn> event on an {{XRSession}} to indicate that presentation to the {{XRSession}} by the page has been suspended by the user agent, OS, or XR hardware. While an {{XRSession}} is blurred it remains active but it may have its frame production throttled. This is to prevent tracking while the user interacts with potentially sensitive UI. For example: The user agent SHOULD blur the presenting application when the user is typing a URL into the browser with a virtual keyboard, otherwise the presenting page may be able to guess the URL the user is entering by tracking their head motions. The event MUST be of type {{XRSessionEvent}}.
+A user agent MAY dispatch a <dfn event for="XRSession">blur</dfn> event on an {{XRSession}} to indicate that presentation to the {{XRSession}} by the page has been suspended by the user agent, OS, or XR hardware. While an {{XRSession}} is <dfn>blurred</dfn> it remains active but it may have its frame production throttled. This is to prevent tracking while the user interacts with potentially sensitive UI. For example: The user agent SHOULD blur the presenting application when the user is typing a URL into the browser with a virtual keyboard, otherwise the presenting page may be able to guess the URL the user is entering by tracking their head motions. The event MUST be of type {{XRSessionEvent}}.
 
 A user agent MAY dispatch a <dfn event for="XRSession">focus</dfn> event on an {{XRSession}} to indicate that presentation to the {{XRSession}} by the page has resumed after being suspended. The event MUST be of type {{XRSessionEvent}}.
 
