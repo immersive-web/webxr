@@ -133,21 +133,21 @@ If `supportsSessionMode` resolved for a given mode, then requesting a session wi
 Only one immersive session per XR hardware device is allowed at a time across the entire UA. All inline sessions are suspended when an immersive session is active. Inline sessions are not required to be created within a user activation event unless paired with another option that explicitly does require it.
 
 Once the session has started, some setup must be done to prepare for rendering.
-- A `XRFrameOfReference` should be created to establish a coordinate system in which `XRViewerPose` data will be defined. See the [Spatial Tracking Explainer](spatial-tracking-explainer.md) for more information.
-- A `XRLayer` must be created and assigned to the `XRSession`'s `baseLayer` attribute. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.)
+- An `XRReferenceSpace` should be created to establish a space in which `XRViewerPose` data will be defined. See the [Spatial Tracking Explainer](spatial-tracking-explainer.md) for more information.
+- An `XRLayer` must be created and assigned to the `XRSession`'s `baseLayer` attribute. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.)
 - Then `XRSession.requestAnimationFrame` must be called to start the render loop pumping.
 
 ```js
 let xrSession = null;
-let xrFrameOfRef = null;
+let xrReferenceSpace = null;
 
 function onSessionStarted(session) {
   // Store the session for use later.
   xrSession = session;
 
-  xrSession.requestFrameOfReference({ type:'stationary', subtype:'eye-level' })
-  .then((frameOfRef) => {
-    xrFrameOfRef = frameOfRef;
+  xrSession.requestReferenceSpace({ type:'stationary', subtype:'eye-level' })
+  .then((referenceSpace) => {
+    xrReferenceSpace = referenceSpace;
   })
   .then(setupWebGLLayer) // Create a compatible XRWebGLLayer
   .then(() => {
@@ -207,13 +207,13 @@ The `XRWebGLLayer`s framebuffer is created by the UA and behaves similarly to a 
 
 Once drawn to, the XR device will continue displaying the contents of the `XRWebGLLayer` framebuffer, potentially reprojected to match head motion, regardless of whether or not the page continues processing new frames. Potentially future spec iterations could enable additional types of layers, such as video layers, that could automatically be synchronized to the device's refresh rate.
 
-To get view matrices or the `poseMatrix` for each `XRFrame`, developers must call `getViewerPose()` and provide an `XRFrameOfReference` in which these matrices should be returned. Due to the nature of XR tracking systems, this function is not guaranteed to return a value and developers will need to respond appropriately.  For more information about what situations will cause `getViewerPose()` to fail and recommended practices for handling the situation, refer to the [Spatial Tracking Explainer](spatial-tracking-explainer.md).
+To get view matrices or the `poseMatrix` for each `XRFrame`, developers must call `getViewerPose()` and provide an `XRReferenceSpace` in which these matrices should be returned. Due to the nature of XR tracking systems, this function is not guaranteed to return a value and developers will need to respond appropriately.  For more information about what situations will cause `getViewerPose()` to fail and recommended practices for handling the situation, refer to the [Spatial Tracking Explainer](spatial-tracking-explainer.md).
 
 ```js
 function onDrawFrame(timestamp, xrFrame) {
   // Do we have an active session?
   if (xrSession) {
-    let pose = xrFrame.getViewerPose(xrFrameOfRef);
+    let pose = xrFrame.getViewerPose(xrReferenceSpace);
     gl.bindFramebuffer(gl.FRAMEBUFFER, xrSession.baseLayer.framebuffer);
 
     for (let view of pose.views) {
@@ -385,7 +385,7 @@ Immersive and inline sessions can use the same render loop, but there are some d
 
 Most instances of inline sessions will only provide a single `XRView` to be rendered, but UA may request multiple views be rendered if, for example, it's detected that that output medium of the page supports stereo rendering. As a result pages should always draw every `XRView` provided by the `XRFrame` regardless of what type of session has been requested.
 
-UAs may have different restrictions on inline sessions that don't apply to immersive sessions. For instance, the UA does not have to guarantee the availability of tracking data to inline sessions, and even when it does a different set of `XRFrameOfReference` types may be available to inline sessions versus immersive sessions.
+UAs may have different restrictions on inline sessions that don't apply to immersive sessions. For instance, the UA does not have to guarantee the availability of tracking data to inline sessions, and even when it does a different set of `XRReferenceSpace` types may be available to inline sessions versus immersive sessions.
 
 ```js
 let inlineCanvas = document.createElement('canvas');
@@ -598,8 +598,8 @@ enum XREnvironmentBlendMode {
   readonly attribute XRSession session;
 
   // Also listed in the spatial-tracking-explainer.md
-  XRViewerPose? getViewerPose(optional XRFrameOfReference frameOfReference);
-  XRInputPose? getInputPose(XRInputSource inputSource, optional XRFrameOfReference frameOfReference);
+  XRViewerPose? getViewerPose(optional XRReferenceSpace referenceSpace);
+  XRInputPose? getInputPose(XRInputSource inputSource, optional XRReferenceSpace referenceSpace);
 };
 
 enum XREye {

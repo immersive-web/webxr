@@ -25,7 +25,7 @@ The properties of an XRInputSource object are immutable. If a device can be mani
 
 ### Input poses
 
-Each input source can query a `XRInputPose` using the `getInputPose()` function of any `XRFrame`. Getting the pose requires passing in the `XRInputSource` you want the pose for, as well as the `XRFrameOfReference` the pose values should be given in, just like `getViewerPose()`. `getInputPose()` may return `null` in cases where tracking has been lost (similar to `getViewerPose()`), or the given `XRInputSource` instance is no longer connected or available.
+Each input source can query a `XRInputPose` using the `getInputPose()` function of any `XRFrame`. Getting the pose requires passing in the `XRInputSource` you want the pose for, as well as the `XRReferenceSpace` the pose values should be given in, just like `getViewerPose()`. `getInputPose()` may return `null` in cases where tracking has been lost (similar to `getViewerPose()`), or the given `XRInputSource` instance is no longer connected or available.
 
 The `gripMatrix` is a transform into a space where if the user was holding a straight rod in their hand it would be aligned with the negative Z axis (forward) and the origin rests at their palm. This enables developers to properly render a virtual object held in the user's hand. For example, a sword would be positioned so that the blade points directly down the negative Z axis and the center of the handle is at the origin.
 
@@ -42,7 +42,7 @@ The `targetRay` will never be `null`. It's value will differ based on the type o
 ```js
 // Loop over every input source and get their pose for the current frame.
 for (let inputSource of xrInputSources) {
-  let inputPose = xrFrame.getInputPose(inputSource, xrFrameOfRef);
+  let inputPose = xrFrame.getInputPose(inputSource, xrReferenceSpace);
 
   // Check to see if the pose is valid
   if (inputPose) {
@@ -92,7 +92,7 @@ function drawHighlightFrom(hoveredObject, inputSource) {
 function drawScene() {
   // Display only a single cursor or ray, on the most recently used input source.
   if (lastInputSource) {
-    let inputPose = xrFrame.getInputPose(lastInputSource, xrFrameOfRef);
+    let inputPose = xrFrame.getInputPose(lastInputSource, xrReferenceSpace);
     if (inputPose) {
       // Render a visualization of the target ray/cursor of the active input source. (see next section)
       renderCursor(lastInputSource, inputPose)
@@ -134,7 +134,7 @@ function onSessionStarted(session) {
 }
 
 function onSelect(event) {
-  let inputPose = event.frame.getInputPose(event.inputSource, xrFrameOfRef);
+  let inputPose = event.frame.getInputPose(event.inputSource, xrReferenceSpace);
   if (inputPose) {
     // Ray cast into scene to determine if anything was hit.
     let ray = inputPose.targetRay;
@@ -157,7 +157,7 @@ While most applications will wish to use a targeting ray from the input source p
 ```js
 function onSelect(event) {
   // Use the viewer pose to create a ray from the head, regardless of whether controllers are connected.
-  let viewerPose = event.frame.getViewerPose(xrFrameOfRef);
+  let viewerPose = event.frame.getViewerPose(xrReferenceSpace);
 
   // Ray cast into scene with the viewer pose to determine if anything was hit.
   // Assumes the use of a fictionalized math and scene library.
@@ -233,7 +233,7 @@ function onSelectStart(event) {
   if (activeDragInteraction)
     return;
   
-  let inputPose = event.frame.getInputPose(event.inputSource, xrFrameOfRef);
+  let inputPose = event.frame.getInputPose(event.inputSource, xrReferenceSpace);
   // Ignore the event if this input source is not capable of tracking.
   if (!inputPose || !inputPose.gripMatrix)
     return;
@@ -261,7 +261,7 @@ function onSelectEnd(event) {
 // Called by the fictional app/middleware every frame
 function onUpdateScene() {
   if (activeDragInteraction) {
-    let inputPose = frame.getInputPose(activeDragInteraction.inputSource, xrFrameOfRef);
+    let inputPose = frame.getInputPose(activeDragInteraction.inputSource, xrReferenceSpace);
     if (inputPose && inputPose.gripMatrix) {
       // Determine the vector from the start of the drag to the input source's current position
       // and position the draggable object accordingly
@@ -306,7 +306,7 @@ partial interface XRSession {
 
 partial interface XRFrame {
   // Also listed in the spatial-tracking-explainer.md
-  XRInputPose? getInputPose(XRInputSource inputSource, optional XRFrameOfReference frameOfReference);
+  XRInputPose? getInputPose(XRInputSource inputSource, optional XRReferenceSpace referenceSpace);
 };
 
 //
