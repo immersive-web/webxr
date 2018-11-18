@@ -350,7 +350,7 @@ enum XREnvironmentBlendMode {
   attribute XRLayer baseLayer;
 
   // Methods
-  Promise&lt;XRFrameOfReference&gt; requestFrameOfReference(XRFrameOfReferenceType type, optional XRFrameOfReferenceOptions options);
+  Promise&lt;XRReferenceSpace&gt; requestReferenceSpace(XRReferenceSpaceType type, optional XRReferenceSpaceOptions options);
 
   FrozenArray&lt;XRInputSource&gt; getInputSources();
 
@@ -414,11 +414,11 @@ The <dfn method for="XRSession">end()</dfn> method provides a way to manually sh
 
 <div class="algorithm" data-algorithm="request-frame-of-reference">
 
-When the <dfn method for="XRSession">requestFrameOfReference(|options|)</dfn> method is invoked, the user agent MUST return [=a new Promise=] |promise| and run the following steps [=in parallel=]:
+When the <dfn method for="XRSession">requestReferenceSpace(|options|)</dfn> method is invoked, the user agent MUST return [=a new Promise=] |promise| and run the following steps [=in parallel=]:
 
-  1. [=Create a frame of reference=], |frameOfRef|, as described by |options|.
-  1. If |frameOfRef| is <code>null</code>, [=reject=] |promise| with a {{NotSupportedError}} and abort these steps.
-  1. [=/Resolve=] |promise| with |frameOfRef|.
+  1. [=Create a reference space=], |referenceSpace|, as described by |options|.
+  1. If |referenceSpace| is <code>null</code>, [=reject=] |promise| with a {{NotSupportedError}} and abort these steps.
+  1. [=/Resolve=] |promise| with |referenceSpace|.
 
 </div>
 
@@ -564,8 +564,8 @@ XRFrame {#xrframe-interface}
 [SecureContext, Exposed=Window] interface XRFrame {
   readonly attribute XRSession session;
 
-  XRViewerPose? getViewerPose(optional XRFrameOfReference frameOfRef);
-  XRInputPose? getInputPose(XRInputSource inputSource, optional XRFrameOfReference frameOfRef);
+  XRViewerPose? getViewerPose(optional XRReferenceSpace referenceSpace);
+  XRInputPose? getInputPose(XRInputSource inputSource, optional XRReferenceSpace referenceSpace);
 };
 </pre>
 
@@ -577,176 +577,174 @@ The <dfn attribute for="XRFrame">session</dfn> attribute returns the {{XRSession
 
 <div class="algorithm" data-algorithm="get-viewer-pose">
 
-When the <dfn method for="XRFrame">getViewerPose(|frameOfRef|)</dfn> method is invoked, the user agent MUST run the following steps:
+When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
 
   1. If the {{XRFrame}}'s [=active=] boolean is <code>false</code>, throw a {{NotAllowedError}} and abort these steps.
   1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
-  1. If |frameOfRef|'s [=XRFrameOfReference/session=] does not equal |session|, return <code>null</code> and abort these steps.
-  1. If the [=viewer=]'s pose cannot be determined relative to |frameOfRef|, return <code>null</code>
-  1. Return a new {{XRViewerPose}} describing the [=viewer=]'s pose relative to the origin of |frameOfRef|.
+  1. If |referenceSpace|'s [=XRReferenceSpace/session=] does not equal |session|, return <code>null</code> and abort these steps.
+  1. If the [=viewer=]'s pose cannot be determined relative to |referenceSpace|, return <code>null</code>
+  1. Return a new {{XRViewerPose}} describing the [=viewer=]'s pose relative to the origin of |referenceSpace|.
 
 </div>
 
 <div class="algorithm" data-algorithm="get-input-pose">
 
-When the <dfn method for="XRFrame">getInputPose(|inputSource|, |frameOfRef|)</dfn> method is invoked, the user agent MUST run the following steps:
+When the <dfn method for="XRFrame">getInputPose(|inputSource|, |referenceSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
 
   1. If the {{XRFrame}}'s [=active=] boolean is <code>false</code>, throw a {{NotAllowedError}} and abort these steps.
   1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
-  1. If |frameOfRef|'s [=XRFrameOfReference/session=] does not equal |session|, return <code>null</code> and abort these steps.
-  1. If |inputSource|'s pose cannot be determined relative to |frameOfRef|, return <code>null</code>
-  1. Return a new {{XRInputPose}} describing |inputSource|'s pose relative to the origin of |frameOfRef|.
+  1. If |referenceSpace|'s [=XRReferenceSpace/session=] does not equal |session|, return <code>null</code> and abort these steps.
+  1. If |inputSource|'s pose cannot be determined relative to |referenceSpace|, return <code>null</code>
+  1. Return a new {{XRInputPose}} describing |inputSource|'s pose relative to the origin of |referenceSpace|.
 
 </div>
 
-Issue: Describe behavior for passing <code>null</code> {{XRFrameOfReference}}s to {{getViewerPose()}} and {{getInputPose()}}
+Issue: Describe behavior for passing <code>null</code> {{XRReferenceSpace}}s to {{getViewerPose()}} and {{getInputPose()}}
 
 ISSUE: The last two steps of the {{getViewerPose()}} and {{getInputPose()}} algorithms need to be expanded.
 
-Coordinate Systems {#coordinatesystems}
-==================
+Spaces {#spaces}
+======
 
-XRCoordinateSystem {#xrcoordinatesystem-interface}
+XRSpace {#xrspace-interface}
 ------------------
 
 <pre class="idl">
-[SecureContext, Exposed=Window] interface XRCoordinateSystem {
-  Float32Array? getTransformTo(XRCoordinateSystem other);
+[SecureContext, Exposed=Window] interface XRSpace : EventTarget {
+  Float32Array? getTransformTo(XRSpace other);
 };
 </pre>
 
-An {{XRCoordinateSystem}} describes an entity that is tracked by the [=XR device=]'s tracking systems. {{XRCoordinateSystem}}s MAY NOT have a fixed spatial relationship to one another or to any given {{XRFrameOfReference}}. The transform between two {{XRCoordinateSystem}} can be evaluated by calling the {{getTransformTo()}} method every [=animation frame=].
+An {{XRSpace}} describes an entity that is tracked by the [=XR device=]'s tracking systems. {{XRSpace}}s MAY NOT have a fixed spatial relationship to one another or to any given {{XRReferenceSpace}}. The transform between two {{XRSpace}} can be evaluated by calling the {{getTransformTo()}} method every [=animation frame=].
 
 <div class="algorithm" data-algorithm="get-transform-to">
 
-When the <dfn method for="XRCoordinateSystem">getTransformTo(|other|)</dfn> method is invoked, the user agent MUST run the following steps:
+When the <dfn method for="XRSpace">getTransformTo(|other|)</dfn> method is invoked, the user agent MUST run the following steps:
 
-  1. Let |current| be the target {{XRCoordinateSystem}} object.
-  1. If a known transform exists from the coordinate system described by |current| to the coordinate system described by |other|, return it as a [=matrix=].
+  1. Let |current| be the target {{XRSpace}} object.
+  1. If a known transform exists from the space described by |current| to the space described by |other|, return it as a [=matrix=].
   1. Else return <code>null</code>
 
 </div>
 
-XRFrameOfReference {#xrframeofreference-interface}
+XRReferenceSpace {#xrreferencespace-interface}
 ------------------
 
 <pre class="idl">
-enum XRFrameOfReferenceType {
+enum XRReferenceSpaceType {
   "stationary",
   "bounded",
   "unbounded"
 };
 
-dictionary XRFrameOfReferenceOptions {
-  required XRFrameOfReferenceType type;
+dictionary XRReferenceSpaceOptions {
+  required XRReferenceSpaceType type;
 };
 
-[SecureContext, Exposed=Window] interface XRFrameOfReference : EventTarget {
-  readonly attribute XRCoordinateSystem coordinateSystem;
-  
+[SecureContext, Exposed=Window] interface XRReferenceSpace : XRSpace {
   attribute EventHandler onreset;
 };
 </pre>
 
-An {{XRFrameOfReference}} describes an {{XRCoordinateSystem}} that is generally expected to remain static for the duration of the {{XRSession}}, with the most common exception being mid-session reconfiguration by the user.
+An {{XRReferenceSpace}} describes an {{XRSpace}} that is generally expected to remain static for the duration of the {{XRSession}}, with the most common exception being mid-session reconfiguration by the user.
 
-Every {{XRFrameOfReference}} describes a coordinate system where the Y axis MUST be aligned with gravity, with <code>+Y</code> being "Up". <code>-Z</code> is considered "Forward", and <code>+X</code> is considered "Right". Each {{XRFrameOfReference}} has as <dfn for="XRFrameOfReference">session</dfn>, which is the {{XRSession}} that created it.
+Every {{XRReferenceSpace}} describes a coordinate system where the Y axis MUST be aligned with gravity, with <code>+Y</code> being "Up". <code>-Z</code> is considered "Forward", and <code>+X</code> is considered "Right". Each {{XRReferenceSpace}} has as <dfn for="XRReferenceSpace">session</dfn>, which is the {{XRSession}} that created it.
 
-An {{XRFrameOfReference}} is obtained by calling {{XRSession/requestFrameOfReference()}}, which creates an instance of an interface extending {{XRFrameOfReference}}, determined by the {{XRFrameOfReferenceOptions/type}} value of the {{XRFrameOfReferenceOptions}} dictionary passed into the call:
+An {{XRReferenceSpace}} is obtained by calling {{XRSession/requestReferenceSpace()}}, which creates an instance of an interface extending {{XRReferenceSpace}}, determined by the {{XRReferenceSpaceOptions/type}} value of the {{XRReferenceSpaceOptions}} dictionary passed into the call:
 
-  - Passing a {{XRFrameOfReferenceOptions/type}} of <dfn enum-value for="XRFrameOfReferenceType">stationary</dfn> creates an {{XRStationaryFrameOfReference}} instance.
+  - Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRReferenceSpaceType">stationary</dfn> creates an {{XRStationaryReferenceSpace}} instance.
 
-  - Passing a {{XRFrameOfReferenceOptions/type}} of <dfn enum-value for="XRFrameOfReferenceType">bounded</dfn> creates an {{XRBoundedFrameOfReference}} instance if supported by the [=XR device=].
+  - Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRReferenceSpaceType">bounded</dfn> creates an {{XRBoundedReferenceSpace}} instance if supported by the [=XR device=].
 
-  - Passing a {{XRFrameOfReferenceOptions/type}} of <dfn enum-value for="XRFrameOfReferenceType">unbounded</dfn> creates an {{XRUnboundedFrameOfReference}} instance if supported by the [=XR device=].
+  - Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRReferenceSpaceType">unbounded</dfn> creates an {{XRUnboundedReferenceSpace}} instance if supported by the [=XR device=].
 
-The <dfn attribute for="XRFrameOfReference">onreset</dfn> attribute is an [=Event handler IDL attribute=] for the {{reset}} event type.
+The <dfn attribute for="XRReferenceSpace">onreset</dfn> attribute is an [=Event handler IDL attribute=] for the {{reset}} event type.
 
 <div class="algorithm" data-algorithm="create-frame-of-reference">
 
-When an {{XRFrameOfReference}} is requested, the user agent MUST <dfn>create a frame of reference</dfn> by running the following steps:
+When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a reference space</dfn> by running the following steps:
 
-  1. Initialize [=XRFrameOfReference/session=] be the {{XRSession}} object that requested creation of a frame of reference.
-  1. Let |options| be the {{XRFrameOfReferenceOptions}} passed to {{requestFrameOfReference()}}.
-  1. Let |type| be set to |options| {{XRFrameOfReferenceOptions/type}}.
-  1. Let |frameOfRef| be set to <code>null</code>.
-  1. If |type| is {{stationary}}, let |frameOfRef| be a new {{XRStationaryFrameOfReference}}.
-  1. Else if |type| is {{bounded}}, let |frameOfRef| be a new {{XRBoundedFrameOfReference}}.
-  1. Else if |type| is {{unbounded}}, let |frameOfRef| be a new {{XRUnboundedFrameOfReference}}.
-  1. Return |frameOfRef|.
+  1. Initialize [=XRReferenceSpace/session=] be the {{XRSession}} object that requested creation of a reference space.
+  1. Let |options| be the {{XRReferenceSpaceOptions}} passed to {{requestReferenceSpace()}}.
+  1. Let |type| be set to |options| {{XRReferenceSpaceOptions/type}}.
+  1. Let |referenceSpace| be set to <code>null</code>.
+  1. If |type| is {{stationary}}, let |referenceSpace| be a new {{XRStationaryReferenceSpace}}.
+  1. Else if |type| is {{bounded}}, let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
+  1. Else if |type| is {{unbounded}}, let |referenceSpace| be a new {{XRUnboundedReferenceSpace}}.
+  1. Return |referenceSpace|.
 
 </div>
 
-Issue: Describe circumstances when a frame of reference type might be rejected.
+Issue: Describe circumstances when a reference space type might be rejected.
 
-XRStationaryFrameOfReference {#xrstationaryframeofreference-interface}
+XRStationaryReferenceSpace {#xrstationaryreferencespace-interface}
 ----------------------------
 
 <pre class="idl">
-enum XRStationaryFrameOfReferenceSubtype {
+enum XRStationaryReferenceSpaceSubtype {
   "eye-level",
   "floor-level",
   "position-disabled"
 };
 
-dictionary XRStationaryFrameOfReferenceOptions : XRFrameOfReferenceOptions {
-  required XRStationaryFrameOfReferenceSubtype subtype;
+dictionary XRStationaryReferenceSpaceOptions : XRReferenceSpaceOptions {
+  required XRStationaryReferenceSpaceSubtype subtype;
 };
 
 [SecureContext, Exposed=Window]
-interface XRStationaryFrameOfReference : XRFrameOfReference {
-  readonly attribute XRStationaryFrameOfReferenceSubtype subtype;
+interface XRStationaryReferenceSpace : XRReferenceSpace {
+  readonly attribute XRStationaryReferenceSpaceSubtype subtype;
 };
 </pre>
 
-An {{XRStationaryFrameOfReference}} represents a tracking space that the user is not expected to move around within. Tracking in a {{stationary}} frame of reference is optimized for keeping the frame of reference origin stable relative to the environment.
+An {{XRStationaryReferenceSpace}} represents a tracking space that the user is not expected to move around within. Tracking in a {{stationary}} reference space is optimized for keeping the reference space origin stable relative to the environment.
 
-There are several subtypes of {{XRStationaryFrameOfReference}}, determined by the {{XRStationaryFrameOfReferenceOptions/subtype}} value of the {{XRStationaryFrameOfReferenceOptions}} dictionary passed into the {{requestFrameOfReference()}} call:
+There are several subtypes of {{XRStationaryReferenceSpace}}, determined by the {{XRStationaryReferenceSpaceOptions/subtype}} value of the {{XRStationaryReferenceSpaceOptions}} dictionary passed into the {{requestReferenceSpace()}} call:
 
-- Passing a {{XRStationaryFrameOfReferenceOptions/subtype}} of <dfn enum-value for="XRStationaryFrameOfReferenceSubtype">eye-level</dfn> creates an {{XRStationaryFrameOfReference}} with it's origin near the user's head at the time of creation. The exact position and orientation will be initialized based on the conventions of the underlying platform.
+- Passing a {{XRStationaryReferenceSpaceOptions/subtype}} of <dfn enum-value for="XRStationaryReferenceSpaceSubtype">eye-level</dfn> creates an {{XRStationaryReferenceSpace}} with it's origin near the user's head at the time of creation. The exact position and orientation will be initialized based on the conventions of the underlying platform.
 
-- Passing a {{XRFrameOfReferenceOptions/type}} of <dfn enum-value for="XRStationaryFrameOfReferenceSubtype">floor-level</dfn> creates an {{XRStationaryFrameOfReference}} with it's origin positioned at the floor in a safe position for the user to stand. The `y` axis equals `0` at floor level, with the `x` and `z` position and orientation initialized based on the conventions of the underlying platform. If the floor level isn't known it will be estimated.
+- Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRStationaryReferenceSpaceSubtype">floor-level</dfn> creates an {{XRStationaryReferenceSpace}} with it's origin positioned at the floor in a safe position for the user to stand. The `y` axis equals `0` at floor level, with the `x` and `z` position and orientation initialized based on the conventions of the underlying platform. If the floor level isn't known it will be estimated.
 
-- Passing a {{XRFrameOfReferenceOptions/type}} of <dfn enum-value for="XRStationaryFrameOfReferenceSubtype">position-disabled</dfn> creates an {{XRStationaryFrameOfReference}} where orientation is tracked but the [=viewer=]s position is always reported as being at the origin.
+- Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRStationaryReferenceSpaceSubtype">position-disabled</dfn> creates an {{XRStationaryReferenceSpace}} where orientation is tracked but the [=viewer=]s position is always reported as being at the origin.
 
 Note: The {{position-disabled}} subtype is primarily intended for use with pre-rendered media such as panoramic photos or videos. It should not be used for most other media types due to user discomfort associated with the lack of a neck model or full positional tracking.
 
-The {{XRStationaryFrameOfReference}}'s <dfn attribute for="XRBoundedFrameOfReference">subtype</dfn> attribute is the {{XRStationaryFrameOfReferenceSubtype}} that the {{XRStationaryFrameOfReference}} was created with.
+The {{XRStationaryReferenceSpace}}'s <dfn attribute for="XRBoundedReferenceSpace">subtype</dfn> attribute is the {{XRStationaryReferenceSpaceSubtype}} that the {{XRStationaryReferenceSpace}} was created with.
 
-XRBoundedFrameOfReference {#xrboundedframeofreference-interface}
+XRBoundedReferenceSpace {#xrboundedreferencespace-interface}
 ----------------------------
 
 <pre class="idl">
 [SecureContext, Exposed=Window]
-interface XRBoundedFrameOfReference : XRFrameOfReference {
+interface XRBoundedReferenceSpace : XRReferenceSpace {
   readonly attribute FrozenArray&lt;DOMPointReadOnly&gt; boundsGeometry;
 };    
 </pre>
 
-An {{XRBoundedFrameOfReference}} represents a floor-relative tracking space where the user is expected to move within a pre-established boundary. In order to ensure user safety tracking in an {{bounded}} frame of reference is optimized for keeping the frame of reference origin and bounds geometry stable relative to the environment. Other XR platforms sometimes refer to this as "room scale" tracking.
+An {{XRBoundedReferenceSpace}} represents a floor-relative tracking space where the user is expected to move within a pre-established boundary. In order to ensure user safety tracking in an {{bounded}} reference space is optimized for keeping the reference space origin and bounds geometry stable relative to the environment. Other XR platforms sometimes refer to this as "room scale" tracking.
 
-The origin of a {{XRBoundedFrameOfReference}} MUST be positioned at the floor, such that the `y` axis equals `0` at floor level. The `x` and `z` position and orientation are initialized based on the conventions of the underlying platform, typically expected to be near the center of the room facing in a logical forward direction.
+The origin of a {{XRBoundedReferenceSpace}} MUST be positioned at the floor, such that the `y` axis equals `0` at floor level. The `x` and `z` position and orientation are initialized based on the conventions of the underlying platform, typically expected to be near the center of the room facing in a logical forward direction.
 
-Note: An {{XRBoundedFrameOfReference}} is not intended to describe multi-room spaces, areas with uneven floor levels, or very large open areas. Content that needs to handle those scenarios should use an {{XRUnboundedFrameOfReference}}.
+Note: An {{XRBoundedReferenceSpace}} is not intended to describe multi-room spaces, areas with uneven floor levels, or very large open areas. Content that needs to handle those scenarios should use an {{XRUnboundedReferenceSpace}}.
 
-The <dfn attribute for="XRBoundedFrameOfReference">boundsGeometry</dfn> attribute describes the border around the {{XRBoundedFrameOfReference}}, which the user can expect to safely move within. 
+The <dfn attribute for="XRBoundedReferenceSpace">boundsGeometry</dfn> attribute describes the border around the {{XRBoundedReferenceSpace}}, which the user can expect to safely move within. 
 
-The polygonal boundary is given as an array of {{DOMPointReadOnly}}s, which represents a loop of points at the edges of the safe space. The points describe offsets from the {{XRFrameOfReference}} origin in meters, but MAY not contain the origin. Points MUST be given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The {{DOMPointReadOnly/y}} value of each point MUST be <code>0</code> and the {{DOMPointReadOnly/w}} value of each point MUST be <code>1</code>. The bounds can be considered to originate at the floor and extend infinitely high. The shape it describes MAY not be convex.
+The polygonal boundary is given as an array of {{DOMPointReadOnly}}s, which represents a loop of points at the edges of the safe space. The points describe offsets from the {{XRReferenceSpace}} origin in meters, but MAY not contain the origin. Points MUST be given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The {{DOMPointReadOnly/y}} value of each point MUST be <code>0</code> and the {{DOMPointReadOnly/w}} value of each point MUST be <code>1</code>. The bounds can be considered to originate at the floor and extend infinitely high. The shape it describes MAY not be convex.
 
 Note: Content should not require the user to move beyond the {{boundsGeometry}}. It is possible for the user to move beyond the bounds if their physical surroundings allow for it, resulting in position values outside of the polygon they describe. This is not an error condition and should be handled gracefully by page content.
 
 Note: Content generally should not provide a visualization of the {{boundsGeometry}}, as it's the user agent's responsibility to ensure that safety critical information is provided to the user.
 
-XRUnboundedFrameOfReference {#xrunboundedframeofreference-interface}
+XRUnboundedReferenceSpace {#xrunboundedreferencespace-interface}
 ----------------------------
 
 <pre class="idl">
 [SecureContext, Exposed=Window] 
-interface XRUnboundedFrameOfReference : XRFrameOfReference {
+interface XRUnboundedReferenceSpace : XRReferenceSpace {
 };  
 </pre>
 
-An {{XRUnboundedFrameOfReference}} represents a tracking space where the user is expected to move freely around their environment, potentially even long distances from their starting point. Tracking in an {{unbounded}} frame of reference is optimized for stability around the user's current position, and as such the tracking origin may drift over time.
+An {{XRUnboundedReferenceSpace}} represents a tracking space where the user is expected to move freely around their environment, potentially even long distances from their starting point. Tracking in an {{unbounded}} reference space is optimized for stability around the user's current position, and as such the tracking origin may drift over time.
 
 Views {#views}
 =====
@@ -832,13 +830,13 @@ XRViewerPose {#xrviewerpose-interface}
 };
 </pre>
 
-An {{XRViewerPose}} describes the state of a <dfn>viewer</dfn> of the XR scene as tracked by the [=XR device=]. A [=viewer=] may represent a tracked piece of hardware, the observed position of a users head relative to the hardware, or some other means of computing a series of viewpoints into the XR scene. The {{XRViewerPose}} describes the position and orientation of the [=viewer=] relative to the {{XRFrameOfReference}} it was queried with, as well as an array of [=view=]s, which include view and projection matrices. These matrices should be used by the application when render a frame of an XR scene.
+An {{XRViewerPose}} describes the state of a <dfn>viewer</dfn> of the XR scene as tracked by the [=XR device=]. A [=viewer=] may represent a tracked piece of hardware, the observed position of a users head relative to the hardware, or some other means of computing a series of viewpoints into the XR scene. The {{XRViewerPose}} describes the position and orientation of the [=viewer=] relative to the {{XRReferenceSpace}} it was queried with, as well as an array of [=view=]s, which include view and projection matrices. These matrices should be used by the application when render a frame of an XR scene.
 
-The <dfn attribute for="XRViewerPose">poseMatrix</dfn> is a [=matrix=] describing the transform from the origin of the {{XRFrameOfReference}} the {{XRViewerPose}} was queried with to the [=viewer=].
+The <dfn attribute for="XRViewerPose">poseMatrix</dfn> is a [=matrix=] describing the transform from the origin of the {{XRReferenceSpace}} the {{XRViewerPose}} was queried with to the [=viewer=].
 
 NOTE: The {{XRViewerPose/poseMatrix}} can be used to position graphical representations of the [=viewer=] for spectator views of the scene or multi-user interaction.
 
-The <dfn attribute for="XRViewerPose">views</dfn> array is a sequence of {{XRView}}s describing the viewpoints of the XR scene, relative to the {{XRFrameOfReference}} the {{XRViewerPose}} was queried with. Every [=view=] of the XR scene in the array must be rendered in order to display correctly on the [=XR device=]. Each {{XRView}} includes view and projection matrices, and can be used to query {{XRViewport}}s from layers when needed.
+The <dfn attribute for="XRViewerPose">views</dfn> array is a sequence of {{XRView}}s describing the viewpoints of the XR scene, relative to the {{XRReferenceSpace}} the {{XRViewerPose}} was queried with. Every [=view=] of the XR scene in the array must be rendered in order to display correctly on the [=XR device=]. Each {{XRView}} includes view and projection matrices, and can be used to query {{XRViewport}}s from layers when needed.
 
 Input {#input}
 =====
@@ -1244,27 +1242,27 @@ When the user agent fires an {{XRInputSourceEvent}} |event| it MUST run the foll
 
 </div>
 
-XRFrameOfReferenceEvent {#xrframeofreferenceevent-interface}
+XRReferenceSpaceEvent {#xrreferencespaceevent-interface}
 -----------------------
 
 <pre class="idl">
-[SecureContext, Exposed=Window, Constructor(DOMString type, XRFrameOfReferenceEventInit eventInitDict)]
-interface XRFrameOfReferenceEvent : Event {
-  readonly attribute XRFrameOfReference frameOfReference;
+[SecureContext, Exposed=Window, Constructor(DOMString type, XRReferenceSpaceEventInit eventInitDict)]
+interface XRReferenceSpaceEvent : Event {
+  readonly attribute XRReferenceSpace referenceSpace;
   readonly attribute Float32Array? transformMatrix;
 };
 
-dictionary XRFrameOfReferenceEventInit : EventInit {
-  required XRFrameOfReference frameOfReference;
+dictionary XRReferenceSpaceEventInit : EventInit {
+  required XRReferenceSpace referenceSpace;
   Float32Array transformMatrix;
 };
 </pre>
 
-<dfn attribute for="XRFrameOfReferenceEvent">frameOfReference</dfn>
-The {{XRCoordinateSystem}} associated with this event.
+<dfn attribute for="XRReferenceSpaceEvent">referenceSpace</dfn>
+The {{XRReferenceSpace}} associated with this event.
 
-<dfn attribute for="XRFrameOfReferenceEvent">transformMatrix</dfn>
-A [=matrix=] describing the transform the {{XRFrameOfReferenceEvent/frameOfReference}} underwent during this event, if applicable.
+<dfn attribute for="XRReferenceSpaceEvent">transformMatrix</dfn>
+A [=matrix=] describing the transform the {{XRReferenceSpaceEvent/referenceSpace}} underwent during this event, if applicable.
 
 Event Types {#event-types}
 -----------
@@ -1287,7 +1285,7 @@ A user agent MUST dispatch a <dfn event for="XRSession">selectend</dfn> event on
 
 A user agent MUST dispatch a <dfn event for="XRSession">select</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s has fully completed a [=primary action=]. The event MUST be of type {{XRInputSourceEvent}}.
 
-A user agent MUST dispatch a <dfn event for="XRFrameOfReference">reset</dfn> event on an {{XRFrameOfReference}} when a discontinuity of the origin occurs, or when the {{boundsGeometry}} changes for a {{XRBoundedFrameOfReference}}. The event MUST be of type {{XRFrameOfReferenceEvent}}, and MUST be dispatched prior to the execution of any [=animation frame=]s that make use of the new origin.
+A user agent MUST dispatch a <dfn event for="XRReferenceSpace">reset</dfn> event on an {{XRReferenceSpace}} when a discontinuity of the origin occurs, or when the {{boundsGeometry}} changes for a {{XRBoundedReferenceSpace}}. The event MUST be of type {{XRReferenceSpaceEvent}}, and MUST be dispatched prior to the execution of any [=animation frame=]s that make use of the new origin.
 
 Integrations {#integrations}
 ============
