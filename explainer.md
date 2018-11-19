@@ -197,9 +197,13 @@ If the system's underlying XR device changes (signaled by the `devicechange` eve
 
 The WebXR Device API provides information about the current frame to be rendered via the `XRFrame` object which developers must examine each iteration of the render loop. From this object the frame's `XRViewerPose` can be queried, which contains the information about all the views which must be rendered in order for the scene to display correctly on the XR device.
 
-`XRWebGLLayer` objects are not updated automatically. To present new frames, developers must use `XRSession`'s `requestAnimationFrame()` method. When the callback function is run, it is passed both a timestamp and an `XRFrame` containing fresh rendering data that must be used to draw into the `XRWebGLLayer`s `framebuffer` during the callback.
+`XRWebGLLayer` objects are not updated automatically. To present new frames, developers must use `XRSession`'s `requestAnimationFrame()` method. The first time `requestAnimationFrame()` is called for a session a new `XRFrame` is created internally. Subsequent calls to `requestAnimationFrame()` will all use the same `XRFrame` until the frame callbacks are run. At that point the next `requestAnimationFrame()` call will create a new `XRFrame` and the cycle repeats.
+
+When the `requestAnimationFrame()` callback functions are run, they are passed both a timestamp and the active `XRFrame`, which will contain fresh rendering data that must be used to draw into the `XRWebGLLayer`s `framebuffer` during the callback.
 
 `XRFrame` objects act as snapshots of the state of the XR device and all associated inputs. The state may represent historical data, current sensor readings, or a future projection. Due to it's time-sensitive nature, an `XRFrame` is only valid during the execution of the callback that it is passed into, and once control is returned to the browser any active `XRFrame` objects are marked as inactive. Calling any method of an inactive `XRFrame` will throw a [`NotAllowedError`](https://heycam.github.io/webidl/#notallowederror).
+
+The `XRFrame` also keeps a copy of the  `XRSession`'s "render state" at the time it was created, such as `depthNear/Far` values and the `baseLayer`.  This captured render state is what will be used when the frame is being composited by the XR hardware. Any changes the developer makes to the session's render state after the frame is created will not be applied until the the next `XRFrame` is created.
 
 The timestamp provided is acquired using identical logic to the [processing of `window.requestAnimationFrame()` callbacks](https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#run-the-animation-frame-callbacks). This means that the timestamp is a `DOMHighResTimeStamp` set to the current time when the frame's callbacks begin processing. Multiple callbacks in a single frame will receive the same timestamp, even though time has elapsed during the processing of previous callbacks. In the future if additional, XR-specific timing information is identified that the API should provide it is recommended that it be via the `XRFrame` object.
 
@@ -250,6 +254,10 @@ function drawScene(view) {
   // Draw Scene
 }
 ```
+
+### Frame lifetime
+
+
 
 ### Handling suspended sessions
 
