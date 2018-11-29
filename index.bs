@@ -500,7 +500,7 @@ When the <dfn method for="XRSession">cancelAnimationFrame(|handle|)</dfn> method
 
 <div class="algorithm" data-algorithm="run-animation-frames">
 
-When the user agent is to run the animation frame callbacks for an {{XRSession}} |session| with a timestamp |now| and an {{XRFrame}} |frame|, it MUST run the following steps:
+  When an {{XRSession}} |session| receives updated [=viewer=] state from the [=XR device=], it runs an <dfn>XR animation frame</dfn> with a timestamp |now| and an {{XRFrame}} |frame|, which MUST run the following steps:
 
   1. Let |callbacks| be a list of the entries in |session|'s [=list of animation frame callback=], in the order in which they were added to the list.
   1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
@@ -569,7 +569,7 @@ XRFrame {#xrframe-interface}
 };
 </pre>
 
-An {{XRFrame}} provides all the values needed to render a single <dfn>animation frame</dfn> of an XR scene to the [=XR device=]'s display. Applications can only acquire an {{XRFrame}} by calling {{XRSession/requestAnimationFrame()}} on an {{XRSession}} with an {{XRFrameRequestCallback}}. When the callback is called it will be passed an {{XRFrame}}.
+An {{XRFrame}} represents a snapshot of the state of all of the tracked objects for an {{XRSession}}. Applications can acquire an {{XRFrame}} by calling {{XRSession/requestAnimationFrame()}} on an {{XRSession}} with an {{XRFrameRequestCallback}}. When the callback is called it will be passed an {{XRFrame}}. Events which need to communicate tracking state, such as the {{select}} event, will also provide a {{XRFrame}}.
 
 Each {{XRFrame}} has a <dfn for="XRFrame">active</dfn> boolean which is initially set to <code>false</code>.
 
@@ -583,7 +583,7 @@ When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method 
   1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
   1. If |referenceSpace|'s [=XRReferenceSpace/session=] does not equal |session|, return <code>null</code> and abort these steps.
   1. If the [=viewer=]'s pose cannot be determined relative to |referenceSpace|, return <code>null</code>
-  1. Return a new {{XRViewerPose}} describing the [=viewer=]'s pose relative to the origin of |referenceSpace|.
+  1. Return a new {{XRViewerPose}} describing the [=viewer=]'s pose relative to the origin of |referenceSpace| at the timestamp of the {{XRFrame}}.
 
 </div>
 
@@ -615,7 +615,7 @@ XRSpace {#xrspace-interface}
 };
 </pre>
 
-An {{XRSpace}} describes an entity that is tracked by the [=XR device=]'s tracking systems. {{XRSpace}}s MAY NOT have a fixed spatial relationship to one another or to any given {{XRReferenceSpace}}. The transform between two {{XRSpace}} can be evaluated by calling the {{getTransformTo()}} method every [=animation frame=].
+An {{XRSpace}} describes an entity that is tracked by the [=XR device=]'s tracking systems. {{XRSpace}}s MAY NOT have a fixed spatial relationship to one another or to any given {{XRReferenceSpace}}. The transform between two {{XRSpace}} can be evaluated by calling the {{getTransformTo()}} method every [=XR animation frame=].
 
 <div class="algorithm" data-algorithm="get-transform-to">
 
@@ -654,9 +654,9 @@ An {{XRReferenceSpace}} is obtained by calling {{XRSession/requestReferenceSpace
 
   - Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRReferenceSpaceType">stationary</dfn> creates an {{XRStationaryReferenceSpace}} instance.
 
-  - Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRReferenceSpaceType">bounded</dfn> creates an {{XRBoundedReferenceSpace}} instance if supported by the [=XR device=].
+  - Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRReferenceSpaceType">bounded</dfn> creates an {{XRBoundedReferenceSpace}} instance if supported by the [=XR device=] and the {{XRSession}}.
 
-  - Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRReferenceSpaceType">unbounded</dfn> creates an {{XRUnboundedReferenceSpace}} instance if supported by the [=XR device=].
+  - Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRReferenceSpaceType">unbounded</dfn> creates an {{XRUnboundedReferenceSpace}} instance if supported by the [=XR device=] and the {{XRSession}}.
 
 The <dfn attribute for="XRReferenceSpace">onreset</dfn> attribute is an [=Event handler IDL attribute=] for the {{reset}} event type.
 
@@ -668,7 +668,7 @@ When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a ref
   1. Let |options| be the {{XRReferenceSpaceOptions}} passed to {{requestReferenceSpace()}}.
   1. Let |type| be set to |options| {{XRReferenceSpaceOptions/type}}.
   1. Let |referenceSpace| be set to <code>null</code>.
-  1. If |type| is {{stationary}}, let |referenceSpace| be a new {{XRStationaryReferenceSpace}}.
+  1. If |type| is {{stationary}}, let |referenceSpace| be a new {{XRStationaryReferenceSpace}} with a {{XRStationaryReferenceSpace/subtype}} of |options| {{XRStationaryReferenceSpaceOptions/subtype}}.
   1. Else if |type| is {{bounded}}, let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
   1. Else if |type| is {{unbounded}}, let |referenceSpace| be a new {{XRUnboundedReferenceSpace}}.
   1. Return |referenceSpace|.
@@ -697,7 +697,7 @@ interface XRStationaryReferenceSpace : XRReferenceSpace {
 };
 </pre>
 
-An {{XRStationaryReferenceSpace}} represents a tracking space that the user is not expected to move around within. Tracking in a {{stationary}} reference space is optimized for keeping the reference space origin stable relative to the environment.
+An {{XRStationaryReferenceSpace}} represents a tracking space that the user is not expected to move around within. Tracking in a {{stationary}} reference space is optimized for the assumption that the user will not move much beyond their starting point, if at all. For devices with [=6DoF=] tracking, {{stationary}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
 
 There are several subtypes of {{XRStationaryReferenceSpace}}, determined by the {{XRStationaryReferenceSpaceOptions/subtype}} value of the {{XRStationaryReferenceSpaceOptions}} dictionary passed into the {{requestReferenceSpace()}} call:
 
@@ -709,7 +709,7 @@ There are several subtypes of {{XRStationaryReferenceSpace}}, determined by the 
 
 Note: The {{position-disabled}} subtype is primarily intended for use with pre-rendered media such as panoramic photos or videos. It should not be used for most other media types due to user discomfort associated with the lack of a neck model or full positional tracking.
 
-The {{XRStationaryReferenceSpace}}'s <dfn attribute for="XRBoundedReferenceSpace">subtype</dfn> attribute is the {{XRStationaryReferenceSpaceSubtype}} that the {{XRStationaryReferenceSpace}} was created with.
+The {{XRStationaryReferenceSpace}}'s <dfn attribute for="XRStationaryReferenceSpace">subtype</dfn> attribute is the {{XRStationaryReferenceSpaceSubtype}} that the {{XRStationaryReferenceSpace}} was created with.
 
 XRBoundedReferenceSpace {#xrboundedreferencespace-interface}
 ----------------------------
@@ -721,15 +721,15 @@ interface XRBoundedReferenceSpace : XRReferenceSpace {
 };    
 </pre>
 
-An {{XRBoundedReferenceSpace}} represents a floor-relative tracking space where the user is expected to move within a pre-established boundary. In order to ensure user safety tracking in an {{bounded}} reference space is optimized for keeping the reference space origin and bounds geometry stable relative to the environment. Other XR platforms sometimes refer to this as "room scale" tracking.
+An {{XRBoundedReferenceSpace}} represents a floor-relative tracking space where the user is expected to move within a pre-established boundary. Tracking in an {{bounded}} reference space is optimized for keeping the reference space origin and bounds geometry stable relative to the user's environment.
 
 The origin of a {{XRBoundedReferenceSpace}} MUST be positioned at the floor, such that the `y` axis equals `0` at floor level. The `x` and `z` position and orientation are initialized based on the conventions of the underlying platform, typically expected to be near the center of the room facing in a logical forward direction.
 
-Note: An {{XRBoundedReferenceSpace}} is not intended to describe multi-room spaces, areas with uneven floor levels, or very large open areas. Content that needs to handle those scenarios should use an {{XRUnboundedReferenceSpace}}.
+Note: Other XR platforms sometimes refer to the type of tracking offered by a {{bounded}} reference space as "room scale" tracking. An {{XRBoundedReferenceSpace}} is not intended to describe multi-room spaces, areas with uneven floor levels, or very large open areas. Content that needs to handle those scenarios should use an {{XRUnboundedReferenceSpace}}.
 
 The <dfn attribute for="XRBoundedReferenceSpace">boundsGeometry</dfn> attribute describes the border around the {{XRBoundedReferenceSpace}}, which the user can expect to safely move within. 
 
-The polygonal boundary is given as an array of {{DOMPointReadOnly}}s, which represents a loop of points at the edges of the safe space. The points describe offsets from the {{XRReferenceSpace}} origin in meters, but MAY not contain the origin. Points MUST be given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The {{DOMPointReadOnly/y}} value of each point MUST be <code>0</code> and the {{DOMPointReadOnly/w}} value of each point MUST be <code>1</code>. The bounds can be considered to originate at the floor and extend infinitely high. The shape it describes MAY not be convex.
+The polygonal boundary is given as an array of {{DOMPointReadOnly}}s, which represents a loop of points at the edges of the safe space. The points describe offsets from the {{XRReferenceSpace}} origin in meters. Points MUST be given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The {{DOMPointReadOnly/y}} value of each point MUST be <code>0</code> and the {{DOMPointReadOnly/w}} value of each point MUST be <code>1</code>. The bounds can be considered to originate at the floor and extend infinitely high. The shape it describes MAY not be convex.
 
 Note: Content should not require the user to move beyond the {{boundsGeometry}}. It is possible for the user to move beyond the bounds if their physical surroundings allow for it, resulting in position values outside of the polygon they describe. This is not an error condition and should be handled gracefully by page content.
 
@@ -1285,7 +1285,7 @@ A user agent MUST dispatch a <dfn event for="XRSession">selectend</dfn> event on
 
 A user agent MUST dispatch a <dfn event for="XRSession">select</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s has fully completed a [=primary action=]. The event MUST be of type {{XRInputSourceEvent}}.
 
-A user agent MUST dispatch a <dfn event for="XRReferenceSpace">reset</dfn> event on an {{XRReferenceSpace}} when a discontinuity of the origin occurs, or when the {{boundsGeometry}} changes for a {{XRBoundedReferenceSpace}}. The event MUST be of type {{XRReferenceSpaceEvent}}, and MUST be dispatched prior to the execution of any [=animation frame=]s that make use of the new origin.
+A user agent MUST dispatch a <dfn event for="XRReferenceSpace">reset</dfn> event on an {{XRReferenceSpace}} when the position or orientation of the origin changes relative to the user's environment. It also fires when the {{boundsGeometry}} changes for a {{XRBoundedReferenceSpace}}. The event MUST be of type {{XRReferenceSpaceEvent}}, and MUST be dispatched prior to the execution of any [=XR animation frame=]s that make use of the new origin.
 
 Integrations {#integrations}
 ============
