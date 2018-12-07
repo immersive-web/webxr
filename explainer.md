@@ -134,7 +134,7 @@ Only one immersive session per XR hardware device is allowed at a time across th
 
 Once the session has started, some setup must be done to prepare for rendering.
 - An `XRReferenceSpace` should be created to establish a space in which `XRViewerPose` data will be defined. See the [Spatial Tracking Explainer](spatial-tracking-explainer.md) for more information.
-- An `XRLayer` must be created and assigned to the `XRSession`'s `baseLayer` attribute. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.)
+- An `XRLayer` must be created and set as the `XRSession`'s `renderState.baseLayer`. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.)
 - Then `XRSession.requestAnimationFrame` must be called to start the render loop pumping.
 
 ```js
@@ -159,7 +159,9 @@ function onSessionStarted(session) {
 
 ### Setting up an XRLayer
 
-The content to present to the device is defined by an `XRLayer`. In the initial version of the spec only one layer type, `XRWebGLLayer`, is defined and only one layer can be used at a time. This is set via the `XRSession`'s `baseLayer` attribute. Future iterations of the spec will define new types of `XRLayer`s. For example: a new layer type would be added to enable use with any new graphics APIs that get added to the browser. The ability to use multiple layers at once and have them composited by the UA will likely also be added in a future API revision.
+The content to present to the device is defined by an `XRLayer`. In the initial version of the spec only one layer type, `XRWebGLLayer`, is defined and only one layer can be used at a time. This is set via the `XRSession`'s `updateRenderState()` function. `updateRenderState()` takes a dictionary containing new values for a variety of options affecting the session's rendering, including `baseLayer`. Only the options specified in the dictionary are updated, and a promise is returned that resolves when the new values take effect.
+
+Future iterations of the spec will define new types of `XRLayer`s. For example: a new layer type would be added to enable use with any new graphics APIs that get added to the browser. The ability to use multiple layers at once and have them composited by the UA will likely also be added in a future API revision.
 
 In order for a WebGL canvas to be used with an `XRWebGLLayer`, its context must be _compatible_ with the XR device. This can mean different things for different environments. For example, on a desktop computer this may mean the context must be created against the graphics adapter that the XR device is physically plugged into. On most mobile devices though, that's not a concern and so the context will always be compatible. In either case, the WebXR application must take steps to ensure WebGL context compatibility before using it with an `XRWebGLLayer`.
 
@@ -178,7 +180,7 @@ function setupWebGLLayer() {
   return gl.makeXRCompatible().then(() => {
     // The content that will be shown on the device is defined by the session's
     // baseLayer.
-    xrSession.baseLayer = new XRWebGLLayer(xrSession, gl);
+    return xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(xrSession, gl) });
   });
 }
 ```
@@ -201,7 +203,7 @@ The WebXR Device API provides information about the current frame to be rendered
 
 A new `XRFrame` is created for each batch of `requestAnimationFrame()` callbacks or for certain events that are associated with tracking data. `XRFrame` objects act as snapshots of the state of the XR device and all associated inputs. The state may represent historical data, current sensor readings, or a future projection. Due to it's time-sensitive nature, an `XRFrame` is only valid during the execution of the callback that it is passed into, and once control is returned to the browser any active `XRFrame` objects are marked as inactive. Calling any method of an inactive `XRFrame` will throw an [`InvalidStateError`](https://heycam.github.io/webidl/#invalidstateerror).
 
-The `XRFrame` also makes a copy of the  `XRSession`'s "render state", such as `depthNear/Far` values and the `baseLayer`, at the time the first `requestAnimationFrame()` call in the current batch was made. This captured render state is what will be used when computing view information like projection matrices and when the frame is being composited by the XR hardware. Any subsequent changes the developer makes to the session's render state will not be applied until the the next `XRFrame` is created.
+The `XRFrame` also makes a copy of the  `XRSession`'s `renderState`, such as `depthNear/Far` values and the `baseLayer`, at the time the first `requestAnimationFrame()` call in the current batch was made. This captured `renderState` is what will be used when computing view information like projection matrices and when the frame is being composited by the XR hardware. Any subsequent calls the developer makes to `updateRenderState()` will not be applied until the the next `XRFrame` is created.
 
 The timestamp provided is acquired using identical logic to the [processing of `window.requestAnimationFrame()` callbacks](https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#run-the-animation-frame-callbacks). This means that the timestamp is a `DOMHighResTimeStamp` set to the current time when the frame's callbacks begin processing. Multiple callbacks in a single frame will receive the same timestamp, even though time has elapsed during the processing of previous callbacks. In the future if additional, XR-specific timing information is identified that the API should provide it is recommended that it be via the `XRFrame` object.
 
@@ -219,11 +221,12 @@ The `XRViewerPose` contains a `views` attribute, which is an array of `XRView`s.
 function onDrawFrame(timestamp, xrFrame) {
   // Do we have an active session?
   if (xrSession) {
+    let glLayer = xrSession.renderState.baseLayer;
     let pose = xrFrame.getViewerPose(xrReferenceSpace);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, xrSession.baseLayer.framebuffer);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, glLayer.framebuffer);
 
     for (let view of pose.views) {
-      let viewport = xrSession.baseLayer.getViewport(view);
+      let viewport = glLayer.getViewport(view);
       gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
       drawScene(view);
     }
@@ -389,7 +392,7 @@ These scenarios can make use of inline sessions to render tracked content to the
 
 The [`RelativeOrientationSensor`](https://w3c.github.io/orientation-sensor/#relativeorientationsensor) and [`AbsoluteOrientationSensor`](https://w3c.github.io/orientation-sensor/#absoluteorientationsensor) interfaces (see [Motion Sensors Explainer](https://w3c.github.io/motion-sensors/)) can be used to polyfill the first case.
 
-Similar to mirroring, to make use of this mode an `XRPresentationContext` is provided as the `outputContext` at session creation time with an inline session. At that point content rendered to the `XRSession`'s `baseLayer` will be rendered to the canvas associated with the `outputContext`. The UA is also allowed to composite in additional content if desired. In the future, if multiple `XRLayers` are used their composited result will be what is displayed in the `outputContext`. Requests to create an inline session without an output context will be rejected.
+Similar to mirroring, to make use of this mode an `XRPresentationContext` is provided as the `outputContext` at session creation time with an inline session. At that point content rendered to the `XRRenderState`'s `baseLayer` will be rendered to the canvas associated with the `outputContext`. The UA is also allowed to composite in additional content if desired. In the future, if multiple `XRLayers` are used their composited result will be what is displayed in the `outputContext`. Requests to create an inline session without an output context will be rejected.
 
 Immersive and inline sessions can use the same render loop, but there are some differences in behavior to be aware of. The sessions may run their render loops at at different rates. During immersive sessions the UA runs the rendering loop at the XR device's native refresh rate. During inline sessions the UA runs the rendering loop at the refresh rate of page (aligned with `window.requestAnimationFrame`.) The method of computation of `XRView` projection and view matrices also differs between immersive and inline sessions, with inline sessions taking into account the output canvas dimensions and possibly the position of the users head in relation to the canvas if that can be determined.
 
@@ -437,7 +440,8 @@ If the `framebufferScaleFactor` is set to a number higher or lower than `1.0` th
 function setupWebGLLayer() {
   return gl.makeXRCompatible().then(() => {
     // Create a WebGL layer with a slightly lower than default resolution.
-    xrSession.baseLayer = new XRWebGLLayer(xrSession, gl, { framebufferScaleFactor: 0.8 });
+    let glLayer = new XRWebGLLayer(xrSession, gl, { framebufferScaleFactor: 0.8 });
+    xrSession.updateRenderState({ baseLayer: glLayer });
   });
 ```
 
@@ -448,7 +452,8 @@ function setupNativeScaleWebGLLayer() {
   return gl.makeXRCompatible().then(() => {
     // Create a WebGL layer that matches the device's native resolution.
     let nativeScaleFactor = XRWebGLLayer.getNativeFramebufferScaleFactor(xrSession);
-    xrSession.baseLayer = new XRWebGLLayer(xrSession, gl, { framebufferScaleFactor: nativeScaleFactor });
+    let glLayer = new XRWebGLLayer(xrSession, gl, { framebufferScaleFactor: nativeScaleFactor });
+    xrSession.updateRenderState({ baseLayer: glLayer });
   });
 ```
 
@@ -474,15 +479,17 @@ function onDrawFrame() {
 
 The projection matrices given by the `XRView`s take into account not only the field of view of presentation medium but also the depth range for the scene, defined as a near and far plane. WebGL fragments rendered closer than the near plane or further than the far plane are discarded. By default the near plane is 0.1 meters away from the user's viewpoint and the far plane is 1000 meters away.
 
-Some scenes may benefit from changing that range to better fit the scene's content. For example, if all of the visible content in a scene is expected to remain within 100 meters of the user's viewpoint, and all content is expected to appear at least 1 meter away, reducing the range of the near and far plane to `[1, 100]` will lead to more accurate depth precision. This reduces the occurence of z fighting, an artifact which manifests as a flickery, shifting pattern when closely overlapping surfaces are rendered. Conversely, if the visible scene extends for long distances you'd want to set the far plane far enough away to cover the entire visible range to prevent clipping, with the tradeoff being that further draw distances increase the occurence of z fighting artifacts. The best practice is to always set the near and far planes to as tight of a range as your content will allow.
+Some scenes may benefit from changing that range to better fit the scene's content. For example, if all of the visible content in a scene is expected to remain within 100 meters of the user's viewpoint, and all content is expected to appear at least 1 meter away, reducing the range of the near and far plane to `[1, 100]` will lead to more accurate depth precision. This reduces the occurrence of z fighting, an artifact which manifests as a flickery, shifting pattern when closely overlapping surfaces are rendered. Conversely, if the visible scene extends for long distances you'd want to set the far plane far enough away to cover the entire visible range to prevent clipping, with the tradeoff being that further draw distances increase the occurrence of z fighting artifacts. The best practice is to always set the near and far planes to as tight of a range as your content will allow.
 
-To adjust the near and far plane distance, set the `XRSession`'s `depthNear` and `depthFar` values respectively. These values are given in meters and changes to them will take affect with the next `XRFrame` provided.
+To adjust the near and far plane distance, `depthNear` and `depthFar` values can be given in meters when calling `updateRenderState()`.
 
 ```js
 // This reduces the depth range of the scene to [1, 100] meters.
 // The change will take effect on the next XRSession requestAnimationFrame callback.
-xrSession.depthNear = 1.0;
-xrSession.depthFar = 100.0;
+xrSession.updateRenderState({
+  depthNear: 1.0,
+  depthFar: 100.0,
+});
 ```
 
 ### Handling non-opaque displays
@@ -574,15 +581,13 @@ dictionary XRSessionCreationOptions {
   readonly attribute XRSessionMode mode;
   readonly attribute XRPresentationContext outputContext;
   readonly attribute XREnvironmentBlendMode environmentBlendMode;
-
-  attribute double depthNear;
-  attribute double depthFar;
-
-  attribute XRLayer baseLayer;
+  readonly attribute XRRenderState renderState;
 
   attribute EventHandler onblur;
   attribute EventHandler onfocus;
   attribute EventHandler onend;
+
+  Promise<void> updateRenderState(XRRenderStateInit state);
 
   long requestAnimationFrame(XRFrameRequestCallback callback);
   void cancelAnimationFrame(long handle);
@@ -598,6 +603,18 @@ enum XREnvironmentBlendMode {
   "opaque",
   "additive",
   "alpha-blend",
+};
+
+dictionary XRRenderStateOptions {
+  double depthNear;
+  double depthFar;
+  XRLayer baseLayer;
+};
+
+[SecureContext, Exposed=Window] interface XRRenderState {
+  readonly attribute double depthNear;
+  readonly attribute double depthFar;
+  readonly attribute XRLayer baseLayer;
 };
 
 //
@@ -677,7 +694,7 @@ interface XRWebGLLayer : XRLayer {
   readonly attribute WebGLFramebuffer framebuffer;
 
   XRViewport? getViewport(XRView view);
-  void requestViewportScaling(double viewportScaleFactor);
+  Promise<void> requestViewportScaling(double viewportScaleFactor);
 
   static double getNativeFramebufferScaleFactor(XRSession session);
 };
