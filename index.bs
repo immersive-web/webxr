@@ -570,7 +570,7 @@ The <dfn attribute for="XRFrame">session</dfn> attribute returns the {{XRSession
 
 When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
 
-  1. If the {{XRFrame}}'s [=active=] boolean is <code>false</code>, throw a {{NotAllowedError}} and abort these steps.
+  1. If the {{XRFrame}}'s [=active=] boolean is <code>false</code>, throw a {{InvalidStateError}} and abort these steps.
   1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
   1. If |referenceSpace|'s [=XRReferenceSpace/session=] does not equal |session|, return <code>null</code> and abort these steps.
   1. If the [=viewer=]'s pose cannot be determined relative to |referenceSpace|, return <code>null</code>
@@ -582,7 +582,7 @@ When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method 
 
 When the <dfn method for="XRFrame">getInputPose(|inputSource|, |referenceSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
 
-  1. If the {{XRFrame}}'s [=active=] boolean is <code>false</code>, throw a {{NotAllowedError}} and abort these steps.
+  1. If the {{XRFrame}}'s [=active=] boolean is <code>false</code>, throw a {{InvalidStateError}} and abort these steps.
   1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
   1. If |referenceSpace|'s [=XRReferenceSpace/session=] does not equal |session|, return <code>null</code> and abort these steps.
   1. If |inputSource|'s pose cannot be determined relative to |referenceSpace|, return <code>null</code>
