@@ -604,7 +604,7 @@ An {{XRSpace}} describes an entity that is tracked by the [=XR device=]'s tracki
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRSpace : EventTarget {
-  Float32Array? getTransformTo(XRSpace other);
+  XRRigidTransform? getTransformTo(XRSpace other);
 };
 </pre>
 
@@ -613,7 +613,7 @@ An {{XRSpace}} describes an entity that is tracked by the [=XR device=]'s tracki
 When the <dfn method for="XRSpace">getTransformTo(|other|)</dfn> method is invoked, the user agent MUST run the following steps:
 
   1. Let |current| be the target {{XRSpace}} object.
-  1. If a known transform exists from the space described by |current| to the space described by |other|, return it as a [=matrix=].
+  1. If a known transform exists from the space described by |current| to the space described by |other|, return it as an {{XRRigidTransform}}.
   1. Else return <code>null</code>
 
 </div>
@@ -757,6 +757,7 @@ enum XREye {
   readonly attribute XREye eye;
   readonly attribute Float32Array projectionMatrix;
   readonly attribute Float32Array viewMatrix;
+  readonly attribute XRRigidTransform transform;
 };
 </pre>
 
@@ -765,7 +766,11 @@ The <dfn attribute for="XRView">eye</dfn> attribute describes which eye this vie
 The <dfn attribute for="XRView">projectionMatrix</dfn> attribute provides a [=matrix=] describing the projection to be used when rendering the [=view=]. It is <b>strongly recommended</b> that applications use this matrix without modification. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
 
 The <dfn attribute for="XRView">viewMatrix</dfn> attribute provides a [=matrix=]
-describing the view transform to be used  when rendering the [=view=]. The [=matrix=] represent the inverse of the model matrix of the associated viewpoint. It is <b>strongly recommended</b> that applications use this matrix without modification. Failure to use the provided view matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
+describing the view transform to be used when rendering the [=view=]. The [=matrix=] represents the inverse of the {{XRView/transform}}'s {{XRRigidTransform/matrix}}. It is <b>strongly recommended</b> that applications use this matrix without modification. Failure to use the provided view matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
+
+The <dfn attribute for="XRView">transform</dfn> attribute is the {{XRRigidTransform}} of the viewpoint. 
+
+NOTE: The {{XRView/transform}} can be used to position camera objects in many rendering libraries instead of using the {{XRView/viewMatrix}} directly if the library is more naturally set up to consume data in that format.
 
 XRViewport {#xrviewport-interface}
 ------
@@ -805,8 +810,8 @@ xrSession.requestAnimationFrame((time, xrFrame) => {
 </pre>
 </div>
 
-Pose {#pose}
-====
+Geometric Primitives {#geometricprimitives}
+====================
 
 Matrices {#matrices}
 --------
@@ -815,6 +820,98 @@ WebXR provides various transforms in the form of <dfn lt="matrix">matrices</dfn>
 
 Translations specified by WebXR matrices are always given in meters.
 
+XRRigidTransform {#xrrigidtransform-interface}
+----------------
+
+An {{XRRigidTransform}} is a transform described by a {{XRRigidTransform/position}} and {{XRRigidTransform/orientation}}. When interpreting an {{XRRigidTransform}} the {{XRRigidTransform/orientation}} is always applied prior to the {{XRRigidTransform/position}}.
+
+<pre class="idl">
+[SecureContext, Exposed=Window,
+ Constructor(optional DOMPointInit position, optional DOMPointInit orientation)]
+interface XRRigidTransform {
+  readonly attribute DOMPointReadOnly position;
+  readonly attribute DOMPointReadOnly orientation;
+  readonly attribute Float32Array matrix;
+};
+</pre>
+
+<div class="algorithm" data-algorithm="construct-rigid-transform">
+
+The <dfn constructor for="XRRigidTransform">XRRigidTransform(|position|, |orientation|)</dfn> constructor MUST perform the following steps when invoked:
+
+  1. Let |transform| be a new {{XRRigidTransform}}.
+  1. If |position| is not a {{DOMPointInit}} initialize |transform|'s {{XRRigidTransform/position}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
+  1. Else initialize |transform|'s {{XRRigidTransform/position}}’s {{DOMPointReadOnly/x}} value to |position|'s x dictionary member, {{DOMPointReadOnly/y}} value to |position|'s y dictionary member, {{DOMPointReadOnly/z}} value to |position|'s z dictionary member and {{DOMPointReadOnly/w}} to <code>1.0</code>.
+  1. If |orientation| is not a {{DOMPointInit}} initialize |transform|'s {{XRRigidTransform/orientation}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
+  1. Else initialize |transform|'s {{XRRigidTransform/orientation}}’s {{DOMPointReadOnly/x}} value to |orientation|'s x dictionary member, {{DOMPointReadOnly/y}} value to |orientation|'s y dictionary member, {{DOMPointReadOnly/z}} value to |orientation|'s z dictionary member and {{DOMPointReadOnly/w}} value to |orientation|'s w dictionary member.
+  1. [=Normalize=] |transform|'s {{XRRigidTransform/orientation}}.
+  1. Return |transform|.
+
+</div>
+
+The <dfn attribute for="XRRigidTransform">position</dfn> attribute is a 3-dimensional point, given in meters, describing the translation component of the transform. The {{XRRigidTransform/position}}'s {{DOMPointReadOnly/w}} attribute MUST be <code>1.0</code>.
+
+The <dfn attribute for="XRRigidTransform">orientation</dfn> attribute is a quaternion describing the rotational component of the transform. The {{XRRigidTransform/orientation}} MUST be normalized to have a length of <code>1.0</code>.
+
+The <dfn attribute for="XRRigidTransform">matrix</dfn> attribute returns the transform described by the {{XRRigidTransform/position}} and {{XRRigidTransform/orientation}} attributes as a [=matrix=].
+
+ISSUE: Define <dfn>Normalize</dfn>
+
+XRRay {#xrray-interface}
+-----
+
+An {{XRRay}} is a geometric ray described by a {{XRRay/origin}} point and {{XRRay/direction}} vector.
+
+<pre class="idl">
+[SecureContext, Exposed=Window,
+ Constructor(optional DOMPointInit origin, optional DOMPointInit direction),
+ Constructor(XRRigidTransform transform)]
+interface XRRay {
+  readonly attribute DOMPointReadOnly origin;
+  readonly attribute DOMPointReadOnly direction;
+  readonly attribute Float32Array matrix;
+};
+</pre>
+
+<div class="algorithm" data-algorithm="construct-ray-origin-direction">
+
+The <dfn constructor for="XRRay">XRRay(|origin|, |direction|)</dfn> constructor MUST perform the following steps when invoked:
+
+  1. Let |ray| be a new {{XRRay}}.
+  1. If |origin| is not a {{DOMPointInit}} initialize |ray|'s {{XRRay/origin}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
+  1. Else initialize |ray|'s {{XRRay/origin}}’s {{DOMPointReadOnly/x}} value to |origin|'s x dictionary member, {{DOMPointReadOnly/y}} value to |origin|'s y dictionary member, {{DOMPointReadOnly/z}} value to |origin|'s z dictionary member and {{DOMPointReadOnly/w}} to <code>1.0</code>.
+  1. If |direction| is not a {{DOMPointInit}} initialize |ray|'s {{XRRay/direction}} to <code>{ x: 0.0, y: 0.0, z: -1.0, w: 0.0 }</code>.
+  1. Else initialize |ray|'s {{XRRay/direction}}’s {{DOMPointReadOnly/x}} value to |direction|'s x dictionary member, {{DOMPointReadOnly/y}} value to |direction|'s y dictionary member, {{DOMPointReadOnly/z}} value to |direction|'s z dictionary member and {{DOMPointReadOnly/w}} value to to <code>0.0</code>.
+  1. [=Normalize=] the {{DOMPointReadOnly/x}}, {{DOMPointReadOnly/y}}, and {{DOMPointReadOnly/z}} components of |ray|'s {{XRRay/direction}}.
+  1. Return |ray|.
+  
+</div>
+
+<div class="algorithm" data-algorithm="construct-ray-transform">
+
+  The <dfn constructor for="XRRay">XRRay(|transform|)</dfn> constructor MUST perform the following steps when invoked:
+  
+    1. Let |ray| be a new {{XRRay}}.
+    1. Initialize |ray|'s {{XRRay/origin}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
+    1. Initialize |ray|'s {{XRRay/direction}} to <code>{ x: 0.0, y: 0.0, z: -1.0, w: 0.0 }</code>.
+    1. Multiply |ray|'s {{XRRay/origin}} by the |transform|'s {{XRRigidTransform/matrix}}.
+    1. Multiply |ray|'s {{XRRay/direction}} by the |transform|'s {{XRRigidTransform/matrix}}.
+    1. [=Normalize=] the {{DOMPointReadOnly/x}}, {{DOMPointReadOnly/y}}, and {{DOMPointReadOnly/z}} components of |ray|'s {{XRRay/direction}}
+    1. Return |ray|.
+    
+  </div>
+
+The <dfn attribute for="XRRay">origin</dfn> attribute defines the 3-dimensional point in space that the ray originates from, given in meters. The {{XRRay/origin}}'s {{DOMPointReadOnly/w}} attribute MUST be <code>1.0</code>.
+
+The <dfn attribute for="XRRay">direction</dfn> attribute defines the ray's 3-dimensional directional vector. The {{XRRay/direction}}'s {{DOMPointReadOnly/w}} attribute MUST be <code>0.0</code> and the vector MUST be normalized to have a length of <code>1.0</code>.
+
+The <dfn attribute for="XRRay">matrix</dfn> attribute is a [=matrix=] which represents the transform from a ray originating at <code>[0, 0, 0]</code> and extending down the negative Z axis to the ray described by the {{XRRay}}'s {{XRRay/origin}} and {{XRRay/direction}}.
+
+NOTE: The {{XRRay}}'s {{XRRay/matrix}} can be used to easily position graphical representations of the ray when rendering.
+
+Pose {#pose}
+====
+
 XRViewerPose {#xrviewerpose-interface}
 -------------
 
@@ -822,14 +919,14 @@ An {{XRViewerPose}} describes the state of a <dfn>viewer</dfn> of the XR scene a
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRViewerPose {
-  readonly attribute Float32Array poseMatrix;
+  readonly attribute XRRigidTransform transform;
   readonly attribute FrozenArray&lt;XRView&gt; views;
 };
 </pre>
 
-The <dfn attribute for="XRViewerPose">poseMatrix</dfn> is a [=matrix=] describing the transform from the origin of the {{XRReferenceSpace}} the {{XRViewerPose}} was queried with to the [=viewer=].
+The <dfn attribute for="XRViewerPose">transform</dfn> is the {{XRRigidTransform}} of the [=viewer=] relative to the origin of the {{XRReferenceSpace}} the {{XRViewerPose}} was queried with.
 
-NOTE: The {{XRViewerPose/poseMatrix}} can be used to position graphical representations of the [=viewer=] for spectator views of the scene or multi-user interaction.
+NOTE: The {{XRViewerPose/transform}} can be used to position graphical representations of the [=viewer=] for spectator views of the scene or multi-user interaction.
 
 The <dfn attribute for="XRViewerPose">views</dfn> array is a sequence of {{XRView}}s describing the viewpoints of the XR scene, relative to the {{XRReferenceSpace}} the {{XRViewerPose}} was queried with. Every [=view=] of the XR scene in the array must be rendered in order to display correctly on the [=XR device=]. Each {{XRView}} includes view and projection matrices, and can be used to query {{XRViewport}}s from layers when needed.
 
@@ -873,26 +970,6 @@ The <dfn attribute for="XRInputSource">targetRayMode</dfn> attribute describes t
 
 Note: Some input sources, like an {{XRInputSource}} with {{targetRayMode}} set to {{screen}}, will only be added to the session's [=list of active input sources=] immediately before the {{selectstart}} event, and removed from the session's [=list of active input sources=] immediately after the {{selectend}} event.
 
-XRRay {#xrray-interface}
------
-
-An {{XRRay}} describes a geometric ray.
-
-<pre class="idl">
-[SecureContext, Exposed=Window]
-interface XRRay {
-  readonly attribute DOMPointReadOnly origin;
-  readonly attribute DOMPointReadOnly direction;
-  readonly attribute Float32Array transformMatrix;
-};
-</pre>
-
-The <dfn attribute for="XRRay">origin</dfn> attribute defines the 3-dimensional point in space that the ray originates from, given in meters. The {{XRRay/origin}}'s {{DOMPointReadOnly/w}} attribute MUST be <code>1.0</code>. The <dfn attribute for="XRRay">direction</dfn> attribute defines the ray's 3-dimensional directional vector. The {{direction}}'s {{DOMPointReadOnly/w}} attribute MUST be <code>0.0</code> and the vector MUST be normalized to have a length of <code>1.0</code>.
-
-The <dfn attribute for="XRRay">transformMatrix</dfn> is a [=matrix=] which represents the transform from a ray originating at <code>[0, 0, 0]</code> and extending down the negative Z axis to the ray described by the {{XRRay}}'s {{XRRay/origin}} and {{direction}}.
-
-NOTE: The {{XRRay}}'s {{XRRay/transformMatrix}} can be used to easily position graphical representations of the ray when rendering.
-
 XRInputPose {#xrinputpose-interface}
 -------------
 
@@ -903,19 +980,19 @@ ISSUE: Need some intro text for XRInputPose
 interface XRInputPose {
   readonly attribute boolean emulatedPosition;
   readonly attribute XRRay targetRay;
-  readonly attribute Float32Array? gripMatrix;
+  readonly attribute XRRigidTransform? gripTransform;
 };
 </pre>
 
 The <dfn attribute for="XRInputPose">targetRay</dfn> describes the preferred pointing ray of the {{XRInputSource}}, as defined by the {{targetRayMode}}.
 
-The <dfn attribute for="XRInputPose">gripMatrix</dfn> MUST describe a transform to a space which, if the user were to hold a straight rod in their hand their hand, places the origin at the centroid of their curled fingers and where the <code>-Z</code> axis points along the rod towards their thumb. The <code>X</code> axis is perpendicular to the back of the hand being described, with back of the users right hand pointing towards <code>+X</code> and the back of the user's left hand pointing towards <code>-X</code>. The <code>Y</code> axis is implied by the relationship between the <code>X</code> and <code>Z</code> axis, with <code>+Y</code> roughly pointing in the direction of the user's arm. 
+The <dfn attribute for="XRInputPose">gripTransform</dfn> MUST describe a transform to a space which, if the user were to hold a straight rod in their hand their hand, places the origin at the centroid of their curled fingers and where the <code>-Z</code> axis points along the rod towards their thumb. The <code>X</code> axis is perpendicular to the back of the hand being described, with back of the users right hand pointing towards <code>+X</code> and the back of the user's left hand pointing towards <code>-X</code>. The <code>Y</code> axis is implied by the relationship between the <code>X</code> and <code>Z</code> axis, with <code>+Y</code> roughly pointing in the direction of the user's arm. 
 
-The {{gripMatrix}} MAY represent an emulated translation or rotation if the input source's cannot supply full [=6DoF=] tracking.
+The {{gripTransform}} MAY represent an emulated translation or rotation if the input source's cannot supply full [=6DoF=] tracking.
 
-The {{gripMatrix}} MUST be `null` if the input source isn't trackable. 
+The {{gripTransform}} MUST be `null` if the input source isn't trackable. 
 
-The <dfn attribute for="XRInputPose">emulatedPosition</dfn> attribute indicates the accuracy of the {{XRRay/origin}} of the {{XRInputPose/targetRay}} and translation component of the {{XRInputPose/gripMatrix}}. {{XRInputPose/emulatedPosition}} MUST be set to <code>true</code> if positional values are software estimations, such as those provided by a neck or arm model. {{XRInputPose/emulatedPosition}} MUST be set to <code>false</code> if the positional values are based on sensor readings.
+The <dfn attribute for="XRInputPose">emulatedPosition</dfn> attribute indicates the accuracy of the {{XRRay/origin}} of the {{XRInputPose/targetRay}} and {{XRRigidTransform/position}} of the {{XRInputPose/gripTransform}}. {{XRInputPose/emulatedPosition}} MUST be set to <code>true</code> if positional values are software estimations, such as those provided by a neck or arm model. {{XRInputPose/emulatedPosition}} MUST be set to <code>false</code> if the positional values are based on sensor readings.
 
 Layers {#layers}
 ======
@@ -1253,18 +1330,18 @@ XRReferenceSpaceEvent {#xrreferencespaceevent-interface}
 [SecureContext, Exposed=Window, Constructor(DOMString type, XRReferenceSpaceEventInit eventInitDict)]
 interface XRReferenceSpaceEvent : Event {
   readonly attribute XRReferenceSpace referenceSpace;
-  readonly attribute Float32Array? transformMatrix;
+  readonly attribute XRRigidTransform? transform;
 };
 
 dictionary XRReferenceSpaceEventInit : EventInit {
   required XRReferenceSpace referenceSpace;
-  Float32Array transformMatrix;
+  XRRigidTransform transform;
 };
 </pre>
 
 The <dfn attribute for="XRReferenceSpaceEvent">referenceSpace</dfn> attribute indicates the {{XRReferenceSpace}} that generated this event.
 
-The <dfn attribute for="XRReferenceSpaceEvent">transformMatrix</dfn> attribute is a [=matrix=] describing the transform the {{XRReferenceSpaceEvent/referenceSpace}} underwent during this event, if applicable.
+The <dfn attribute for="XRReferenceSpaceEvent">transform</dfn> attribute describes the transform the {{XRReferenceSpaceEvent/referenceSpace}} underwent during this event, if applicable.
 
 Event Types {#event-types}
 -----------
