@@ -441,7 +441,7 @@ function setupWebGLLayer() {
   return gl.makeXRCompatible().then(() => {
     // Create a WebGL layer with a slightly lower than default resolution.
     let glLayer = new XRWebGLLayer(xrSession, gl, { framebufferScaleFactor: 0.8 });
-    xrSession.updateRenderState({ baseLayer: glLayer });
+    return xrSession.updateRenderState({ baseLayer: glLayer });
   });
 ```
 
@@ -453,7 +453,7 @@ function setupNativeScaleWebGLLayer() {
     // Create a WebGL layer that matches the device's native resolution.
     let nativeScaleFactor = XRWebGLLayer.getNativeFramebufferScaleFactor(xrSession);
     let glLayer = new XRWebGLLayer(xrSession, gl, { framebufferScaleFactor: nativeScaleFactor });
-    xrSession.updateRenderState({ baseLayer: glLayer });
+    return xrSession.updateRenderState({ baseLayer: glLayer });
   });
 ```
 
@@ -614,7 +614,7 @@ dictionary XRRenderStateOptions {
 [SecureContext, Exposed=Window] interface XRRenderState {
   readonly attribute double depthNear;
   readonly attribute double depthFar;
-  readonly attribute XRLayer baseLayer;
+  readonly attribute XRLayer? baseLayer;
 };
 
 //
