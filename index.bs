@@ -302,7 +302,7 @@ enum XREnvironmentBlendMode {
 [SecureContext, Exposed=Window] interface XRSession : EventTarget {
   // Attributes
   readonly attribute XRSessionMode mode;
-  readonly attribute XRPresentationContext outputContext;
+  readonly attribute XRPresentationContext? outputContext;
   readonly attribute XREnvironmentBlendMode environmentBlendMode;
 
   attribute double depthNear;
@@ -451,7 +451,7 @@ The {{XRSessionCreationOptions}} dictionary provides a <dfn>session description<
 <pre class="idl">
 dictionary XRSessionCreationOptions {
   XRSessionMode mode = "inline";
-  XRPresentationContext outputContext;
+  XRPresentationContext outputContext? = null;
 };
 </pre>
 
