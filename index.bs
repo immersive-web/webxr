@@ -451,7 +451,7 @@ The {{XRSessionCreationOptions}} dictionary provides a <dfn>session description<
 <pre class="idl">
 dictionary XRSessionCreationOptions {
   XRSessionMode mode = "inline";
-  XRPresentationContext outputContext? = null;
+  XRPresentationContext? outputContext = null;
 };
 </pre>
 
