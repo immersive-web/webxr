@@ -366,7 +366,7 @@ In order to mirror WebXR content to the page, developers provide an `XRPresentat
 
 When mirroring only one eye's content will be shown, and it should be shown without any distortion to correct for headset optics. The UA may choose to crop the image shown, display it at a lower resolution than originally rendered, and the mirror may be multiple frames behind the image shown in the headset. The mirror may include or exclude elements added by the underlying XR system (such as visualizations of room boundaries) at the UA's discretion. Pages should not rely on a particular timing or presentation of mirrored content, it's really just for the benefit of bystanders or demo operators.
 
-The UA may also choose to ignore the `outputCanvas` on systems where mirroring is inappropriate, such as devices without an external display to mirror to like mobile or all-in-one systems.
+The UA may also choose to ignore the `outputContext` on systems where mirroring is inappropriate, such as devices without an external display to mirror to like mobile or all-in-one systems.
 
 ```js
 function beginXRSession() {
@@ -625,8 +625,8 @@ dictionary XRRenderStateOptions {
   readonly attribute XRSession session;
 
   // Also listed in the spatial-tracking-explainer.md
-  XRViewerPose? getViewerPose(optional XRReferenceSpace referenceSpace);
-  XRInputPose? getInputPose(XRInputSource inputSource, optional XRReferenceSpace referenceSpace);
+  XRViewerPose? getViewerPose(XRReferenceSpace referenceSpace);
+  XRInputPose? getInputPose(XRInputSource inputSource, XRReferenceSpace referenceSpace);
 };
 
 enum XREye {

@@ -196,12 +196,63 @@ function teleport(deltaX, deltaY, deltaZ) {
 }
 ```
 
+### Identity reference spaces
+An _identity_ reference space is one which provides no tracking. This type of reference space is used for creating inline experiences with tracing information explicitly disabled, such as a furniture viewer that will use pointer data to rotate the furniture. It also supports cases where the developer does not wish to request consent to access tracking data from the user prior to entering an immersive mode.
+
+This type of reference space is requested with a type of `identity` and returns a basic `XRReferenceSpace`. `XRViewerPose` objects retrieved with this reference space will have a transform that is equal to the reference space's `originOffset`. The pose will only contain a single `XRView`, which must also have a transform equal to the `originOffset`. `identity` references spaces cannot be created by immersive sessions, since a lack of tracking in an immersive experience could cause severe discomfort for the user.
+
+```js
+let xrSession = null;
+let xrReferenceSpace = null;
+
+// Create an 'identity' reference space
+function onSessionStarted(session) {
+  xrSession = session;
+  xrSession.requestReferenceSpace({ type:'identity' })
+  .then((referenceSpace) => {
+    xrReferenceSpace = referenceSpace;
+  })
+  .then(setupWebGLLayer)
+  .then(() => {
+    xrSession.requestAnimationFrame(onDrawFrame);
+  });
+}
+```
+
 ## Practical Usage Guidelines
 
 ### Inline Sessions
-Inline sessions, by definition, do not require a user gesture or user permission to create, and as a result there must be strong limitations on the pose data that can be reported for privacy and security reasons.  Requests for an `XRBoundedReferenceSpace` or an `XRUnboundedReferenceSpace` will always be rejected on inline sessions.  Requests for `XRStationaryReferenceSpace` may succeed, but may also be rejected if the UA is unable provide any tracking information such as for an inline session on a desktop PC or a 2D browser window in a headset.
+Inline sessions, by definition, do not require a user gesture or user permission to create, and as a result there must be strong limitations on the pose data that can be reported for privacy and security reasons.  Requests for an `XRBoundedReferenceSpace` or an `XRUnboundedReferenceSpace` will always be rejected on inline sessions, while requests for `identity` reference spaces will always succeed. Requests for an `XRStationaryReferenceSpace` may succeed, but may also be rejected if the UA is unable provide any tracking information such as for an inline session on a desktop PC or a 2D browser window in a headset. The UA is also allowed to request the users consent prior to returning an `XRStationaryReferenceSpace`.
 
-Additionally, some inline experiences explicitly want tracking information disabled, such as a furniture viewer that will use pointer data to rotate the furniture.  Under both of these situations, there is no `XRReferenceSpace` needed.  Passing `null` as the `XRReferenceSpace` parameter to `getViewerPose()` or `getInputPose()` will return pose data whose values are based on the identity matrix.  Developers are then free to multiply in whatever transform they choose.
+### Click-and-drag view controls
+
+Frequently with inline sessions it's desirable to have the view rotate when the user interacts with the inline canvas. This is useful on devices without tracking capabilities to allow users to still view the full immersive scene, but can also be desirable on devices with tracking capabilities as a way to adjust the users view without requiring them to physically turn around.
+
+By updating the `originOffset` in response to pointer events, pages can provide basic click-and-drag style controls to allow the user to pan the view around the immersive scene.
+
+```js
+// Amount to rotate, in radians, per CSS pixel of pointer movement.
+const RAD_PER_PIXEL = Math.PI / 180.0; // (1 degree)
+
+// Pan the view any time pointer move events happen over the canvas.
+function onPointerMove(event) {
+  let s = Math.sin(event.movementX * RAD_PER_PIXEL);
+  let c = Math.cos(event.movementX * RAD_PER_PIXEL);
+  let o = xrReferenceSpace.originOffset.orientation;
+
+  xrReferenceSpace.originOffset = new XRRigidTransform(
+      // Keep the previous position
+      xrReferenceSpace.originOffset.position,
+      // Quaternion math to rotate the previous orientation around the Y axis.
+      {
+        x: o.x * c - o.z * s,
+        y: o.y * c + o.w * s,
+        z: o.z * c + o.x * s,
+        w: o.w * c - o.y * s
+      });
+}
+inlineCanvas.addEventListener('pointermove', onPointerMove);
+```
 
 ### Ensuring hardware compatibility
 Immersive sessions will always be able to provide a `XRStationaryReferenceSpace`, but may not support other `XRReferenceSpace` types due to hardware limitations.  Developers are strongly encouraged to follow the spirit of [progressive enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement) and provide a reasonable fallback behavior if their desired `XRBoundedReferenceSpace` or `XRUnboundedReferenceSpace` is unavailable.  In many cases it will be adequate for this fallback to behave similarly to an inline preview experience.
@@ -302,13 +353,14 @@ How to pick a reference space:
 
 ### Reference Space Examples
 
-| Type                           | Subtype             | Examples                                      |
-| -------------------------------| ------------------- | --------------------------------------------- |
-| `XRStationaryReferenceSpace` | `position-disabled` | - 360 photo/video viewer |
-| `XRStationaryReferenceSpace` | `eye-level`         | - Immersive 2D video viewer<br>- Racing simulator<br>- Solar system explorer |
-| `XRStationaryReferenceSpace` | `floor-level`       | - VR chat "room"<br>- Action game where you duck and dodge in place<br>- Fallback for Bounded experience that relies on teleportation instead |
-| `XRBoundedReferenceSpace`    |                     | - VR painting/sculpting tool<br>- Training simulators<br>- Dance games<br>- Previewing of 3D objects in the real world |
-| `XRUnboundedReferenceSpace`  |                     | - Campus tour<br>- Renovation preview |
+| Type         | Subtype             | Examples                                      |
+| -------------| ------------------- | --------------------------------------------- |
+| `identity`   |                     | - In-page content preview<br>- Click/Drag viewing |
+| `stationary` | `position-disabled` | - 360 photo/video viewer |
+| `stationary` | `eye-level`         | - Immersive 2D video viewer<br>- Racing simulator<br>- Solar system explorer |
+| `stationary` | `floor-level`       | - VR chat "room"<br>- Action game where you duck and dodge in place<br>- Fallback for Bounded experience that relies on teleportation instead |
+| `bounded`    |                     | - VR painting/sculpting tool<br>- Training simulators<br>- Dance games<br>- Previewing of 3D objects in the real world |
+| `unbounded`  |                     | - Campus tour<br>- Renovation preview |
 
 ### XRReferenceSpace Availability
 
@@ -318,13 +370,14 @@ How to pick a reference space:
 
 **Rejected** The UA will never provide this reference space
 
-| Type                           | Subtype             | Inline             | Immersive |
-| -------------------------------| ------------------- | ------------------ | ---------- |
-| `XRStationaryReferenceSpace` | `position-disabled` | Hardware-dependent | Guaranteed |
-| `XRStationaryReferenceSpace` | `eye-level`         | Hardware-dependent | Guaranteed |
-| `XRStationaryReferenceSpace` | `floor-level`       | Hardware-dependent | Guaranteed |
-| `XRBoundedReferenceSpace`    |                     | Rejected           | Hardware-dependent |
-| `XRUnboundedReferenceSpace`  |                     | Rejected           | Hardware-dependent |
+| Type         | Subtype             | Inline             | Immersive  |
+| ------------ | ------------------- | ------------------ | ---------- |
+| `identity`   |                     | Guaranteed         | Rejected   |
+| `stationary` | `position-disabled` | Hardware-dependent | Guaranteed |
+| `stationary` | `eye-level`         | Hardware-dependent | Guaranteed |
+| `stationary` | `floor-level`       | Hardware-dependent | Guaranteed |
+| `bounded`    |                     | Rejected           | Hardware-dependent |
+| `unbounded`  |                     | Rejected           | Hardware-dependent |
 
 ## Appendix B: Proposed partial IDL
 This is a partial IDL and is considered additive to the core IDL found in the main [explainer](explainer.md).
@@ -348,10 +401,10 @@ partial interface XRSession {
 
 partial interface XRFrame {
   // Also listed in the main explainer.md
-  XRViewerPose? getViewerPose(optional XRReferenceSpace referenceSpace);
+  XRViewerPose? getViewerPose(XRReferenceSpace referenceSpace);
 
   // Also listed in input-explainer.md
-  XRInputPose? getInputPose(XRInputSource inputSource, optional XRReferenceSpace referenceSpace);
+  XRInputPose? getInputPose(XRInputSource inputSource, XRReferenceSpace referenceSpace);
 };
 
 [SecureContext, Exposed=Window]
@@ -374,6 +427,7 @@ interface XRInputPose {
 //
 
 enum XRReferenceSpaceType {
+  "identity",
   "stationary",
   "bounded",
   "unbounded"
@@ -383,7 +437,7 @@ dictionary XRReferenceSpaceOptions {
   required XRReferenceSpaceType type;
 };
 
-[SecureContext, Exposed=Window] interface XRReferenceSpace : XRSpace {  
+[SecureContext, Exposed=Window] interface XRReferenceSpace : XRSpace {
   attribute XRRigidTransform originOffset;
 
   attribute EventHandler onreset;
