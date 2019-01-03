@@ -197,7 +197,7 @@ function teleport(deltaX, deltaY, deltaZ) {
 ```
 
 ### Identity reference spaces
-An _identity_ reference space is one which provides no tracking. This type of reference space is used for creating inline experiences with tracing information explicitly disabled, such as a furniture viewer that will use pointer data to rotate the furniture. It also supports cases where the developer does not wish to request consent to access tracking data from the user prior to entering an immersive mode.
+An _identity_ reference space is one which provides no tracking. This type of reference space is used for creating inline experiences with tracking information explicitly disabled, such as a furniture viewer that will use [click-and-drag controls](#click-and-drag-view-controls) to rotate the furniture. It also supports cases where the developer wish to avoid displaying any type of tracking consent prompt to the user prior while displaying inline content.
 
 This type of reference space is requested with a type of `identity` and returns a basic `XRReferenceSpace`. `XRViewerPose` objects retrieved with this reference space will have a transform that is equal to the reference space's `originOffset`. The pose will only contain a single `XRView`, which must also have a transform equal to the `originOffset`. `identity` references spaces cannot be created by immersive sessions, since a lack of tracking in an immersive experience could cause severe discomfort for the user.
 
@@ -226,7 +226,7 @@ Inline sessions, by definition, do not require a user gesture or user permission
 
 ### Click-and-drag view controls
 
-Frequently with inline sessions it's desirable to have the view rotate when the user interacts with the inline canvas. This is useful on devices without tracking capabilities to allow users to still view the full immersive scene, but can also be desirable on devices with tracking capabilities as a way to adjust the users view without requiring them to physically turn around.
+Frequently with inline sessions it's desirable to have the view rotate when the user interacts with the inline canvas. This is useful on devices without tracking capabilities to allow users to still view the full scene, but can also be desirable on devices with some tracking capabilities, such as a mobile phone or tablet, as a way to adjust the users view without requiring them to physically turn around.
 
 By updating the `originOffset` in response to pointer events, pages can provide basic click-and-drag style controls to allow the user to pan the view around the immersive scene.
 
