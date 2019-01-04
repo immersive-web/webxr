@@ -197,7 +197,7 @@ function teleport(deltaX, deltaY, deltaZ) {
 ```
 
 ### Identity reference spaces
-An _identity_ reference space is one which provides no tracking. This type of reference space is used for creating inline experiences with tracking information explicitly disabled, such as a furniture viewer that will use [click-and-drag controls](#click-and-drag-view-controls) to rotate the furniture. It also supports cases where the developer wish to avoid displaying any type of tracking consent prompt to the user prior while displaying inline content.
+An _identity_ reference space is one which provides no tracking. This type of reference space is used for creating inline experiences with tracking information explicitly disabled, such as a furniture viewer that will use [click-and-drag controls](#click-and-drag-view-controls) to rotate the furniture. It also supports cases where the developer wishes to avoid displaying any type of tracking consent prompt to the user prior while displaying inline content.
 
 This type of reference space is requested with a type of `identity` and returns a basic `XRReferenceSpace`. `XRViewerPose` objects retrieved with this reference space will have a transform that is equal to the reference space's `originOffset`. The pose will only contain a single `XRView`, which must also have a transform equal to the `originOffset`. `identity` references spaces cannot be created by immersive sessions, since a lack of tracking in an immersive experience could cause severe discomfort for the user.
 
