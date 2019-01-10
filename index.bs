@@ -253,7 +253,7 @@ When the <dfn method for="XR">requestSession(|options|)</dfn> method is invoked,
   1. Let |mode| be the {{XRSessionCreationOptions/mode}} attribute of the |options| argument.
   1. Let |immersive| be a boolean set to <code>true</code> if |mode| is {{immersive-vr}} or {{immersive-ar}} and <code>false</code> otherwise.
   1. If |immersive| is <code>true</code>: 
-    1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] in not <code>null</code>, [=reject=] |promise| with an {{InvalidStateError}} and abort these steps.
+    1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an {{InvalidStateError}} and abort these steps.
     1. Else set [=pending immersive session=] to be <code>true</code>.
   1. [=Ensure an XR device is selected=].
   1. If [=XR device=] is <code>null</code>, [=reject=] |promise| with <code>null</code>.
