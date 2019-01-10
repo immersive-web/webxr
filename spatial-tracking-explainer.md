@@ -199,7 +199,7 @@ function teleport(deltaX, deltaY, deltaZ) {
 ### Identity reference spaces
 An _identity_ reference space is one which provides no tracking. This type of reference space is used for creating inline experiences with tracking information explicitly disabled, such as a furniture viewer that will use [click-and-drag controls](#click-and-drag-view-controls) to rotate the furniture. It also supports cases where the developer wishes to avoid displaying any type of tracking consent prompt to the user prior while displaying inline content.
 
-This type of reference space is requested with a type of `identity` and returns a basic `XRReferenceSpace`. `XRViewerPose` objects retrieved with this reference space will have a transform that is equal to the reference space's `originOffset`. The pose will only contain a single `XRView`, which must also have a transform equal to the `originOffset`. `identity` references spaces cannot be created by immersive sessions, since a lack of tracking in an immersive experience could cause severe discomfort for the user.
+This type of reference space is requested with a type of `identity` and returns a basic `XRReferenceSpace`. `XRViewerPose` objects retrieved with this reference space will have a transform that is equal to the reference space's `originOffset`. The pose will only contain a single `XRView`, which must also have a transform equal to the `originOffset`.
 
 ```js
 let xrSession = null;
@@ -222,7 +222,7 @@ function onSessionStarted(session) {
 ## Practical Usage Guidelines
 
 ### Inline Sessions
-Inline sessions, by definition, do not require a user gesture or user permission to create, and as a result there must be strong limitations on the pose data that can be reported for privacy and security reasons.  Requests for an `XRBoundedReferenceSpace` or an `XRUnboundedReferenceSpace` will always be rejected on inline sessions, while requests for `identity` reference spaces will always succeed. Requests for an `XRStationaryReferenceSpace` may succeed, but may also be rejected if the UA is unable provide any tracking information such as for an inline session on a desktop PC or a 2D browser window in a headset. The UA is also allowed to request the users consent prior to returning an `XRStationaryReferenceSpace`.
+Inline sessions, by definition, do not require a user gesture or user permission to create, and as a result there must be strong limitations on the pose data that can be reported for privacy and security reasons. Requests for `identity` reference spaces will always succeed. Requests for an `XRBoundedReferenceSpace` or an `XRUnboundedReferenceSpace` will always be rejected on inline sessions. Requests for an `XRStationaryReferenceSpace` may succeed, but may also be rejected if the UA is unable provide any tracking information such as for an inline session on a desktop PC or a 2D browser window in a headset. The UA is also allowed to request the users consent prior to returning an `XRStationaryReferenceSpace`.
 
 ### Click-and-drag view controls
 
@@ -372,7 +372,7 @@ How to pick a reference space:
 
 | Type         | Subtype             | Inline             | Immersive  |
 | ------------ | ------------------- | ------------------ | ---------- |
-| `identity`   |                     | Guaranteed         | Rejected   |
+| `identity`   |                     | Guaranteed         | Guaranteed |
 | `stationary` | `position-disabled` | Hardware-dependent | Guaranteed |
 | `stationary` | `eye-level`         | Hardware-dependent | Guaranteed |
 | `stationary` | `floor-level`       | Hardware-dependent | Guaranteed |
