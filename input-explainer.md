@@ -177,6 +177,19 @@ Most applications will want to visually represent the input sources somehow. The
   * `'tracked-pointer'`: If the `gripSpace` is not `null` an application-appropriate controller model should be drawn using that transform. If appropriate for the experience, the a visualization of the target ray and a cursor as described in the `'gaze'` should also be drawn.
   * `'screen'`: In all cases the point of origin of the target ray is obvious and no visualization is needed.
 
+Determining what to render is important as well. In some cases it's appropriate for the application to render a contextually appropriate model (such as a racket in a tennis game), in which case the physical appearance of the input source doesn't matter much. Many other times, though, it's desirable for the application to display a device that matches what the user is holding, especially when relaying instructions about it's use. Finally there are times when it's best to not render anything at all, such as when the XR device uses a transparent display and the user can see their hands and/or any tracked devices without app assistance.
+
+ The `XRInputSource`'s `renderId` is used to determine what should be rendered in the cases when an application specific model isn't being used. 
+
+  - A `renderId` of `''` (empty string) indicates the input source should not be rendered. Cursors and pointing rays should still be rendered as described above if needed by the application. Input sources with a `targetRayMode` of `'gaze'` or `'screen'` MUST have a `renderId` of `''`. `'tracked-pointer'` input sources should typically only have a `renderId` of `''` when using displays that allow the user to see their environment and the physical input source.
+  - The `renderId` may be `'unknown'` if the type of input source cannot be reliably identified or the UA determines that the input source type must be masked for any reason.
+  - Inline sessions MUST only expose `renderId`s of `''` or `'unknown'`.
+  - Otherwise the `renderId` should be a lower-case string that describes the physical input source. It should not include and indication of the handedness of the input source, as that should be implied by the `handedness` attribute.
+    - If the input source is a tracked hand without any held controller, the `renderId` MUST be `hand`
+    - For most controllers this should ideally be of the format `<vendor>-<product-id>`. For example: `oculus-touch`. UAs should make an effort to align on the strings that are returned for any given device.
+
+The WebXR Device API currently does not offer any way to retrieve renderable resources that represent the input devices from the API itself, and as such the `renderId` must be used as a key to load an appropriate resources from the application's server or a CDN. The example below presumes that the `getControllerMesh` call would do the required lookup and caching.
+
 ```js
 // These methods presumes the use of a fictionalized rendering library.
 
@@ -192,8 +205,10 @@ function renderInputSource(xrFrame, inputSource) {
   // only render a controller mesh if the XREnvironmentBlendMode is 'opaque' and
   // we have a valid gripPose to transform it with.
   if (gripPose && xrFrame.session.environmentBlendMode == 'opaque') {
-    let controllerMesh = getControllerMesh(inputSource);
-    renderer.drawMeshAtTransform(controllerMesh, gripPose.transform);
+    let controllerMesh = getControllerMesh(inputSource.renderId);
+    if (controllerMesh) {
+      renderer.drawMeshAtTransform(controllerMesh, gripPose.transform);
+    }
   }
 }
 
@@ -333,6 +348,7 @@ enum XRTargetRayMode {
 
 [SecureContext, Exposed=Window]
 interface XRInputSource {
+  readonly attribute DOMString renderId;
   readonly attribute XRHandedness handedness;
   readonly attribute XRTargetRayMode targetRayMode;
   readonly attribute XRSpace targetRaySpace;
