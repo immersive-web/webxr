@@ -253,7 +253,7 @@ When the <dfn method for="XR">requestSession(|options|)</dfn> method is invoked,
   1. Let |mode| be the {{XRSessionCreationOptions/mode}} attribute of the |options| argument.
   1. Let |immersive| be a boolean set to <code>true</code> if |mode| is {{immersive-vr}} or {{immersive-ar}} and <code>false</code> otherwise.
   1. If |immersive| is <code>true</code>: 
-    1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] in not <code>null</code>, [=reject=] |promise| with an {{InvalidStateError}} and abort these steps.
+    1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an {{InvalidStateError}} and abort these steps.
     1. Else set [=pending immersive session=] to be <code>true</code>.
   1. [=Ensure an XR device is selected=].
   1. If [=XR device=] is <code>null</code>, [=reject=] |promise| with <code>null</code>.
@@ -364,7 +364,7 @@ The <dfn method for="XRSession">end()</dfn> method provides a way to manually sh
 
 </div>
 
-Each {{XRSession}} has an <dfn>active render state</dfn> which is a new {{XRRenderState}}, a <dfn>pending render state</dfn> which is a new {{XRRenderState}}, and a <dfn>list of pending render state promises</dfn>, which is initially empty.
+Each {{XRSession}} has an <dfn>active render state</dfn> which is a new {{XRRenderState}}, a <dfn>list of pending render states</dfn>, which is initially empty, and a <dfn>render state suspended</dfn> boolean, which is initially <code>false</code>.
 
 The <dfn attribute for="XRSession">renderState</dfn> attribute returns the {{XRSession}}'s [=active render state=].
 
@@ -373,16 +373,32 @@ The <dfn attribute for="XRSession">renderState</dfn> attribute returns the {{XRS
 When the <dfn method for="XRSession">updateRenderState(|newState|)</dfn> method is invoked, the user agent MUST return [=a new Promise=] |promise| and run the following steps [=in parallel=]:
 
   1. Let |session| be the target {{XRSession}}.
-  1. Let |pendingState| be |session|'s [=pending render state=].
-  1. If |newState|'s {{XRRenderStateInit/depthNear}} value is set, set |pendingState|'s {{XRRenderState/depthNear}} to |newState|'s {{XRRenderStateInit/depthNear}}.
-  1. If |newState|'s {{XRRenderStateInit/depthFar}} value is set, set |pendingState|'s {{XRRenderState/depthFar}} to |newState|'s {{XRRenderStateInit/depthFar}}.
-  1. If |newState|'s {{XRRenderStateInit/baseLayer}} is set, set |pendingState|'s {{XRRenderState/baseLayer}} to |newState|'s {{XRRenderStateInit/baseLayer}}.
-  1. If |session|'s [=processing frame=] flag is <code>false</code>, copy |session|'s [=pending render state=] to |session|'s [=active render state=] and [=/Resolve=] |promise|.
-  1. Else append |promise| to |session|'s [=list of pending render state promises=].
+  1. Append |newState| to |session|'s [=list of pending render states=] associated with |promise|.
+  1. If |session|'s [=render state suspended=] boolean is <code>false</code>, [=apply pending render states=].
 
 </div>
 
-NOTE: The [=active render state=] of an {{XRSession}} is constant for the full duration of an [=XR animation frame=]. 
+NOTE: The check against [=render state suspended=] ensures the [=active render state=] of an {{XRSession}} is constant for the full duration of an [=XR animation frame=], but otherwise applies immediately. 
+
+<div class="algorithm" data-algorithm="apply-pending-render-states">
+
+When requested, the {{XRSession}} MUST <dfn>apply pending render states</dfn> by running the following steps:
+
+  1. Let |session| be the target {{XRSession}}.
+  1. Let |activeState| be |session|'s [=active render state=].
+  1. Let |pendingStates| be |session|'s [=list of pending render states=].
+  1. Set |session|'s [=list of pending render states=] to the empty list.
+  1. Set |session|'s [=render state suspended=] to <code>true</code>.
+  1. For each entry in |pendingStates|:
+    1. Let |newState| be the {{XRRenderStateInit}} associated with the entry.
+    1. If |newState|'s {{XRRenderStateInit/depthNear}} value is set, set |activeState|'s {{XRRenderState/depthNear}} to |newState|'s {{XRRenderStateInit/depthNear}}.
+    1. If |newState|'s {{XRRenderStateInit/depthFar}} value is set, set |activeState|'s {{XRRenderState/depthFar}} to |newState|'s {{XRRenderStateInit/depthFar}}.
+    1. If |newState|'s {{XRRenderStateInit/baseLayer}} is set, set |activeState|'s {{XRRenderState/baseLayer}} to |newState|'s {{XRRenderStateInit/baseLayer}}.
+    1. [=/Resolve=] the promise associated with the entry.
+  1. Set |session|'s [=render state suspended=] to <code>false</code>.
+  1. If |session|'s [=list of pending render states=] is not empty, [=apply pending render states=].
+
+</div>
 
 <div class="algorithm" data-algorithm="request-reference-space">
 
@@ -512,7 +528,7 @@ callback XRFrameRequestCallback = void (DOMHighResTimeStamp time, XRFrame frame)
 
 Each {{XRFrameRequestCallback}} object has a <dfn for="XRFrameRequestCallback">cancelled</dfn> boolean initially set to <code>false</code>.
 
-Each {{XRSession}} has a <dfn>list of animation frame callbacks</dfn>, which is initially empty, and an <dfn>animation frame callback identifier</dfn>, which is a number initially be zero. Each {{XRSession}} also has a <dfn>processing frame</dfn> boolean, which is initially be set to <code>false</code>.
+Each {{XRSession}} has a <dfn>list of animation frame callbacks</dfn>, which is initially empty, and an <dfn>animation frame callback identifier</dfn>, which is a number initially be zero.
 
 <div class="algorithm" data-algorithm="request-animation-frame">
 
@@ -541,18 +557,15 @@ When an {{XRSession}} |session| receives updated [=viewer=] state from the [=XR 
 
   1. Let |callbacks| be a list of the entries in |session|'s [=list of animation frame callback=], in the order in which they were added to the list.
   1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
-  1. Set |session|'s [=processing frame=] to <code>true</code>.
+  1. Set |session|'s [=render state suspended=] to <code>true</code>.
   1. Set |frame|'s [=active=] boolean to <code>true</code>.
   1. For each entry in |callbacks|, in order:
     1. If the entry's [=cancelled=] boolean is <code>true</code>, continue to the next entry.
     1. [=Invoke the Web IDL callback function=], passing |now| and |frame| as the  arguments
     1. If an exception is thrown, [=report the exception=].
-  1. Set |session|'s [=processing frame=] to <code>false</code>.
   1. Set |frame|'s [=active=] boolean to <code>false</code>.
-  1. Copy |session|'s [=pending render state=] to |session|'s [=active render state=].
-  1. Let |renderStatePromises| be a list of the entries in |session|'s [=list of pending render state promises=], in the order in which they were added to the list.
-  1. Set |session|'s [=list of pending render state promises=] to the empty list.
-  1. [=/Resolve=] each promise in |renderStatePromises| in the order in which they were added to the list.
+  1. Set |session|'s [=render state suspended=] to <code>false</code>.
+  1. If |session|'s [=list of pending render states=] is not empty, [=apply pending render states=].
 
 </div>
 
