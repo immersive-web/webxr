@@ -623,7 +623,7 @@ An {{XRFrame}} represents a snapshot of the state of all of the tracked objects 
   readonly attribute XRSession session;
 
   XRViewerPose? getViewerPose(optional XRReferenceSpace referenceSpace);
-  XRInputPose? getInputPose(XRInputSource inputSource, optional XRReferenceSpace referenceSpace);
+  XRPose? getPose(XRSpace space, XRSpace relativeTo);
 };
 </pre>
 
@@ -643,15 +643,16 @@ When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method 
 
 </div>
 
-<div class="algorithm" data-algorithm="get-input-pose">
+<div class="algorithm" data-algorithm="get-pose">
 
-When the <dfn method for="XRFrame">getInputPose(|inputSource|, |referenceSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
+When the <dfn method for="XRFrame">getPose(|space|, |relativeTo|)</dfn> method is invoked, the user agent MUST run the following steps:
 
   1. If the {{XRFrame}}'s [=active=] boolean is <code>false</code>, throw a {{InvalidStateError}} and abort these steps.
   1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
-  1. If |referenceSpace|'s [=XRSpace/session=] does not equal |session|, return <code>null</code> and abort these steps.
-  1. If |inputSource|'s pose cannot be determined relative to |referenceSpace|, return <code>null</code>
-  1. Return a new {{XRInputPose}} describing |inputSource|'s pose relative to the origin of |referenceSpace|.
+  1. If |space|'s [=XRSpace/session=] does not equal |session|, return <code>null</code> and abort these steps.
+  1. If |relativeTo|'s [=XRSpace/session=] does not equal |session|, return <code>null</code> and abort these steps.
+  1. If |space|'s pose cannot be determined relative to |relativeTo|, return <code>null</code>
+  1. Return a new {{XRPose}} describing |space|'s pose relative to the origin of |relativeTo|.
 
 </div>
 
@@ -661,25 +662,15 @@ Spaces {#spaces}
 XRSpace {#xrspace-interface}
 ------------------
 
-An {{XRSpace}} describes an entity that is tracked by the [=/XR device=]'s tracking systems. {{XRSpace}}s MAY NOT have a fixed spatial relationship to one another or to any given {{XRReferenceSpace}}. The transform between two {{XRSpace}} can be evaluated by calling the {{getTransformTo()}} method every [=XR animation frame=].
+An {{XRSpace}} describes an entity that is tracked by the [=/XR device=]'s tracking systems. {{XRSpace}}s MAY NOT have a fixed spatial relationship to one another or to any given {{XRReferenceSpace}}. The transform between two {{XRSpace}} can be evaluated by calling an {{XRFrame}}'s {{XRFrame/getPose()}} method. The interface is intentionally opaque.
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRSpace : EventTarget {
-  XRRigidTransform? getTransformTo(XRSpace other);
+  
 };
 </pre>
 
 Each {{XRSpace}} has a <dfn for="XRSpace">session</dfn> which is set to the {{XRSession}} that created the {{XRSpace}.
-
-<div class="algorithm" data-algorithm="get-transform-to">
-
-When the <dfn method for="XRSpace">getTransformTo(|other|)</dfn> method is invoked, the user agent MUST run the following steps:
-
-  1. Let |current| be the target {{XRSpace}} object.
-  1. If a known transform exists from the space described by |current| to the space described by |other|, return it as an {{XRRigidTransform}}.
-  1. Else return <code>null</code>
-
-</div>
 
 XRReferenceSpace {#xrreferencespace-interface}
 ------------------
@@ -983,23 +974,36 @@ NOTE: The {{XRRay}}'s {{XRRay/matrix}} can be used to easily position graphical 
 Pose {#pose}
 ====
 
+XRPose {#xrpose-interface}
+------
+
+An {{XRPose}} describes a position and orientation in space relative to an {{XRSpace}}.
+
+<pre class="idl">
+[SecureContext, Exposed=Window] interface XRPose {
+  readonly attribute XRRigidTransform transform;
+  readonly attribute boolean emulatedPosition;
+};
+</pre>
+
+The <dfn attribute for="XRPose">transform</dfn> attribute describes the {{XRRigidTransform}} between two {{XRSpace}}.
+
+The <dfn attribute for="XRPose">emulatedPosition</dfn> attribute indicates the accuracy of the {{XRPose/transform}}.{{XRRigidTransform/position}} value. {{XRPose/emulatedPosition}} MUST be set to <code>true</code> if the given positional values are software estimations, such as those provided by a neck or arm model. {{XRPose/emulatedPosition}} MUST be set to <code>false</code> if the positional values are based on sensor readings.
+
 XRViewerPose {#xrviewerpose-interface}
 -------------
 
-An {{XRViewerPose}} describes the state of a <dfn>viewer</dfn> of the XR scene as tracked by the [=/XR device=]. A [=viewer=] may represent a tracked piece of hardware, the observed position of a users head relative to the hardware, or some other means of computing a series of viewpoints into the XR scene. The {{XRViewerPose}} describes the position and orientation of the [=viewer=] relative to the {{XRReferenceSpace}} it was queried with, as well as an array of [=view=]s, which include view and projection matrices. These matrices should be used by the application when render a frame of an XR scene.
+An {{XRViewerPose}} is an {{XRPose}} describing the state of a <dfn>viewer</dfn> of the XR scene as tracked by the [=/XR device=]. A [=viewer=] may represent a tracked piece of hardware, the observed position of a users head relative to the hardware, or some other means of computing a series of viewpoints into the XR scene. {{XRViewerPose}}s can only be queried relative to an {{XRReferenceSpace}}. It provides, in addition to the {{XRPose}} values, an array of [=view=]s which include view and projection matrices. These matrices should be used by the application when render a frame of an XR scene.
 
 <pre class="idl">
-[SecureContext, Exposed=Window] interface XRViewerPose {
-  readonly attribute XRRigidTransform transform;
+[SecureContext, Exposed=Window] interface XRViewerPose : XRPose {
   readonly attribute FrozenArray&lt;XRView&gt; views;
 };
 </pre>
 
-The <dfn attribute for="XRViewerPose">transform</dfn> is the {{XRRigidTransform}} of the [=viewer=] relative to the origin of the {{XRReferenceSpace}} the {{XRViewerPose}} was queried with.
-
-NOTE: The {{XRViewerPose/transform}} can be used to position graphical representations of the [=viewer=] for spectator views of the scene or multi-user interaction.
-
 The <dfn attribute for="XRViewerPose">views</dfn> array is a sequence of {{XRView}}s describing the viewpoints of the XR scene, relative to the {{XRReferenceSpace}} the {{XRViewerPose}} was queried with. Every [=view=] of the XR scene in the array must be rendered in order to display correctly on the [=/XR device=]. Each {{XRView}} includes view and projection matrices, and can be used to query {{XRViewport}}s from layers when needed.
+
+NOTE: The {{XRViewerPose}}'s {{XRPose/transform}} can be used to position graphical representations of the [=viewer=] for spectator views of the scene or multi-user interaction.
 
 Input {#input}
 =====
@@ -1025,6 +1029,8 @@ enum XRTargetRayMode {
 interface XRInputSource {
   readonly attribute XRHandedness handedness;
   readonly attribute XRTargetRayMode targetRayMode;
+  readonly attribute XRSpace targetRaySpace;
+  readonly attribute XRSpace? gripSpace;
 };
 </pre>
 
@@ -1039,30 +1045,12 @@ The <dfn attribute for="XRInputSource">targetRayMode</dfn> attribute describes t
   - <dfn enum-value for="XRTargetRayMode">screen</dfn> indicates that the input source was an interaction with the canvas element associated with a inline session's output context, such as a mouse click or touch event.
 
 Note: Some input sources, like an {{XRInputSource}} with {{targetRayMode}} set to {{screen}}, will only be added to the session's [=list of active input sources=] immediately before the {{selectstart}} event, and removed from the session's [=list of active input sources=] immediately after the {{selectend}} event.
-</section>
 
-<section class="unstable">
-XRInputPose {#xrinputpose-interface}
--------------
+The <dfn attribute for="XRInputSource">targetRaySpace</dfn> attribute is an {{XRSpace}} that tracks the pose of the preferred pointing ray of the {{XRInputSource}}, as defined by the {{targetRayMode}}.
 
-<pre class="idl">
-[SecureContext, Exposed=Window]
-interface XRInputPose {
-  readonly attribute boolean emulatedPosition;
-  readonly attribute XRRay targetRay;
-  readonly attribute XRRigidTransform? gripTransform;
-};
-</pre>
+The <dfn attribute for="XRInputSource">gripSpace</dfn> attribute is an {{XRSpace}} that tracks the transform that should be used to render virtual objects such that they appear to be held in the user's hand. If the user were to hold a straight rod, this {{XRSpace}} places the origin at the centroid of their curled fingers and where the <code>-Z</code> axis points along the length of the rod towards their thumb. The <code>X</code> axis is perpendicular to the back of the hand being described, with back of the users right hand pointing towards <code>+X</code> and the back of the user's left hand pointing towards <code>-X</code>. The <code>Y</code> axis is implied by the relationship between the <code>X</code> and <code>Z</code> axis, with <code>+Y</code> roughly pointing in the direction of the user's arm.
 
-The <dfn attribute for="XRInputPose">targetRay</dfn> describes the preferred pointing ray of the {{XRInputSource}}, as defined by the {{targetRayMode}}.
-
-The <dfn attribute for="XRInputPose">gripTransform</dfn> MUST describe a transform to a space which, if the user were to hold a straight rod in their hand their hand, places the origin at the centroid of their curled fingers and where the <code>-Z</code> axis points along the rod towards their thumb. The <code>X</code> axis is perpendicular to the back of the hand being described, with back of the users right hand pointing towards <code>+X</code> and the back of the user's left hand pointing towards <code>-X</code>. The <code>Y</code> axis is implied by the relationship between the <code>X</code> and <code>Z</code> axis, with <code>+Y</code> roughly pointing in the direction of the user's arm. 
-
-The {{gripTransform}} MAY represent an emulated translation or rotation if the input source's cannot supply full [=6DoF=] tracking.
-
-The {{gripTransform}} MUST be `null` if the input source isn't trackable. 
-
-The <dfn attribute for="XRInputPose">emulatedPosition</dfn> attribute indicates the accuracy of the {{XRRay/origin}} of the {{XRInputPose/targetRay}} and {{XRRigidTransform/position}} of the {{XRInputPose/gripTransform}}. {{XRInputPose/emulatedPosition}} MUST be set to <code>true</code> if positional values are software estimations, such as those provided by a neck or arm model. {{XRInputPose/emulatedPosition}} MUST be set to <code>false</code> if the positional values are based on sensor readings.
+The {{gripSpace}} MUST be `null` if the input source isn't trackable.
 </section>
 
 Layers {#layers}
