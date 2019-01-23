@@ -364,7 +364,7 @@ The <dfn method for="XRSession">end()</dfn> method provides a way to manually sh
 
 </div>
 
-Each {{XRSession}} has an <dfn>active render state</dfn> which is a new {{XRRenderState}}, a <dfn>list of pending render states</dfn>, which is initially empty, and a <dfn>render state suspended</dfn> boolean, which is initially <code>false</code>.
+Each {{XRSession}} has an <dfn>active render state</dfn> which is a new {{XRRenderState}}, a <dfn>list of pending render states</dfn>, which is initially empty.
 
 The <dfn attribute for="XRSession">renderState</dfn> attribute returns the {{XRSession}}'s [=active render state=].
 
@@ -374,11 +374,8 @@ When the <dfn method for="XRSession">updateRenderState(|newState|)</dfn> method 
 
   1. Let |session| be the target {{XRSession}}.
   1. Append |newState| to |session|'s [=list of pending render states=] associated with |promise|.
-  1. If |session|'s [=render state suspended=] boolean is <code>false</code>, [=apply pending render states=].
 
 </div>
-
-NOTE: The check against [=render state suspended=] ensures the [=active render state=] of an {{XRSession}} is constant for the full duration of an [=XR animation frame=], but otherwise applies immediately. 
 
 <div class="algorithm" data-algorithm="apply-pending-render-states">
 
@@ -388,15 +385,12 @@ When requested, the {{XRSession}} MUST <dfn>apply pending render states</dfn> by
   1. Let |activeState| be |session|'s [=active render state=].
   1. Let |pendingStates| be |session|'s [=list of pending render states=].
   1. Set |session|'s [=list of pending render states=] to the empty list.
-  1. Set |session|'s [=render state suspended=] to <code>true</code>.
   1. For each entry in |pendingStates|:
     1. Let |newState| be the {{XRRenderStateInit}} associated with the entry.
     1. If |newState|'s {{XRRenderStateInit/depthNear}} value is set, set |activeState|'s {{XRRenderState/depthNear}} to |newState|'s {{XRRenderStateInit/depthNear}}.
     1. If |newState|'s {{XRRenderStateInit/depthFar}} value is set, set |activeState|'s {{XRRenderState/depthFar}} to |newState|'s {{XRRenderStateInit/depthFar}}.
     1. If |newState|'s {{XRRenderStateInit/baseLayer}} is set, set |activeState|'s {{XRRenderState/baseLayer}} to |newState|'s {{XRRenderStateInit/baseLayer}}.
     1. [=/Resolve=] the promise associated with the entry.
-  1. Set |session|'s [=render state suspended=] to <code>false</code>.
-  1. If |session|'s [=list of pending render states=] is not empty, [=apply pending render states=].
 
 </div>
 
@@ -496,7 +490,7 @@ There are multiple values that developers can configure which affect how the ses
 dictionary XRRenderStateInit {
   double depthNear;
   double depthFar;
-  XRLayer baseLayer;
+  XRLayer? baseLayer;
 };
 
 [SecureContext, Exposed=Window] interface XRRenderState {
@@ -553,19 +547,17 @@ When the <dfn method for="XRSession">cancelAnimationFrame(|handle|)</dfn> method
 
 <div class="algorithm" data-algorithm="run-animation-frames">
 
-When an {{XRSession}} |session| receives updated [=viewer=] state from the [=XR device=], it runs an <dfn>XR animation frame</dfn> with a timestamp |now| and an {{XRFrame}} |frame|, which MUST run the following steps:
+When an {{XRSession}} |session| receives updated [=viewer=] state from the [=XR device=], it runs an <dfn>XR animation frame</dfn> with a timestamp |now| and an {{XRFrame}} |frame|, which MUST run the following steps regardless of if the [=list of animation frame callbacks=] is empty or not:
 
   1. Let |callbacks| be a list of the entries in |session|'s [=list of animation frame callback=], in the order in which they were added to the list.
+  1. If |session|'s [=list of pending render states=] is not empty, [=apply pending render states=].
   1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
-  1. Set |session|'s [=render state suspended=] to <code>true</code>.
   1. Set |frame|'s [=active=] boolean to <code>true</code>.
   1. For each entry in |callbacks|, in order:
     1. If the entry's [=cancelled=] boolean is <code>true</code>, continue to the next entry.
     1. [=Invoke the Web IDL callback function=], passing |now| and |frame| as the  arguments
     1. If an exception is thrown, [=report the exception=].
   1. Set |frame|'s [=active=] boolean to <code>false</code>.
-  1. Set |session|'s [=render state suspended=] to <code>false</code>.
-  1. If |session|'s [=list of pending render states=] is not empty, [=apply pending render states=].
 
 </div>
 
