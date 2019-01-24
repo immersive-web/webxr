@@ -159,7 +159,7 @@ function onSessionStarted(session) {
 
 ### Setting up an XRLayer
 
-The content to present to the device is defined by an `XRLayer`. In the initial version of the spec only one layer type, `XRWebGLLayer`, is defined and only one layer can be used at a time. This is set via the `XRSession`'s `updateRenderState()` function. `updateRenderState()` takes a dictionary containing new values for a variety of options affecting the session's rendering, including `baseLayer`. Only the options specified in the dictionary are updated, and a `renderstatechange` event is fired on the session when the new values take effect.
+The content to present to the device is defined by an `XRLayer`. In the initial version of the spec only one layer type, `XRWebGLLayer`, is defined and only one layer can be used at a time. This is set via the `XRSession`'s `updateRenderState()` function. `updateRenderState()` takes a dictionary containing new values for a variety of options affecting the session's rendering, including `baseLayer`. Only the options specified in the dictionary are updated.
 
 Future iterations of the spec will define new types of `XRLayer`s. For example: a new layer type would be added to enable use with any new graphics APIs that get added to the browser. The ability to use multiple layers at once and have them composited by the UA will likely also be added in a future API revision.
 
@@ -586,7 +586,6 @@ dictionary XRSessionCreationOptions {
   attribute EventHandler onblur;
   attribute EventHandler onfocus;
   attribute EventHandler onend;
-  attribute EventHandler onrenderstatechange;
 
   void updateRenderState(optional XRRenderStateInit state);
 
