@@ -307,7 +307,7 @@ enum XREnvironmentBlendMode {
   readonly attribute XRRenderState renderState;
 
   // Methods
-  Promise&lt;void&gt; updateRenderState(optional XRRenderStateInit state);
+  void updateRenderState(optional XRRenderStateInit state);
   Promise&lt;XRReferenceSpace&gt; requestReferenceSpace(XRReferenceSpaceOptions options);
 
   FrozenArray&lt;XRInputSource&gt; getInputSources();
@@ -325,6 +325,7 @@ enum XREnvironmentBlendMode {
   attribute EventHandler oninputsourceschange;
   attribute EventHandler onselectstart;
   attribute EventHandler onselectend;
+  attribute EventHandler onrenderstatechange;
 };
 </pre>
 
@@ -370,10 +371,9 @@ The <dfn attribute for="XRSession">renderState</dfn> attribute returns the {{XRS
 
 <div class="algorithm" data-algorithm="update-render-state">
 
-When the <dfn method for="XRSession">updateRenderState(|newState|)</dfn> method is invoked, the user agent MUST return [=a new Promise=] |promise| and run the following steps [=in parallel=]:
+When the <dfn method for="XRSession">updateRenderState(|newState|)</dfn> method is invoked, the user agent MUST run the following steps:
 
-  1. Let |session| be the target {{XRSession}}.
-  1. Append |newState| to |session|'s [=list of pending render states=] associated with |promise|.
+  1. Append |newState| to the target {{XRSession}}'s [=list of pending render states=].
 
 </div>
 
@@ -385,12 +385,11 @@ When requested, the {{XRSession}} MUST <dfn>apply pending render states</dfn> by
   1. Let |activeState| be |session|'s [=active render state=].
   1. Let |pendingStates| be |session|'s [=list of pending render states=].
   1. Set |session|'s [=list of pending render states=] to the empty list.
-  1. For each entry in |pendingStates|:
-    1. Let |newState| be the {{XRRenderStateInit}} associated with the entry.
+  1. For each |newState| in |pendingStates|:
     1. If |newState|'s {{XRRenderStateInit/depthNear}} value is set, set |activeState|'s {{XRRenderState/depthNear}} to |newState|'s {{XRRenderStateInit/depthNear}}.
     1. If |newState|'s {{XRRenderStateInit/depthFar}} value is set, set |activeState|'s {{XRRenderState/depthFar}} to |newState|'s {{XRRenderStateInit/depthFar}}.
     1. If |newState|'s {{XRRenderStateInit/baseLayer}} is set, set |activeState|'s {{XRRenderState/baseLayer}} to |newState|'s {{XRRenderStateInit/baseLayer}}.
-    1. [=/Resolve=] the promise associated with the entry.
+  1. Fire an {{XRSessionEvent}} event named {{renderstatechange}} on |session|.
 
 </div>
 
@@ -435,6 +434,8 @@ The <dfn attribute for="XRSession">oninputsourceschange</dfn> attribute is an [=
 The <dfn attribute for="XRSession">onselectstart</dfn> attribute is an [=Event handler IDL attribute=] for the {{selectstart}} event type.
 
 The <dfn attribute for="XRSession">onselectend</dfn> attribute is an [=Event handler IDL attribute=] for the {{selectend}} event type.
+
+The <dfn attribute for="XRSession">onrenderstatechange</dfn> attribute is an [=Event handler IDL attribute=] for the {{renderstatechange}} event type.
 
 The <dfn attribute for="XRSession">onselect</dfn> attribute is an [=Event handler IDL attribute=] for the {{XRSession/select}} event type.
 
@@ -1426,6 +1427,8 @@ A user agent MUST dispatch a <dfn event for="XRSession">selectstart</dfn> event 
 A user agent MUST dispatch a <dfn event for="XRSession">selectend</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s ends its [=primary action=] or when an {{XRInputSource}} that has begun a [=primary action=] is disconnected. The event MUST be of type {{XRInputSourceEvent}}.
 
 A user agent MUST dispatch a <dfn event for="XRSession">select</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s has fully completed a [=primary action=]. The event MUST be of type {{XRInputSourceEvent}}.
+
+A user agent MUST dispatch a <dfn event for="XRSession">renderstatechange</dfn> event on an {{XRSession}} when its [=active render state=] has been updated. The event MUST be of type {{XRSessionEvent}}.
 
 A user agent MUST dispatch a <dfn event for="XRReferenceSpace">reset</dfn> event on an {{XRReferenceSpace}} when discontinuities of the origin occur. (That is, significant changes in the origin's position or orientation relative to the user's environment.) It also fires when the {{boundsGeometry}} changes for a {{XRBoundedReferenceSpace}}. The event MUST be of type {{XRReferenceSpaceEvent}}, and MUST be dispatched prior to the execution of any [=XR animation frame=]s that make use of the new origin.
 

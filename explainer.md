@@ -159,7 +159,7 @@ function onSessionStarted(session) {
 
 ### Setting up an XRLayer
 
-The content to present to the device is defined by an `XRLayer`. In the initial version of the spec only one layer type, `XRWebGLLayer`, is defined and only one layer can be used at a time. This is set via the `XRSession`'s `updateRenderState()` function. `updateRenderState()` takes a dictionary containing new values for a variety of options affecting the session's rendering, including `baseLayer`. Only the options specified in the dictionary are updated, and a promise is returned that resolves when the new values take effect.
+The content to present to the device is defined by an `XRLayer`. In the initial version of the spec only one layer type, `XRWebGLLayer`, is defined and only one layer can be used at a time. This is set via the `XRSession`'s `updateRenderState()` function. `updateRenderState()` takes a dictionary containing new values for a variety of options affecting the session's rendering, including `baseLayer`. Only the options specified in the dictionary are updated, and a `renderstatechange` event is fired on the session when the new values take effect.
 
 Future iterations of the spec will define new types of `XRLayer`s. For example: a new layer type would be added to enable use with any new graphics APIs that get added to the browser. The ability to use multiple layers at once and have them composited by the UA will likely also be added in a future API revision.
 
@@ -180,7 +180,7 @@ function setupWebGLLayer() {
   return gl.makeXRCompatible().then(() => {
     // The content that will be shown on the device is defined by the session's
     // baseLayer.
-    return xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(xrSession, gl) });
+    xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(xrSession, gl) });
   });
 }
 ```
@@ -203,7 +203,7 @@ The WebXR Device API provides information about the current frame to be rendered
 
 A new `XRFrame` is created for each batch of `requestAnimationFrame()` callbacks or for certain events that are associated with tracking data. `XRFrame` objects act as snapshots of the state of the XR device and all associated inputs. The state may represent historical data, current sensor readings, or a future projection. Due to it's time-sensitive nature, an `XRFrame` is only valid during the execution of the callback that it is passed into, and once control is returned to the browser any active `XRFrame` objects are marked as inactive. Calling any method of an inactive `XRFrame` will throw an [`InvalidStateError`](https://heycam.github.io/webidl/#invalidstateerror).
 
-The `XRFrame` also makes a copy of the  `XRSession`'s `renderState`, such as `depthNear/Far` values and the `baseLayer`, at the time the first `requestAnimationFrame()` call in the current batch was made. This captured `renderState` is what will be used when computing view information like projection matrices and when the frame is being composited by the XR hardware. Any subsequent calls the developer makes to `updateRenderState()` will not be applied until the the next `XRFrame` is created.
+The `XRFrame` also makes a copy of the  `XRSession`'s `renderState`, such as `depthNear/Far` values and the `baseLayer`, just prior to the `requestAnimationFrame()` callbacks in the current batch being called. This captured `renderState` is what will be used when computing view information like projection matrices and when the frame is being composited by the XR hardware. Any subsequent calls the developer makes to `updateRenderState()` will not be applied until the next `XRFrame`'s callbacks are processed.
 
 The timestamp provided is acquired using identical logic to the [processing of `window.requestAnimationFrame()` callbacks](https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#run-the-animation-frame-callbacks). This means that the timestamp is a `DOMHighResTimeStamp` set to the current time when the frame's callbacks begin processing. Multiple callbacks in a single frame will receive the same timestamp, even though time has elapsed during the processing of previous callbacks. In the future if additional, XR-specific timing information is identified that the API should provide it is recommended that it be via the `XRFrame` object.
 
@@ -441,7 +441,7 @@ function setupWebGLLayer() {
   return gl.makeXRCompatible().then(() => {
     // Create a WebGL layer with a slightly lower than default resolution.
     let glLayer = new XRWebGLLayer(xrSession, gl, { framebufferScaleFactor: 0.8 });
-    return xrSession.updateRenderState({ baseLayer: glLayer });
+    xrSession.updateRenderState({ baseLayer: glLayer });
   });
 ```
 
@@ -453,7 +453,7 @@ function setupNativeScaleWebGLLayer() {
     // Create a WebGL layer that matches the device's native resolution.
     let nativeScaleFactor = XRWebGLLayer.getNativeFramebufferScaleFactor(xrSession);
     let glLayer = new XRWebGLLayer(xrSession, gl, { framebufferScaleFactor: nativeScaleFactor });
-    return xrSession.updateRenderState({ baseLayer: glLayer });
+    xrSession.updateRenderState({ baseLayer: glLayer });
   });
 ```
 
@@ -586,8 +586,9 @@ dictionary XRSessionCreationOptions {
   attribute EventHandler onblur;
   attribute EventHandler onfocus;
   attribute EventHandler onend;
+  attribute EventHandler onrenderstatechange;
 
-  Promise<void> updateRenderState(optional XRRenderStateInit state);
+  void updateRenderState(optional XRRenderStateInit state);
 
   long requestAnimationFrame(XRFrameRequestCallback callback);
   void cancelAnimationFrame(long handle);
