@@ -683,8 +683,15 @@ enum XRReferenceSpaceType {
   "unbounded"
 };
 
+enum XRStationaryReferenceSpaceSubtype {
+  "eye-level",
+  "floor-level",
+  "position-disabled"
+};
+
 dictionary XRReferenceSpaceOptions {
   required XRReferenceSpaceType type;
+  XRStationaryReferenceSpaceSubtype subtype;
 };
 
 [SecureContext, Exposed=Window] interface XRReferenceSpace : XRSpace {
@@ -715,7 +722,9 @@ When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a ref
   1. Let |options| be the {{XRReferenceSpaceOptions}} passed to {{requestReferenceSpace()}}.
   1. Let |type| be set to |options| {{XRReferenceSpaceOptions/type}}.
   1. Let |referenceSpace| be set to <code>null</code>.
-  1. If |type| is {{stationary}}, let |referenceSpace| be a new {{XRStationaryReferenceSpace}} with a {{XRStationaryReferenceSpace/subtype}} of |options| {{XRStationaryReferenceSpaceOptions/subtype}}.
+  1. If |type| is {{stationary}} and |options| does not have a {{XRReferenceSpaceOptions/subtype}} field, throw {{TypeError}}.
+  1. Else if |type| is {{bounded}} or {{unbounded}} and |options| has a {{XRReferenceSpaceOptions/subtype}} field, throw a {{TypeError}}.
+  1. If |type| is {{stationary}}, let |referenceSpace| be a new {{XRStationaryReferenceSpace}} with a {{XRStationaryReferenceSpace/subtype}} of |options| {{XRReferenceSpaceOptions/subtype}}.
   1. Else if |type| is {{bounded}}, let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
   1. Else if |type| is {{unbounded}}, let |referenceSpace| be a new {{XRUnboundedReferenceSpace}}.
   1. Return |referenceSpace|.
@@ -730,16 +739,6 @@ XRStationaryReferenceSpace {#xrstationaryreferencespace-interface}
 An {{XRStationaryReferenceSpace}} represents a tracking space that the user is not expected to move around within. Tracking in a {{stationary}} reference space is optimized for the assumption that the user will not move much beyond their starting point, if at all. For devices with [=6DoF=] tracking, {{stationary}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
 
 <pre class="idl">
-enum XRStationaryReferenceSpaceSubtype {
-  "eye-level",
-  "floor-level",
-  "position-disabled"
-};
-
-dictionary XRStationaryReferenceSpaceOptions : XRReferenceSpaceOptions {
-  required XRStationaryReferenceSpaceSubtype subtype;
-};
-
 [SecureContext, Exposed=Window]
 interface XRStationaryReferenceSpace : XRReferenceSpace {
   readonly attribute XRStationaryReferenceSpaceSubtype subtype;
