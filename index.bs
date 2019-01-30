@@ -1297,7 +1297,9 @@ XRPresentationContext {#xrpresentationcontext-interface}
 };
 </pre>
 
-<dfn attribute for="XRPresentationContext">canvas</dfn>
+Each {{XRPresentationContext}} has an associated <dfn attribute for="XRPresentationContext">canvas</dfn> which is an {{HTMLCanvasElement}} set during creation.
+
+When the {{HTMLCanvasElement/getContext()}} method of an {{HTMLCanvasElement}} |canvas| is to return a new object for the <var ignore>contextId</var> <code>present-xr</code>, the user agent must return an {{XRPresentationContext}} with {{XRPresentationContext/canvas}} set to |canvas|.
 
 Events {#events}
 ========
