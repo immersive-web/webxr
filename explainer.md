@@ -624,14 +624,14 @@ dictionary XRRenderStateInit {
   double depthNear;
   double depthFar;
   XRLayer? baseLayer;
-  XRPresentationContext outputContext
+  XRPresentationContext? outputContext
 };
 
 [SecureContext, Exposed=Window] interface XRRenderState {
   readonly attribute double depthNear;
   readonly attribute double depthFar;
   readonly attribute XRLayer? baseLayer;
-  readonly attribute XRPresentationContext outputContext;
+  readonly attribute XRPresentationContext? outputContext;
 };
 
 //
