@@ -30,14 +30,6 @@ Custom Warning Text:
 <pre class="anchors">
 urlPrefix: http://www.w3.org/TR/hr-time/
     type: typedef; text: DOMHighResTimeStamp; url: dom-domhighrestimestamp
-urlPrefix: https://html.spec.whatwg.org/multipage/system-state.html
-    type: interface; text: Navigator
-urlPrefix: https://www.w3.org/TR/html51/webappapis.html
-    type: typedef; text: EventHandler; url:#typedefdef-eventhandler
-urlPrefix: https://www.w3.org/TR/html5/semantics-scripting.html
-    type: interface; text: HTMLCanvasElement
-urlPrefix: https://www.w3.org/TR/html5/
-    type: dfn; text: infrastructure.html#dispatch
 urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: interface; text: WebGLFramebuffer; url: WebGLFramebuffer
     type: interface; text: WebGLRenderingContext; url: WebGLRenderingContext
@@ -59,9 +51,6 @@ urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: dfn; text: Restore the context; url: #restore-the-drawing-buffer
 urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/2.0/
     type: interface; text: WebGL2RenderingContext; url: WebGL2RenderingContext
-urlPrefix: https://drafts.fxtf.org/geometry/
-    type: interface; text: DOMMatrix
-    type: interface; text: DOMPointReadOnly
 urlPrefix: https://w3c.github.io/orientation-sensor/; spec: ORIENTATION-SENSOR
     type: interface; text: AbsoluteOrientationSensor
     type: interface; text: RelativeOrientationSensor
@@ -69,11 +58,6 @@ urlPrefix: https://w3c.github.io/orientation-sensor/; spec: ORIENTATION-SENSOR
 spec: WebIDL; urlPrefix: https://www.w3.org/TR/WebIDL-1/#
     type: dfn
         text: invoke the Web IDL callback function; url:es-invoking-callback-functions
-spec: Feature Policy; urlPrefix: https://w3c.github.io/webappsec-feature-policy/#
-    type: dfn
-        text: default allowlist
-        text: policy-controlled feature
-        text: feature identifier
 </pre>
 
 <style>
@@ -1457,7 +1441,7 @@ Feature Policy {#feature-policy}
 --------------
 This specification defines a [=policy-controlled feature=] that controls whether the {{Navigator/xr}} attribute is exposed on the {{Navigator}} object.
 
-The [=feature identifier=] for this feature is <code>"xr"</code>.
+The feature identifier for this feature is <code>"xr"</code>.
 
 The [=default allowlist=] for this feature is <code>["self"]</code>.
 
