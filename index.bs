@@ -29,7 +29,7 @@ Custom Warning Text:
 
 <pre class="anchors">
 urlPrefix: http://www.w3.org/TR/hr-time/
-    type: typedef; text: DOMHighResTimeStamp
+    type: typedef; text: DOMHighResTimeStamp; url: dom-domhighrestimestamp
     type: dfn; text: timestamp origin
 urlPrefix: https://html.spec.whatwg.org/multipage/system-state.html
     type: interface; text: Navigator
@@ -43,28 +43,28 @@ urlPrefix: https://www.w3.org/TR/html5/semantics-scripting.html
     type: interface; text: HTMLCanvasElement
 urlPrefix: https://www.w3.org/TR/html5/
     type: interface; text: Document
-    type: dfn; text: dispatch
+    type: dfn; text: infrastructure.html#dispatch
 urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
-    type: interface; text: WebGLFramebuffer
-    type: interface; text: WebGLRenderingContext
-    type: interface; text: WebGLRenderingContextBase
-    type: typedef; text: INVALID_OPERATION
-    type: typedef; text: INVALID_FRAMEBUFFER_OPERATION
-    type: typedef; text: FRAMEBUFFER_UNSUPPORTED
-    type: method; text: uniformMatrix4fv
-    type: method; text: framebufferTexture2D
-    type: method; text: framebufferRenderbuffer
-    type: method; text: getFramebufferAttachmentParameter
-    type: method; text: getRenderbufferParameter
-    type: method; text: checkFramebufferStatus
-    type: dictionary; text: WebGLContextAttributes
+    type: interface; text: WebGLFramebuffer; url: WebGLFramebuffer
+    type: interface; text: WebGLRenderingContext; url: WebGLRenderingContext
+    type: interface; text: WebGLRenderingContextBase; url: WebGLRenderingContextBase
+    type: typedef; text: INVALID_OPERATION; url: WebGLRenderingContextBase
+    type: typedef; text: INVALID_FRAMEBUFFER_OPERATION; url: WebGLRenderingContextBase
+    type: typedef; text: FRAMEBUFFER_UNSUPPORTED; url: WebGLRenderingContextBase
+    type: method; text: uniformMatrix4fv; url: 5.14.10
+    type: method; text: framebufferTexture2D;  url: 5.14.6
+    type: method; text: framebufferRenderbuffer;  url: 5.14.6
+    type: method; text: getFramebufferAttachmentParameter;  url: 5.14.6
+    type: method; text: getRenderbufferParameter;  url: 5.14.7
+    type: method; text: checkFramebufferStatus;  url: 5.14.6
+    type: dictionary; text: WebGLContextAttributes; url: WebGLContextAttributes
     type: dfn; text: Create the WebGL context; url:#2.1
     type: dfn; text: WebGL viewport; url:#5.14.4
     type: dfn; text: WebGL context lost flag; url:#webgl-context-lost-flag
     type: dfn; text: handle the context loss; url:#CONTEXT_LOST
     type: dfn; text: Restore the context; url: #restore-the-drawing-buffer
 urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/2.0/
-    type: interface; text: WebGL2RenderingContext
+    type: interface; text: WebGL2RenderingContext; url: WebGL2RenderingContext
 urlPrefix: https://drafts.fxtf.org/geometry/
     type: interface; text: DOMMatrix
     type: interface; text: DOMPointReadOnly
@@ -80,11 +80,11 @@ spec: WebIDL; urlPrefix: https://www.w3.org/TR/WebIDL-1/#
     type: dfn
         text: invoke the Web IDL callback function; url:es-invoking-callback-functions
 
-spec: Feature Policy; urlPrefix: https://wicg.github.io/feature-policy/#
+spec: Feature Policy; urlPrefix: https://w3c.github.io/webappsec-feature-policy/#
     type: dfn
         text: default allowlist
-        text: feature
-        text: feature name
+        text: feature; url: policy-controlled-feature
+        text: feature name; url: feature-identifier
 </pre>
 
 <style>
