@@ -30,19 +30,13 @@ Custom Warning Text:
 <pre class="anchors">
 urlPrefix: http://www.w3.org/TR/hr-time/
     type: typedef; text: DOMHighResTimeStamp; url: dom-domhighrestimestamp
-    type: dfn; text: timestamp origin
 urlPrefix: https://html.spec.whatwg.org/multipage/system-state.html
     type: interface; text: Navigator
-urlPrefix: https://wiki.whatwg.org/wiki/OffscreenCanvas
-    type: typedef; text: OffscreenCanvas
-    type: dfn; text: offscreen canvas
 urlPrefix: https://www.w3.org/TR/html51/webappapis.html
-    type: dfn; text: window.requestAnimationFrame
     type: typedef; text: EventHandler; url:#typedefdef-eventhandler
 urlPrefix: https://www.w3.org/TR/html5/semantics-scripting.html
     type: interface; text: HTMLCanvasElement
 urlPrefix: https://www.w3.org/TR/html5/
-    type: interface; text: Document
     type: dfn; text: infrastructure.html#dispatch
 urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: interface; text: WebGLFramebuffer; url: WebGLFramebuffer
@@ -72,14 +66,9 @@ urlPrefix: https://w3c.github.io/orientation-sensor/; spec: ORIENTATION-SENSOR
     type: interface; text: AbsoluteOrientationSensor
     type: interface; text: RelativeOrientationSensor
 
-spec: ECMAScript; urlPrefix: https://tc39.github.io/ecma262/#
-    type: interface
-        text: Promise; url:sec-promise-objects
-
 spec: WebIDL; urlPrefix: https://www.w3.org/TR/WebIDL-1/#
     type: dfn
         text: invoke the Web IDL callback function; url:es-invoking-callback-functions
-
 spec: Feature Policy; urlPrefix: https://w3c.github.io/webappsec-feature-policy/#
     type: dfn
         text: default allowlist
