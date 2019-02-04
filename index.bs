@@ -83,8 +83,8 @@ spec: WebIDL; urlPrefix: https://www.w3.org/TR/WebIDL-1/#
 spec: Feature Policy; urlPrefix: https://w3c.github.io/webappsec-feature-policy/#
     type: dfn
         text: default allowlist
-        text: feature; url: policy-controlled-feature
-        text: feature name; url: feature-identifier
+        text: policy-controlled feature
+        text: feature identifier
 </pre>
 
 <style>
@@ -1466,9 +1466,9 @@ Integrations {#integrations}
 
 Feature Policy {#feature-policy}
 --------------
-This specification defines a [=feature=] that controls whether the {{Navigator/xr}} attribute is exposed on the {{Navigator}} object.
+This specification defines a [=policy-controlled feature=] that controls whether the {{Navigator/xr}} attribute is exposed on the {{Navigator}} object.
 
-The [=feature name=] for this feature is <code>"xr"</code>.
+The [=feature identifier=] for this feature is <code>"xr"</code>.
 
 The [=default allowlist=] for this feature is <code>["self"]</code>.
 
