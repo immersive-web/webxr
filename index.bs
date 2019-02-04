@@ -28,7 +28,7 @@ Custom Warning Text:
 </pre>
 
 <pre class="anchors">
-urlPrefix: http://www.w3.org/TR/hr-time/
+urlPrefix: https://www.w3.org/TR/hr-time/
     type: typedef; text: DOMHighResTimeStamp; url: dom-domhighrestimestamp
 urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: interface; text: WebGLFramebuffer; url: WebGLFramebuffer
