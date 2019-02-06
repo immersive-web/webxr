@@ -523,8 +523,9 @@ When the <dfn method for="XRSession">cancelAnimationFrame(|handle|)</dfn> method
 
 When an {{XRSession}} |session| receives updated [=viewer=] state from the [=XR device=], it runs an <dfn>XR animation frame</dfn> with a timestamp |now| and an {{XRFrame}} |frame|, which MUST run the following steps regardless of if the [=list of animation frame callbacks=] is empty or not:
 
-  1. Let |callbacks| be a list of the entries in |session|'s [=list of animation frame callback=], in the order in which they were added to the list.
   1. If |session|'s [=list of pending render states=] is not empty, [=apply pending render states=].
+  1. If |session|'s {{XRSession/renderState}}'s {{XRRenderState/baseLayer}} is <code>null</code>, abort these steps.
+  1. Let |callbacks| be a list of the entries in |session|'s [=list of animation frame callback=], in the order in which they were added to the list.
   1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
   1. Set |frame|'s [=active=] boolean to <code>true</code>.
   1. For each entry in |callbacks|, in order:
