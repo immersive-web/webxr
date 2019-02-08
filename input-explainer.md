@@ -220,11 +220,11 @@ function updatePointingRay(inputSourcePose, virtualHitTestResult) {
 ```
 
 ### Renderable models
-For `tracked-controller` input sources, it is often appropriate for the application to render a contextually appropriate model (such as a racket in a tennis game). Other times it's desirable for the application to render a device that matches what the user is holding, especially when relaying instructions about it's use. Finally, there are times when it's best to not render anything at all, such as when the XR device uses a transparent display and the user can see their hands and/or any tracked devices without app assistance. See [Handling non-opaque displays](explainer.md#Handling-non-opaque-displays) in the main explainer for more details.
+For `tracked-pointer` input sources, it is often appropriate for the application to render a contextually appropriate model (such as a racket in a tennis game). Other times it's desirable for the application to render a device that matches what the user is holding, especially when relaying instructions about it's use. Finally, there are times when it's best to not render anything at all, such as when the XR device uses a transparent display and the user can see their hands and/or any tracked devices without app assistance. See [Handling non-opaque displays](explainer.md#Handling-non-opaque-displays) in the main explainer for more details.
 
 
 #### Choosing renderable models
-The majority of `tracked-controller` input sources will have a non-null `gamepad` attribute on the `XRInputSource` object. The `Gamepad`'s `id` is used to determine what should be rendered if the app intends to visualize the input source itself, rather than an alternative virtual object. (See the section on [Button and Axis State](#button-and-axis-state) for more details.)
+The majority of `tracked-pointer` input sources will have a non-null `gamepad` attribute on the `XRInputSource` object. The `Gamepad`'s `id` is used to determine what should be rendered if the app intends to visualize the input source itself, rather than an alternative virtual object. (See the section on [Button and Axis State](#button-and-axis-state) for more details.)
 
 The WebXR Device API currently does not offer any way to retrieve renderable resources that represent the input devices from the API itself, and as such the `Gamepad`'s `id` must be used as a key to load an appropriate resources from the application's server or a CDN. The example below presumes that the `getInputSourceRenderableModel` call would do the required lookup and caching.
 
@@ -276,57 +276,41 @@ function updateRenderableInputModels(xrFrame) {
 
 ## Button and Axis State
 
-Some applications need more than point-and-click style interaction provided by the `select` events. For devices that make use of controllers with buttons and axes, more complete information about the state of those inputs can be observed via the `XRInputSource`'s `gamepad` attribute.
+Some applications need more than point-and-click style interaction provided by the `select` events. For input sources with buttons and axes, more complete information about the state of those inputs can be observed via the `XRInputSource`'s `gamepad` attribute. `gamepad` is an instance of the [`Gamepad`](https://w3c.github.io/gamepad/#gamepad-interface) interface if the input source has buttons and axes to report, and `null` otherwise.
 
-If the `XRInputState` represents an XR controller device with buttons or axes the `gamepad` attribute is an instance of a [`Gamepad`](https://w3c.github.io/gamepad/#gamepad-interface) interface, and `null` otherwise. Examples of controllers that may expose their state this way include Oculus Touch, Vive wands, Oculus Go and Daydream controllers, or other similar devices. Controllers not directly associated with the XR device, such as the majority of traditional gamepads, should not be exposed using this interface. Tracked devices without discreet inputs, such as optical hand tracking, should also have a `null` `gamepad` attribute.
+Examples of input sources that may expose their state this way include Oculus Touch, Vive wands, Oculus Go and Daydream controllers, or other similar devices. Input devices not directly associated with the XR device, such as the majority of traditional gamepads, and tracked devices without discreet inputs, such as optical hand tracking, must not be exposed using this interface. 
 
 `Gamepad` instances reported in this way have several notable behavioral changes vs. the ones reported by `navigator.getGamepads()`:
 
   - `Gamepad` instances connected to an `XRInputSource` must not be included in the array returned by `navigator.getGamepads()`.
   - The `Gamepad`'s `index` attribute must be `-1`.
   - The `Gamepad`'s `connected` attribute must always be `true`.
-  - The `Gamepad`'s `mapping` attribute must be `xr-standard`.
 
 Finally, the `id` attribute for `Gamepad`s surfaced by the WebXR API are more strictly formatted than those of traditional gamepads in order to make them a more appropriate key for determining rendering assets.
 
   - The `id` MAY be `'unknown'` if the type of input source cannot be reliably identified or the UA determines that the input source type must be masked for any reason. Applications should render a generic input device in this case.
   - Inline sessions MUST only expose `id`s of `'unknown'`.
-  - Otherwise the `id` should be a lower-case string that describes the physical input source.
+  - Otherwise the `id` must be a lower-case string that describes the physical input source.
     - For most devices this SHOULD be of the format `<vendor>-<product-id>`. For example: `oculus-touch`. UAs SHOULD make an effort to align on the strings that are returned for any given device.
-    - It should not include an indication of the handedness of the input source, as that should be implied by the `handedness` attribute.
+    - It should not include an indication of the handedness of the input source (such as `oculus-touch-left`), as that can be determined from the `handedness` attribute.
 
 All other attributes behave as described in the [Gamepad](https://w3c.github.io/gamepad/) specification.
-
-The WebXR Device API introduces a new standard controller layout indicated by the `mapping` value of `xr-standard`. (Additional mapping variants may be added in the future if necessary.) This defines a specific layout for the inputs most commonly found on XR controller devices today. The following table describes the buttons/axes and their physical locations:
-
-| Button/Axis  | Location                          |
-| ------------ | --------------------------------- |
-| buttons[0]   | Primary trigger                   |
-| buttons[1]   | Primary Touchpad/Joystick click   |
-| buttons[2]   | Grip/Secondary trigger            |
-| buttons[3]   | Secondary Touchpad/Joystick click |
-| axes[0]      | Primary Touchpad/Joystick X       |
-| axes[1]      | Primary Touchpad/Joystick Y       |
-| axes[2]      | Secondary Touchpad/Joystick X     |
-| axes[3]      | Secondary Touchpad/Joystick Y     |
-
-Additional device-specific inputs may be exposed after these reserved indices, but devices that lack one of the canonical inputs must still preserve their place in the array. If a device has both a touchpad and a joystick the UA should designate one of them to be the primary axis-based input and expose the other at axes[2] and axes[3] with an associated button at button[3].
 
 ```js
 function onXRFrame(timestamp, frame) {
   let inputSource = primaryInputSource;
 
-  // Check to see if the input source has buttons/axes and is using the standard
-  // mapping.
-  if (inputSource && inputSource.gamepad &&
-      inputSource.gamepad.mapping == 'xr-standard') {
+  // Check to see if the input source has gamepad data.
+  if (inputSource && inputSource.gamepad) {
     let gamepad = inputSource.gamepad;
     
     // Use joystick or touchpad values for movement.
-    MoveUser(gamepad.axes[0], gamepad.axes[1]);
+    if (gamepad.axes.length >= 2) {
+      MoveUser(gamepad.axes[0], gamepad.axes[1]);
+    }
 
-    // Use the trigger or joystick/touchpad click for painting.
-    if (gamepad.buttons[0].pressed || gamepad.buttons[1].pressed) {
+    // If the first gamepad button is pressed, perform an action.
+    if (gamepad.buttons.length >= 1 && gamepad.buttons[0].pressed) {
       EmitPaint();
     }
     
@@ -340,6 +324,34 @@ function onXRFrame(timestamp, frame) {
 If the application includes interactions that require user activation (such as starting media playback), the application can listen to the `XRInputSource`s `select` events, which fire for every pressed and released button on the controller. When triggered by a controller input, the `XRInputSourceEvent` will include a `buttonIndex` other than `-1` to indicate which button on the gamepad triggered the event.
 
 The UA may update the `gamepad` state at any point, but it must remain constant while running a batch of `XRSession` `requestAnimationFrame` callbacks or event callbacks which provide an `XRFrame`.
+
+### XR gamepad mapping
+
+The WebXR Device API also introduces a new standard controller layout indicated by the `mapping` value of `xr-standard`. (Additional mapping variants may be added in the future if necessary.) This defines a specific layout for the inputs most commonly found on XR controller devices today. The following table describes the buttons/axes and their physical locations:
+
+| Button     | `xr-standard` Location            |
+| ---------- | --------------------------------- |
+| buttons[0] | Primary trigger                   |
+| buttons[1] | Primary Touchpad/Joystick click   |
+| buttons[2] | Grip/Secondary trigger            |
+| buttons[3] | Secondary Touchpad/Joystick click |
+
+| Axis    | `xr-standard` Location        |
+| ------- | ----------------------------- |
+| axes[0] | Primary Touchpad/Joystick X   |
+| axes[1] | Primary Touchpad/Joystick Y   |
+| axes[2] | Secondary Touchpad/Joystick X |
+| axes[3] | Secondary Touchpad/Joystick Y |
+
+Additional device-specific inputs may be exposed after these reserved indices, but devices that lack one of the canonical inputs must still preserve their place in the array. If a device has both a touchpad and a joystick the UA should designate one of them to be the primary axis-based input and expose the other at axes[2] and axes[3] with an associated button at button[3].
+
+In order to make use of the `xr-standard` mapping, a device must meet **at least** the following criteria:
+
+ - Is a `tracked-pointer` device. 
+ - Has a trigger or similarly accessed button
+ - Has at least one touchpad or joystick
+
+devices that lack one of those elements may still expose `gamepad` data, but must not claim the `xr-standard` mapping. For example: The controls on the side of a Gear VR would not qualify for the `xr-standard` mapping because they represent a `gaze`-style input. Similarly, a Daydream controller would not qualify for the `xr-standard` mapping since it lacks a trigger.
 
 ### Exposing button/axis values with an action maps
 
@@ -357,7 +369,7 @@ When using an API that limits reading controller input to use of an action map, 
 
 If the API does not provided a way to enumerate the available input devices, the UA should provide bindings for the left and right hand instead of a specific device and expose a `Gamepad` for any hand that has at least one non-`null` input.
 
-The UA should not make any attempt to circumvent user remapping of the inputs.
+The UA must not make any attempt to circumvent user remapping of the inputs.
 
 ## Appendix A: Proposed partial IDL
 This is a partial IDL and is considered additive to the core IDL found in the main [explainer](explainer.md).
