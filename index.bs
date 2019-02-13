@@ -882,6 +882,21 @@ WebXR provides various transforms in the form of <dfn lt="matrix">matrices</dfn>
 
 Translations specified by WebXR matrices are always given in meters.
 
+Normalization {#normalization}
+-------------
+
+There are several algorithms which call for a vector or quaternion to be normalized, which means to scale the components to have a collective magnitude of <code>1.0</code>.
+
+<div class="algorithm" data-algorithm="normalize">
+
+To <dfn>normalize</dfn> a list of components the UA MUST perform the following steps:
+
+  1. Let |length| be the square root of the sum of the squares of each component.
+  1. If |length| is <code>0</code>, throw an {{InvalidStateError}}  and abort these steps.
+  1. Divide each component by |length| and set the component.
+
+</div>
+
 XRRigidTransform {#xrrigidtransform-interface}
 ----------------
 
@@ -906,7 +921,7 @@ The <dfn constructor for="XRRigidTransform">XRRigidTransform(|position|, |orient
   1. Else initialize |transform|'s {{XRRigidTransform/position}}’s {{DOMPointReadOnly/x}} value to |position|'s x dictionary member, {{DOMPointReadOnly/y}} value to |position|'s y dictionary member, {{DOMPointReadOnly/z}} value to |position|'s z dictionary member and {{DOMPointReadOnly/w}} to <code>1.0</code>.
   1. If |orientation| is not a {{DOMPointInit}} initialize |transform|'s {{XRRigidTransform/orientation}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
   1. Else initialize |transform|'s {{XRRigidTransform/orientation}}’s {{DOMPointReadOnly/x}} value to |orientation|'s x dictionary member, {{DOMPointReadOnly/y}} value to |orientation|'s y dictionary member, {{DOMPointReadOnly/z}} value to |orientation|'s z dictionary member and {{DOMPointReadOnly/w}} value to |orientation|'s w dictionary member.
-  1. [=Normalize=] |transform|'s {{XRRigidTransform/orientation}}.
+  1. [=Normalize=] {{DOMPointReadOnly/x}}, {{DOMPointReadOnly/y}}, {{DOMPointReadOnly/z}}, and {{DOMPointReadOnly/w}} components of |transform|'s {{XRRigidTransform/orientation}}.
   1. Return |transform|.
 
 </div>
@@ -918,8 +933,6 @@ The <dfn attribute for="XRRigidTransform">orientation</dfn> attribute is a quate
 The <dfn attribute for="XRRigidTransform">matrix</dfn> attribute returns the transform described by the {{XRRigidTransform/position}} and {{XRRigidTransform/orientation}} attributes as a [=matrix=].
 
 An {{XRRigidTransform}} with a {{XRRigidTransform/position}} of <code>{ x: 0, y: 0, z: 0 w: 1 }</code> and an {{XRRigidTransform/orientation}} of <code>{ x: 0, y: 0, z: 0, w: 1 }</code> is known as an <dfn>identity transform</dfn>.
-
-We still need to define the <dfn>Normalize</dfn> step. (This is <a href="https://github.com/immersive-web/webxr/issues/472">filed</a>.)
 
 XRRay {#xrray-interface}
 -----
@@ -958,8 +971,8 @@ The <dfn constructor for="XRRay">XRRay(|origin|, |direction|)</dfn> constructor 
     1. Let |ray| be a new {{XRRay}}.
     1. Initialize |ray|'s {{XRRay/origin}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
     1. Initialize |ray|'s {{XRRay/direction}} to <code>{ x: 0.0, y: 0.0, z: -1.0, w: 0.0 }</code>.
-    1. Multiply |ray|'s {{XRRay/origin}} by the |transform|'s {{XRRigidTransform/matrix}}.
-    1. Multiply |ray|'s {{XRRay/direction}} by the |transform|'s {{XRRigidTransform/matrix}}.
+    1. Multiply |ray|'s {{XRRay/origin}} by the |transform|'s {{XRRigidTransform/matrix}} and set |ray| to the result.
+    1. Multiply |ray|'s {{XRRay/direction}} by the |transform|'s {{XRRigidTransform/matrix}} and set |ray| to the result.
     1. [=Normalize=] the {{DOMPointReadOnly/x}}, {{DOMPointReadOnly/y}}, and {{DOMPointReadOnly/z}} components of |ray|'s {{XRRay/direction}}
     1. Return |ray|.
     
