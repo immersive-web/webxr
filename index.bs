@@ -308,6 +308,7 @@ enum XREnvironmentBlendMode {
   readonly attribute XRPresentationContext? outputContext;
   readonly attribute XREnvironmentBlendMode environmentBlendMode;
   readonly attribute XRRenderState renderState;
+  readonly attribute XRSpace viewerSpace;
 
   // Methods
   void updateRenderState(optional XRRenderStateInit state);
@@ -430,6 +431,10 @@ Each {{XRSession}} has a <dfn>environment blending mode</dfn> value, which is a 
 The <dfn attribute for="XRSession">environmentBlendMode</dfn> attribute returns the {{XRSession}}'s [=environment blending mode=]
 
 NOTE: Most Virtual Reality devices exhibit {{XREnvironmentBlendMode/opaque}} blending behavior. Augmented Reality devices that use transparent optical elements frequently exhibit {{XREnvironmentBlendMode/additive}} blending behavior, and Augmented Reality devices that use passthrough cameras frequently exhibit {{XREnvironmentBlendMode/alpha-blend}} blending behavior.
+
+The <dfn attribute for="XRSession">viewerSpace</dfn> attribute is an {{XRSpace}} which tracks the pose of the [=viewer=].
+
+NOTE: For any given {{XRFrame}} calling {{XRFrame/getPose()}} with the {{XRSession/viewerSpace}} and any {{XRReferenceSpace}} will return the same pose (without the {{views}} array) as calling {{XRFrame/getViewerPose()}} with the same {{XRReferenceSpace}}.
 
 <section class="unstable">
 The <dfn attribute for="XRSession">onblur</dfn> attribute is an [=Event handler IDL attribute=] for the {{blur}} event type.
