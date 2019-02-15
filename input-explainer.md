@@ -267,7 +267,7 @@ partial interface XRSession {
 //
 
 enum XRHandedness {
-  "",
+  "none",
   "left",
   "right"
 };
