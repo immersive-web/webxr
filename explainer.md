@@ -226,7 +226,7 @@ Once drawn to, the XR device will continue displaying the contents of the `XRWeb
 
 Each `XRFrame` the scene will be drawn from the perspective of a "viewer", which is the user or device viewing the scene, described by an `XRViewerPose`. Developers retrieve the current `XRViewerPose` by calling `getViewerPose()` on the `XRFrame` and providing an `XRReferenceSpace` for the pose to be returned in. Due to the nature of XR tracking systems, this function is not guaranteed to return a value and developers will need to respond appropriately. For more information about what situations will cause `getViewerPose()` to fail and recommended practices for handling the situation, refer to the [Spatial Tracking Explainer](spatial-tracking-explainer.md).
 
-The `XRViewerPose` contains a `views` attribute, which is an array of `XRView`s. Each `XRView` has a `viewMatrix` and a `projectionMatrix` that should be used when rendering with WebGL. The `XRView` is also passed to an `XRWebGLLayer`'s `getViewport()` method to determine what the WebGL viewport should be set to when rendering. This ensures that the appropriate perspectives of scene are rendered to the correct portion on the `XRWebGLLayer`'s `framebuffer` in order to display correctly on the XR hardware.
+The `XRViewerPose` contains a `views` attribute, which is an array of `XRView`s. Each `XRView` has a `projectionMatrix` and `transform` that should be used when rendering with WebGL. (See the [definition of an `XRRigidTransform`](spatial-tracking-explainer.md#rigid-transforms) in the spatial tracking explainer.) The `XRView` is also passed to an `XRWebGLLayer`'s `getViewport()` method to determine what the WebGL viewport should be set to when rendering. This ensures that the appropriate perspectives of scene are rendered to the correct portion on the `XRWebGLLayer`'s `framebuffer` in order to display correctly on the XR hardware.
 
 ```js
 function onDrawFrame(timestamp, xrFrame) {
@@ -262,7 +262,7 @@ function drawScene(view) {
   let viewMatrix = null;
   let projectionMatrix = null;
   if (view) {
-    viewMatrix = view.viewMatrix;
+    viewMatrix = view.transform.inverse().matrix;
     projectionMatrix = view.projectionMatrix;
   } else {
     viewMatrix = defaultViewMatrix;
@@ -275,7 +275,7 @@ function drawScene(view) {
 }
 ```
 
-Because the `XRViewerPose` inherits from `XRPose` it also contains a `transform` describing the position and orientation of the viewer as a whole relative to the `XRReferenceSpace` origin. This is primarily useful for rendering a visual representation of the viewer for spectator views or multi-user environments. Each `XRView` has a `transform` as well that can be used in lieu of the `viewMatrix` to position virtual cameras in the scene if the rendering library being used prefers. For more information on `XRRigidTransform`s, see [the spatial tracking explainer](spatial-tracking-explainer.md#rigid-transforms).
+Because the `XRViewerPose` inherits from `XRPose` it also contains a `transform` describing the position and orientation of the viewer as a whole relative to the `XRReferenceSpace` origin. This is primarily useful for rendering a visual representation of the viewer for spectator views or multi-user environments.
 
 ### Handling suspended sessions
 
@@ -663,7 +663,6 @@ enum XREye {
 [SecureContext, Exposed=Window] interface XRView {
   readonly attribute XREye eye;
   readonly attribute Float32Array projectionMatrix;
-  readonly attribute Float32Array viewMatrix;
   readonly attribute XRRigidTransform transform;
 };
 

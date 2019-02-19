@@ -435,6 +435,8 @@ interface XRRigidTransform {
   readonly attribute DOMPointReadOnly position;
   readonly attribute DOMPointReadOnly orientation;
   readonly attribute Float32Array matrix;
+
+  XRRigidTransform inverse();
 };
 
 [SecureContext, Exposed=Window,

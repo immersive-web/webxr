@@ -833,7 +833,6 @@ enum XREye {
 [SecureContext, Exposed=Window] interface XRView {
   readonly attribute XREye eye;
   readonly attribute Float32Array projectionMatrix;
-  readonly attribute Float32Array viewMatrix;
   readonly attribute XRRigidTransform transform;
 };
 </pre>
@@ -842,12 +841,9 @@ The <dfn attribute for="XRView">eye</dfn> attribute describes which eye this vie
 
 The <dfn attribute for="XRView">projectionMatrix</dfn> attribute provides a [=matrix=] describing the projection to be used when rendering the [=view=]. It is <b>strongly recommended</b> that applications use this matrix without modification. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
 
-The <dfn attribute for="XRView">viewMatrix</dfn> attribute provides a [=matrix=]
-describing the view transform to be used when rendering the [=view=]. The [=matrix=] represents the inverse of the {{XRView/transform}}'s {{XRRigidTransform/matrix}}. It is <b>strongly recommended</b> that applications use this matrix without modification. Failure to use the provided view matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
+The <dfn attribute for="XRView">transform</dfn> attribute is the {{XRRigidTransform}} of the viewpoint.
 
-The <dfn attribute for="XRView">transform</dfn> attribute is the {{XRRigidTransform}} of the viewpoint. 
-
-NOTE: The {{XRView/transform}} can be used to position camera objects in many rendering libraries instead of using the {{XRView/viewMatrix}} directly if the library is more naturally set up to consume data in that format.
+NOTE: The {{XRView/transform}} can be used to position camera objects in many rendering libraries. If a more traditional view matrix is needed by the application one can be retrieved by calling `view.transform.inverse().matrix`.
 </section>
 
 XRViewport {#xrviewport-interface}
@@ -925,6 +921,8 @@ interface XRRigidTransform {
   readonly attribute DOMPointReadOnly position;
   readonly attribute DOMPointReadOnly orientation;
   readonly attribute Float32Array matrix;
+
+  XRRigidTransform inverse();
 };
 </pre>
 
@@ -949,6 +947,18 @@ The <dfn attribute for="XRRigidTransform">orientation</dfn> attribute is a quate
 The <dfn attribute for="XRRigidTransform">matrix</dfn> attribute returns the transform described by the {{XRRigidTransform/position}} and {{XRRigidTransform/orientation}} attributes as a [=matrix=].
 
 An {{XRRigidTransform}} with a {{XRRigidTransform/position}} of <code>{ x: 0, y: 0, z: 0 w: 1 }</code> and an {{XRRigidTransform/orientation}} of <code>{ x: 0, y: 0, z: 0, w: 1 }</code> is known as an <dfn>identity transform</dfn>.
+
+The {{XRRigidTransform/inverse()}} method returns an {{XRRigidTransform}} which, if applied to an object that had previously been transformed by the original {{XRRigidTransform}}, would undo the transform and return the object to it's initial pose.
+
+<div class="algorithm" data-algorithm="rigid-transform-inverse">
+
+When the <dfn method for="XRRigidTransform">inverse()</dfn> method is invoked, the user agent MUST run the following steps:
+
+  1. Figure out WTF the math that goes here should be.
+
+</div>
+
+ISSUE: Obviously the above algorithm should be written out prior to landing.
 
 XRRay {#xrray-interface}
 -----
