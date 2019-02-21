@@ -573,6 +573,7 @@ When an {{XRSession}} |session| receives updated [=viewer=] state from the [=/XR
   1. Let |callbacks| be a list of the entries in |session|'s [=list of animation frame callback=], in the order in which they were added to the list.
   1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
   1. Set |frame|'s [=active=] boolean to <code>true</code>.
+  1. Set |frame|'s [=animationFrame=] boolean to <code>true</code>.
   1. For each entry in |callbacks|, in order:
     1. If the entry's [=cancelled=] boolean is <code>true</code>, continue to the next entry.
     1. [=Invoke the Web IDL callback function=], passing |now| and |frame| as the  arguments
@@ -636,7 +637,7 @@ An {{XRFrame}} represents a snapshot of the state of all of the tracked objects 
 };
 </pre>
 
-Each {{XRFrame}} has a <dfn for="XRFrame">active</dfn> boolean which is initially set to <code>false</code>.
+Each {{XRFrame}} has a <dfn for="XRFrame">active</dfn> boolean which is initially set to <code>false</code>, and an <dfn for="XRFrame">animationFrame</dfn> boolean which is initially set to <code>false</code>.
 
 The <dfn attribute for="XRFrame">session</dfn> attribute returns the {{XRSession}} that produced the {{XRFrame}}.
 
@@ -645,6 +646,7 @@ The <dfn attribute for="XRFrame">session</dfn> attribute returns the {{XRSession
 When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
 
   1. If the {{XRFrame}}'s [=active=] boolean is <code>false</code>, throw a {{InvalidStateError}} and abort these steps.
+  1. If the {{XRFrame}}'s [=animationFrame=] boolean is <code>false</code>, throw a {{InvalidStateError}} and abort these steps.
   1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
   1. If |referenceSpace|'s [=XRSpace/session=] does not equal |session|, throw a {{InvalidStateError}} and abort these steps.
   1. If the [=viewer=]'s pose cannot be determined relative to |referenceSpace|, return <code>null</code>
