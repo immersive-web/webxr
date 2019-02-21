@@ -693,12 +693,6 @@ enum XRReferenceSpaceType {
   "unbounded"
 };
 
-enum XRStationaryReferenceSpaceSubtype {
-  "eye-level",
-  "floor-level",
-  "position-disabled"
-};
-
 dictionary XRReferenceSpaceOptions {
   required XRReferenceSpaceType type;
   XRStationaryReferenceSpaceSubtype subtype;
@@ -749,6 +743,12 @@ XRStationaryReferenceSpace {#xrstationaryreferencespace-interface}
 An {{XRStationaryReferenceSpace}} represents a tracking space that the user is not expected to move around within. Tracking in a {{stationary}} reference space is optimized for the assumption that the user will not move much beyond their starting point, if at all. For devices with [=6DoF=] tracking, {{stationary}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
 
 <pre class="idl">
+enum XRStationaryReferenceSpaceSubtype {
+  "eye-level",
+  "floor-level",
+  "position-disabled"
+};
+
 [SecureContext, Exposed=Window]
 interface XRStationaryReferenceSpace : XRReferenceSpace {
   readonly attribute XRStationaryReferenceSpaceSubtype subtype;
@@ -764,6 +764,8 @@ There are several subtypes of {{XRStationaryReferenceSpace}}, determined by the 
 - Passing a {{XRReferenceSpaceOptions/subtype}} of <dfn enum-value for="XRStationaryReferenceSpaceSubtype">position-disabled</dfn> creates an {{XRStationaryReferenceSpace}} where orientation is tracked but the [=viewer=]s position is always reported as being at the origin.
 
 Note: The {{position-disabled}} subtype is primarily intended for use with pre-rendered media such as panoramic photos or videos. It should not be used for most other media types due to user discomfort associated with the lack of a neck model or full positional tracking.
+
+Devices which support {{XRReferenceSpaceType/stationary}} reference spaces MUST support all {{XRStationaryReferenceSpace/subtype}}s.
 
 The {{XRStationaryReferenceSpace}}'s <dfn attribute for="XRStationaryReferenceSpace">subtype</dfn> attribute is the {{XRStationaryReferenceSpaceSubtype}} that the {{XRStationaryReferenceSpace}} was created with.
 
