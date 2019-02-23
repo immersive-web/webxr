@@ -693,6 +693,12 @@ enum XRReferenceSpaceType {
   "unbounded"
 };
 
+enum XRStationaryReferenceSpaceSubtype {
+  "eye-level",
+  "floor-level",
+  "position-disabled"
+};
+
 dictionary XRReferenceSpaceOptions {
   required XRReferenceSpaceType type;
   XRStationaryReferenceSpaceSubtype subtype;
@@ -711,6 +717,18 @@ An {{XRReferenceSpace}} is obtained by calling {{XRSession/requestReferenceSpace
   - Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRReferenceSpaceType">bounded</dfn> creates an {{XRBoundedReferenceSpace}} instance if supported by the [=/XR device=] and the {{XRSession}}.
 
   - Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRReferenceSpaceType">unbounded</dfn> creates an {{XRUnboundedReferenceSpace}} instance if supported by the [=/XR device=] and the {{XRSession}}.
+
+If a {{XRReferenceSpaceOptions/type}} of {{XRReferenceSpaceType/stationary}} is specified a {XRReferenceSpaceOptions/subtype}} must also be given:
+
+  - Passing a {{XRReferenceSpaceOptions/subtype}} of <dfn enum-value for="XRStationaryReferenceSpaceSubtype">eye-level</dfn> creates an {{XRStationaryReferenceSpace}} with it's origin near the user's head at the time of creation. The exact position and orientation will be initialized based on the conventions of the underlying platform.
+  
+  - Passing a {{XRReferenceSpaceOptions/subtype}} of <dfn enum-value for="XRStationaryReferenceSpaceSubtype">floor-level</dfn> creates an {{XRStationaryReferenceSpace}} with it's origin positioned at the floor in a safe position for the user to stand. The `y` axis equals `0` at floor level, with the `x` and `z` position and orientation initialized based on the conventions of the underlying platform. If the floor level isn't known it will be estimated.
+  
+  - Passing a {{XRReferenceSpaceOptions/subtype}} of <dfn enum-value for="XRStationaryReferenceSpaceSubtype">position-disabled</dfn> creates an {{XRStationaryReferenceSpace}} where orientation is tracked but the [=viewer=]s position is always reported as being at the origin.
+
+Note: The {{position-disabled}} subtype is primarily intended for use with pre-rendered media such as panoramic photos or videos. It should not be used for most other media types due to user discomfort associated with the lack of a neck model or full positional tracking.
+  
+Devices that support {{XRReferenceSpaceType/stationary}} reference spaces MUST support all {{XRStationaryReferenceSpaceSubtype}}s.
 
 <section class="unstable">
 The <dfn attribute for="XRReferenceSpace">originOffset</dfn> attribute is a {{XRRigidTransform}} that describes an additional translation and rotation to be applied to any poses queried using the {{XRReferenceSpace}}. It is initially set to an [=identity transform=]. Changes to the {{originOffset}} take effect immediately, and subsequent poses queried with the {{XRReferenceSpace}} will take into account the new transform.
@@ -743,29 +761,11 @@ XRStationaryReferenceSpace {#xrstationaryreferencespace-interface}
 An {{XRStationaryReferenceSpace}} represents a tracking space that the user is not expected to move around within. Tracking in a {{stationary}} reference space is optimized for the assumption that the user will not move much beyond their starting point, if at all. For devices with [=6DoF=] tracking, {{stationary}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
 
 <pre class="idl">
-enum XRStationaryReferenceSpaceSubtype {
-  "eye-level",
-  "floor-level",
-  "position-disabled"
-};
-
 [SecureContext, Exposed=Window]
 interface XRStationaryReferenceSpace : XRReferenceSpace {
   readonly attribute XRStationaryReferenceSpaceSubtype subtype;
 };
 </pre>
-
-There are several subtypes of {{XRStationaryReferenceSpace}}, determined by the {{XRReferenceSpaceOptions/subtype}} value of the {{XRReferenceSpaceOptions}} dictionary passed into the {{requestReferenceSpace()}} call:
-
-- Passing a {{XRReferenceSpaceOptions/subtype}} of <dfn enum-value for="XRStationaryReferenceSpaceSubtype">eye-level</dfn> creates an {{XRStationaryReferenceSpace}} with it's origin near the user's head at the time of creation. The exact position and orientation will be initialized based on the conventions of the underlying platform.
-
-- Passing a {{XRReferenceSpaceOptions/subtype}} of <dfn enum-value for="XRStationaryReferenceSpaceSubtype">floor-level</dfn> creates an {{XRStationaryReferenceSpace}} with it's origin positioned at the floor in a safe position for the user to stand. The `y` axis equals `0` at floor level, with the `x` and `z` position and orientation initialized based on the conventions of the underlying platform. If the floor level isn't known it will be estimated.
-
-- Passing a {{XRReferenceSpaceOptions/subtype}} of <dfn enum-value for="XRStationaryReferenceSpaceSubtype">position-disabled</dfn> creates an {{XRStationaryReferenceSpace}} where orientation is tracked but the [=viewer=]s position is always reported as being at the origin.
-
-Note: The {{position-disabled}} subtype is primarily intended for use with pre-rendered media such as panoramic photos or videos. It should not be used for most other media types due to user discomfort associated with the lack of a neck model or full positional tracking.
-
-Devices which support {{XRReferenceSpaceType/stationary}} reference spaces MUST support all {{XRStationaryReferenceSpace/subtype}}s.
 
 The {{XRStationaryReferenceSpace}}'s <dfn attribute for="XRStationaryReferenceSpace">subtype</dfn> attribute is the {{XRStationaryReferenceSpaceSubtype}} that the {{XRStationaryReferenceSpace}} was created with.
 
