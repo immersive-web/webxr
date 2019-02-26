@@ -89,7 +89,7 @@ It should be noted that an immersive VR session may still display the users envi
 
 This document will use the term "immersive session" to refer to either an immersive VR or and immersive AR session throughout.
 
-In the following examples we will explain the core API concepts using immersive VR sessions first, and cover the differences introduced by [immersive AR sessions](#ar-sessions) and [inline sessions](#inline-sessions) afterwards. With that in mind, this code checks for supports of immersive VR content, since we want the ability to display imagery on a device like a headset.
+In the following examples we will explain the core API concepts using immersive VR sessions first, and cover the differences introduced by [immersive AR sessions](#ar-sessions) and [inline sessions](#inline-sessions) afterwards. With that in mind, this code checks for support of immersive VR sessions, since we want the ability to display imagery on a device like a headset.
 
 ```js
 async function checkForXRSupport() {
