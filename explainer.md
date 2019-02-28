@@ -520,6 +520,18 @@ xrSession.updateRenderState({
 });
 ```
 
+### Preventing the compositor from using the depth buffer
+
+By default the depth attachment of an `XRWebGLLayer`'s `framebuffer`, if present, may be used to assist the XR compositor. For example, the scene's depth values may be used by advanced reprojection techniques or to help avoid depth disparity when rendering platform/UA interfaces. This assumes, of course, that the values in the depth buffer are representative of the scene content.
+
+Some applications may violate that assumption, such as when using certain deferred rendering techniques or rendering stereo video. In those cases if the depth buffer's values are used by the compositor it may result in objectionable artifacts. To avoid this, the compositor can be instructed to ignore the depth values of an `XRWebGLLayer` by setting the `ignoreDepthValues` option to `true` at layer creation time:
+
+```js
+let webglLayer = new XRWebGLLayer(xrSession, gl, { ignoreDepthValues: true });
+```
+
+If `ignoreDepthValues` is not set to `true` the The UA is allowed (but not required) to use depth buffer as it sees fit. As a result, barring compositor access to the depth buffer in this way may lead to certain platform or UA features being unavailable or less robust.
+
 ### Handling non-opaque displays
 
 Some devices which support the WebXR Device API may use displays that are not fully opaque, or otherwise show your surrounding environment in some capacity. To determine how the display will blend rendered content with the real world, check the `XRSession`'s `environmentBlendMode` attribute. It may currently be one of three values, and more may be added in the future if new display technology necessitates it:
@@ -689,6 +701,7 @@ dictionary XRWebGLLayerInit {
   boolean depth = true;
   boolean stencil = false;
   boolean alpha = true;
+  boolean ignoreDepthValues = false;
   double framebufferScaleFactor = 1.0;
 };
 
@@ -705,6 +718,7 @@ interface XRWebGLLayer : XRLayer {
   readonly attribute boolean depth;
   readonly attribute boolean stencil;
   readonly attribute boolean alpha;
+  readonly attribute boolean ignoreDepthValues;
 
   readonly attribute unsigned long framebufferWidth;
   readonly attribute unsigned long framebufferHeight;
