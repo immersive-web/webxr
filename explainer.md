@@ -522,7 +522,7 @@ xrSession.updateRenderState({
 
 ### Preventing the compositor from using the depth buffer
 
-By default the depth attachment of an `XRWebGLLayer`'s `framebuffer`, if present, may be used to assist the XR compositor. For example, the scene's depth values may be used by advanced reprojection techniques or to help avoid depth disparity when rendering platform/UA interfaces. This assumes, of course, that the values in the depth buffer are representative of the scene content.
+By default the depth attachment of an `XRWebGLLayer`'s `framebuffer`, if present, may be used to assist the XR compositor. For example, the scene's depth values may be used by advanced reprojection techniques or to help avoid depth conflicts when rendering platform/UA interfaces. This assumes, of course, that the values in the depth buffer are representative of the scene content.
 
 Some applications may violate that assumption, such as when using certain deferred rendering techniques or rendering stereo video. In those cases if the depth buffer's values are used by the compositor it may result in objectionable artifacts. To avoid this, the compositor can be instructed to ignore the depth values of an `XRWebGLLayer` by setting the `ignoreDepthValues` option to `true` at layer creation time:
 
