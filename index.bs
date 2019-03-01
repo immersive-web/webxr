@@ -64,6 +64,16 @@ urlPrefix: https://w3c.github.io/orientation-sensor/; spec: ORIENTATION-SENSOR
 spec: WebIDL; urlPrefix: https://www.w3.org/TR/WebIDL-1/#
     type: dfn
         text: invoke the Web IDL callback function; url:es-invoking-callback-functions
+spec: Gamepad; urlPrefix: https://w3c.github.io/gamepad/#
+    type: interface; text: Gamepad; url: dom-gamepad
+    type: enum; text: GamepadMappingType; url: dom-gamepadmappingtype
+    type: method; text: navigator.getGamepads(); url: dom-navigator-getgamepads
+    type: attribute; text: id; for: Gamepad; url: dom-gamepad-id
+    type: attribute; text: index; for: Gamepad; url: dom-gamepad-index
+    type: attribute; text: mapping; for: Gamepad; url: dom-gamepad-mapping
+    type: attribute; text: connected; for: Gamepad; url: dom-gamepad-connected
+    type: attribute; text: buttons; for: Gamepad; url: dom-gamepad-buttons
+    type: attribute; text: axes; for: Gamepad; url: dom-gamepad-axes
 </pre>
 
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -98,6 +108,29 @@ spec: WebIDL; urlPrefix: https://www.w3.org/TR/WebIDL-1/#
   .non-normative::before {
     content: "This section is non-normative.";
     font-style: italic;
+  }
+  .tg {
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+  .tg th {
+    border-style: solid;
+    border-width: 1px;
+    background: #90b8de;
+    color: #fff;
+    font-family: sans-serif;
+    font-weight: bold;
+    border-color: grey;
+  }
+  .tg td {
+    padding: 4px 5px;
+    background-color: rgb(221, 238, 255);
+    font-family: monospace;
+    border-style: solid;
+    border-width: 1px;
+    border-color: grey;
+    overflow: hidden;
+    word-break: normal;
   }
 </style>
 
@@ -1076,6 +1109,7 @@ interface XRInputSource {
   readonly attribute XRTargetRayMode targetRayMode;
   readonly attribute XRSpace targetRaySpace;
   readonly attribute XRSpace? gripSpace;
+  readonly attribute Gamepad? gamepad;
 };
 </pre>
 
@@ -1096,6 +1130,104 @@ The <dfn attribute for="XRInputSource">targetRaySpace</dfn> attribute is an {{XR
 The <dfn attribute for="XRInputSource">gripSpace</dfn> attribute is an {{XRSpace}} that tracks the pose that should be used to render virtual objects such that they appear to be held in the user's hand. If the user were to hold a straight rod, this {{XRSpace}} places the origin at the centroid of their curled fingers and where the <code>-Z</code> axis points along the length of the rod towards their thumb. The <code>X</code> axis is perpendicular to the back of the hand being described, with back of the users right hand pointing towards <code>+X</code> and the back of the user's left hand pointing towards <code>-X</code>. The <code>Y</code> axis is implied by the relationship between the <code>X</code> and <code>Z</code> axis, with <code>+Y</code> roughly pointing in the direction of the user's arm.
 
 The {{gripSpace}} MUST be <code>null</code> if the input source isn't inherently trackable such as for input sources with a {{targetRayMode}} of {{XRTargetRayMode/gaze}} or {{XRTargetRayMode/screen}}.
+
+The <dfn attribute for="XRInputSource">gamepad</dfn> attribute is a {{Gamepad}} that describes the state of any buttons and axes on the input device. If the {{XRInputSource}} does not represent a device with either multiple buttons or at least one axis the {{gamepad}} attribute MUST be <code>null</code>. 
+</section>
+
+<section class="unstable">
+Gamepad API Integration {#gamepad-api-integration}
+-----------------------
+
+{{Gamepad}} instances returned by an {{XRInputSource}}'s {{XRInputSource/gamepad}} attribute behave as described by the <a href="https://w3c.github.io/gamepad/">Gamepad API</a>, with several additional behavioral restrictions:
+
+  - {{XRInputSource/gamepad}} MUST NOT be included in the array returned by {{navigator.getGamepads()}}.
+  - {{XRInputSource/gamepad}}'s {{Gamepad/index}} attribute MUST be <code>-1</code>.
+  - {{XRInputSource/gamepad}}'s {{Gamepad/connected}} attribute MUST be <code>true</code> until the {{XRInputSource}} is removed from the array returned by {{XRSession/getInputSources()}} or the {{XRSession}} is ended.
+
+ISSUE: Document {{Gamepad/id}} restrictions and formatting.
+</section>
+
+<section class="unstable">
+"xr-standard" Gamepad Mapping {#xr-standard-gamepad-mapping}
+-----------------------------
+
+The WebXR Device API introduces a new {{GamepadMappingType}} to describe the mapping of common XR controller devices.
+
+<pre class="idl">
+  enum GamepadMappingType {
+    "xr-standard",
+  };
+</pre>
+
+The <dfn enum-value for="GamepadMappingType">xr-standard</dfn> mapping indicates that the layout of the buttons and axes of the {{XRInputSource/gamepad}} corresponds as closely as possible to the tables below. In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} the device MUST report a {{XRInputSource/targetRayMode}} of {{XRTargetRayMode/tracked-pointer}}, MUST have at least one touchpad or joystick and MUST have at least one primary button, often a trigger, separate from the touchpad or joystick. If a device does not meet the requirements for the {{GamepadMappingType/xr-standard}} mapping it may still be exposed on an {{XRInputSource}} with the <code>""</code> (empty string) mapping.
+
+<table class="tg">
+  <thead>
+    <tr>
+      <th>Button</th>
+      <th><code>xr-standard</code> Location</th>
+      <th>Required</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>buttons[0]</td>
+      <td>Primary Button/Trigger</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>buttons[1]</td>
+      <td>Primary Touchpad/Joystick Button</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>buttons[2]</td>
+      <td>Secondary Button/Grip Trigger</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>buttons[3]</td>
+      <td>Secondary Touchpad/Joystick Button</td>
+      <td>No</td>
+    </tr>
+  </tbody>
+</table>
+<br/>
+<table class="tg"s>
+  <thead>
+    <tr>
+      <th>Axis</th>
+      <th><code>xr-standard</code> Location</th>
+      <th>Required</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>axis[0]</td>
+      <td>Primary Touchpad/Joystick X</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>axis[1]</td>
+      <td>Primary Touchpad/Joystick Y</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>axis[2]</td>
+      <td>Secondary Touchpad/Joystick X</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>axis[3]</td>
+      <td>Secondary Touchpad/Joystick Y</td>
+      <td>No</td>
+    </tr>
+  </tbody>
+</table>
+
+Additional buttons or axes may be exposed after these reserved indices, and SHOULD appear in order of decreasing importance. Devices that lack one of the inputs listed in the tables above MUST still preserve their place in the {{Gamepad/buttons}} or {{Gamepad/axes}} array. If a device has both a touchpad and a joystick the UA MAY designate whichever it chooses to be the primary axis-based input. Buttons reserved by the UA or platform MUST NOT be exposed.
+
+NOTE: This diagram demonstrates how two potential controllers would be exposed with the `xr-standard` mapping. <img src="images/xr-standard-mapping.svg" />
 </section>
 
 Layers {#layers}
@@ -1437,17 +1569,21 @@ XRInputSourceEvent {#xrinputsourceevent-interface}
 interface XRInputSourceEvent : Event {
   readonly attribute XRFrame frame;
   readonly attribute XRInputSource inputSource;
+  readonly attribute long buttonIndex;
 };
 
 dictionary XRInputSourceEventInit : EventInit {
   required XRFrame frame;
   required XRInputSource inputSource;
+  long buttonIndex = -1;
 };
 </pre>
 
 The <dfn attribute for="XRInputSourceEvent">inputSource</dfn> attribute indicates the {{XRInputSource}} that generated this event.
 
 The <dfn attribute for="XRInputSourceEvent">frame</dfn> attribute is an {{XRFrame}} that corresponds with the time that the event took place. It may represent historical data. Any {{XRViewerPose}} queried from the {{XRInputSourceEvent/frame}} MUST have an empty {{XRViewerPose/views}} array.
+
+The <dfn attribute for="XRInputSourceEvent">buttonIndex</dfn> attribute indicates the index of the button in the {{Gamepad/buttons}} array of the {{XRInputSourceEvent/inputSource}}'s {{XRInputSource/gamepad}} that caused the event to be generated. If the {{XRInputSource/gamepad}} is <code>null</code> or the event was not generated by a button interaction the values MUST be <code>-1</code>.
 
 <div class="algorithm" data-algorithm="fire-input-source-event">
 
