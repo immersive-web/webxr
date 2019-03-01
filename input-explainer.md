@@ -284,15 +284,16 @@ Examples of input sources that may expose their state this way include Oculus To
 
   - `Gamepad` instances connected to an `XRInputSource` must not be included in the array returned by `navigator.getGamepads()`.
   - The `Gamepad`'s `index` attribute must be `-1`.
-  - The `Gamepad`'s `connected` attribute must always be `true`.
+  - The `Gamepad`'s `connected` attribute must be `true` unless the related `XRInputSource` is removed from the `inputSources` array or the related `XRSession` is ended.
 
 Finally, the `id` attribute for `Gamepad`s surfaced by the WebXR API are more strictly formatted than those of traditional gamepads in order to make them a more appropriate key for determining rendering assets.
 
   - The `id` MAY be `'unknown'` if the type of input source cannot be reliably identified or the UA determines that the input source type must be masked for any reason. Applications should render a generic input device in this case.
   - Inline sessions MUST only expose `id`s of `'unknown'`.
   - Otherwise the `id` must be a lower-case string that describes the physical input source.
-    - For most devices this SHOULD be of the format `<vendor>-<product-id>`. For example: `oculus-touch`. UAs SHOULD make an effort to align on the strings that are returned for any given device.
-    - It should not include an indication of the handedness of the input source (such as `oculus-touch-left`), as that can be determined from the `handedness` attribute.
+    - The exact format is [still under discussion](https://github.com/immersive-web/webxr/issues/550), but will probably need to include at least an indication of the input device's manufacturer and model. (Such as `oculus-touch`)
+    - It must not include an indication of the handedness of the input source (such as `oculus-touch-left`), as that can be determined from the `handedness` attribute.
+    - UAs SHOULD make an effort to align on the strings that are returned for any given device.
 
 All other attributes behave as described in the [Gamepad](https://w3c.github.io/gamepad/) specification.
 
