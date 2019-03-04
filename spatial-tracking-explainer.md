@@ -300,17 +300,16 @@ let xrReferenceSpace = null;
 
 function onSessionStarted(session) {
   xrSession = session;
-  xrSession.requestReferenceSpace([
-    { type:'unbounded' }, 
-    { type:'stationary', subtype:'eye-level' }
-  ])
-  .then((referenceSpace) => {
+  // First request an unbounded frame of reference.
+  xrSession.requestReferenceSpace({ type:'unbounded' }).then((referenceSpace) => {
     xrReferenceSpace = referenceSpace;
-    if (xrReferenceSpace instanceof XRUnboundedReferenceSpace) {
-      // Set up unbounded experience
-    } else if (xrReferenceSpace instanceof XRStationaryReferenceSpace) {
-      // Build an appropriate fallback experience if needed; perhaps similar to the inline version
-    }
+  }).catch(() => {
+    // If an unbounded reference space is not available, request a stationary
+    // frame of reference as a fallback and adjust the experience as necessary.
+    return xrSession.requestReferenceSpace({ type:'stationary',
+                                             subtype:'eye-level' }).then((referenceSpace) => {
+      xrReferenceSpace = referenceSpace;
+    });
   })
   .then(setupWebGLLayer)
   .then(() => {
@@ -422,7 +421,7 @@ partial dictionary XRSessionCreationOptions {
 partial interface XRSession {
   readonly attribute XRSpace viewerSpace;
 
-  Promise<XRReferenceSpace> requestReferenceSpace(Array<XRReferenceSpaceOptions> preferredOptions);
+  Promise<XRReferenceSpace> requestReferenceSpace(XRReferenceSpaceOptions options);
 };
 
 //
