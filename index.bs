@@ -1185,7 +1185,11 @@ The <dfn attribute for="XRWebGLLayer">stencil</dfn> attribute is <code>true</cod
 
 The <dfn attribute for="XRWebGLLayer">alpha</dfn> attribute is <code>true</code> if the {{framebuffer}} has an alpha buffer attachment and <code>false</code> if no alpha buffer is attached.
 
-The <dfn attribute for="XRWebGLLayer">ignoreDepthValues</dfn> attribute, if <code>true</code>, indicates the [=XR Compositor=] MUST NOT make use of values in the depth buffer attachment when rendering. When the attribute is <code>false</code> it indicates that the content of the depth buffer attachment is expected to be representative of the scene rendered into the layer and the compositor MAY use it for effects such as improved reprojection.
+The <dfn attribute for="XRWebGLLayer">ignoreDepthValues</dfn> attribute, if <code>true</code>, indicates the [=XR Compositor=] MUST NOT make use of values in the depth buffer attachment when rendering. When the attribute is <code>false</code> it indicates that the content of the depth buffer attachment is expected to be representative of the scene rendered into the layer and MAY be used by the [=XR Compositor=].
+
+Depth values stored in the buffer are expected to be between <code>0.0</code> and <code>1.0</code>, with <code>0.0</code> representing the distance of {{XRRenderState/depthNear}} and <code>1.0</code> representing the distance of {{XRRenderState/depthFar}}, with intermediate values interpolated linearly. This is the default behavior of WebGL. (See documentation for the <a href="https://www.khronos.org/registry/OpenGL-Refpages/es2.0/xhtml/glDepthRangef.xml">depthRange function</a> for additional details.))
+
+NOTE: Making the scene's depth buffer available to the compositor allows some platforms to provide quality and comfort improvements such as improved reprojection.
 
 Each {{XRWebGLLayer}} MUST have a <dfn>list of viewports</dfn> which contains one [=WebGL viewport=] for each {{XRView}} the {{XRSession}} currently exposes. The viewports MUST NOT be overlapping. The {{XRWebGLLayer}} MUST also have a <dfn>viewport scale factor</dfn>, initially set to 1.0, and a <dfn>minimum viewport scale factor</dfn> set to a UA-determined value between 0 and 1.
 
