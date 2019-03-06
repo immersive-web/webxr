@@ -948,17 +948,7 @@ The <dfn attribute for="XRRigidTransform">matrix</dfn> attribute returns the tra
 
 An {{XRRigidTransform}} with a {{XRRigidTransform/position}} of <code>{ x: 0, y: 0, z: 0 w: 1 }</code> and an {{XRRigidTransform/orientation}} of <code>{ x: 0, y: 0, z: 0, w: 1 }</code> is known as an <dfn>identity transform</dfn>.
 
-The {{XRRigidTransform/inverse()}} method returns an {{XRRigidTransform}} which, if applied to an object that had previously been transformed by the original {{XRRigidTransform}}, would undo the transform and return the object to it's initial pose.
-
-<div class="algorithm" data-algorithm="rigid-transform-inverse">
-
-When the <dfn method for="XRRigidTransform">inverse()</dfn> method is invoked, the user agent MUST run the following steps:
-
-  1. Figure out WTF the math that goes here should be.
-
-</div>
-
-ISSUE: Obviously the above algorithm should be written out prior to landing.
+The {{XRRigidTransform/inverse()}} method returns a {{XRRigidTransform}} which, if applied to an object that had previously been transformed by the original {{XRRigidTransform}}, would undo the transform and return the object to it's initial pose.
 
 XRRay {#xrray-interface}
 -----
