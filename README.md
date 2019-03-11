@@ -32,7 +32,7 @@ The [WebXR Device API Specification][1] is the repository of the [Immersive Web 
 * [WebXR Device API Specification][1]
 * [Immersive Web Early Adopters Guide][16]
 * [Legacy WebVR API Specification][2]
-* [WebXR Charter][4]
+* [Immersive Web Working Group Charter][4]
 
 
 ## Communication
@@ -72,7 +72,7 @@ Per the [`LICENSE.md`](LICENSE.md) file:
 [1]: https://immersive-web.github.io/webxr/
 [2]: https://immersive-web.github.io/webvr/
 [3]: https://www.w3.org/community/webvr/
-[4]: https://immersive-web.github.io/webxr/charter/
+[4]: https://www.w3.org/2018/09/immersive-web-wg-charter.html
 [5]: https://w3c.github.io/gamepad/
 [6]: https://w3c.github.io/gamepad/extensions.html
 [7]: https://lists.w3.org/Archives/Public/public-webvr/
