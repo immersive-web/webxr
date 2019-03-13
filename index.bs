@@ -847,7 +847,7 @@ The <dfn attribute for="XRView">projectionMatrix</dfn> attribute provides a [=ma
 
 The <dfn attribute for="XRView">transform</dfn> attribute is the {{XRRigidTransform}} of the viewpoint.
 
-NOTE: The {{XRView/transform}} can be used to position camera objects in many rendering libraries. If a more traditional view matrix is needed by the application one can be retrieved by calling `view.transform.inverse().matrix`.
+NOTE: The {{XRView/transform}} can be used to position camera objects in many rendering libraries. If a more traditional view matrix is needed by the application one can be retrieved by calling `view.transform.inverse.matrix`.
 </section>
 
 XRViewport {#xrviewport-interface}
@@ -925,8 +925,7 @@ interface XRRigidTransform {
   readonly attribute DOMPointReadOnly position;
   readonly attribute DOMPointReadOnly orientation;
   readonly attribute Float32Array matrix;
-
-  XRRigidTransform inverse();
+  readonly attribute XRRigidTransform inverse;
 };
 </pre>
 
@@ -948,11 +947,11 @@ The <dfn attribute for="XRRigidTransform">position</dfn> attribute is a 3-dimens
 
 The <dfn attribute for="XRRigidTransform">orientation</dfn> attribute is a quaternion describing the rotational component of the transform. The {{XRRigidTransform/orientation}} MUST be normalized to have a length of <code>1.0</code>.
 
-The <dfn attribute for="XRRigidTransform">matrix</dfn> attribute returns the transform described by the {{XRRigidTransform/position}} and {{XRRigidTransform/orientation}} attributes as a [=matrix=].
+The <dfn attribute for="XRRigidTransform">matrix</dfn> attribute returns the transform described by the {{XRRigidTransform/position}} and {{XRRigidTransform/orientation}} attributes as a [=matrix=]. This attribute SHOULD be lazily evaluated.
+
+The <dfn attribute for="XRRigidTransform">inverse</dfn> attribute returns a {{XRRigidTransform}} which, if applied to an object that had previously been transformed by the original {{XRRigidTransform}}, would undo the transform and return the object to it's initial pose. This attribute SHOULD be lazily evaluated.
 
 An {{XRRigidTransform}} with a {{XRRigidTransform/position}} of <code>{ x: 0, y: 0, z: 0 w: 1 }</code> and an {{XRRigidTransform/orientation}} of <code>{ x: 0, y: 0, z: 0, w: 1 }</code> is known as an <dfn>identity transform</dfn>.
-
-The {{XRRigidTransform/inverse()}} method returns a {{XRRigidTransform}} which, if applied to an object that had previously been transformed by the original {{XRRigidTransform}}, would undo the transform and return the object to it's initial pose.
 
 XRRay {#xrray-interface}
 -----

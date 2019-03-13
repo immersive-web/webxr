@@ -262,7 +262,7 @@ function drawScene(view) {
   let viewMatrix = null;
   let projectionMatrix = null;
   if (view) {
-    viewMatrix = view.transform.inverse().matrix;
+    viewMatrix = view.transform.inverse.matrix;
     projectionMatrix = view.projectionMatrix;
   } else {
     viewMatrix = defaultViewMatrix;
