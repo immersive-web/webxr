@@ -361,7 +361,6 @@ enum XREnvironmentBlendMode {
 
 [SecureContext, Exposed=Window] interface XRSession : EventTarget {
   // Attributes
-  readonly attribute XRSessionMode mode;
   readonly attribute XREnvironmentBlendMode environmentBlendMode;
   readonly attribute XRRenderState renderState;
   readonly attribute XRSpace viewerSpace;
@@ -388,13 +387,15 @@ enum XREnvironmentBlendMode {
 };
 </pre>
 
+Each {{XRSession}} has an <dfn for="XRSession">mode</dfn> which is the {{XRSessionMode}} it was created with.
+
 <div class="algorithm" data-algorithm="initialize-session">
 
 When an {{XRSession}} is created, the user agent MUST <dfn>initialize the session</dfn> by running the following steps:
 
   1. Let |session| be the newly created {{XRSession}} object.
   1. Let |mode| be the {{XRSessionMode}} passed to {{requestSession()}}.
-  1. Initialize |session|'s {{XRSession/mode}} to |mode|.
+  1. Initialize |session|'s [=XRSession/mode=] to |mode|.
   1. [=Initialize the render state=].
   1. If no other features of the user agent have done so already, perform the necessary platform-specific steps to initialize the device's tracking and rendering capabilities.
 
@@ -608,7 +609,7 @@ When an {{XRSession}} |session| receives updated [=viewer=] state from the [=/XR
 
   1. If |session|'s [=list of pending render states=] is not empty, [=apply pending render states=].
   1. If |session|'s {{XRSession/renderState}}'s {{XRRenderState/baseLayer}} is <code>null</code>, abort these steps.
-  1. If |session|'s  {{XRSession/mode}} is {{XRSessionMode/inline}} and |session|'s {{XRSession/renderState}}'s {{XRRenderState/outputContext}} is <code>null</code>, abort these steps.
+  1. If |session|'s  [=XRSession/mode=] is {{XRSessionMode/inline}} and |session|'s {{XRSession/outputContext}} is <code>null</code>, abort these steps.
   1. Let |callbacks| be a list of the entries in |session|'s [=list of animation frame callback=], in the order in which they were added to the list.
   1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
   1. Set |frame|'s [=active=] boolean to <code>true</code>.
@@ -796,7 +797,7 @@ When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a ref
   1. If |type| is {{identity}} let |referenceSpace| be a new {{XRReferenceSpace}}.
   1. If |type| is {{stationary}} and |options| does not have a {{XRReferenceSpaceOptions/subtype}} field, throw {{TypeError}}.
   1. Else if |type| is {{bounded}} or {{unbounded}} and |options| has a {{XRReferenceSpaceOptions/subtype}} field, throw a {{TypeError}}.
-  1. If |type| is {{stationary}}, let |referenceSpace| be a new {{XRStationaryReferenceSpace}} with a {{XRStationaryReferenceSpace/subtype}} of |options| {{XRReferenceSpaceOptions/subtype}}.
+  1. If |type| is {{stationary}}, let |referenceSpace| be a new {{XRStationaryReferenceSpace}}.
   1. Else if |type| is {{bounded}}, let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
   1. Else if |type| is {{unbounded}}, let |referenceSpace| be a new {{XRUnboundedReferenceSpace}}.
   1. Return |referenceSpace|.
@@ -811,11 +812,8 @@ An {{XRStationaryReferenceSpace}} represents a tracking space that the user is n
 <pre class="idl">
 [SecureContext, Exposed=Window]
 interface XRStationaryReferenceSpace : XRReferenceSpace {
-  readonly attribute XRStationaryReferenceSpaceSubtype subtype;
 };
 </pre>
-
-The {{XRStationaryReferenceSpace}}'s <dfn attribute for="XRStationaryReferenceSpace">subtype</dfn> attribute is the {{XRStationaryReferenceSpaceSubtype}} that the {{XRStationaryReferenceSpace}} was created with.
 
 XRBoundedReferenceSpace {#xrboundedreferencespace-interface}
 ----------------------------
@@ -1276,9 +1274,6 @@ interface XRWebGLLayer : XRLayer {
   readonly attribute XRWebGLRenderingContext context;
 
   readonly attribute boolean antialias;
-  readonly attribute boolean depth;
-  readonly attribute boolean stencil;
-  readonly attribute boolean alpha;
   readonly attribute boolean ignoreDepthValues;
 
   readonly attribute WebGLFramebuffer framebuffer;
@@ -1304,9 +1299,6 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
   1. If |context|'s [=XR compatible=] boolean is false, throw an {{InvalidStateError}} and abort these steps.
   1. Initialize |layer|'s {{XRWebGLLayer/context}} to |context|.
   1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layerInit|'s {{XRWebGLLayerInit/antialias}} value.
-  1. Initialize |layer|'s {{XRWebGLLayer/depth}} to |layerInit|'s {{XRWebGLLayerInit/depth}} value.
-  1. Initialize |layer|'s {{XRWebGLLayer/stencil}} to |layerInit|'s {{XRWebGLLayerInit/stencil}} value.
-  1. Initialize |layer|'s {{XRWebGLLayer/alpha}} to |layerInit|'s {{XRWebGLLayerInit/alpha}} value.
   1. If |layerInit|'s {{XRWebGLLayerInit/ignoreDepthValues}} value is <code>false</code> and the [=XR Compositor=] will make use of depth values, Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>false</code>.
   1. Else Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>true</code>
   1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] created with |context|.
@@ -1327,12 +1319,6 @@ The <dfn attribute for="XRWebGLLayer">framebuffer</dfn> attribute of an {{XRWebG
 The <dfn attribute for="XRWebGLLayer">framebufferWidth</dfn> and <dfn attribute for="XRWebGLLayer">framebufferHeight</dfn> attributes return the width and height of the {{framebuffer}}'s attachments, respectively.
 
 The <dfn attribute for="XRWebGLLayer">antialias</dfn> attribute is <code>true</code> if the {{framebuffer}} supports antialiasing using a technique of the UAs choosing, and <code>false</code> if no antialiasing will be performed.
-
-The <dfn attribute for="XRWebGLLayer">depth</dfn> attribute is <code>true</code> if the {{framebuffer}} has a depth buffer attachment and <code>false</code> if no depth buffer is attached.
-
-The <dfn attribute for="XRWebGLLayer">stencil</dfn> attribute is <code>true</code> if the {{framebuffer}} has a stencil buffer attachment and <code>false</code> if no stencil buffer is attached.
-
-The <dfn attribute for="XRWebGLLayer">alpha</dfn> attribute is <code>true</code> if the {{framebuffer}} has an alpha buffer attachment and <code>false</code> if no alpha buffer is attached.
 
 The <dfn attribute for="XRWebGLLayer">ignoreDepthValues</dfn> attribute, if <code>true</code>, indicates the [=XR Compositor=] MUST NOT make use of values in the depth buffer attachment when rendering. When the attribute is <code>false</code> it indicates that the content of the depth buffer attachment will be used by the [=XR Compositor=] and is expected to be representative of the scene rendered into the layer.
 
@@ -1381,8 +1367,8 @@ Each {{XRSession}} MUST identify a <dfn>native WebGL framebuffer resolution</dfn
 The [=native WebGL framebuffer resolution=] is determined by running the following steps:
 
   1. Let |session| be the target {{XRSession}}.
-  1. If |session|'s {{XRSession/mode}} value is not <code>"inline"</code>, set the [=native WebGL framebuffer resolution=] to the resolution required to have a 1:1 ratio between the pixels of a framebuffer large enough to contain all of the session's {{XRView}}s and the physical screen pixels in the area of the display under the highest magnification and abort these steps. If no method exists to determine the native resolution as described, the [=recommended WebGL framebuffer resolution=] MAY be used.
-  1. If |session|'s {{XRSession/mode}} value is <code>"inline"</code>, set the [=native WebGL framebuffer resolution=] to the size of the |session|'s {{XRSession/renderState}}'s {{XRRenderState/outputContext}}'s {{XRPresentationContext/canvas}} in physical display pixels and reevaluate these steps every time the size of the canvas changes or the {{XRRenderState/outputContext}} is changed.
+  1. If |session|'s [=XRSession/mode=] value is not <code>"inline"</code>, set the [=native WebGL framebuffer resolution=] to the resolution required to have a 1:1 ratio between the pixels of a framebuffer large enough to contain all of the session's {{XRView}}s and the physical screen pixels in the area of the display under the highest magnification and abort these steps. If no method exists to determine the native resolution as described, the [=recommended WebGL framebuffer resolution=] MAY be used.
+  1. If |session|'s [=XRSession/mode=] value is <code>"inline"</code>, set the [=native WebGL framebuffer resolution=] to the size of the |session|'s {{XRSession/renderState}}'s {{XRRenderState/outputContext}}'s {{XRPresentationContext/canvas}} in physical display pixels and reevaluate these steps every time the size of the canvas changes or the {{XRRenderState/outputContext}} is changed.
 
 </div>
 

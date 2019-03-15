@@ -633,7 +633,6 @@ enum XRSessionMode {
 }
 
 [SecureContext, Exposed=Window] interface XRSession : EventTarget {
-  readonly attribute XRSessionMode mode;
   readonly attribute XREnvironmentBlendMode environmentBlendMode;
   readonly attribute XRRenderState renderState;
 
@@ -732,9 +731,6 @@ typedef (WebGLRenderingContext or
 interface XRWebGLLayer : XRLayer {
   readonly attribute XRWebGLRenderingContext context;
   readonly attribute boolean antialias;
-  readonly attribute boolean depth;
-  readonly attribute boolean stencil;
-  readonly attribute boolean alpha;
   readonly attribute boolean ignoreDepthValues;
 
   readonly attribute unsigned long framebufferWidth;
