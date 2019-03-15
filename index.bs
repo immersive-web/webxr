@@ -729,7 +729,7 @@ An {{XRReferenceSpace}} is obtained by calling {{XRSession/requestReferenceSpace
 
   - Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRReferenceSpaceType">unbounded</dfn> creates an {{XRUnboundedReferenceSpace}} instance if supported by the [=/XR device=] and the {{XRSession}}.
 
-If a {{XRReferenceSpaceOptions/type}} of {{XRReferenceSpaceType/stationary}} is specified a {XRReferenceSpaceOptions/subtype}} must also be given:
+If a {{XRReferenceSpaceOptions/type}} of {{XRReferenceSpaceType/stationary}} is specified a {{XRReferenceSpaceOptions/subtype}} must also be given:
 
   - Passing a {{XRReferenceSpaceOptions/subtype}} of <dfn enum-value for="XRStationaryReferenceSpaceSubtype">eye-level</dfn> creates an {{XRStationaryReferenceSpace}} with it's origin near the user's head at the time of creation. The exact position and orientation will be initialized based on the conventions of the underlying platform.
   
