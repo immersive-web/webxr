@@ -1163,7 +1163,8 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
   1. Initialize |layer|'s {{XRWebGLLayer/depth}} to |layerInit|'s {{XRWebGLLayerInit/depth}} value.
   1. Initialize |layer|'s {{XRWebGLLayer/stencil}} to |layerInit|'s {{XRWebGLLayerInit/stencil}} value.
   1. Initialize |layer|'s {{XRWebGLLayer/alpha}} to |layerInit|'s {{XRWebGLLayerInit/alpha}} value.
-  1. Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to |layerInit|'s {{XRWebGLLayerInit/ignoreDepthValues}} value.
+  1. If |layerInit|'s {{XRWebGLLayerInit/ignoreDepthValues}} value is <code>false</code> and the [=XR Compositor=] will make use of depth values, Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>false</code>.
+  1. Else Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>true</code>
   1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] created with |context|.
   1. Initialize the |layer|'s [=swap chain=].
   1. If |layer|'s [=swap chain=] was unable to be created for any reason, throw an {{OperationError}} and abort these steps.
@@ -1189,7 +1190,7 @@ The <dfn attribute for="XRWebGLLayer">stencil</dfn> attribute is <code>true</cod
 
 The <dfn attribute for="XRWebGLLayer">alpha</dfn> attribute is <code>true</code> if the {{framebuffer}} has an alpha buffer attachment and <code>false</code> if no alpha buffer is attached.
 
-The <dfn attribute for="XRWebGLLayer">ignoreDepthValues</dfn> attribute, if <code>true</code>, indicates the [=XR Compositor=] MUST NOT make use of values in the depth buffer attachment when rendering. When the attribute is <code>false</code> it indicates that the content of the depth buffer attachment is expected to be representative of the scene rendered into the layer and MAY be used by the [=XR Compositor=].
+The <dfn attribute for="XRWebGLLayer">ignoreDepthValues</dfn> attribute, if <code>true</code>, indicates the [=XR Compositor=] MUST NOT make use of values in the depth buffer attachment when rendering. When the attribute is <code>false</code> it indicates that the content of the depth buffer attachment will be used by the [=XR Compositor=] and is expected to be representative of the scene rendered into the layer.
 
 Depth values stored in the buffer are expected to be between <code>0.0</code> and <code>1.0</code>, with <code>0.0</code> representing the distance of {{XRRenderState/depthNear}} and <code>1.0</code> representing the distance of {{XRRenderState/depthFar}}, with intermediate values interpolated linearly. This is the default behavior of WebGL. (See documentation for the <a href="https://www.khronos.org/registry/OpenGL-Refpages/es2.0/xhtml/glDepthRangef.xml">depthRange function</a> for additional details.))
 

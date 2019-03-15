@@ -530,7 +530,7 @@ Some applications may violate that assumption, such as when using certain deferr
 let webglLayer = new XRWebGLLayer(xrSession, gl, { ignoreDepthValues: true });
 ```
 
-If `ignoreDepthValues` is not set to `true` the The UA is allowed (but not required) to use depth buffer as it sees fit. As a result, barring compositor access to the depth buffer in this way may lead to certain platform or UA features being unavailable or less robust.
+If `ignoreDepthValues` is not set to `true` the The UA is allowed (but not required) to use depth buffer as it sees fit. As a result, barring compositor access to the depth buffer in this way may lead to certain platform or UA features being unavailable or less robust. To detect if the depth buffer is being used by the compositor, check the `ignoreDepthValues` attribute of the `XRWebGLLayer` after the layer is created. A value of `true` indicates that the depth buffer will not be utilized by the compositor even if `ignoreDepthValues` was set to `false` during layer creation.
 
 ### Handling non-opaque displays
 
