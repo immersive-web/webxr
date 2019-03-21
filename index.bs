@@ -937,6 +937,7 @@ The <dfn constructor for="XRRigidTransform">XRRigidTransform(|position|, |orient
 
   1. Let |transform| be a new {{XRRigidTransform}}.
   1. If |position| is not a {{DOMPointInit}} initialize |transform|'s {{XRRigidTransform/position}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
+  1. If |position|'s {{DOMPointReadOnly/w}} value is not 1.0, throw a {{TypeError}}.
   1. Else initialize |transform|'s {{XRRigidTransform/position}}’s {{DOMPointReadOnly/x}} value to |position|'s x dictionary member, {{DOMPointReadOnly/y}} value to |position|'s y dictionary member, {{DOMPointReadOnly/z}} value to |position|'s z dictionary member and {{DOMPointReadOnly/w}} to <code>1.0</code>.
   1. If |orientation| is not a {{DOMPointInit}} initialize |transform|'s {{XRRigidTransform/orientation}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
   1. Else initialize |transform|'s {{XRRigidTransform/orientation}}’s {{DOMPointReadOnly/x}} value to |orientation|'s x dictionary member, {{DOMPointReadOnly/y}} value to |orientation|'s y dictionary member, {{DOMPointReadOnly/z}} value to |orientation|'s z dictionary member and {{DOMPointReadOnly/w}} value to |orientation|'s w dictionary member.
