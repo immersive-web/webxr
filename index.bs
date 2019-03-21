@@ -176,7 +176,7 @@ XR {#xr-interface}
 [SecureContext, Exposed=Window] interface XR : EventTarget {
   // Methods
   Promise&lt;void&gt; supportsSessionMode(XRSessionMode mode);
-  Promise&lt;XRSession&gt; requestSession(optional XRSessionCreationOptions parameters);
+  Promise&lt;XRSession&gt; requestSession(XRSessionMode mode);
 
   // Events
   attribute EventHandler ondevicechange;
@@ -251,9 +251,8 @@ The {{XR}} object has a <dfn>pending immersive session</dfn> boolean, which MUST
 
 <div class="algorithm" data-algorithm="request-session">
 
-When the <dfn method for="XR">requestSession(|options|)</dfn> method is invoked, the user agent MUST return [=a new Promise=] |promise| and run the following steps [=in parallel=]:
+When the <dfn method for="XR">requestSession(|mode|)</dfn> method is invoked, the user agent MUST return [=a new Promise=] |promise| and run the following steps [=in parallel=]:
 
-  1. Let |mode| be the {{XRSessionCreationOptions/mode}} attribute of the |options| argument.
   1. Let |immersive| be a boolean set to <code>true</code> if |mode| is {{immersive-vr}} or {{immersive-ar}} and <code>false</code> otherwise.
   1. If |immersive| is <code>true</code>: 
     1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an {{InvalidStateError}} and abort these steps.
@@ -278,12 +277,34 @@ The following code attempts to retrieve an {{immersive-vr}} {{XRSession}}.
 <pre highlight="js">
 let xrSession;
 
-navigator.xr.requestSession({ mode: "immersive-vr" }).then((session) => {
+navigator.xr.requestSession("immersive-vr").then((session) => {
   xrSession = session;
 });
 </pre>
 </div>
 
+<section class="unstable">
+XRSessionMode {#xrsessionmode-enum}
+-------------------------
+
+The {{XRSessionMode}} enum defines the modes that an {{XRSession}} can operate in.
+
+<pre class="idl">
+enum XRSessionMode {
+  "inline",
+  "immersive-vr",
+  "immersive-ar"
+};
+</pre>
+
+  - A session mode of <dfn enum-value for="XRSessionMode">inline</dfn> indicates that the session's output will be shown as an element in the HTML document. {{inline}} session content MAY be displayed in mono or stereo and MAY allow for [=viewer=] tracking. User agents MUST allow {{inline}} sessions to be created for any [=/XR device=].
+  - A session mode of <dfn enum-value for="XRSessionMode">immersive-vr</dfn> indicates that the session's output will be given [=exclusive access=] to the [=/XR device=] display and that content <b>is not</b> intended to be integrated with the user's environment. The {{environmentBlendMode}} for {{immersive-vr}} sessions is expected to be {{opaque}} when possible, but MAY be {{additive}} if the hardware requires it.
+  - A session mode of <dfn enum-value for="XRSessionMode">immersive-ar</dfn> indicates that the session's output will be given [=exclusive access=] to the [=/XR device=] display and that content <b>is</b> intended to be integrated with the user's environment. The {{environmentBlendMode}} MUST NOT be {{opaque}} for {{immersive-ar}} sessions.
+
+An <dfn>immersive session</dfn> refers to either an {{immersive-vr}} or an {{immersive-ar}} session. [=Immersive sessions=] MUST provide some level of [=viewer=] tracking, and content MUST be shown at the proper scale relative to the user and/or the surrounding environment. Additionally, [=Immersive sessions=] MUST be given <dfn>exclusive access</dfn> to the [=/XR device=], meaning that while the [=immersive session=] is not [=blurred=] the HTML document is not shown on the [=/XR device=]'s display, nor is content from other applications shown on the [=/XR device=]'s display.
+
+NOTE: Examples of ways [=exclusive access=] may be presented include stereo content displayed on a virtual reality or augmented reality headset, or augmented reality content displayed fullscreen on a mobile device.
+</section>
 
 Session {#session}
 =======
@@ -460,42 +481,6 @@ We still need to document what happens when we <dfn lt="blur all sessions">blur 
 We still need to document what happens when we <dfn>poll the device pose</dfn> (This is <a href="https://github.com/immersive-web/webxr/issues/480">filed</a>.)
 
 We still need to document how the<dfn>list of active input sources</dfn> is maintained. (This is <a href="https://github.com/immersive-web/webxr/issues/465">filed</a>.)
-
-<section class="unstable">
-XRSessionMode {#xrsessionmode-enum}
--------------------------
-
-The {{XRSessionMode}} enum defines the modes that an {{XRSession}} can operate in.
-
-<pre class="idl">
-enum XRSessionMode {
-  "inline",
-  "immersive-vr",
-  "immersive-ar"
-};
-</pre>
-
-  - A session mode of <dfn enum-value for="XRSessionMode">inline</dfn> indicates that the session's output will be shown as an element in the HTML document. {{inline}} session content MAY be displayed in mono or stereo and MAY allow for [=viewer=] tracking. User agents MUST allow {{inline}} sessions to be created for any [=/XR device=].
-  - A session mode of <dfn enum-value for="XRSessionMode">immersive-vr</dfn> indicates that the session's output will be given [=exclusive access=] to the [=/XR device=] display and that content <b>is not</b> intended to be integrated with the user's environment. The {{environmentBlendMode}} for {{immersive-vr}} sessions is expected to be {{opaque}} when possible, but MAY be {{additive}} if the hardware requires it.
-  - A session mode of <dfn enum-value for="XRSessionMode">immersive-ar</dfn> indicates that the session's output will be given [=exclusive access=] to the [=/XR device=] display and that content <b>is</b> intended to be integrated with the user's environment. The {{environmentBlendMode}} MUST NOT be {{opaque}} for {{immersive-ar}} sessions.
-
-An <dfn>immersive session</dfn> refers to either an {{immersive-vr}} or an {{immersive-ar}} session. [=Immersive sessions=] MUST provide some level of [=viewer=] tracking, and content MUST be shown at the proper scale relative to the user and/or the surrounding environment. Additionally, [=Immersive sessions=] MUST be given <dfn>exclusive access</dfn> to the [=/XR device=], meaning that while the [=immersive session=] is not [=blurred=] the HTML document is not shown on the [=/XR device=]'s display, nor is content from other applications shown on the [=/XR device=]'s display.
-
-NOTE: Examples of ways [=exclusive access=] may be presented include stereo content displayed on a virtual reality or augmented reality headset, or augmented reality content displayed fullscreen on a mobile device.
-</section>
-
-<section class="unstable">
-XRSessionCreationOptions {#xrsessioncreationoptions-interface}
--------------------------
-
-The {{XRSessionCreationOptions}} dictionary provides a <dfn>session description</dfn>, indicating the desired properties of a session to be returned from {{requestSession()}}.
-
-<pre class="idl">
-dictionary XRSessionCreationOptions {
-  XRSessionMode mode = "inline";
-};
-</pre>
-</section>
 
 XRRenderState {#xrrenderstate-interface}
 -------------
@@ -815,7 +800,7 @@ An {{XRUnboundedReferenceSpace}} represents a tracking space where the user is e
 <pre class="idl">
 [SecureContext, Exposed=Window] 
 interface XRUnboundedReferenceSpace : XRReferenceSpace {
-};  
+};
 </pre>
 
 Views {#views}

@@ -318,18 +318,6 @@ function onSessionStarted(session) {
 }
 ```
 
-While many sites will be able to provide this fallback, for some sites this will not be possible.  Under these circumstances, it is instead preferable for session creation to reject rather than spin up immersive display/tracking systems only to immediately exit the session.
-
-```js
-function beginImmersiveSession() {
-  xrDevice.requestSession({ immersive: true,  requiredReferenceSpaceType:'unbounded' })
-      .then(onSessionStarted)
-      .catch(err => {
-        // Error will indicate required reference space type unavailable
-      });
-}
-```
-
 ### Floor Alignment
 Some XR hardware with inside-out tracking has users establish "known spaces" that can be used to easily provide `XRBoundedReferenceSpace` and the `floor-level` subtype of `XRStationaryReferenceSpace`.  On inside-out XR hardware which does not intrinsically provide these known spaces, the User Agent must still provide `XRStationaryReferenceSpace` of subtype `floor-level`.  It may do so by estimating a floor level, but may not present any UI at the time the reference space is requested.  
 
