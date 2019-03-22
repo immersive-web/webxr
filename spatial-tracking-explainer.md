@@ -203,9 +203,9 @@ One of the core features of any XR platform is its ability to track spatial rela
 When working with real-world spaces, it is important to be able to express transforms exclusively in terms of position and orientation. In WebXR this is done through the `XRRigidTransform` which contains a `position` vector and an `orientation` quaternion. When interpreting an `XRRigidTransform` the `orientation` is applied prior to the `position`. This means that, for example, a transform that indicates a quarter rotation to the right and a 1-meter translation along -Z would place a transformed object at `[0, 0, -1]` facing to the right. `XRRigidTransform`s also have a `matrix` attribute that reports the same transform as a 4×4 matrix when needed. By definition, the matrix of a rigid transform cannot contain scale or skew.
 
 #### Poses
-On a frame-by-frame basis, developers can query the location of any `XRSpace` relative to another `XRSpace` via the `XRFrame.getPose()` function. This function takes the `space` parameter which is the `XRSpace` to locate and the `relativeTo` parameter which defines the coordinate system in which the resulting `XRPose` should be returned. The `transform` attribute of `XRPose` is an `XRRigidTransform` representing the location of `space` within `relativeTo`. 
+On a frame-by-frame basis, developers can query the location of any `XRSpace` relative to another `XRSpace` via the `XRFrame.getPose()` function. This function takes the `sourceSpace` parameter which is the `XRSpace` to locate and the `destinationSpace` parameter which defines the coordinate system in which the resulting `XRPose` should be returned. The `transform` attribute of `XRPose` is an `XRRigidTransform` from `sourceSpace` to `destinationSpace`, its `position` element represents the location of `sourceSpace`'s origin within `destinationSpace`'s coordinate system.
 
-Developers should always check the result from `getPose()` as it will be null on frames in which `space`'s location cannot be determined within `relativeTo`. This may happen due to overall tracking loss, `space` or `relativeTo` not being locatable, or for other reasons. While the `relativeTo` parameter is an `XRSpace`, developers will often choose to supply a `XRReferenceSpace` as the `relativeTo` parameter so that coordinates will be consistent with those used for rendering. For more information on rendering, see the main [WebXR explainer](explainer.md). 
+Developers should always check the result from `getPose()` as it will be null on frames in which `sourceSpace`'s location cannot be determined within `destinationSpace`. This may happen due to overall tracking loss, `sourceSpace` or `destinationSpace` not being locatable, or for other reasons. While the `destinationSpace` parameter is an `XRSpace`, developers will often choose to supply a `XRReferenceSpace` as the `destinationSpace` parameter so that coordinates will be consistent with those used for rendering. For more information on rendering, see the main [WebXR explainer](explainer.md).
 
 ```js
   let pose = frame.getPose(xrSpace, xrReferenceSpace);
@@ -232,21 +232,50 @@ Calls to `XRFrame.getViewerPose()` return an `XRViewerPose` object which contain
 ### Application-supplied transforms
 Frequently developers will want to provide an additional, artificial transform on top of the user's tracked motion to allow the user to navigate larger virtual scenes than their tracking systems or physical space allows. This effect is traditionally accomplished by mathematically combining the API-provided transform with the desired additional application transforms. WebXR offers developers a simplification to ensure that all tracked values, such as viewer and input poses, are transformed consistently.
 
-Developers can specify application-specific transforms by setting the `originOffset` attribute of any `XRReferenceSpace`. The `originOffset` is initialized to an identity transform, and any values queried using the `XRReferenceSpace` will be offset by the `position` and `orientation` the `originOffset` describes. The `XRReferenceSpace`'s `originOffset` can be updated at any time and will immediately take effect, meaning that any subsequent poses queried with the `XRReferenceSpace` will take into account the new `originOffset`. Previously queried values will not be altered. Changing the `originOffset` between pose queries in a single frame is not advised, since it will cause inconsistencies in the tracking data and rendered output.
+Developers can specify application-specific transforms by setting the `originOffset` attribute of any `XRReferenceSpace`, it is a transform from the effective `XRReferenceSpace` to the underlying unmodified `XRReferenceSpace`. The `originOffset` is initialized to an identity transform. Any values queried using the `XRReferenceSpace` will be modified by the inverse of the `originOffset` transform. The `XRReferenceSpace`'s `originOffset` can be updated at any time and will immediately take effect, meaning that any subsequent poses queried with the `XRReferenceSpace` will take into account the new `originOffset`. Previously queried values will not be altered. Changing the `originOffset` between pose queries in a single frame is not advised, since it will cause inconsistencies in the tracking data and rendered output.
 
-A common use case for this attribute would be for a "teleportation" mechanic, where the user "jumps" to a new point in the virtual scene, after which the selected point is treated as the new virtual origin which all tracked motion is relative to.
+`originOffset.orientation` rotates the effective reference space around its origin, and `originOffset.position` contains the coordinates of the effective reference space's origin in the unmodified reference space's coordinate system.
+
+A common use case for this attribute would be for a "teleportation" mechanic, where the user "jumps" to a new point in the virtual scene. Changing originOffset's position moves the reference space origin, this corresponds to the user teleporting the same distance in the opposite direction.
 
 ```js
-// Teleport the user a certain number of meters along the X, Y, and Z axes
-function teleport(deltaX, deltaY, deltaZ) {
+// Teleport the user a certain number of meters along the X, Y, and Z axes,
+// for example deltaX=1 means the virtual world view changes as if the user had
+// taken a 1m step to the right, so the new reference space pose should
+// have its X value increased by 1m.
+function teleportRelative(deltaX, deltaY, deltaZ) {
   let currentOrigin = xrReferenceSpace.originOffset;
+  // Move the user by moving the reference space in the opposite direction,
+  // adjusting originOffset's position by the inverse delta.
   xrReferenceSpace.originOffset = new XRRigidTransform(
-      { x: currentOrigin.position.x + deltaX,
-        y: currentOrigin.position.y + deltaY,
-        z: currentOrigin.position.z + deltaZ },
+      { x: currentOrigin.position.x - deltaX,
+        y: currentOrigin.position.y - deltaY,
+        z: currentOrigin.position.z - deltaZ },
       currentOrigin.orientation);
-}
 ```
+
+Care is needed when combining teleportation with rotation, especially in 6DoF environments where the viewer pose moves around relative to the unmodified reference space origin. Placing the viewer at a specific location in reference space requires setting up the `originOffset` so that the new pose as calculated in the new reference space matches the desired new location. The user's pose in the unmodified reference space is unaffected by teleportation (it represents the actual pose in the real world relative to the unmodified reference space origin), and `originOffset` transforms from effective reference space to the unmodified reference space, so a teleport must preserve the identity that `newOriginOffset.matrix * newViewerPose == oldOriginOffset.matrix * oldViewerPose`, or equivalently `newViewerPose == newOriginOffset.inverse.matrix * oldOriginOffset.matrix * oldViewerPose`.
+
+The following example rotates the effective reference space left around its Y axis by 90 degrees, and places the effective reference space origin at location (2, 0, 3) in the original reference space:
+
+```js
+let position = {x: 2, y: 0, z: 3, w: 1};
+// let orientation = quaternion.fromAxisAngle({0, 1, 0}, 90 * Math.Pi / 180)
+let orientation = {x: 0, y: Math.sqrt(0.5), z: 0, w: Math.sqrt(0.5)};
+xrReferenceSpace.originOffset = new XRRigidTransform(position, orientation);
+// => xrReferenceSpace.originOffset.matrix (in column-major element order)
+//   [0, 0, -1, 0,
+//    0, 1,  0, 0,
+//    1, 0,  0, 0,
+//    2, 0,  3, 1]
+// = (as matrix with vertical columns)
+//    0 0 1 2
+//    0 1 0 0
+//   -1 0 0 3
+//    0 0 0 1
+```
+
+In this example, if the viewer pose was previously at location (0, 1.6, 0) in the original reference space, looking along the original reference space's -Z axis, the modified pose in the effective reference space will have position (3, 1.6, -2) and orientation looking along the effective reference space's +X axis. If the user walks 1m straight ahead, their position changes to (4, 1.6, -2) in the effective reference space.
 
 ### Relating between reference spaces
 There are several circumstances in which developers may choose to relate content in different reference spaces.

@@ -641,7 +641,7 @@ An {{XRFrame}} represents a snapshot of the state of all of the tracked objects 
   readonly attribute XRSession session;
 
   XRViewerPose? getViewerPose(XRReferenceSpace referenceSpace);
-  XRPose? getPose(XRSpace space, XRSpace relativeTo);
+  XRPose? getPose(XRSpace sourceSpace, XRSpace destinationSpace);
 };
 </pre>
 
@@ -658,20 +658,20 @@ When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method 
   1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
   1. If |referenceSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
   1. If the [=viewer=]'s pose cannot be determined relative to |referenceSpace|, return <code>null</code>
-  1. Return a new {{XRViewerPose}} describing the [=viewer=]'s pose relative to the origin of |referenceSpace| at the timestamp of the {{XRFrame}}.
+  1. Return a new {{XRViewerPose}} with an {{XRRigidTransform}} from the [=viewer=] space to |referenceSpace| at the timestamp of the {{XRFrame}}. The transform's {{XRRigidTransform/position}} is the location of the [=viewer=] in reference space coordinates.
 
 </div>
 
 <div class="algorithm unstable" data-algorithm="get-pose">
 
-When the <dfn method for="XRFrame">getPose(|space|, |relativeTo|)</dfn> method is invoked, the user agent MUST run the following steps:
+When the <dfn method for="XRFrame">getPose(|destinationSpace|, |sourceSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
 
   1. If the {{XRFrame}}'s [=active=] boolean is <code>false</code>, throw a {{InvalidStateError}} and abort these steps.
   1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
-  1. If |space|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
-  1. If |relativeTo|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
-  1. If |space|'s pose cannot be determined relative to |relativeTo|, return <code>null</code>
-  1. Return a new {{XRPose}} describing |space|'s pose relative to the origin of |relativeTo|.
+  1. If |destinationSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
+  1. If |sourceSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
+  1. If |destinationSpace|'s pose cannot be determined relative to |sourceSpace|, return <code>null</code>
+  1. Return a new {{XRPose}} containing the {{XRRigidTransform}} from |sourceSpace| to |destinationSpace|. The transform's {{XRRigidTransform/position}} is the location of the |sourceSpace| origin in |destinationSpace| coordinates.
 
 </div>
 
@@ -681,7 +681,7 @@ Spaces {#spaces}
 XRSpace {#xrspace-interface}
 ------------------
 
-An {{XRSpace}} describes an entity that is tracked by the [=/XR device=]'s tracking systems. {{XRSpace}}s MAY NOT have a fixed spatial relationship to one another or to any given {{XRReferenceSpace}}. The transform between two {{XRSpace}} can be evaluated by calling an {{XRFrame}}'s {{XRFrame/getPose()}} method. The interface is intentionally opaque.
+An {{XRSpace}} describes an entity that is tracked by the [=/XR device=]'s tracking systems. It conceptually corresponds to a specific origin and orientation, but does not directly expose any numerical coordinate values. {{XRSpace}}s MAY NOT have a fixed spatial relationship to one another or to any given {{XRReferenceSpace}}. The current transform between two {{XRSpace}}s can be evaluated by calling an {{XRFrame}}'s {{XRFrame/getPose()}} method. The interface is intentionally opaque.
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRSpace : EventTarget {
@@ -746,7 +746,7 @@ Note: The {{position-disabled}} subtype is primarily intended for use with pre-r
 Devices that support {{XRReferenceSpaceType/stationary}} reference spaces MUST support all {{XRStationaryReferenceSpaceSubtype}}s.
 
 <section class="unstable">
-The <dfn attribute for="XRReferenceSpace">originOffset</dfn> attribute is a {{XRRigidTransform}} that describes an additional translation and rotation to be applied to any poses queried using the {{XRReferenceSpace}}. It is initially set to an [=identity transform=]. Changes to the {{originOffset}} take effect immediately, and subsequent poses queried with the {{XRReferenceSpace}} will take into account the new transform.
+The <dfn attribute for="XRReferenceSpace">originOffset</dfn> attribute is a settable {{XRRigidTransform}} that affects all poses queried using that {{XRReferenceSpace}}. It is a transform from the effective {{XRReferenceSpace}} to the underlying unmodified {{XRReferenceSpace}}, and is initially set to an [=identity transform=]. Changes to the {{originOffset}} take effect immediately, and subsequent poses queried with the {{XRReferenceSpace}} will use the effective reference space that takes into account the new transform, applying the inverse of the {{originOffset}} to the pose that would have been returned from the same reference space with an identity {{originOffset}}.
 
 Note: Changing the {{originOffset}} between pose queries in a single [=XR animation frame=] is not advised, since it will cause inconsistencies in the tracking data and rendered output.
 </section>
@@ -849,7 +849,7 @@ The <dfn attribute for="XRView">eye</dfn> attribute describes which eye this vie
 
 The <dfn attribute for="XRView">projectionMatrix</dfn> attribute provides a [=matrix=] describing the projection to be used when rendering the [=view=]. It is <b>strongly recommended</b> that applications use this matrix without modification or decomposition. The {{projectionMatrix}} MAY include transformations such as shearing that prevent the projection from being accurately described by a simple frustum. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
 
-The <dfn attribute for="XRView">transform</dfn> attribute is the {{XRRigidTransform}} of the viewpoint.
+The <dfn attribute for="XRView">transform</dfn> attribute is the {{XRRigidTransform}} from viewpoint space to the reference space used for the parent {{XRViewerPose}} query.
 
 NOTE: The {{XRView/transform}} can be used to position camera objects in many rendering libraries. If a more traditional view matrix is needed by the application one can be retrieved by calling `view.transform.inverse.matrix`.
 </section>
@@ -920,7 +920,7 @@ To <dfn>normalize</dfn> a list of components the UA MUST perform the following s
 XRRigidTransform {#xrrigidtransform-interface}
 ----------------
 
-An {{XRRigidTransform}} is a transform described by a {{XRRigidTransform/position}} and {{XRRigidTransform/orientation}}. When interpreting an {{XRRigidTransform}} the {{XRRigidTransform/orientation}} is always applied prior to the {{XRRigidTransform/position}}.
+An {{XRRigidTransform}} is a transform from a source {{XRSpace}} to a destination {{XRSpace}} described by a {{XRRigidTransform/position}} and {{XRRigidTransform/orientation}}. When applying an {{XRRigidTransform}} the {{XRRigidTransform/orientation}} is always applied prior to the {{XRRigidTransform/position}}. Effectively, the source space is rotated around its origin using the {{XRRigidTransform/orientation}}, and then the source space's origin is translated to the {{XRRigidTransform/position}} in destination space.
 
 <pre class="idl">
 [SecureContext, Exposed=Window,
@@ -948,13 +948,13 @@ The <dfn constructor for="XRRigidTransform">XRRigidTransform(|position|, |orient
 
 </div>
 
-The <dfn attribute for="XRRigidTransform">position</dfn> attribute is a 3-dimensional point, given in meters, describing the translation component of the transform. The {{XRRigidTransform/position}}'s {{DOMPointReadOnly/w}} attribute MUST be <code>1.0</code>.
+The <dfn attribute for="XRRigidTransform">position</dfn> attribute is a 3-dimensional point, given in meters, for the source space's origin location in the destination space's coordinate system. The {{XRRigidTransform/position}}'s {{DOMPointReadOnly/w}} attribute MUST be <code>1.0</code>.
 
 The <dfn attribute for="XRRigidTransform">orientation</dfn> attribute is a quaternion describing the rotational component of the transform. The {{XRRigidTransform/orientation}} MUST be normalized to have a length of <code>1.0</code>.
 
-The <dfn attribute for="XRRigidTransform">matrix</dfn> attribute returns the transform described by the {{XRRigidTransform/position}} and {{XRRigidTransform/orientation}} attributes as a [=matrix=]. This attribute SHOULD be lazily evaluated.
+The <dfn attribute for="XRRigidTransform">matrix</dfn> attribute returns the transform described by the {{XRRigidTransform/position}} and {{XRRigidTransform/orientation}} attributes as a [=matrix=]. This attribute SHOULD be lazily evaluated. The top left 3x3 sub-matrix is the rotation matrix corresponding to the {{XRRigidTransform/orientation}}, its column values are the source space's axis directions as unit vector coordinates in destination space. The fourth column contains the {{XRRigidTransform/position}}. Premultiplying this matrix onto a column vector of source space coordinates produces a column vector of destination space coordinates.
 
-The <dfn attribute for="XRRigidTransform">inverse</dfn> attribute returns a {{XRRigidTransform}} which, if applied to an object that had previously been transformed by the original {{XRRigidTransform}}, would undo the transform and return the object to it's initial pose. This attribute SHOULD be lazily evaluated.
+The <dfn attribute for="XRRigidTransform">inverse</dfn> attribute is an inverted {{XRRigidTransform}} that transforms from destination space to source space. If applied to an object that had previously been transformed by the original {{XRRigidTransform}}, it would undo the transform and return the object to its initial pose. This attribute SHOULD be lazily evaluated.
 
 An {{XRRigidTransform}} with a {{XRRigidTransform/position}} of <code>{ x: 0, y: 0, z: 0 w: 1 }</code> and an {{XRRigidTransform/orientation}} of <code>{ x: 0, y: 0, z: 0, w: 1 }</code> is known as an <dfn>identity transform</dfn>.
 
@@ -1481,7 +1481,7 @@ dictionary XRReferenceSpaceEventInit : EventInit {
 
 The <dfn attribute for="XRReferenceSpaceEvent">referenceSpace</dfn> attribute indicates the {{XRReferenceSpace}} that generated this event.
 
-The <dfn attribute for="XRReferenceSpaceEvent">transform</dfn> attribute describes the transform the {{XRReferenceSpaceEvent/referenceSpace}} underwent during this event, if applicable.
+The <dfn attribute for="XRReferenceSpaceEvent">transform</dfn> attribute describes the transform the {{XRReferenceSpaceEvent/referenceSpace}} underwent during this event, if applicable, providing the transform from the old state's space to the new state's space.
 
 Event Types {#event-types}
 -----------
