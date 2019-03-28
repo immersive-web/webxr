@@ -847,7 +847,7 @@ enum XREye {
 
 The <dfn attribute for="XRView">eye</dfn> attribute describes which eye this view is expected to be shown to. This attribute's primary purpose is to ensure that pre-rendered stereo content can present the correct portion of the content to the correct eye. If the view does not have an intrinsically associated eye (the display is monoscopic, for example) this attribute MUST be set to {{XREye/"left"}}.
 
-The <dfn attribute for="XRView">projectionMatrix</dfn> attribute provides a [=matrix=] describing the projection to be used when rendering the [=view=]. It is <b>strongly recommended</b> that applications use this matrix without modification. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
+The <dfn attribute for="XRView">projectionMatrix</dfn> attribute provides a [=matrix=] describing the projection to be used when rendering the [=view=]. It is <b>strongly recommended</b> that applications use this matrix without modification or decomposition. The {{projectionMatrix}} MAY include transformations such as shearing that prevent the projection from being accurately described by a simple frustum. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
 
 The <dfn attribute for="XRView">transform</dfn> attribute is the {{XRRigidTransform}} of the viewpoint.
 
