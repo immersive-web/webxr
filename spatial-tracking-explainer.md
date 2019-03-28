@@ -255,7 +255,7 @@ There are several circumstances in which developers may choose to relate content
 It is expected that developers will often choose to preview `immersive` experiences with a similar experience `inline`. In this situation, users often expect to see the scene from the same perspective when they make the transition from `inline` to `immersive`. To accomplish this, developers should grab the `transform` of the last `XRViewerPose` retrieved using the `inline` session's `XRReferenceSpace` and set it as the `originOffset` of the `immersive` session's `XRReferenceSpace`. The same logic applies in the reverse when exiting `immersive`.
 
 #### Unbounded to Bounded 
-When building an experience that is predominantly based on an `XRUnboundedReferenceSpace`, developers may occasionally choose to switch to an `XRBoundedReferenceSpace`.  For example, a whole-home renovation experience might choose to switch to a bounded reference space for reviewing a furniture selection library.  If necessary to continue displaying content belonging to the previous reference space, developers may call the `XRFrame`'s `getPose()` method to re-parent nearby virtual content to the new reference space.
+When building an experience that is predominantly based on an `unbounded` reference space, developers may occasionally choose to switch to a `bounded` reference space. For example, a whole-home renovation experience might choose to switch to a bounded reference space for reviewing a furniture selection library.  If necessary to continue displaying content belonging to the previous reference space, developers may call the `XRFrame`'s `getPose()` method to re-parent nearby virtual content to the new reference space.
 
 ### Click-and-drag view controls
 Frequently with inline sessions it's desirable to have the view rotate when the user interacts with the inline canvas. This is useful on devices without tracking capabilities to allow users to still view the full scene, but can also be desirable on devices with some tracking capabilities, such as a mobile phone or tablet, as a way to adjust the users view without requiring them to physically turn around.
@@ -289,10 +289,10 @@ inlineCanvas.addEventListener('pointermove', onPointerMove);
 ## Practical-usage guidelines
 
 ### Inline sessions
-Inline sessions, by definition, do not require a user gesture or user permission to create, and as a result there must be strong limitations on the pose data that can be reported for privacy and security reasons. Requests for `identity` reference spaces will always succeed. Requests for an `XRBoundedReferenceSpace` or an `XRUnboundedReferenceSpace` will always be rejected on inline sessions. Requests for an `XRStationaryReferenceSpace` may succeed but may also be rejected if the UA is unable provide any tracking information such as for an inline session on a desktop PC or a 2D browser window in a headset. The UA is also allowed to request the user's consent prior to returning an `XRStationaryReferenceSpace`.
+Inline sessions, by definition, do not require a user gesture or user permission to create, and as a result there must be strong limitations on the pose data that can be reported for privacy and security reasons. Requests for `identity` reference spaces will always succeed. Requests for a `bounded` or an `unbounded` reference space will always be rejected on inline sessions. Requests for a `stationary` reference space may succeed but may also be rejected if the UA is unable provide any tracking information such as for an inline session on a desktop PC or a 2D browser window in a headset. The UA is also allowed to request the user's consent prior to returning a `stationary` reference space.
 
 ### Ensuring hardware compatibility
-Immersive sessions will always be able to provide a `XRStationaryReferenceSpace`, but may not support other `XRReferenceSpace` types due to hardware limitations.  Developers are strongly encouraged to follow the spirit of [progressive enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement) and provide a reasonable fallback behavior if their desired `XRBoundedReferenceSpace` or `XRUnboundedReferenceSpace` is unavailable.  In many cases it will be adequate for this fallback to behave similarly to an inline preview experience.
+Immersive sessions will always be able to provide `stationary` reference spaces, but may not support other `XRReferenceSpace` types due to hardware limitations.  Developers are strongly encouraged to follow the spirit of [progressive enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement) and provide a reasonable fallback behavior if their desired `bounded` or `unbounded` reference space is unavailable.  In many cases it will be adequate for this fallback to behave similarly to an inline preview experience.
 
 ```js
 let xrSession = null;
@@ -319,9 +319,9 @@ function onSessionStarted(session) {
 ```
 
 ### Floor Alignment
-Some XR hardware with inside-out tracking has users establish "known spaces" that can be used to easily provide `XRBoundedReferenceSpace` and the `floor-level` subtype of `XRStationaryReferenceSpace`.  On inside-out XR hardware which does not intrinsically provide these known spaces, the User Agent must still provide `XRStationaryReferenceSpace` of subtype `floor-level`.  It may do so by estimating a floor level, but may not present any UI at the time the reference space is requested.  
+Some XR hardware with inside-out tracking has users establish "known spaces" that can be used to easily provide `bounded` reference spaces and the `floor-level` subtype of `stationary` reference spaces.  On inside-out XR hardware which does not intrinsically provide these known spaces, the User Agent must still provide `stationary` reference space of subtype `floor-level`.  It may do so by estimating a floor level, but may not present any UI at the time the reference space is requested.  
 
-Additionally, XR hardware with orientation-only tracking may also provide an emulated value for the floor offset of an `XRStationaryReferenceSpace` with the `floor-level` subtype.  On these devices, it is recommended that the User Agent or underlying platform provide a setting for users to customize this value.
+Additionally, XR hardware with orientation-only tracking may also provide an emulated value for the floor offset of a `stationary` reference space with the `floor-level` subtype.  On these devices, it is recommended that the User Agent or underlying platform provide a setting for users to customize this value.
 
 ### Reset Event
 The `XRReferenceSpace` type has an event, `onreset`, that is fired when a discontinuity of the reference space's origin occurs.  This discontinuity may be caused for different reasons for each type, but the result is essentially the same, the perception of the user's location will have changed.  In response, pages may wish to reposition virtual elements in the scene or clear any additional transforms, such as teleportation transforms, that may no longer be needed.  The `onreset` event will fire prior to any poses being delivered with the new origin/direction, and all poses queried following the event must be relative to the reset origin/direction. 
@@ -346,9 +346,9 @@ Example reasons `onreset` may fire:
 * Some XR systems have a mechanism for allowing the user to reset which direction is "forward" or re-center the scene's origin at their current location.
 * When a user steps outside the bounds of a "known" playspace and enters a different "known" playspace
 * An inside-out based tracking system is temporarily unable to locate the user (ex: due to poor lighting conditions) and is unable to relate the new map fragment to the previous map fragment when it recovers
-* When the user has travelled far enough from the origin of an `XRUnboundedReferenceSpace` that floating point error would become problematic
+* When the user has travelled far enough from the origin of an `unbounded` reference space that floating point error would become problematic
 
-The `onreset` event will **NOT** fire as an `XRUnboundedReferenceSpace` makes small changes to its origin as part of maintaining space stability near the user; these are considered minor corrections rather than a discontinuity in the origin.
+The `onreset` event will **NOT** fire as an `unbounded` reference space makes small changes to its origin as part of maintaining space stability near the user; these are considered minor corrections rather than a discontinuity in the origin.
 
 ## Appendix A : Miscellaneous
 
@@ -467,8 +467,15 @@ enum XRReferenceSpaceType {
   "unbounded"
 };
 
+enum XRStationaryReferenceSpaceSubtype {
+  "eye-level",
+  "floor-level",
+  "position-disabled"
+}
+
 dictionary XRReferenceSpaceOptions {
   required XRReferenceSpaceType type;
+  XRStationaryReferenceSpaceSubtype subtype;
 };
 
 [SecureContext, Exposed=Window] interface XRReferenceSpace : XRSpace {
@@ -478,38 +485,12 @@ dictionary XRReferenceSpaceOptions {
 };
 
 //
-// Stationary Reference Space
-//
-
-enum XRStationaryReferenceSpaceSubtype {
-  "eye-level",
-  "floor-level",
-  "position-disabled"
-}
-
-dictionary XRStationaryReferenceSpaceOptions : XRReferenceSpaceOptions {
-  required XRStationaryReferenceSpaceSubtype subtype;
-};
-
-[SecureContext, Exposed=Window]
-interface XRStationaryReferenceSpace : XRReferenceSpace {
-};
-
-//
 // Bounded Reference Space
 //
 
 [SecureContext, Exposed=Window]
 interface XRBoundedReferenceSpace : XRReferenceSpace {
   readonly attribute FrozenArray<DOMPointReadOnly> boundsGeometry;
-};
-
-//
-// Unbounded Reference Space
-//
-
-[SecureContext, Exposed=Window] 
-interface XRUnboundedReferenceSpace : XRReferenceSpace {
 };
 
 //
