@@ -664,7 +664,7 @@ When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method 
 
 <div class="algorithm unstable" data-algorithm="get-pose">
 
-When the <dfn method for="XRFrame">getPose(|destinationSpace|, |sourceSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
+When the <dfn method for="XRFrame">getPose(|sourceSpace|, |destinationSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
 
   1. If the {{XRFrame}}'s [=active=] boolean is <code>false</code>, throw a {{InvalidStateError}} and abort these steps.
   1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
