@@ -1131,7 +1131,13 @@ The <dfn attribute for="XRInputSource">gripSpace</dfn> attribute is an {{XRSpace
 
 The {{gripSpace}} MUST be <code>null</code> if the input source isn't inherently trackable such as for input sources with a {{targetRayMode}} of {{XRTargetRayMode/gaze}} or {{XRTargetRayMode/screen}}.
 
-The <dfn attribute for="XRInputSource">gamepad</dfn> attribute is a {{Gamepad}} that describes the state of any buttons and axes on the input device. If the {{XRInputSource}} does not represent a device with either multiple buttons or at least one axis the {{gamepad}} attribute MUST be <code>null</code>. 
+The <dfn attribute for="XRInputSource">gamepad</dfn> attribute is a {{Gamepad}} that describes the state of any buttons and axes on the input device. If the device does not have at least one of the following properties, the {{gamepad}} attribute MUST be <code>null</code>:
+
+ - Multiple buttons
+ - A button which reports analog values
+ - An axis
+
+NOTE: {{XRInputSource}}s with a <code>null</code> {{gamepad}} can still fire {{select}}, {{selectstart}}, and {{selectend}} events to report binary inputs.
 </section>
 
 <section class="unstable">
