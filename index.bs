@@ -681,7 +681,7 @@ Spaces {#spaces}
 XRSpace {#xrspace-interface}
 ------------------
 
-An {{XRSpace}} describes an entity that is tracked by the [=/XR device=]'s tracking systems. It conceptually corresponds to a specific origin and orientation, but does not directly expose any numerical coordinate values. {{XRSpace}}s MAY NOT have a fixed spatial relationship to one another or to any given {{XRReferenceSpace}}. The current transform between two {{XRSpace}}s can be evaluated by calling an {{XRFrame}}'s {{XRFrame/getPose()}} method. The interface is intentionally opaque.
+An {{XRSpace}} describes an entity that is tracked by the [=/XR device=]'s tracking systems. It conceptually corresponds to a specific origin and orientation, but does not directly expose any numerical coordinate values. The spacial relationships between {{XRSpace}}s or {{XRReferenceSpace}} change over time in response to movement of tracked entities, but can also change without real-world movement as a result of ongoing tracking system recalibration. The transform between two {{XRSpace}}s at the time represented by an {{XRFrame}} can be evaluated by calling the frame's {{XRFrame/getPose()}} method. The interface is intentionally opaque.
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRSpace : EventTarget {
