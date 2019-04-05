@@ -561,19 +561,19 @@ Whenever possible the matrices given by `XRView`'s `projectionMatrix` attribute 
 
 By default a vertical field of view of 0.5 radians (90 degrees) is used for inline sessions. The horizontal field of view can be computed from the vertical field of view based on the width/height ratio of the `outputContext`'s canvas.
 
-If a different default field of view is desired, it can be specified by passing a new `verticalFieldOfView` value, in radians, to the `updateRenderState` method:
+If a different default field of view is desired, it can be specified by passing a new `inlineVerticalFieldOfView` value, in radians, to the `updateRenderState` method:
 
 ```js
 // This changes the default vertical field of view for an inline session to
 // 0.4 radians (72 degrees).
 xrSession.updateRenderState({
-  verticalFieldOfView: 0.4 * Math.PI,
+  inlineVerticalFieldOfView: 0.4 * Math.PI,
 });
 ```
 
 The UA is allowed to clamp the value, and if a physically-based field of view is available it must always be used in favor of the default value.
 
-Attempting to set a `verticalFieldOfView` value on an immersive session will cause `updateRenderState()` to throw an `InvalidStateError`. `XRRenderState.verticalFieldOfView` must return `null` on immersive sessions.
+Attempting to set a `inlineVerticalFieldOfView` value on an immersive session will cause `updateRenderState()` to throw an `InvalidStateError`. `XRRenderState.inlineVerticalFieldOfView` must return `null` on immersive sessions.
 
 ## Appendix A: I don’t understand why this is a new API. Why can’t we use…
 
@@ -666,7 +666,7 @@ enum XREnvironmentBlendMode {
 dictionary XRRenderStateInit {
   double depthNear;
   double depthFar;
-  double verticalFieldOfView;
+  double inlineVerticalFieldOfView;
   XRLayer? baseLayer;
   XRPresentationContext? outputContext
 };
@@ -674,7 +674,7 @@ dictionary XRRenderStateInit {
 [SecureContext, Exposed=Window] interface XRRenderState {
   readonly attribute double depthNear;
   readonly attribute double depthFar;
-  readonly attribute double? verticalFieldOfView;
+  readonly attribute double? inlineVerticalFieldOfView;
   readonly attribute XRLayer? baseLayer;
   readonly attribute XRPresentationContext? outputContext;
 };
