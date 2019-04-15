@@ -756,15 +756,19 @@ enum XRReferenceSpaceType {
   "unbounded"
 };
 
-[SecureContext, Exposed=Window] interface XRReferenceSpace : XRSpace {
-  attribute XRRigidTransform originOffset;
+
+[SecureContext, Exposed=Window,
+ Constructor(XRReferenceSpace base, XRRigidTransform originOffset)]
+interface XRReferenceSpace : XRSpace {
+  readonly attribute XRReferenceSpace? base;
+  readonly attribute XRRigidTransform originOffset;
   attribute EventHandler onreset;
 };
 </pre>
 
 Each {{XRReferenceSpace}} has a <dfn for="XRReferenceSpace">type</dfn>, which is an {{XRReferenceSpaceType}}.
 
-An {{XRReferenceSpace}} is obtained by calling {{XRSession/requestReferenceSpace()}}, which creates an instance of an {{XRReferenceSpace}} or an interface extending it, determined by the {{XRReferenceSpaceType}} enum value passed into the call. The type indicates the tracking behavior that the reference space will exhibit:
+An {{XRReferenceSpace}} is most frequently obtained by calling {{XRSession/requestReferenceSpace()}}, which creates an instance of an {{XRReferenceSpace}} or an interface extending it, determined by the {{XRReferenceSpaceType}} enum value passed into the call. The type indicates the tracking behavior that the reference space will exhibit:
 
   - Passing a type of <dfn enum-value for="XRReferenceSpaceType">identity</dfn> creates an {{XRReferenceSpace}} instance. It represents a reference space where the [=viewer=] is always at the [=native origin=]. Only the {{XRSession/viewerSpace}} and {{XRInputSource/targetRaySpace}}'s of {{XRInputSource}}'s with an {{XRInputSource/targetRayMode}} of {{XRTargetRayMode/screen}} can be spatially related to an {{identity}} reference space.
 
@@ -782,10 +786,20 @@ Devices that support any of the following {{XRReferenceSpaceType}}s MUST support
 
 Note: The {{position-disabled}} type is primarily intended for use with pre-rendered media such as panoramic photos or videos. It should not be used for most other media types due to user discomfort associated with the lack of a neck model or full positional tracking.
 
+<!--
+The <dfn constructor for="XRReferenceSpace">XRReferenceSpace(|base|, |originOffset|)</dfn> constructor MUST perform the following steps when invoked:
+
+  1. Let |refSpace| be a new {{XRReferenceSpace}}.
+  1. If |base|'s {{XRReferenceSpace/base}} is <code>null</code>, set |refSpace|'s {{XRReferenceSpace/base}} to |base|.
+  1. Else set |refSpace|'s {{XRReferenceSpace/base}} to |base|'s {{XRReferenceSpace/base}}.
+  1. Set |refSpace|'s {{XRReferenceSpace/originOffset}} to |originOffset| multiplied by |base|'s {{XRReferenceSpace/originOffset}}.
+  1. Return |refSpace|.
+
+</div>
+-->
+
 <section class="unstable">
 The <dfn attribute for="XRReferenceSpace">originOffset</dfn> attribute gets and sets the {{XRReferenceSpace}}'s [=XRSpace/origin offset=]. Changes to the {{originOffset}} take effect immediately, and subsequent poses queried with the {{XRReferenceSpace}} will take into account the [=effective origin=].
-
-Note: Changing the {{originOffset}} between pose queries in a single [=XR animation frame=] is not advised, since it will cause inconsistencies in the tracking data and rendered output.
 </section>
 
 The <dfn attribute for="XRReferenceSpace">onreset</dfn> attribute is an [=Event handler IDL attribute=] for the {{reset}} event type.
@@ -799,6 +813,7 @@ When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a ref
   1. If |type| is {{bounded}}, let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
   1. Else let |referenceSpace| be a new {{XRReferenceSpace}}.
   1. Initialize |referenceSpace|'s [=XRReferenceSpace/type=] to be |type|.
+  1. Set |referenceSpace|'s {{XRReferenceSpace/originOffset}} to an [=identity transform=].
   1. Initialize [=XRSpace/session=] to be |session|.
   1. Return |referenceSpace|.
 
@@ -820,9 +835,22 @@ The origin of a {{XRBoundedReferenceSpace}} MUST be positioned at the floor, suc
 
 Note: Other XR platforms sometimes refer to the type of tracking offered by a {{bounded}} reference space as "room scale" tracking. An {{XRBoundedReferenceSpace}} is not intended to describe multi-room spaces, areas with uneven floor levels, or very large open areas. Content that needs to handle those scenarios should use an {{unbounded}} reference space.
 
+The <dfn constructor for="XRBoundedReferenceSpace">XRBoundedReferenceSpace(|base|, |originOffset|)</dfn> constructor MUST perform the following steps when invoked:
+
+  1. Let |refSpace| be a new {{XRBoundedReferenceSpace}}.
+  1. If |base|'s {{XRReferenceSpace/base}} is <code>null</code>, set |refSpace|'s {{XRReferenceSpace/base}} to |base|.
+  1. Else set |refSpace|'s {{XRReferenceSpace/base}} to |base|'s {{XRReferenceSpace/base}}.
+  1. Set |refSpace|'s {{XRReferenceSpace/originOffset}} to |originOffset| multiplied by |base|'s {{XRReferenceSpace/originOffset}}.
+  1. Set |refSpace|'s {{boundsGeometry}} to |base|'s {{boundsGeometry}}, with each point transformed by the {{XRRigidTransform/inverse}} of |originOffset|.
+  1. Return |refSpace|.
+
+</div>
+
 The <dfn attribute for="XRBoundedReferenceSpace">boundsGeometry</dfn> attribute describes the border around the {{XRBoundedReferenceSpace}}, which the user can expect to safely move within. 
 
-The polygonal boundary is given as an array of {{DOMPointReadOnly}}s, which represents a loop of points at the edges of the safe space. The points describe offsets from the {{XRReferenceSpace}} origin in meters. Points MUST be given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The {{DOMPointReadOnly/y}} value of each point MUST be <code>0</code> and the {{DOMPointReadOnly/w}} value of each point MUST be <code>1</code>. The bounds can be considered to originate at the floor and extend infinitely high. The shape it describes MAY be convex or concave.
+The polygonal boundary is given as an array of {{DOMPointReadOnly}}s, which represents a loop of points at the edges of the safe space. The points describe offsets from the {{XRReferenceSpace}} origin in meters.
+
+The following restrictions apply to the points prior to transformation by the {{XRReferenceSpace/originOffset}}: Points MUST be given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The {{DOMPointReadOnly/y}} value of each point MUST be <code>0</code> and the {{DOMPointReadOnly/w}} value of each point MUST be <code>1</code>. The bounds can be considered to originate at the floor and extend infinitely high. The shape it describes MAY be convex or concave.
 
 Note: Content should not require the user to move beyond the {{boundsGeometry}}. It is possible for the user to move beyond the bounds if their physical surroundings allow for it, resulting in position values outside of the polygon they describe. This is not an error condition and should be handled gracefully by page content.
 
