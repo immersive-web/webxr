@@ -420,7 +420,7 @@ When the <dfn method for="XRSession">updateRenderState(|newState|)</dfn> method 
   1. Let |session| be the target {{XRSession}}.
   1. If |session|'s [=ended=] value is <code>true</code>, throw an {{InvalidStateError}} and abort these steps.
   1. If |newState|'s {{XRRenderStateInit/baseLayer}}'s was created with an {{XRSession}} other than |session|, throw an {{InvalidStateError}} and abort these steps.
-  1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set and |session|'s {{XRSession/mode}} is not {{XRSessionMode/inline}}, throw an {{InvalidStateError}} and abort these steps.
+  1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set and |session| is an [=immersive session=], throw an {{InvalidStateError}} and abort these steps.
   1. Append |newState| to |session|'s [=list of pending render states=].
 
 </div>
@@ -570,8 +570,8 @@ When an {{XRRenderState}} object is created for an {{XRSession}} |session|, the 
   1. Let |state| be the newly created {{XRRenderState}} object.
   1. Initialize |state|'s {{XRRenderState/depthNear}} to <code>0.1</code>.
   1. Initialize |state|'s {{XRRenderState/depthFar}} to <code>1000.0</code>.
-  1. If |session|'s {{XRSession/mode}} is {{XRSessionMode/inline}}, initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} to <code>PI * 0.5</code>.
-  1. Else initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} to <code>null</code>.
+  1. If |session| is an [=immersive session=], initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} to <code>null</code>.
+  1. Else initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} to <code>PI * 0.5</code>.
   1. Initialize |state|'s {{XRRenderState/baseLayer}} to <code>null</code>.
   1. Initialize |state|'s {{XRRenderState/outputContext}} to <code>null</code>.
 
@@ -581,7 +581,7 @@ The <dfn attribute for="XRRenderState">depthNear</dfn> attribute defines the dis
 
 {{XRRenderState/depthNear}} and {{XRRenderState/depthFar}} is used in the computation of the {{XRView/projectionMatrix}} of {{XRView}}s and determines how the values of an {{XRWebGLLayer}} depth buffer are interpreted. {{XRRenderState/depthNear}} MAY be greater than {{XRRenderState/depthFar}}.
 
-The <dfn attribute for="XRRenderState">inlineVerticalFieldOfView</dfn> attribute defines the default vertical field of view in radians used when computing projection matrices for {{XRSessionMode/inline}} {{XRSession}}s. The projection matrix calculation also takes into account the aspect ratio of the {{XRRenderState/outputContext}}'s {{XRPresentationContext/canvas}}. This value MUST be <code>null</code> for {{XRSessionMode/immersive-vr}} and {{XRSessionMode/immersive-ar}} {{XRSession}}s.
+The <dfn attribute for="XRRenderState">inlineVerticalFieldOfView</dfn> attribute defines the default vertical field of view in radians used when computing projection matrices for {{XRSessionMode/inline}} {{XRSession}}s. The projection matrix calculation also takes into account the aspect ratio of the {{XRRenderState/outputContext}}'s {{XRPresentationContext/canvas}}. This value MUST be <code>null</code> for [=immersive sessions=].
 
 Animation Frames {#animation-frames}
 ----------------
