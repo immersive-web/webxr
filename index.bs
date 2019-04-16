@@ -771,12 +771,10 @@ dictionary XRReferenceSpaceOptions {
   XRStationaryReferenceSpaceSubtype subtype;
 };
 
-
-[SecureContext, Exposed=Window,
- Constructor(XRReferenceSpace base, XRRigidTransform originOffset)]
+[SecureContext, Exposed=Window]
 interface XRReferenceSpace : XRSpace {
-  readonly attribute XRReferenceSpace? base;
-  readonly attribute XRRigidTransform originOffset;
+  XRReferenceSpace getOffsetReferenceSpace(XRRigidTransform originOffset);
+
   attribute EventHandler onreset;
 };
 </pre>
@@ -803,22 +801,6 @@ Note: The {{position-disabled}} subtype is primarily intended for use with pre-r
   
 Devices that support {{XRReferenceSpaceType/stationary}} reference spaces MUST support all {{XRStationaryReferenceSpaceSubtype}}s.
 
-<!--
-The <dfn constructor for="XRReferenceSpace">XRReferenceSpace(|base|, |originOffset|)</dfn> constructor MUST perform the following steps when invoked:
-
-  1. Let |refSpace| be a new {{XRReferenceSpace}}.
-  1. If |base|'s {{XRReferenceSpace/base}} is <code>null</code>, set |refSpace|'s {{XRReferenceSpace/base}} to |base|.
-  1. Else set |refSpace|'s {{XRReferenceSpace/base}} to |base|'s {{XRReferenceSpace/base}}.
-  1. Set |refSpace|'s {{XRReferenceSpace/originOffset}} to |originOffset| multiplied by |base|'s {{XRReferenceSpace/originOffset}}.
-  1. Return |refSpace|.
-
-</div>
--->
-
-<section class="unstable">
-The <dfn attribute for="XRReferenceSpace">originOffset</dfn> attribute gets and sets the {{XRReferenceSpace}}'s [=XRSpace/origin offset=]. Changes to the {{originOffset}} take effect immediately, and subsequent poses queried with the {{XRReferenceSpace}} will take into account the [=effective origin=].
-</section>
-
 The <dfn attribute for="XRReferenceSpace">onreset</dfn> attribute is an [=Event handler IDL attribute=] for the {{reset}} event type.
 
 <div class="algorithm" data-algorithm="create-reference-space">
@@ -836,8 +818,21 @@ When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a ref
   1. If |type| is {{stationary}}, let |referenceSpace| be a new {{XRStationaryReferenceSpace}} with a [=XRStationaryReferenceSpace/subtype=] of |options|'s {{XRReferenceSpaceOptions/subtype}}.
   1. Else if |type| is {{bounded}}, let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
   1. Else if |type| is {{unbounded}}, let |referenceSpace| be a new {{XRUnboundedReferenceSpace}}.
-  1. Set |referenceSpace|'s {{XRReferenceSpace/originOffset}} to an [=identity transform=].
   1. Return |referenceSpace|.
+
+</div>
+
+<div class="algorithm" data-algorithm="get-offset-space">
+The <dfn method for="XRReferenceSpace">getOffsetReferenceSpace(|originOffset|)</dfn> method MUST perform the following steps when invoked:
+
+  1. Let |base| be the {{XRReferenceSpace}} the method was called on.
+  1. If |base| is an instance of {{XRStationaryReferenceSpace}}, let |offsetSpace| be a new {{XRStationaryReferenceSpace}}.
+  1. Else if |base| is an instance of {{XRBoundedReferenceSpace}}, let |offsetSpace| be a new {{XRBoundedReferenceSpace}} and set |offsetSpace|'s {{boundsGeometry}} to |base|'s {{boundsGeometry}}, with each point transformed by the {{XRRigidTransform/inverse}} of |originOffset|.
+  1. Else if |base| is an instance of {{XRUnboundedReferenceSpace}}, let |offsetSpace| be a new {{XRUnboundedReferenceSpace}}.
+  1. Else let |offsetSpace| be a new {{XRReferenceSpace}}.
+  1. Set |offsetSpace|'s [=native origin=] to |base|'s [=native origin=].
+  1. Set |offsetSpace|'s [=origin offset=] to the result of [=multiply transforms|multiplying=] |originOffset| by |base|'s [=origin offset=].
+  1. Return |offsetSpace|.
 
 </div>
 
@@ -870,22 +865,11 @@ The origin of a {{XRBoundedReferenceSpace}} MUST be positioned at the floor, suc
 
 Note: Other XR platforms sometimes refer to the type of tracking offered by a {{bounded}} reference space as "room scale" tracking. An {{XRBoundedReferenceSpace}} is not intended to describe multi-room spaces, areas with uneven floor levels, or very large open areas. Content that needs to handle those scenarios should use an {{XRUnboundedReferenceSpace}}.
 
-The <dfn constructor for="XRBoundedReferenceSpace">XRBoundedReferenceSpace(|base|, |originOffset|)</dfn> constructor MUST perform the following steps when invoked:
-
-  1. Let |refSpace| be a new {{XRBoundedReferenceSpace}}.
-  1. If |base|'s {{XRReferenceSpace/base}} is <code>null</code>, set |refSpace|'s {{XRReferenceSpace/base}} to |base|.
-  1. Else set |refSpace|'s {{XRReferenceSpace/base}} to |base|'s {{XRReferenceSpace/base}}.
-  1. Set |refSpace|'s {{XRReferenceSpace/originOffset}} to |originOffset| multiplied by |base|'s {{XRReferenceSpace/originOffset}}.
-  1. Set |refSpace|'s {{boundsGeometry}} to |base|'s {{boundsGeometry}}, with each point transformed by the {{XRRigidTransform/inverse}} of |originOffset|.
-  1. Return |refSpace|.
-
-</div>
-
 The <dfn attribute for="XRBoundedReferenceSpace">boundsGeometry</dfn> attribute describes the border around the {{XRBoundedReferenceSpace}}, which the user can expect to safely move within. 
 
 The polygonal boundary is given as an array of {{DOMPointReadOnly}}s, which represents a loop of points at the edges of the safe space. The points describe offsets from the {{XRReferenceSpace}} origin in meters.
 
-The following restrictions apply to the points prior to transformation by the {{XRReferenceSpace/originOffset}}: Points MUST be given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The {{DOMPointReadOnly/y}} value of each point MUST be <code>0</code> and the {{DOMPointReadOnly/w}} value of each point MUST be <code>1</code>. The bounds can be considered to originate at the floor and extend infinitely high. The shape it describes MAY be convex or concave.
+Relative to the {{XRBoundedReferenceSpace}}'s [=native origin=], points MUST be given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The {{DOMPointReadOnly/y}} value of each point MUST be <code>0</code> and the {{DOMPointReadOnly/w}} value of each point MUST be <code>1</code>. The bounds can be considered to originate at the floor and extend infinitely high. The shape it describes MAY be convex or concave.
 
 Note: Content should not require the user to move beyond the {{boundsGeometry}}. It is possible for the user to move beyond the bounds if their physical surroundings allow for it, resulting in position values outside of the polygon they describe. This is not an error condition and should be handled gracefully by page content.
 
