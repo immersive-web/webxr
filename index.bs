@@ -387,7 +387,7 @@ enum XREnvironmentBlendMode {
 };
 </pre>
 
-Each {{XRSession}} has an <dfn for="XRSession">mode</dfn> which is the {{XRSessionMode}} it was created with.
+Each {{XRSession}} has a <dfn for="XRSession">mode</dfn> which is the {{XRSessionMode}} it was created with.
 
 <div class="algorithm" data-algorithm="initialize-session">
 
@@ -609,7 +609,7 @@ When an {{XRSession}} |session| receives updated [=viewer=] state from the [=/XR
 
   1. If |session|'s [=list of pending render states=] is not empty, [=apply pending render states=].
   1. If |session|'s {{XRSession/renderState}}'s {{XRRenderState/baseLayer}} is <code>null</code>, abort these steps.
-  1. If |session|'s  [=XRSession/mode=] is {{XRSessionMode/inline}} and |session|'s {{XRSession/outputContext}} is <code>null</code>, abort these steps.
+  1. If |session|'s  [=XRSession/mode=] is {{XRSessionMode/inline}} and |session|'s {{XRSession/renderState}}'s {{XRRenderState/outputContext}} is <code>null</code>, abort these steps.
   1. Let |callbacks| be a list of the entries in |session|'s [=list of animation frame callback=], in the order in which they were added to the list.
   1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
   1. Set |frame|'s [=active=] boolean to <code>true</code>.
@@ -797,7 +797,7 @@ When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a ref
   1. If |type| is {{identity}} let |referenceSpace| be a new {{XRReferenceSpace}}.
   1. If |type| is {{stationary}} and |options| does not have a {{XRReferenceSpaceOptions/subtype}} field, throw {{TypeError}}.
   1. Else if |type| is {{bounded}} or {{unbounded}} and |options| has a {{XRReferenceSpaceOptions/subtype}} field, throw a {{TypeError}}.
-  1. If |type| is {{stationary}}, let |referenceSpace| be a new {{XRStationaryReferenceSpace}}.
+  1. If |type| is {{stationary}}, let |referenceSpace| be a new {{XRStationaryReferenceSpace}} with a [=XRStationaryReferenceSpace/subtype=] of |options|'s {{XRReferenceSpaceOptions/subtype}}.
   1. Else if |type| is {{bounded}}, let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
   1. Else if |type| is {{unbounded}}, let |referenceSpace| be a new {{XRUnboundedReferenceSpace}}.
   1. Return |referenceSpace|.
@@ -814,6 +814,8 @@ An {{XRStationaryReferenceSpace}} represents a tracking space that the user is n
 interface XRStationaryReferenceSpace : XRReferenceSpace {
 };
 </pre>
+
+Each {{XRStationaryReferenceSpace}} has a <dfn for="XRStationaryReferenceSpace">subtype</dfn>, which is an {{XRStationaryReferenceSpaceSubtype}}.
 
 XRBoundedReferenceSpace {#xrboundedreferencespace-interface}
 ----------------------------
