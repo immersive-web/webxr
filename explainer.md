@@ -72,7 +72,7 @@ The basic steps most WebXR applications will go through are:
 
 The UA will identify an available physical unit of XR hardware that can present imagery to the user, referred to here as an "XR device". On desktop clients this will usually be a headset peripheral; on mobile clients it may represent the mobile device itself in conjunction with a viewer harness (e.g., Google Cardboard/Daydream or Samsung Gear VR). It may also represent devices without stereo-presentation capabilities but with more advanced tracking, such as ARCore/ARKit-compatible devices. Any queries for XR capabilities or functionality are implicitly made against this device.
 
-> **Non-normative Note:** If there are multiple XR devices available, the UA will need to pick which one to expose. The UA is allowed to use any criteria it wishes to select which device is used, including settings UI that allow users to manage device priority. Calling `navigator.xr.supportsSessionMode` or `navigator.xr.requestSession` with `'inline'` should **not** trigger device-selection UI, however, as this would cause many sites to display XR-specific dialogs early in the document lifecycle without user activation.
+> **Non-normative Note:** If there are multiple XR devices available, the UA will need to pick which one to expose. The UA is allowed to use any criteria it wishes to select which device is used, including settings UI that allow users to manage device priority. Calling `navigator.xr.supportsSession` or `navigator.xr.requestSession` with `'inline'` should **not** trigger device-selection UI, however, as this would cause many sites to display XR-specific dialogs early in the document lifecycle without user activation.
 
 It's possible that even if no XR device is available initially, one may become available while the application is running, or that a previously available device becomes unavailable. This will be most common with PC peripherals that can be connected or disconnected at any time. Pages can listen to the `devicechange` event emitted on `navigator.xr` to respond to changes in device availability after the page loads. (XR devices already available when the page loads will not cause a `devicechange` event to be fired.) `devicechange` fires an event of type `Event`.
 
@@ -84,9 +84,9 @@ navigator.xr.addEventListener('devicechange', checkForXRSupport);
 
 Interacting with an XR device is done through the `XRSession` interface, but before any XR-enabled page requests a session it should first query to determine if the type of XR content desired is supported by the current hardware and UA. If it is, the page can then advertise XR functionality to the user. (For example, by adding a button to the page that the user can click to start XR content.)
 
-The `navigator.xr.supportsSessionMode` function is used to check if the device supports the XR capabilities the application needs. It takes an "XR mode" describing the desired functionality and returns a promise which resolves if the device can successfully create an `XRSession` using that mode. The call rejects otherwise.
+The `navigator.xr.supportsSession` function is used to check if the device supports the XR capabilities the application needs. It takes an "XR mode" describing the desired functionality and returns a promise which resolves if the device can successfully create an `XRSession` using that mode. The call rejects otherwise.
 
-Querying for support this way is necessary because it allows the application to detect what XR modes are available prior to requesting an `XRSession`, which may engage the XR device sensors and begin presentation. This can incur significant power or performance overhead on some systems and may have side effects such as taking over the user's screen, launching a status tray or storefront, or terminating another application's access to XR hardware. Calling `navigator.xr.supportsSessionMode` must not interfere with any running XR applications on the system or have any user-visible side effects.
+Querying for support this way is necessary because it allows the application to detect what XR modes are available prior to requesting an `XRSession`, which may engage the XR device sensors and begin presentation. This can incur significant power or performance overhead on some systems and may have side effects such as taking over the user's screen, launching a status tray or storefront, or terminating another application's access to XR hardware. Calling `navigator.xr.supportsSession` must not interfere with any running XR applications on the system or have any user-visible side effects.
 
 There are three XR modes that can be requested:
 
@@ -108,7 +108,7 @@ async function checkForXRSupport() {
   // presentation (for example: displaying in a headset). If the device has that
   // capability the page will want to add an "Enter VR" button to the page (similar to
   // a "Fullscreen" button) that starts the display of immersive VR content.
-  navigator.xr.supportsSessionMode('immersive-vr').then(() => {
+  navigator.xr.supportsSession('immersive-vr').then(() => {
     var enterXrBtn = document.createElement("button");
     enterXrBtn.innerHTML = "Enter VR";
     enterXrBtn.addEventListener("click", beginXRSession);
@@ -121,7 +121,7 @@ async function checkForXRSupport() {
 
 ### Requesting a Session
 
-After confirming that the desired mode is available with `navigator.xr.supportsSessionMode()`, the application will need to request an `XRSession` instance with the `navigator.xr.requestSession()` method in order to interact with XR device's presentation or tracking capabilities.
+After confirming that the desired mode is available with `navigator.xr.supportsSession()`, the application will need to request an `XRSession` instance with the `navigator.xr.requestSession()` method in order to interact with XR device's presentation or tracking capabilities.
 
 ```js
 function beginXRSession() {
@@ -139,7 +139,7 @@ function beginXRSession() {
 
 In this sample, the `beginXRSession` function, which is assumed to be run by clicking the "Enter VR" button in the previous sample, requests an `XRSession` that operates in `immersive-vr` mode. The `requestSession` method returns a promise that resolves to an `XRSession` upon success. When requesting a session, the capabilities that the returned session must have, including it's XR mode, are passed in via an `XRSessionCreationOptions` dictionary.
 
-If `supportsSessionMode` resolved for a given mode, then requesting a session with the same mode should be reasonably expected to succeed, barring external factors (such as `requestSession` not being called in a user activation event for an immersive session.) The UA is ultimately responsible for determining if it can honor the request.
+If `supportsSession` resolved for a given mode, then requesting a session with the same mode should be reasonably expected to succeed, barring external factors (such as `requestSession` not being called in a user activation event for an immersive session.) The UA is ultimately responsible for determining if it can honor the request.
 
 Only one immersive session per XR hardware device is allowed at a time across the entire UA. If an immersive session is requested and the UA already has an active immersive session or a pending request for an immersive session, then the new request must be rejected. All inline sessions are [suspended](#handling-suspended-sessions) when an immersive session is active. Inline sessions are not required to be created within a user activation event unless paired with another option that explicitly does require it. 
 
@@ -352,12 +352,12 @@ function beginXRSession() {
 
 This provides a session that behaves much like the immersive VR sessions described above with a few key behavioral differences. The primary distinction between an "immersive-vr" and "immersive-ar" session is that the latter guarantees that the user's environment is visible and that rendered content will be aligned to the environment. The exact nature of the visibility is hardware-dependent, and communicated by the `XRSession`'s `environmentBlendMode` attribute. AR sessions will never report an `environmentBlendMode` of `opaque`. See [Handling non-opaque displays](#handling-non-opaque-displays) for more details.
 
-UAs must reject the request for an AR session if the XR hardware device cannot support a mode where the user's environment is visible. Pages should be designed to robustly handle the inability to acquire AR sessions. `navigator.xr.supportsSessionMode()` can be used if a page wants to test for AR session support before attempting to create the `XRSession`.
+UAs must reject the request for an AR session if the XR hardware device cannot support a mode where the user's environment is visible. Pages should be designed to robustly handle the inability to acquire AR sessions. `navigator.xr.supportsSession()` can be used if a page wants to test for AR session support before attempting to create the `XRSession`.
 
 ```js
 function checkARSupport() {
   // Check to see if the UA can support an AR sessions.
-  return navigator.xr.supportsSessionMode('immersive-ar')
+  return navigator.xr.supportsSession('immersive-ar')
       .then(() => { console.log("AR content is supported!"); })
       .catch((reason) => { console.log("AR content is not supported: " + reason); });
 }
@@ -441,12 +441,12 @@ function beginInlineXRSession() {
 }
 ```
 
-The UA should not reject requests for an inline session unless the page's feature policy prevents it. `navigator.xr.supportsSessionMode()` can still be used if a page wants to test if inline session are allowed.
+The UA should not reject requests for an inline session unless the page's feature policy prevents it. `navigator.xr.supportsSession()` can still be used if a page wants to test if inline session are allowed.
 
 ```js
 function checkInlineSupport() {
   // Check to see if the page is allowed to request inline sessions.
-  return navigator.xr.supportsSessionMode('inline')
+  return navigator.xr.supportsSession('inline')
       .then(() => { console.log("Inline content is supported!"); })
       .catch((reason) => { console.log("Inline content is blocked: " + reason); });
 }
@@ -618,7 +618,7 @@ partial interface Navigator {
 
 [SecureContext, Exposed=Window] interface XR : EventTarget {
   attribute EventHandler ondevicechange;
-  Promise<void> supportsSessionMode(XRSessionMode mode);
+  Promise<void> supportsSession(XRSessionMode mode);
   Promise<XRSession> requestSession(XRSessionMode mode);
 };
 

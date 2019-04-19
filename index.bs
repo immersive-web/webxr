@@ -172,7 +172,7 @@ Application flow {#applicationflow}
 
 Most applications using the WebXR Device API will follow a similar usage pattern:
 
-  * Query {{XR/supportsSessionMode()|navigator.xr.supportsSessionMode()}} to determine if the desired type of XR content is supported by the hardware and UA.
+  * Query {{XR/supportsSession()|navigator.xr.supportsSession()}} to determine if the desired type of XR content is supported by the hardware and UA.
   * If so, advertise the XR content to the user.
   * Wait for the user to [=triggered by user activation|trigger a user activation event=] indicating they want to begin viewing XR content.
   * Request an {{XRSession}} within the user activation event with {{XR/requestSession()|navigator.xr.requestSession()}}.
@@ -211,7 +211,7 @@ XR {#xr-interface}
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XR : EventTarget {
   // Methods
-  Promise&lt;void&gt; supportsSessionMode(XRSessionMode mode);
+  Promise&lt;void&gt; supportsSession(XRSessionMode mode);
   Promise&lt;XRSession&gt; requestSession(XRSessionMode mode);
 
   // Events
@@ -259,9 +259,9 @@ The user agent <dfn>ensures an XR device is selected</dfn> by running the follow
 
 The <dfn attribute for="XR">ondevicechange</dfn> attribute is an [=Event handler IDL attribute=] for the {{devicechange}} event type.
 
-<div class="algorithm" data-algorithm="supports-session-mode">
+<div class="algorithm" data-algorithm="supports-session">
 
-When the <dfn method for="XR">supportsSessionMode(|mode|)</dfn> method is invoked, it MUST return [=a new Promise=] |promise| and run the following steps [=in parallel=]:
+When the <dfn method for="XR">supportsSession(|mode|)</dfn> method is invoked, it MUST return [=a new Promise=] |promise| and run the following steps [=in parallel=]:
 
   1. [=ensures an XR device is selected|Ensure an XR device is selected=].
   1. If the [=XR/XR device=] is null, [=reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}} and abort these steps.
@@ -270,13 +270,13 @@ When the <dfn method for="XR">supportsSessionMode(|mode|)</dfn> method is invoke
 
 </div>
 
-Calling {{XR/supportsSessionMode()}} MUST NOT trigger device-selection UI as this would cause many sites to display XR-specific dialogs early in the document lifecycle without user activation.
+Calling {{XR/supportsSession()}} MUST NOT trigger device-selection UI as this would cause many sites to display XR-specific dialogs early in the document lifecycle without user activation. Additionally, calling {{XR/supportsSession()}} MUST NOT interfere with any running XR applications on the system.
 
 <div class="example">
 The following code checks to see if {{immersive-vr}} sessions are supported.
 
 <pre highlight="js">
-navigator.xr.supportsSessionMode('immersive-vr').then(() => {
+navigator.xr.supportsSession('immersive-vr').then(() => {
   // 'immersive-vr' sessions are supported.
   // Page should advertise support to the user.
 }
