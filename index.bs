@@ -367,7 +367,7 @@ enum XREnvironmentBlendMode {
 
   // Methods
   void updateRenderState(optional XRRenderStateInit state);
-  Promise&lt;XRReferenceSpace&gt; requestReferenceSpace(XRReferenceSpaceOptions options);
+  Promise&lt;XRReferenceSpace&gt; requestReferenceSpace(XRReferenceSpaceType type);
 
   FrozenArray&lt;XRInputSource&gt; getInputSources();
 
@@ -749,20 +749,11 @@ An {{XRReferenceSpace}} is one of several common {{XRSpace}}s that applications 
 <pre class="idl">
 enum XRReferenceSpaceType {
   "identity",
-  "stationary",
-  "bounded",
-  "unbounded"
-};
-
-enum XRStationaryReferenceSpaceSubtype {
+  "position-disabled",
   "eye-level",
   "floor-level",
-  "position-disabled"
-};
-
-dictionary XRReferenceSpaceOptions {
-  required XRReferenceSpaceType type;
-  XRStationaryReferenceSpaceSubtype subtype;
+  "bounded",
+  "unbounded"
 };
 
 [SecureContext, Exposed=Window] interface XRReferenceSpace : XRSpace {
@@ -771,30 +762,25 @@ dictionary XRReferenceSpaceOptions {
 };
 </pre>
 
-Each {{XRReferenceSpace}} has a <dfn for="XRReferenceSpace">type</dfn>, which is an {{XRReferenceSpaceType}}, and a <dfn for="XRReferenceSpace">stationary subtype</dfn>, which is an {{XRStationaryReferenceSpaceSubtype}}.
+Each {{XRReferenceSpace}} has a <dfn for="XRReferenceSpace">type</dfn>, which is an {{XRReferenceSpaceType}}.
 
-An {{XRReferenceSpace}} is obtained by calling {{XRSession/requestReferenceSpace()}}, which creates an instance of an {{XRReferenceSpace}} or an interface extending it, determined by the {{XRReferenceSpaceOptions/type}} value of the {{XRReferenceSpaceOptions}} dictionary passed into the call. The {{XRReferenceSpaceOptions/type}} indicates the tracking behavior that the reference space will exhibit:
+An {{XRReferenceSpace}} is obtained by calling {{XRSession/requestReferenceSpace()}}, which creates an instance of an {{XRReferenceSpace}} or an interface extending it, determined by the {{XRReferenceSpaceType}} enum value passed into the call. The type indicates the tracking behavior that the reference space will exhibit:
 
-  - Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRReferenceSpaceType">identity</dfn> creates an {{XRReferenceSpace}} instance. It represents a reference space without any tracking behavior. The {{XRPose/transform}} of any {{XRPose}} queried from an {{identity}} reference space MUST be an [=identity transform=] offset by the {{originOffset}}.
+  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">identity</dfn> creates an {{XRReferenceSpace}} instance. It represents a reference space without any tracking behavior. The {{XRPose/transform}} of any {{XRPose}} queried from an {{identity}} reference space MUST be an [=identity transform=] offset by the {{originOffset}}.
 
-  - Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRReferenceSpaceType">stationary</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space where the user is not expected to move beyond their initial position much, if at all, and tracking is optimized for that purpose. For devices with [=6DoF=] tracking, {{stationary}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
+  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">position-disabled</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space where orientation is tracked but the [=viewer=]s position is always reported as being at the origin.
 
-  - Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRReferenceSpaceType">bounded</dfn> creates an {{XRBoundedReferenceSpace}} instance if supported by the [=/XR device=] and the {{XRSession}}. It represents a floor-relative tracking space where the user is expected to move within a pre-established boundary. Tracking in a {{bounded}} reference space is optimized for keeping the reference space origin and bounds geometry stable relative to the user's environment.
+  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">eye-level</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space with it's origin near the user's head at the time of creation. The exact position and orientation will be initialized based on the conventions of the underlying platform. When using this reference space the user is not expected to move beyond their initial position much, if at all, and tracking is optimized for that purpose. For devices with [=6DoF=] tracking, {{eye-level}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
 
-  - Passing a {{XRReferenceSpaceOptions/type}} of <dfn enum-value for="XRReferenceSpaceType">unbounded</dfn> creates an {{XRReferenceSpace}} instance if supported by the [=/XR device=] and the {{XRSession}}. It represents a tracking space where the user is expected to move freely around their environment, potentially even long distances from their starting point. Tracking in an {{unbounded}} reference space is optimized for stability around the user's current position, and as such the tracking origin may drift over time.
+  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">floor-level</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space with it's origin positioned at the floor in a safe position for the user to stand. The `y` axis equals `0` at floor level, with the `x` and `z` position and orientation initialized based on the conventions of the underlying platform. If the floor level isn't known it will be estimated. When using this reference space the user is not expected to move beyond their initial position much, if at all, and tracking is optimized for that purpose. For devices with [=6DoF=] tracking, {{floor-level}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
 
+  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">bounded</dfn> creates an {{XRBoundedReferenceSpace}} instance if supported by the [=/XR device=] and the {{XRSession}}. It represents a floor-relative tracking space where the user is expected to move within a pre-established boundary. Tracking in a {{bounded}} reference space is optimized for keeping the reference space origin and bounds geometry stable relative to the user's environment.
 
-If a {{XRReferenceSpaceOptions/type}} of {{XRReferenceSpaceType/stationary}} is specified a {{XRReferenceSpaceOptions/subtype}} must also be given:
+  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">unbounded</dfn> creates an {{XRReferenceSpace}} instance if supported by the [=/XR device=] and the {{XRSession}}. It represents a tracking space where the user is expected to move freely around their environment, potentially even long distances from their starting point. Tracking in an {{unbounded}} reference space is optimized for stability around the user's current position, and as such the tracking origin may drift over time.
 
-  - Passing a {{XRReferenceSpaceOptions/subtype}} of <dfn enum-value for="XRStationaryReferenceSpaceSubtype">eye-level</dfn> creates an {{XRReferenceSpace}} with it's origin near the user's head at the time of creation. The exact position and orientation will be initialized based on the conventions of the underlying platform.
+Note: The {{position-disabled}} type is primarily intended for use with pre-rendered media such as panoramic photos or videos. It should not be used for most other media types due to user discomfort associated with the lack of a neck model or full positional tracking.
   
-  - Passing a {{XRReferenceSpaceOptions/subtype}} of <dfn enum-value for="XRStationaryReferenceSpaceSubtype">floor-level</dfn> creates an {{XRReferenceSpace}} with it's origin positioned at the floor in a safe position for the user to stand. The `y` axis equals `0` at floor level, with the `x` and `z` position and orientation initialized based on the conventions of the underlying platform. If the floor level isn't known it will be estimated.
-  
-  - Passing a {{XRReferenceSpaceOptions/subtype}} of <dfn enum-value for="XRStationaryReferenceSpaceSubtype">position-disabled</dfn> creates an {{XRReferenceSpace}} where orientation is tracked but the [=viewer=]s position is always reported as being at the origin.
-
-Note: The {{position-disabled}} subtype is primarily intended for use with pre-rendered media such as panoramic photos or videos. It should not be used for most other media types due to user discomfort associated with the lack of a neck model or full positional tracking.
-  
-Devices that support {{XRReferenceSpaceType/stationary}} reference spaces MUST support all {{XRStationaryReferenceSpaceSubtype}}s.
+Devices that support any of the following {{XRReferenceSpaceType}}s MUST support all three: {{XRReferenceSpaceType/position-disabled}}, {{XRReferenceSpaceType/eye-level}}, {{XRReferenceSpaceType/floor-level}}. 
 
 <section class="unstable">
 The <dfn attribute for="XRReferenceSpace">originOffset</dfn> attribute gets and sets the {{XRReferenceSpace}}'s [=XRSpace/origin offset=]. Changes to the {{originOffset}} take effect immediately, and subsequent poses queried with the {{XRReferenceSpace}} will take into account the [=effective origin=].
@@ -809,17 +795,11 @@ The <dfn attribute for="XRReferenceSpace">onreset</dfn> attribute is an [=Event 
 When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a reference space</dfn> by running the following steps:
 
   1. Let |session| be the {{XRSession}} object that requested creation of a reference space.
-  1. Initialize [=XRSpace/session=] to be |session|.
-  1. Let |options| be the {{XRReferenceSpaceOptions}} passed to {{requestReferenceSpace()}}.
-  1. Let |type| be set to |options| {{XRReferenceSpaceOptions/type}}.
-  1. Let |referenceSpace| be set to <code>null</code>.
-  1. If |type| is {{identity}} let |referenceSpace| be a new {{XRReferenceSpace}}.
-  1. If |type| is {{stationary}} and |options| does not have a {{XRReferenceSpaceOptions/subtype}} field, throw {{TypeError}}.
-  1. Else if |type| is {{bounded}} or {{unbounded}} and |options| has a {{XRReferenceSpaceOptions/subtype}} field, throw a {{TypeError}}.
-  1. If |type| is {{stationary}}, let |referenceSpace| be a new {{XRReferenceSpace}} with a [=XRReferenceSpace/stationary subtype=] of |options|'s {{XRReferenceSpaceOptions/subtype}}.
-  1. Else if |type| is {{bounded}}, let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
-  1. Else if |type| is {{unbounded}}, let |referenceSpace| be a new {{XRReferenceSpace}}.
+  1. Let |type| be set to the {{XRReferenceSpaceType}} passed to {{requestReferenceSpace()}}.
+  1. If |type| is {{bounded}}, let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
+  1. Else let |referenceSpace| be a new {{XRReferenceSpace}}.
   1. Initialize |referenceSpace|'s [=XRReferenceSpace/type=] to be |type|.
+  1. Initialize [=XRSpace/session=] to be |session|.
   1. Return |referenceSpace|.
 
 </div>
