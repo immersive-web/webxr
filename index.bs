@@ -362,7 +362,7 @@ enum XREnvironmentBlendMode {
 [SecureContext, Exposed=Window] interface XRSession : EventTarget {
   // Attributes
   readonly attribute XREnvironmentBlendMode environmentBlendMode;
-  readonly attribute XRRenderState renderState;
+  [SameObject] readonly attribute XRRenderState renderState;
   [SameObject] readonly attribute XRSpace viewerSpace;
 
   // Methods
