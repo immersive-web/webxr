@@ -363,7 +363,7 @@ enum XREnvironmentBlendMode {
   // Attributes
   readonly attribute XREnvironmentBlendMode environmentBlendMode;
   readonly attribute XRRenderState renderState;
-  readonly attribute XRSpace viewerSpace;
+  [SameObject] readonly attribute XRSpace viewerSpace;
 
   // Methods
   void updateRenderState(optional XRRenderStateInit state);
@@ -670,7 +670,7 @@ An {{XRFrame}} represents a snapshot of the state of all of the tracked objects 
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRFrame {
-  readonly attribute XRSession session;
+  [SameObject] readonly attribute XRSession session;
 
   XRViewerPose? getViewerPose(XRReferenceSpace referenceSpace);
   XRPose? getPose(XRSpace space, XRSpace relativeTo);
@@ -871,8 +871,8 @@ enum XREye {
 
 [SecureContext, Exposed=Window] interface XRView {
   readonly attribute XREye eye;
-  readonly attribute Float32Array projectionMatrix;
-  readonly attribute XRRigidTransform transform;
+  [SameObject] readonly attribute Float32Array projectionMatrix;
+  [SameObject] readonly attribute XRRigidTransform transform;
 };
 </pre>
 
@@ -957,9 +957,9 @@ An {{XRRigidTransform}} is a transform described by a {{XRRigidTransform/positio
 [SecureContext, Exposed=Window,
  Constructor(optional DOMPointInit position, optional DOMPointInit orientation)]
 interface XRRigidTransform {
-  readonly attribute DOMPointReadOnly position;
-  readonly attribute DOMPointReadOnly orientation;
-  readonly attribute Float32Array matrix;
+  [SameObject] readonly attribute DOMPointReadOnly position;
+  [SameObject] readonly attribute DOMPointReadOnly orientation;
+  [SameObject] readonly attribute Float32Array matrix;
   [SameObject] readonly attribute XRRigidTransform inverse;
 };
 </pre>
@@ -999,9 +999,9 @@ An {{XRRay}} is a geometric ray described by a {{XRRay/origin}} point and {{XRRa
  Constructor(optional DOMPointInit origin, optional DOMPointInit direction),
  Constructor(XRRigidTransform transform)]
 interface XRRay {
-  readonly attribute DOMPointReadOnly origin;
-  readonly attribute DOMPointReadOnly direction;
-  readonly attribute Float32Array matrix;
+  [SameObject] readonly attribute DOMPointReadOnly origin;
+  [SameObject] readonly attribute DOMPointReadOnly direction;
+  [SameObject] readonly attribute Float32Array matrix;
 };
 </pre>
 
@@ -1053,8 +1053,8 @@ An {{XRPose}} describes a position and orientation in space relative to an {{XRS
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRPose {
-  readonly attribute XRRigidTransform transform;
-  readonly attribute boolean emulatedPosition;
+  [SameObject] readonly attribute XRRigidTransform transform;
+  [SameObject] readonly attribute boolean emulatedPosition;
 };
 </pre>
 
@@ -1071,7 +1071,7 @@ An {{XRViewerPose}} is an {{XRPose}} describing the state of a <dfn>viewer</dfn>
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRViewerPose : XRPose {
-  readonly attribute FrozenArray&lt;XRView&gt; views;
+  [SameObject] readonly attribute FrozenArray&lt;XRView&gt; views;
 };
 </pre>
 
@@ -1103,11 +1103,11 @@ enum XRTargetRayMode {
 
 [SecureContext, Exposed=Window]
 interface XRInputSource {
-  readonly attribute XRHandedness handedness;
-  readonly attribute XRTargetRayMode targetRayMode;
-  readonly attribute XRSpace targetRaySpace;
-  readonly attribute XRSpace? gripSpace;
-  readonly attribute Gamepad? gamepad;
+  [SameObject] readonly attribute XRHandedness handedness;
+  [SameObject] readonly attribute XRTargetRayMode targetRayMode;
+  [SameObject] readonly attribute XRSpace targetRaySpace;
+  [SameObject] readonly attribute XRSpace? gripSpace;
+  [SameObject] readonly attribute Gamepad? gamepad;
 };
 </pre>
 
@@ -1273,12 +1273,12 @@ dictionary XRWebGLLayerInit {
              optional XRWebGLLayerInit layerInit)]
 interface XRWebGLLayer : XRLayer {
   // Attributes
-  readonly attribute XRWebGLRenderingContext context;
+  [SameObject] readonly attribute XRWebGLRenderingContext context;
 
   readonly attribute boolean antialias;
   readonly attribute boolean ignoreDepthValues;
 
-  readonly attribute WebGLFramebuffer framebuffer;
+  [SameObject] readonly attribute WebGLFramebuffer framebuffer;
   readonly attribute unsigned long framebufferWidth;
   readonly attribute unsigned long framebufferHeight;
 
@@ -1510,7 +1510,7 @@ When the {{HTMLCanvasElement/getContext()}} method of an {{HTMLCanvasElement}} |
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRPresentationContext {
-  readonly attribute HTMLCanvasElement canvas;
+  [SameObject] readonly attribute HTMLCanvasElement canvas;
 };
 </pre>
 
@@ -1544,7 +1544,7 @@ XRSessionEvent {#xrsessionevent-interface}
 <pre class="idl">
 [SecureContext, Exposed=Window, Constructor(DOMString type, XRSessionEventInit eventInitDict)]
 interface XRSessionEvent : Event {
-  readonly attribute XRSession session;
+  [SameObject] readonly attribute XRSession session;
 };
 
 dictionary XRSessionEventInit : EventInit {
@@ -1563,9 +1563,9 @@ XRInputSourceEvent {#xrinputsourceevent-interface}
 <pre class="idl">
 [SecureContext, Exposed=Window, Constructor(DOMString type, XRInputSourceEventInit eventInitDict)]
 interface XRInputSourceEvent : Event {
-  readonly attribute XRFrame frame;
-  readonly attribute XRInputSource inputSource;
-  readonly attribute long? buttonIndex;
+  [SameObject] readonly attribute XRFrame frame;
+  [SameObject] readonly attribute XRInputSource inputSource;
+  [SameObject] readonly attribute long? buttonIndex;
 };
 
 dictionary XRInputSourceEventInit : EventInit {
@@ -1601,8 +1601,8 @@ XRReferenceSpaceEvent {#xrreferencespaceevent-interface}
 <pre class="idl">
 [SecureContext, Exposed=Window, Constructor(DOMString type, XRReferenceSpaceEventInit eventInitDict)]
 interface XRReferenceSpaceEvent : Event {
-  readonly attribute XRReferenceSpace referenceSpace;
-  readonly attribute XRRigidTransform? transform;
+  [SameObject] readonly attribute XRReferenceSpace referenceSpace;
+  [SameObject] readonly attribute XRRigidTransform? transform;
 };
 
 dictionary XRReferenceSpaceEventInit : EventInit {
