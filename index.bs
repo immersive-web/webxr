@@ -270,7 +270,7 @@ When the <dfn method for="XR">supportsSession(|mode|)</dfn> method is invoked, i
 
 </div>
 
-Calling {{XR/supportsSession()}} MUST NOT trigger device-selection UI as this would cause many sites to display XR-specific dialogs early in the document lifecycle without user activation. Additionally, calling {{XR/supportsSession()}} MUST NOT interfere with any running XR applications on the system.
+Calling {{XR/supportsSession()}} MUST NOT trigger device-selection UI as this would cause many sites to display XR-specific dialogs early in the document lifecycle without user activation. Additionally, calling {{XR/supportsSession()}} MUST NOT interfere with any running XR applications on the system, and MUST NOT cause XR-related applications to launch such as system trays or storefronts.
 
 <div class="example">
 The following code checks to see if {{immersive-vr}} sessions are supported.
