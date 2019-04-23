@@ -775,7 +775,7 @@ dictionary XRReferenceSpaceOptions {
 };
 
 [SecureContext, Exposed=Window] interface XRReferenceSpace : XRSpace {
-  attribute XRRigidTransform originOffset;
+  [SameObject] readonly attribute XRRigidTransform originOffset;
   attribute EventHandler onreset;
 };
 </pre>
