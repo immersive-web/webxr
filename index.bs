@@ -670,7 +670,7 @@ An {{XRFrame}} represents a snapshot of the state of all of the tracked objects 
   [SameObject] readonly attribute XRSession session;
 
   XRViewerPose? getViewerPose(XRReferenceSpace referenceSpace);
-  XRPose? getPose(XRSpace space, XRSpace relativeTo);
+  XRPose? getPose(XRSpace sourceSpace, XRSpace destinationSpace);
 };
 </pre>
 
@@ -682,35 +682,37 @@ The <dfn attribute for="XRFrame">session</dfn> attribute returns the {{XRSession
 
 When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
 
-  1. If the {{XRFrame}}'s [=active=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
-  1. If the {{XRFrame}}'s [=animationFrame=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
-  1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
-  1. If |referenceSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
-  1. If the [=viewer=]'s pose cannot be determined relative to |referenceSpace|, return <code>null</code>
-  1. Return a new {{XRViewerPose}} describing the [=viewer=]'s pose relative to the origin of |referenceSpace| at the timestamp of the {{XRFrame}}.
+  1. Let |frame| be the target {{XRFrame}}
+  1. Let |session| be |frame|'s {{XRFrame/session}} object.
+  1. If |frame|'s [=animationFrame=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
+  1. Let |pose| be a new {{XRViewerPose}} object.
+  1. [=Populate the pose=] of |session|'s {{XRSession/viewerSpace}} in |referenceSpace| at the time represented by |frame| into |pose|.
+  1. Return |pose|.
 
 </div>
 
+ISSUE: Describe how the {{XRViewerPose/views}} are populated.
+
 <div class="algorithm unstable" data-algorithm="get-pose">
 
-When the <dfn method for="XRFrame">getPose(|space|, |relativeTo|)</dfn> method is invoked, the user agent MUST run the following steps:
+When the <dfn method for="XRFrame">getPose(|sourceSpace|, |destinationSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
 
-  1. If the {{XRFrame}}'s [=active=] boolean is <code>false</code>, throw a {{InvalidStateError}} and abort these steps.
-  1. Let |session| be the {{XRFrame}}'s {{XRFrame/session}} object.
-  1. If |space|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
-  1. If |relativeTo|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
-  1. If |space|'s pose cannot be determined relative to |relativeTo|, return <code>null</code>
-  1. Return a new {{XRPose}} describing |space|'s pose relative to the origin of |relativeTo|.
+  1. Let |frame| be the target {{XRFrame}}
+  1. Let |pose| be a new {{XRPose}} object.
+  1. [=Populate the pose=] of |sourceSpace| in |destinationSpace| at the time represented by |frame| into |pose|.
+  1. Return |pose|.
 
 </div>
 
 Spaces {#spaces}
 ======
 
+A core feature of the WebXR Device API is the ability to provide spatial tracking. Spaces are the interface that enable applications to reason about how tracked entities are spatially related to the user's physical environment and each other. 
+
 XRSpace {#xrspace-interface}
 ------------------
 
-An {{XRSpace}} describes an entity that is tracked by the [=/XR device=]'s tracking systems. {{XRSpace}}s MAY NOT have a fixed spatial relationship to one another or to any given {{XRReferenceSpace}}. The transform between two {{XRSpace}} can be evaluated by calling an {{XRFrame}}'s {{XRFrame/getPose()}} method. The interface is intentionally opaque.
+An {{XRSpace}} represents a virtual coordinate system with an origin that corresponds to a physical location. Spatial data that is requested from the API or given to the API is always expressed in relation to a specific {{XRSpace}}, and numeric values such as pose positions are coordinates in that space relative to its origin. The interface is intentionally opaque.
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRSpace : EventTarget {
@@ -718,12 +720,35 @@ An {{XRSpace}} describes an entity that is tracked by the [=/XR device=]'s track
 };
 </pre>
 
-Each {{XRSpace}} has a <dfn for="XRSpace">session</dfn> which is set to the {{XRSession}} that created the {{XRSpace}}.
+Each {{XRSpace}} has a <dfn for="XRSpace">native origin</dfn> that is expressed in the [=/XR device=]'s underlying tracking system, and an <dfn for="XRSpace">effective origin</dfn>, which is the basis of the {{XRSpace}}'s <dfn for="XRSpace">coordinate system</dfn>. The transform from the effective space to the [=native origin=]'s space is given by an <dfn for="XRSpace">origin offset</dfn>, which is an {{XRRigidTransform}} initially set to an [=identity transform=].
+
+The [=effective origin=] of an {{XRSpace}} can only be observed in the coordinate system of another {{XRSpace}} as an {{XRPose}}, returned by an {{XRFrame}}'s {{XRFrame/getPose()}} method. The spatial relationship between {{XRSpace}}s MAY change between {{XRFrame}}s.
+
+<div class="algorithm" data-algorithm="get-the-pose">
+
+To <dfn>populate the pose</dfn> of a {{XRSpace}} |sourceSpace| in an  {{XRSpace}} |destinationSpace| at the time represented by a {{XRFrame}} |frame| into an {{XRPose}} |pose|, the user agent MUST run the following steps:
+
+  1. 1. If |frame|'s [=active=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
+  1. Let |session| be |frame|'s {{XRFrame/session}} object.
+  1. If |sourceSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
+  1. If |destinationSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
+  1. If |destinationSpace|'s pose cannot be determined relative to |sourceSpace| at the time represented by |frame|, set |pose| to <code>null</code>.
+  1. Let |transform| be |pose|'s {{XRPose/transform}}.
+  1. Set |transform|'s {{XRRigidTransform/position}} to the location of |sourceSpace|'s [=effective origin=] in |destinationSpace|'s [=coordinate system=].
+  1. Set |transform|'s {{XRRigidTransform/orientation}} to the orientation of |sourceSpace|'s [=effective origin=] in |destinationSpace|'s [=coordinate system=].
+
+</div>
+
+ISSUE: Describe how the {{XRPose/emulatedPosition}} boolean is determined.
+
+Each {{XRSpace}} also has a <dfn for="XRSpace">session</dfn> which is set to the {{XRSession}} that created the {{XRSpace}}.
 
 XRReferenceSpace {#xrreferencespace-interface}
 ------------------
 
-An {{XRReferenceSpace}} describes an {{XRSpace}} that is generally expected to remain static for the duration of the {{XRSession}}, with the most common exception being mid-session reconfiguration by the user. Every {{XRReferenceSpace}} describes a coordinate system where the Y axis MUST be aligned with gravity, with <code>+Y</code> being "Up". <code>-Z</code> is considered "Forward", and <code>+X</code> is considered "Right".
+An {{XRReferenceSpace}} is one of several common {{XRSpace}}s that applications can use to establish a spatial relationship with the user's physical environment.
+
+{{XRReferenceSpace}}s are generally expected to remain static for the duration of the {{XRSession}}, with the most common exception being mid-session reconfiguration by the user. The [=native origin=] for every {{XRReferenceSpace}} describes a coordinate system where the Y axis MUST be aligned with gravity, with <code>+Y</code> being "Up". <code>-Z</code> is considered "Forward", and <code>+X</code> is considered "Right".
 
 The base {{XRReferenceSpace}} represents a reference space without any tracking behavior.
 
@@ -775,7 +800,7 @@ Note: The {{position-disabled}} subtype is primarily intended for use with pre-r
 Devices that support {{XRReferenceSpaceType/stationary}} reference spaces MUST support all {{XRStationaryReferenceSpaceSubtype}}s.
 
 <section class="unstable">
-The <dfn attribute for="XRReferenceSpace">originOffset</dfn> attribute is a {{XRRigidTransform}} that describes an additional translation and rotation to be applied to any poses queried using the {{XRReferenceSpace}}. It is initially set to an [=identity transform=]. Changes to the {{originOffset}} take effect immediately, and subsequent poses queried with the {{XRReferenceSpace}} will take into account the new transform.
+The <dfn attribute for="XRReferenceSpace">originOffset</dfn> attribute gets and sets the {{XRReferenceSpace}}'s [=XRSpace/origin offset=]. Changes to the {{originOffset}} take effect immediately, and subsequent poses queried with the {{XRReferenceSpace}} will take into account the [=effective origin=].
 
 Note: Changing the {{originOffset}} between pose queries in a single [=XR animation frame=] is not advised, since it will cause inconsistencies in the tracking data and rendered output.
 </section>
@@ -926,9 +951,25 @@ Geometric Primitives {#geometricprimitives}
 Matrices {#matrices}
 --------
 
-WebXR provides various transforms in the form of <dfn lt="matrix">matrices</dfn>. WebXR matrices are always 4x4 and given as 16 element {{Float32Array}}s in column major order. They may be passed directly to WebGL's {{uniformMatrix4fv}} function, used to create an equivalent {{DOMMatrix}}, or used with a variety of third party math libraries.
+WebXR provides various transforms in the form of <dfn lt="matrix">matrices</dfn>. WebXR uses the WebGL conventions when communicating matrices, in which 4x4 matrices are given as 16 element {{Float32Array}}s with column major storage, and are applied to column vectors by premultiplying the matrix from the left. They may be passed directly to WebGL's {{uniformMatrix4fv}} function, used to create an equivalent {{DOMMatrix}}, or used with a variety of third party math libraries.
 
-Translations specified by WebXR matrices are always given in meters.
+<div class="example">
+Matrices returned from the WebXR Device API will be a 16 element {{Float32Array}} laid out like so:
+<pre>
+[a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15]
+</pre>
+
+Applying this matrix as a transform to a column vector specified as a {{DOMPointReadOnly}} lik so:
+<pre>{x:X, y:Y, z:Z, w:1}</pre>
+
+Produces the following result:
+<pre>
+a0 a4 a8  a12  *  X  =  a0 * X + a4 * Y +  a8 * Z + a12
+a1 a5 a9  a13     Y     a1 * X + a5 * Y +  a9 * Z + a13
+a2 a6 a10 a14     Z     a2 * X + a6 * Y + a10 * Z + a14
+a3 a7 a11 a15     1     a3 * X + a7 * Y + a11 * Z + a15
+</pre>
+</div>
 
 Normalization {#normalization}
 -------------
@@ -985,6 +1026,20 @@ The <dfn attribute for="XRRigidTransform">matrix</dfn> attribute returns the tra
 The <dfn attribute for="XRRigidTransform">inverse</dfn> attribute returns a {{XRRigidTransform}} which, if applied to an object that had previously been transformed by the original {{XRRigidTransform}}, would undo the transform and return the object to its initial pose. This attribute SHOULD be lazily evaluated. The {{XRRigidTransform}} returned by {{inverse}} MUST return the originating {{XRRigidTransform}} as its {{inverse}}.
 
 An {{XRRigidTransform}} with a {{XRRigidTransform/position}} of <code>{ x: 0, y: 0, z: 0 w: 1 }</code> and an {{XRRigidTransform/orientation}} of <code>{ x: 0, y: 0, z: 0, w: 1 }</code> is known as an <dfn>identity transform</dfn>.
+
+<div class="algorithm" data-algorithm="multiply transforms">
+
+To <dfn lt="multiply transforms">multiply two {{XRRigidTransform}}s</dfn>, |B| and |A|, the UA MUST perform the following steps:
+
+  1. Let |result| be a new {{XRRigidTransform}} object.
+  1. Set |result|'s {{XRRigidTransform/matrix}} to the result of premultiplying |B|'s {{XRRigidTransform/matrix}} from the left onto |A|'s {{XRRigidTransform/matrix}}.
+  1. Set |result|'s {{XRRigidTransform/orientation}} to the quaternion that describes the rotation indicated by the top left 3x3 sub-matrix of |result|'s {{XRRigidTransform/matrix}}.
+  1. Set |result|'s {{XRRigidTransform/position}} to the vector given by the fourth column of |result|'s {{XRRigidTransform/matrix}}.
+  1. Return |result|.
+
+|result| is a transform from |A|'s source space to |B|'s destination space.
+
+</div>
 
 XRRay {#xrray-interface}
 -----
