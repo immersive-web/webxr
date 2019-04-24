@@ -728,7 +728,9 @@ Spaces {#spaces}
 XRSpace {#xrspace-interface}
 ------------------
 
-An {{XRSpace}} describes an entity that is tracked by the [=/XR device=]'s tracking systems. {{XRSpace}}s MAY NOT have a fixed spatial relationship to one another or to any given {{XRReferenceSpace}}. The transform between two {{XRSpace}} can be evaluated by calling an {{XRFrame}}'s {{XRFrame/getPose()}} method. The interface is intentionally opaque.
+An {{XRSpace}} describes an entity that is tracked by the [=/XR device=]'s tracking systems. Any time a position, orientation, or direction is input or output with the WebXR Device API, the {{XRSpace}} those values are defined in must be specified.
+
+{{XRSpace}}s MAY NOT have a fixed spatial relationship to one another or to any given {{XRReferenceSpace}}. The transform between two {{XRSpace}} can be evaluated by calling an {{XRFrame}}'s {{XRFrame/getPose()}} method. The interface is intentionally opaque.
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRSpace : EventTarget {
@@ -738,9 +740,11 @@ An {{XRSpace}} describes an entity that is tracked by the [=/XR device=]'s track
 
 Each {{XRSpace}} has a <dfn for="XRSpace">session</dfn> which is set to the {{XRSession}} that created the {{XRSpace}}.
 
-Each {{XRSpace}} has a <dfn for="XRSpace">native origin</dfn> which is an {{XRRigidTransform}} that describes the origin of the {{XRSpace}} relative to a component of the [=/XR device=]'s tracking systems or features of the user's physical environment. Each {{XRSpace}} also has an <dfn for="XRSpace">origin offset</dfn> which is an {{XRRigidTransform}}, initially set to an [=identity transform=] that describes an offset from the [=native origin=].
+Each {{XRSpace}} has a <dfn for="XRSpace">native origin</dfn> which is an {{XRRigidTransform}} from the native origin's space to the [=/XR device=]'s underlying tracking system and the user's physical environment. 
 
-To determine the <dfn for="XRSpace">effective origin</dfn> of an {{XRSpace}}, [=multiply=] the [=native origin=] by the [=origin offset=]. The [=effective origin=] is the basis of the <dfn for="XRSpace">coordinate system</dfn> described by the {{XRSpace}}.
+Each {{XRSpace}} also has an <dfn for="XRSpace">origin offset</dfn> which is an {{XRRigidTransform}}, from the effective space to the [=native origin=]'s space. It is initially set to an [=identity transform=].
+
+To determine the <dfn for="XRSpace">effective origin</dfn> of an {{XRSpace}}, [=multiply transforms|multiply=] the [=native origin=] by the [=origin offset=]. The [=effective origin=] is the basis of the <dfn for="XRSpace">coordinate system</dfn> described by the {{XRSpace}}.
 
 <div class="algorithm" data-algorithm="transform-from-to">
 
@@ -960,9 +964,20 @@ Geometric Primitives {#geometricprimitives}
 Matrices {#matrices}
 --------
 
-WebXR provides various transforms in the form of <dfn lt="matrix">matrices</dfn>. WebXR matrices are always 4x4 and given as 16 element {{Float32Array}}s in column major order. They may be passed directly to WebGL's {{uniformMatrix4fv}} function, used to create an equivalent {{DOMMatrix}}, or used with a variety of third party math libraries.
+WebXR provides various transforms in the form of <dfn lt="matrix">matrices</dfn>. WebXR uses the WebGL conventions when communicating matrices, in which 4x4 matrices are given as 16 element {{Float32Array}}s with column major storage and column vectors. They may be passed directly to WebGL's {{uniformMatrix4fv}} function, used to create an equivalent {{DOMMatrix}}, or used with a variety of third party math libraries.
 
-Translations specified by WebXR matrices are always given in meters.
+<div class="example">
+For a 16 element {{Float32Array}} such as this:
+<pre>[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p]</pre>
+
+The corresponding matrix is understood to be laid out like so:
+<pre>
+a e i m
+b f j n
+c g k o
+d h l p
+</pre>
+</div>
 
 Normalization {#normalization}
 -------------
@@ -1022,13 +1037,15 @@ An {{XRRigidTransform}} with a {{XRRigidTransform/position}} of <code>{ x: 0, y:
 
 <div class="algorithm" data-algorithm="multiply transforms">
 
-To <dfn lt="multiply">multiply two {{XRRigidTransform}}s</dfn>, |first| and |second|, the UA MUST perform the following steps:
+To <dfn lt="multiply transforms">multiply two {{XRRigidTransform}}s</dfn>, |B| and |A|, the UA MUST perform the following steps:
 
   1. Let |result| be a new {{XRRigidTransform}} object.
-  1. Set |result|'s {{XRRigidTransform/matrix}} to the result of multiplying |first|'s {{XRRigidTransform/matrix}} by |second|'s {{XRRigidTransform/matrix}}.
+  1. Set |result|'s {{XRRigidTransform/matrix}} to the result of premultiplying |B|'s {{XRRigidTransform/matrix}} from the left onto |A|'s {{XRRigidTransform/matrix}}.
   1. Set |result|'s {{XRRigidTransform/orientation}} to the quaternion that describes the rotation indicated by the top left 3x3 sub-matrix of |result|'s {{XRRigidTransform/matrix}}.
   1. Set |result|'s {{XRRigidTransform/position}} to the vector given by the fourth column of |result|'s {{XRRigidTransform/matrix}}.
   1. Return |result|.
+
+|result| is a transform from |A|'s source space to |B|'s destination space.
 
 </div>
 
