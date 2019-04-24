@@ -389,6 +389,8 @@ enum XREnvironmentBlendMode {
 
 Each {{XRSession}} has a <dfn for="XRSession">mode</dfn>, which is one of the values of {{XRSessionMode}}.
 
+The {{XRSession/viewerSpace}} on an {{XRSession}} has a <dfn for="XRSession/viewerSpace">list of views</dfn>, which is a [=/list=] of [=view=]s corresponding to the views provided by the underlying device.
+
 <div class="algorithm" data-algorithm="initialize-session">
 
 To <dfn>initialize the session</dfn>, given |session| and |mode|, the user agent MUST run the following steps:
@@ -687,11 +689,19 @@ When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method 
   1. If |frame|'s [=animationFrame=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
   1. Let |pose| be a new {{XRViewerPose}} object.
   1. [=Populate the pose=] of |session|'s {{XRSession/viewerSpace}} in |referenceSpace| at the time represented by |frame| into |pose|.
+  1. If |pose| is <code>null</code> return <code>null</code>.
+  1. Let |xrviews| be an empty [=/list=].
+  1. For each [=view=] |view| in the [=XRSession/viewerSpace/list of views=] on the {{XRSession/viewerSpace}} of {{XRFrame/session}}, perform the following steps:
+      1. Let |xrview| be a new {{XRView}} object.
+      1. Initialize |xrview|'s {{XRView/eye}} to the appropriate eye the |view| is expected to render to. For views that have no such associated eye, this defaults to {{XREye/left}}.
+      1. Initialize |xrview|'s {{XRView/projectionMatrix}} to a [=matrix=] describing the projection to be used when rendering the [=view=], provided by the underlying XR system.
+      1. Let |offset| be an {{XRRigidTransform}} equal to the [=view offset=] of |view|
+      1. Set |xrview|'s {{XRView/transform}} property to the result of [=multiply transforms|multiplying=] the |offset| transform by the {{XRViewerPose}}'s {{XRPose/transform}}
+      1. [=list/Append=] |xrview| to |xrviews|
+  1. Set |pose|'ss {{XRViewerPose/views}} to |xrviews|
   1. Return |pose|.
 
 </div>
-
-ISSUE: Describe how the {{XRViewerPose/views}} are populated.
 
 <div class="algorithm unstable" data-algorithm="get-pose">
 
@@ -881,7 +891,11 @@ Views {#views}
 XRView {#xrview-interface}
 ------
 
-An {{XRView}} describes a single <dfn>view</dfn> into an XR scene. Each [=view=] corresponds to a display or portion of a display used by an XR device to present imagery to the user. They are used to retrieve all the information necessary to render content that is well aligned to the [=view=]'s physical output properties, including the field of view, eye offset, and other optical properties. [=Views=] may cover overlapping regions of the user's vision. No guarantee is made about the number of [=views=] any XR device uses or their order, nor is the number of [=views=] required to be constant for the duration of an {{XRSession}}.
+An {{XRView}} describes a single <dfn>view</dfn> into an XR scene for a given frame.
+
+Each [=view=] corresponds to a display or portion of a display used by an XR device to present imagery to the user. They are used to retrieve all the information necessary to render content that is well aligned to the [=view=]'s physical output properties, including the field of view, eye offset, and other optical properties. [=Views=] may cover overlapping regions of the user's vision. No guarantee is made about the number of [=views=] any XR device uses or their order, nor is the number of [=views=] required to be constant for the duration of an {{XRSession}}.
+
+A [=view=] has an associated internal <dfn>view offset</dfn>, which is an {{XRRigidTransform}} describing the position and orientation of the [=view=] in the {{XRSession/viewerSpace}}'s [=coordinate system=].
 
 NOTE: Many HMDs will request that content render two [=views=], one for the left eye and one for the right, while most magic window devices will only request one [=view=], but applications should never assume a specific view configuration. For example: A magic window device may request two views if it is capable of stereo output, but may revert to requesting a single view for performance reasons if the stereo output mode is turned off. Similarly, HMDs may request more than two views to facilitate a wide field of view or displays of different pixel density.
 
