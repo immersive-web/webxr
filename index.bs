@@ -678,18 +678,6 @@ Each {{XRFrame}} has a <dfn for="XRFrame">active</dfn> boolean which is initiall
 
 The <dfn attribute for="XRFrame">session</dfn> attribute returns the {{XRSession}} that produced the {{XRFrame}}.
 
-<div class="algorithm" data-algorithm="valid-pose">
-
-To determine if {{XRFrame}} |frame| can evaluate a <dfn>valid pose</dfn> between {{XRSpace}}s |sourceSpace| and |destinationSpace|, the user agent MUST run the following steps:
-
-1. If |frame|'s [=active=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
-1. Let |session| be |frame|'s {{XRFrame/session}} object.
-1. If |sourceSpace|'s [=XRSpace/session=] does not equal |session| return <code>false</code>.
-1. If |destinationSpace|'s [=XRSpace/session=] does not equal |session| return <code>false</code>.
-1. Return <code>true</code>.
-
-</div>
-
 <div class="algorithm" data-algorithm="get-viewer-pose">
 
 When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
@@ -697,10 +685,8 @@ When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method 
   1. Let |frame| be the target {{XRFrame}}
   1. Let |session| be |frame|'s {{XRFrame/session}} object.
   1. If |frame|'s [=animationFrame=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
-  1. If |frame| cannot evaluate a [=valid pose=] between |session|'s {{XRSession/viewerSpace}} and |referenceSpace|, throw an {{InvalidStateError}} and abort these steps.
   1. Let |pose| be a new {{XRViewerPose}} object.
-  1. Set |pose|'s {{XRPose/transform}} to the [=transform from=] |session|'s {{XRSession/viewerSpace}} to |referenceSpace| at the time represented by |frame|.
-  1. If |pose|'s {{XRPose/transform}} is <code>null</code> return <code>null</code>.
+  1. [=Populate the pose=] of |session|'s {{XRSession/viewerSpace}} in |referenceSpace| at the time represented by |frame| into |pose|.
   1. Return |pose|.
 
 </div>
@@ -712,25 +698,21 @@ ISSUE: Describe how the {{XRViewerPose/views}} are populated.
 When the <dfn method for="XRFrame">getPose(|sourceSpace|, |destinationSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
 
   1. Let |frame| be the target {{XRFrame}}
-  1. If |frame| cannot evaluate a [=valid pose=] between |sourceSpace| and |destinationSpace|, throw an {{InvalidStateError}} and abort these steps.
   1. Let |pose| be a new {{XRPose}} object.
-  1. Set |pose|'s {{XRPose/transform}} to the [=transform from=] |sourceSpace| to |destinationSpace| at the time represented by |frame|.
-  1. If |pose|'s {{XRPose/transform}} is <code>null</code> return <code>null</code>.
+  1. [=Populate the pose=] of |sourceSpace| in |destinationSpace| at the time represented by |frame| into |pose|.
   1. Return |pose|.
 
 </div>
 
-ISSUE: For both pose algorithms describe how the {{XRPose/emulatedPosition}} boolean is determined.
-
 Spaces {#spaces}
 ======
+
+A core feature of the WebXR Device API is the ability to provide spatial tracking. Spaces are the interface that enable applications to reason about how tracked entities are spatially related to the user's physical environment and each other. 
 
 XRSpace {#xrspace-interface}
 ------------------
 
-An {{XRSpace}} describes an entity that is tracked by the [=/XR device=]'s tracking systems. Any time a position, orientation, or direction is input or output with the WebXR Device API, the {{XRSpace}} those values are defined in must be specified.
-
-{{XRSpace}}s MAY NOT have a fixed spatial relationship to one another or to any given {{XRReferenceSpace}}. The transform between two {{XRSpace}} can be evaluated by calling an {{XRFrame}}'s {{XRFrame/getPose()}} method. The interface is intentionally opaque.
+An {{XRSpace}} represents a virtual coordinate system that corresponds to a physical location. Any time spatial data is requested from the API or given to the API, the {{XRSpace}} it is expressed in must be specified. The interface is intentionally opaque.
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRSpace : EventTarget {
@@ -738,30 +720,35 @@ An {{XRSpace}} describes an entity that is tracked by the [=/XR device=]'s track
 };
 </pre>
 
-Each {{XRSpace}} has a <dfn for="XRSpace">session</dfn> which is set to the {{XRSession}} that created the {{XRSpace}}.
+Each {{XRSpace}} has a <dfn for="XRSpace">native origin</dfn> that is expressed in the [=/XR device=]'s underlying tracking system, and an <dfn for="XRSpace">effective origin</dfn>, which is the basis of the {{XRSpace}}'s <dfn for="XRSpace">coordinate system</dfn>. The transform from the effective space to the [=native origin=]'s space is given by an <dfn for="XRSpace">origin offset</dfn>, which is an {{XRRigidTransform}} initially set to an [=identity transform=].
 
-Each {{XRSpace}} has a <dfn for="XRSpace">native origin</dfn> which is an {{XRRigidTransform}} from the native origin's space to the [=/XR device=]'s underlying tracking system and the user's physical environment. 
+The [=effective origin=] of an {{XRSpace}} can only be observed in the coordinate system of another {{XRSpace}} as an {{XRPose}}, returned by an {{XRFrame}}'s {{XRFrame/getPose()}} method. The spatial relationship between {{XRSpace}}s MAY change between {{XRFrame}}s.
 
-Each {{XRSpace}} also has an <dfn for="XRSpace">origin offset</dfn> which is an {{XRRigidTransform}}, from the effective space to the [=native origin=]'s space. It is initially set to an [=identity transform=].
+<div class="algorithm" data-algorithm="get-the-pose">
 
-To determine the <dfn for="XRSpace">effective origin</dfn> of an {{XRSpace}}, [=multiply transforms|multiply=] the [=native origin=] by the [=origin offset=]. The [=effective origin=] is the basis of the <dfn for="XRSpace">coordinate system</dfn> described by the {{XRSpace}}.
+To <dfn>populate the pose</dfn> of a {{XRSpace}} |sourceSpace| in an  {{XRSpace}} |destinationSpace| at the time represented by a {{XRFrame}} |frame| into an {{XRPose}} |pose|, the user agent MUST run the following steps:
 
-<div class="algorithm" data-algorithm="transform-from-to">
-
-To <dfn lt="transform from">get the transform from</dfn> a |sourceSpace| to a |destinationSpace|, the user agent MUST run the following steps:
-
-  1. If |destinationSpace|'s pose cannot be determined relative to |sourceSpace|, return <code>null</code>
-  1. Let |transform| be a new {{XRRigidTransform}} object.
+  1. 1. If |frame|'s [=active=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
+  1. Let |session| be |frame|'s {{XRFrame/session}} object.
+  1. If |sourceSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
+  1. If |destinationSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
+  1. If |destinationSpace|'s pose cannot be determined relative to |sourceSpace| at the time represented by |frame|, set |pose| to <code>null</code>.
+  1. Let |transform| be |pose|'s {{XRPose/transform}}.
   1. Set |transform|'s {{XRRigidTransform/position}} to the location of |sourceSpace|'s [=effective origin=] in |destinationSpace|'s [=coordinate system=].
-  1. Set |transform|'s {{XRRigidTransform/orientation}} to the rotation of |sourceSpace|'s [=effective origin=] in |destinationSpace|'s [=coordinate system=].
-  1. Return |transform|.
+  1. Set |transform|'s {{XRRigidTransform/orientation}} to the orientation of |sourceSpace|'s [=effective origin=] in |destinationSpace|'s [=coordinate system=].
 
 </div>
+
+ISSUE: Describe how the {{XRPose/emulatedPosition}} boolean is determined.
+
+Each {{XRSpace}} also has a <dfn for="XRSpace">session</dfn> which is set to the {{XRSession}} that created the {{XRSpace}}.
 
 XRReferenceSpace {#xrreferencespace-interface}
 ------------------
 
-An {{XRReferenceSpace}} describes an {{XRSpace}} that is generally expected to remain static for the duration of the {{XRSession}}, with the most common exception being mid-session reconfiguration by the user. Every {{XRReferenceSpace}} describes a coordinate system where the Y axis MUST be aligned with gravity, with <code>+Y</code> being "Up". <code>-Z</code> is considered "Forward", and <code>+X</code> is considered "Right".
+An {{XRReferenceSpace}} is one of several common {{XRSpace}}s that applications can use to establish a spatial relationship with the user's physical environment.
+
+{{XRReferenceSpace}}s are generally expected to remain static for the duration of the {{XRSession}}, with the most common exception being mid-session reconfiguration by the user. The [=native origin=] for every {{XRReferenceSpace}} describes a coordinate system where the Y axis MUST be aligned with gravity, with <code>+Y</code> being "Up". <code>-Z</code> is considered "Forward", and <code>+X</code> is considered "Right".
 
 The base {{XRReferenceSpace}} represents a reference space without any tracking behavior.
 
@@ -1034,20 +1021,6 @@ The <dfn attribute for="XRRigidTransform">matrix</dfn> attribute returns the tra
 The <dfn attribute for="XRRigidTransform">inverse</dfn> attribute returns a {{XRRigidTransform}} which, if applied to an object that had previously been transformed by the original {{XRRigidTransform}}, would undo the transform and return the object to its initial pose. This attribute SHOULD be lazily evaluated. The {{XRRigidTransform}} returned by {{inverse}} MUST return the originating {{XRRigidTransform}} as its {{inverse}}.
 
 An {{XRRigidTransform}} with a {{XRRigidTransform/position}} of <code>{ x: 0, y: 0, z: 0 w: 1 }</code> and an {{XRRigidTransform/orientation}} of <code>{ x: 0, y: 0, z: 0, w: 1 }</code> is known as an <dfn>identity transform</dfn>.
-
-<div class="algorithm" data-algorithm="multiply transforms">
-
-To <dfn lt="multiply transforms">multiply two {{XRRigidTransform}}s</dfn>, |B| and |A|, the UA MUST perform the following steps:
-
-  1. Let |result| be a new {{XRRigidTransform}} object.
-  1. Set |result|'s {{XRRigidTransform/matrix}} to the result of premultiplying |B|'s {{XRRigidTransform/matrix}} from the left onto |A|'s {{XRRigidTransform/matrix}}.
-  1. Set |result|'s {{XRRigidTransform/orientation}} to the quaternion that describes the rotation indicated by the top left 3x3 sub-matrix of |result|'s {{XRRigidTransform/matrix}}.
-  1. Set |result|'s {{XRRigidTransform/position}} to the vector given by the fourth column of |result|'s {{XRRigidTransform/matrix}}.
-  1. Return |result|.
-
-|result| is a transform from |A|'s source space to |B|'s destination space.
-
-</div>
 
 XRRay {#xrray-interface}
 -----
