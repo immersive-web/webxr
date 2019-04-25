@@ -712,7 +712,7 @@ A core feature of the WebXR Device API is the ability to provide spatial trackin
 XRSpace {#xrspace-interface}
 ------------------
 
-An {{XRSpace}} represents a virtual coordinate system that corresponds to a physical location. Any time spatial data is requested from the API or given to the API, the {{XRSpace}} it is expressed in must be specified. The interface is intentionally opaque.
+An {{XRSpace}} represents a virtual coordinate system with an origin that corresponds to a physical location. Spatial data that is requested from the API or given to the API is always expressed in relation to a specific {{XRSpace}}, and numeric values such as pose positions are coordinates in that space relative to its origin. The interface is intentionally opaque.
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRSpace : EventTarget {
@@ -800,7 +800,7 @@ Note: The {{position-disabled}} subtype is primarily intended for use with pre-r
 Devices that support {{XRReferenceSpaceType/stationary}} reference spaces MUST support all {{XRStationaryReferenceSpaceSubtype}}s.
 
 <section class="unstable">
-The <dfn attribute for="XRReferenceSpace">originOffset</dfn> attribute is a {{XRRigidTransform}} that describes an additional translation and rotation to be applied to any poses queried using the {{XRReferenceSpace}}. It is initially set to an [=identity transform=]. Changes to the {{originOffset}} take effect immediately, and subsequent poses queried with the {{XRReferenceSpace}} will take into account the new transform.
+The <dfn attribute for="XRReferenceSpace">originOffset</dfn> attribute gets and sets the {{XRReferenceSpace}}'s [=XRSpace/origin offset=]. Changes to the {{originOffset}} take effect immediately, and subsequent poses queried with the {{XRReferenceSpace}} will take into account the [=effective origin=].
 
 Note: Changing the {{originOffset}} between pose queries in a single [=XR animation frame=] is not advised, since it will cause inconsistencies in the tracking data and rendered output.
 </section>
@@ -951,18 +951,23 @@ Geometric Primitives {#geometricprimitives}
 Matrices {#matrices}
 --------
 
-WebXR provides various transforms in the form of <dfn lt="matrix">matrices</dfn>. WebXR uses the WebGL conventions when communicating matrices, in which 4x4 matrices are given as 16 element {{Float32Array}}s with column major storage and column vectors. They may be passed directly to WebGL's {{uniformMatrix4fv}} function, used to create an equivalent {{DOMMatrix}}, or used with a variety of third party math libraries.
+WebXR provides various transforms in the form of <dfn lt="matrix">matrices</dfn>. WebXR uses the WebGL conventions when communicating matrices, in which 4x4 matrices are given as 16 element {{Float32Array}}s with column major storage, and are applied to column vectors by premultiplying the matrix from the left. They may be passed directly to WebGL's {{uniformMatrix4fv}} function, used to create an equivalent {{DOMMatrix}}, or used with a variety of third party math libraries.
 
 <div class="example">
-For a 16 element {{Float32Array}} such as this:
-<pre>[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p]</pre>
-
-The corresponding matrix is understood to be laid out like so:
+Matrices returned from the WebXR Device API will be a 16 element {{Float32Array}} laid out like so:
 <pre>
-a e i m
-b f j n
-c g k o
-d h l p
+[a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15]
+</pre>
+
+Applying this matrix as a transform to a vector specified as a
+{{DOMPointReadOnly}} <pre>{x:X, y:Y, z:Z, w:1}</pre> produces
+the following result:
+
+<pre>
+a0 a4 a8  a12  *  X  =  a0 * X + a4 * Y +  a8 * Z + a12
+a1 a5 a9  a13     Y     a1 * X + a5 * Y +  a9 * Z + a13
+a2 a6 a10 a14     Z     a2 * X + a6 * Y + a10 * Z + a14
+a3 a7 a11 a15     1     a3 * X + a7 * Y + a11 * Z + a15
 </pre>
 </div>
 
@@ -1021,6 +1026,20 @@ The <dfn attribute for="XRRigidTransform">matrix</dfn> attribute returns the tra
 The <dfn attribute for="XRRigidTransform">inverse</dfn> attribute returns a {{XRRigidTransform}} which, if applied to an object that had previously been transformed by the original {{XRRigidTransform}}, would undo the transform and return the object to its initial pose. This attribute SHOULD be lazily evaluated. The {{XRRigidTransform}} returned by {{inverse}} MUST return the originating {{XRRigidTransform}} as its {{inverse}}.
 
 An {{XRRigidTransform}} with a {{XRRigidTransform/position}} of <code>{ x: 0, y: 0, z: 0 w: 1 }</code> and an {{XRRigidTransform/orientation}} of <code>{ x: 0, y: 0, z: 0, w: 1 }</code> is known as an <dfn>identity transform</dfn>.
+
+<div class="algorithm" data-algorithm="multiply transforms">
+
+To <dfn lt="multiply transforms">multiply two {{XRRigidTransform}}s</dfn>, |B| and |A|, the UA MUST perform the following steps:
+
+  1. Let |result| be a new {{XRRigidTransform}} object.
+  1. Set |result|'s {{XRRigidTransform/matrix}} to the result of premultiplying |B|'s {{XRRigidTransform/matrix}} from the left onto |A|'s {{XRRigidTransform/matrix}}.
+  1. Set |result|'s {{XRRigidTransform/orientation}} to the quaternion that describes the rotation indicated by the top left 3x3 sub-matrix of |result|'s {{XRRigidTransform/matrix}}.
+  1. Set |result|'s {{XRRigidTransform/position}} to the vector given by the fourth column of |result|'s {{XRRigidTransform/matrix}}.
+  1. Return |result|.
+
+|result| is a transform from |A|'s source space to |B|'s destination space.
+
+</div>
 
 XRRay {#xrray-interface}
 -----
