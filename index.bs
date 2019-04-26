@@ -691,8 +691,6 @@ When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method 
 
 </div>
 
-ISSUE: Describe how the {{XRViewerPose/views}} are populated.
-
 <div class="algorithm unstable" data-algorithm="get-pose">
 
 When the <dfn method for="XRFrame">getPose(|sourceSpace|, |destinationSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
@@ -712,7 +710,7 @@ A core feature of the WebXR Device API is the ability to provide spatial trackin
 XRSpace {#xrspace-interface}
 ------------------
 
-An {{XRSpace}} represents a virtual coordinate system with an origin that corresponds to a physical location. Spatial data that is requested from the API or given to the API is always expressed in relation to a specific {{XRSpace}}, and numeric values such as pose positions are coordinates in that space relative to its origin. The interface is intentionally opaque.
+An {{XRSpace}} represents a virtual coordinate system with an origin that corresponds to a physical location. Spatial data that is requested from the API or given to the API is always expressed in relation to a specific {{XRSpace}} at the time of a specific {{XRFrame}}. Numeric values such as pose positions are coordinates in that space relative to its origin. The interface is intentionally opaque.
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRSpace : EventTarget {
@@ -720,11 +718,13 @@ An {{XRSpace}} represents a virtual coordinate system with an origin that corres
 };
 </pre>
 
-Each {{XRSpace}} has a <dfn for="XRSpace">native origin</dfn> that is expressed in the [=/XR device=]'s underlying tracking system, and an <dfn for="XRSpace">effective origin</dfn>, which is the basis of the {{XRSpace}}'s <dfn for="XRSpace">coordinate system</dfn>. The transform from the effective space to the [=native origin=]'s space is given by an <dfn for="XRSpace">origin offset</dfn>, which is an {{XRRigidTransform}} initially set to an [=identity transform=].
+Each {{XRSpace}} has a <dfn for="XRSpace">session</dfn> which is set to the {{XRSession}} that created the {{XRSpace}}.
+
+Each {{XRSpace}} has a <dfn for="XRSpace">native origin</dfn> that is tracked by the [=/XR device=]'s underlying tracking system, and an <dfn for="XRSpace">effective origin</dfn>, which is the basis of the {{XRSpace}}'s <dfn for="XRSpace">coordinate system</dfn>. The transform from the effective space to the [=native origin=]'s space is defined by an <dfn for="XRSpace">origin offset</dfn>, which is an {{XRRigidTransform}} initially set to an [=identity transform=].
 
 The [=effective origin=] of an {{XRSpace}} can only be observed in the coordinate system of another {{XRSpace}} as an {{XRPose}}, returned by an {{XRFrame}}'s {{XRFrame/getPose()}} method. The spatial relationship between {{XRSpace}}s MAY change between {{XRFrame}}s.
 
-<div class="algorithm" data-algorithm="get-the-pose">
+<div class="algorithm" data-algorithm="populate-the-pose">
 
 To <dfn>populate the pose</dfn> of a {{XRSpace}} |sourceSpace| in an  {{XRSpace}} |destinationSpace| at the time represented by a {{XRFrame}} |frame| into an {{XRPose}} |pose|, the user agent MUST run the following steps:
 
@@ -738,10 +738,6 @@ To <dfn>populate the pose</dfn> of a {{XRSpace}} |sourceSpace| in an  {{XRSpace}
   1. Set |transform|'s {{XRRigidTransform/orientation}} to the orientation of |sourceSpace|'s [=effective origin=] in |destinationSpace|'s [=coordinate system=].
 
 </div>
-
-ISSUE: Describe how the {{XRPose/emulatedPosition}} boolean is determined.
-
-Each {{XRSpace}} also has a <dfn for="XRSpace">session</dfn> which is set to the {{XRSession}} that created the {{XRSpace}}.
 
 XRReferenceSpace {#xrreferencespace-interface}
 ------------------
