@@ -1196,7 +1196,13 @@ Gamepad API Integration {#gamepad-api-integration}
   - {{XRInputSource/gamepad}}'s {{Gamepad/index}} attribute MUST be <code>0</code>.
   - {{XRInputSource/gamepad}}'s {{Gamepad/connected}} attribute MUST be <code>true</code> until the {{XRInputSource}} is removed from the array returned by {{XRSession/getInputSources()}} or the {{XRSession}} is ended.
 
-ISSUE: <a href="https://github.com/immersive-web/webxr/issues/550">GitHub #550</a> - Additional restrictions, still under discussion, will be applied to the formatting of the {{XRInputSource/gamepad}}'s {{Gamepad/id}} attribute.
+The {{XRInputSource/gamepad}}'s {{Gamepad/id}} also enforces additional behavioral restrictions, and MUST conform to the following rules:
+
+  - If the {{XRSession}}'s [=mode=] is {{XRSessionMode/inline}} the {{XRInputSource/gamepad}}'s {{Gamepad/id}} MUST be <code>"unknown"</code>.
+  - If the input device cannot be reliably identified the {{XRInputSource/gamepad}}'s {{Gamepad/id}} MUST be <code>"unknown"</code>.
+  - If the UA masks the input device type for any reason the {{XRInputSource/gamepad}}'s {{Gamepad/id}} MUST be <code>"unknown"</code>
+
+ISSUE: <a href="https://github.com/immersive-web/webxr/issues/550">GitHub #550</a> - Additional restrictions, still under discussion, will be applied to the formatting of the {{XRInputSource/gamepad}}'s {{Gamepad/id}} attribute. Until those restrictions have been identified, all {{XRInputSource/gamepad}} {{Gamepad/id}}'s should default to <code>"unknown"</code>.
 </section>
 
 <section class="unstable">
