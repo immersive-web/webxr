@@ -744,7 +744,7 @@ XRReferenceSpace {#xrreferencespace-interface}
 
 An {{XRReferenceSpace}} is one of several common {{XRSpace}}s that applications can use to establish a spatial relationship with the user's physical environment.
 
-{{XRReferenceSpace}}s are generally expected to remain static for the duration of the {{XRSession}}, with the most common exception being mid-session reconfiguration by the user. The [=native origin=] for every {{XRReferenceSpace}} describes a coordinate system where <code>+X</code> is considered "Right", <code>+Y</code> is considered "Up", and <code>-Z</code> is considered "Forward". All {{XRReferenceSpace}}s except {{XRReferenceSpaceType/identity}} MUST align the Y axis with gravity.
+{{XRReferenceSpace}}s are generally expected to remain static for the duration of the {{XRSession}}, with the most common exception being mid-session reconfiguration by the user. The [=native origin=] for every {{XRReferenceSpace}} describes a coordinate system where <code>+X</code> is considered "Right", <code>+Y</code> is considered "Up", and <code>-Z</code> is considered "Forward".
 
 The base {{XRReferenceSpace}} represents a reference space without any tracking behavior.
 
