@@ -389,7 +389,7 @@ enum XREnvironmentBlendMode {
 
 Each {{XRSession}} has a <dfn for="XRSession">mode</dfn>, which is one of the values of {{XRSessionMode}}.
 
-The {{XRSession/viewerSpace}} on an {{XRSession}} has a <dfn for="XRSession/viewerSpace">list of views</dfn>, which is a [=/list=] of [=view=]s corresponding to the views provided by the underlying device.
+The {{XRSession/viewerSpace}} on an {{XRSession}} has a <dfn for="XRSession/viewerSpace">list of views</dfn>, which is a [=/list=] of [=view=]s corresponding to the views provided by the [=/XR device=].
 
 <div class="algorithm" data-algorithm="initialize-session">
 
