@@ -816,7 +816,7 @@ When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a ref
 The <dfn method for="XRReferenceSpace">getOffsetReferenceSpace(|originOffset|)</dfn> method MUST perform the following steps when invoked:
 
   1. Let |base| be the {{XRReferenceSpace}} the method was called on.
-  1. If |base| is an instance of {{XRBoundedReferenceSpace}}, let |offsetSpace| be a new {{XRBoundedReferenceSpace}} and set |offsetSpace|'s {{boundsGeometry}} to |base|'s {{boundsGeometry}}, with each point transformed by the {{XRRigidTransform/inverse}} of |originOffset|.
+  1. If |base| is an instance of {{XRBoundedReferenceSpace}}, let |offsetSpace| be a new {{XRBoundedReferenceSpace}} and set |offsetSpace|'s {{boundsGeometry}} to |base|'s {{boundsGeometry}}, with each point multiplied by the {{XRRigidTransform/inverse}} of |originOffset|.
   1. Else let |offsetSpace| be a new {{XRReferenceSpace}}.
   1. Set |offsetSpace|'s [=native origin=] to |base|'s [=native origin=].
   1. Set |offsetSpace|'s [=origin offset=] to the result of [=multiply transforms|multiplying=] |originOffset| by |base|'s [=origin offset=].
@@ -842,7 +842,7 @@ Note: Other XR platforms sometimes refer to the type of tracking offered by a {{
 
 Each {{XRBoundedReferenceSpace}} has a <dfn for="XRBoundedReferenceSpace">native bounds geometry</dfn> describing the border around the {{XRBoundedReferenceSpace}}, which the user can expect to safely move within. The polygonal boundary is given as an array of {{DOMPointReadOnly}}s, which represents a loop of points at the edges of the safe space. The points describe offsets from the [=XRSpace/native origin=] in meters. Points MUST be given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The {{DOMPointReadOnly/y}} value of each point MUST be <code>0</code> and the {{DOMPointReadOnly/w}} value of each point MUST be <code>1</code>. The bounds can be considered to originate at the floor and extend infinitely high. The shape it describes MAY be convex or concave.
 
-The <dfn attribute for="XRBoundedReferenceSpace">boundsGeometry</dfn> attribute is an array of {{DOMPointReadOnly}}s such that each entry is equal to the entry in the {{XRBoundedReferenceSpace}}'s [=XRBoundedReferenceSpace/native bounds geometry=] multiplied by the {{XRRigidTransform/inverse}} of the [=XRSpace/origin offset=]. In other words, it provides the same border around the {{XRBoundedReferenceSpace}} relative to the [=XRSpace/effective origin=].
+The <dfn attribute for="XRBoundedReferenceSpace">boundsGeometry</dfn> attribute is an array of {{DOMPointReadOnly}}s such that each entry is equal to the entry in the {{XRBoundedReferenceSpace}}'s [=XRBoundedReferenceSpace/native bounds geometry=] premultiplied by the {{XRRigidTransform/inverse}} of the [=XRSpace/origin offset=]. In other words, it provides the same border in {{XRBoundedReferenceSpace}} coordinates relative to the [=XRSpace/effective origin=].
 
 Note: Content should not require the user to move beyond the {{boundsGeometry}}. It is possible for the user to move beyond the bounds if their physical surroundings allow for it, resulting in position values outside of the polygon they describe. This is not an error condition and should be handled gracefully by page content.
 
