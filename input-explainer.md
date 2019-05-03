@@ -89,7 +89,7 @@ function onSessionStarted(session) {
 }
 ```
 
-All three events are `XRInputSourceEvent` events. When fired the event's `inputSource` attribute will contain the `XRInputSource` that produced the event. The event's `frame` attribute will contain a valid `XRFrame` that can be used to call `getPose()` at the time the selection event occurred. Calling the frame's `getViewerPose()` method will throw an `InvalidState` error. (The viewer's pose can still be queried by passing the `XRSession`'s `viewerSpace` to `XRFrame.getPose()`.)
+All three events are `XRInputSourceEvent` events. When fired the event's `inputSource` attribute will contain the `XRInputSource` that produced the event. The event's `frame` attribute will contain a valid `XRFrame` that can be used to call `getPose()` at the time the selection event occurred. Calling the frame's `getViewerPose()` method will throw an `InvalidState` error. (The viewer's pose can still be queried by passing an `XRReferenceSpace` of type `viewer` to `XRFrame.getPose()`.)
 
 ### Transient input sources
 Some input sources are only be added to the list of input sources while an action is occurring. For example, those with an `targetRayMode` of 'screen' or those with `targetRayMode` of 'gaze' which are triggered by a voice command. In these cases, `XRInputSource` is only present in the array returned by `getInputSources()` during the lifetime of the action. In this circumstance, the order of events is as follows:

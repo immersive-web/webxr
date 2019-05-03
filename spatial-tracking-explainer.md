@@ -147,19 +147,19 @@ function onSessionStarted(session) {
 }
 ```
 
-### Identity reference spaces
-An _identity_ reference space is one which provides no tracking. This type of reference space is used for creating inline experiences with tracking information explicitly disabled. Instead, developers use `XRReferenceSpace.originOffset` which is described in the [Application supplied transforms section](#application-supplied-transforms).  An example usage of an _identity_ reference space is a furniture viewer that will use [click-and-drag controls](#click-and-drag-view-controls) to rotate the furniture. It also supports cases where the developer wishes to avoid displaying any type of tracking consent prompt to the user prior while displaying inline content.
+### Viewer reference spaces
+A _viewer_ reference space tracks the origin of the viewer. This type of reference space is primarily used for creating inline experiences with no tracking information. Instead, developers may use `XRReferenceSpace.originOffset` which is described in the [Application supplied transforms section](#application-supplied-transforms). An example usage of an _viewer_ reference space is a furniture viewer that will use [click-and-drag controls](#click-and-drag-view-controls) to rotate the furniture. It also supports cases where the developer wishes to avoid displaying any type of tracking consent prompt to the user prior while displaying inline content.
 
-This type of reference space is requested with a type of `identity` and returns a basic `XRReferenceSpace`. `XRViewerPose` objects retrieved with this reference space will have a `transform` that is equal to the reference space's `originOffset` and the `XRView` matrices will be offset accordingly.
+This type of reference space is requested with a type of `viewer` and returns a basic `XRReferenceSpace`. `XRViewerPose` objects retrieved with this reference space will have a `transform` that is equal to the reference space's `originOffset` and the `XRView` matrices will be offset accordingly.
 
 ```js
 let xrSession = null;
 let xrReferenceSpace = null;
 
-// Create an 'identity' reference space
+// Create an 'viewer' reference space
 function onSessionStarted(session) {
   xrSession = session;
-  xrSession.requestReferenceSpace('identity')
+  xrSession.requestReferenceSpace('viewer')
   .then((referenceSpace) => {
     xrReferenceSpace = referenceSpace;
   })
@@ -168,6 +168,15 @@ function onSessionStarted(session) {
     xrSession.requestAnimationFrame(onDrawFrame);
   });
 }
+```
+
+Sometimes it is useful to have access to the `XRSpace` represented by the viewer directly, such when the developer wants to use it to compare locations against other `XRSpace` objects.
+
+```js
+  let pose = xrFrame.getPose(preferredInputSource.gripSpace, xrSession.viewerSpace);
+  if (pose) {
+    // Calculate how far the motion controller is from the user's head
+  }
 ```
 
 ## Spatial relationships
@@ -194,16 +203,6 @@ The `emulatedPosition` attribute of `XRPose` indicates that the translation comp
 
 #### Rays
 An `XRRay` object includes both an `origin` and `direction`, both given as `DOMPointReadOnly`s. The `origin` represents a 3D coordinate in space with a `w` component that must be 1, and the `direction` represents a normalized 3D directional vector with a `w` component that must be 0. The `XRRay` also defines a `matrix` which represents the transform from a ray originating at `[0, 0, 0]` and extending down the negative Z axis to the ray described by the `XRRay`'s `origin` and `direction`. This is useful for positioning graphical representations of the ray.
-
-### Viewer space
-Calls to `XRFrame.getViewerPose()` return an `XRViewerPose` object which contains the pose of the viewer along with the views to be rendered. Sometimes it is useful to have access to the `XRSpace` represented by the viewer directly, such when the developer wants to use it to compare locations against other `XRSpace` objects.
-
-```js
-  let pose = xrFrame.getPose(preferredInputSource.gripSpace, xrSession.viewerSpace);
-  if (pose) {
-    // Calculate how far the motion controller is from the user's head
-  }
-```
 
 ### Application-supplied transforms
 Frequently developers will want to provide an additional, artificial transform on top of the user's tracked motion to allow the user to navigate larger virtual scenes than their tracking systems or physical space allows. This effect is traditionally accomplished by mathematically combining the API-provided transform with the desired additional application transforms. WebXR offers developers a simplification to ensure that all tracked values, such as viewer and input poses, are transformed consistently.
@@ -380,8 +379,6 @@ partial dictionary XRSessionCreationOptions {
 };
 
 partial interface XRSession {
-  readonly attribute XRSpace viewerSpace;
-
   Promise<XRReferenceSpace> requestReferenceSpace(XRReferenceSpaceType type);
 };
 
