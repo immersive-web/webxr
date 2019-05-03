@@ -495,7 +495,7 @@ The <dfn attribute for="XRSession">environmentBlendMode</dfn> attribute returns 
 
 NOTE: Most Virtual Reality devices exhibit {{XREnvironmentBlendMode/opaque}} blending behavior. Augmented Reality devices that use transparent optical elements frequently exhibit {{XREnvironmentBlendMode/additive}} blending behavior, and Augmented Reality devices that use passthrough cameras frequently exhibit {{XREnvironmentBlendMode/alpha-blend}} blending behavior.
 
-The <dfn attribute for="XRSession">viewerSpace</dfn> attribute is an {{XRSpace}} which tracks the pose of the [=viewer=].
+The <dfn attribute for="XRSession">viewerSpace</dfn> attribute is an {{XRSpace}} with a [=native origin=] that tracks the pose of the [=viewer=].
 
 NOTE: For any given {{XRFrame}} calling {{XRFrame/getPose()}} with the {{XRSession/viewerSpace}} and any {{XRReferenceSpace}} will return the same pose (without the {{views}} array) as calling {{XRFrame/getViewerPose()}} with the same {{XRReferenceSpace}}.
 
