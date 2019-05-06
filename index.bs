@@ -471,7 +471,43 @@ When the <dfn method for="XRSession">requestReferenceSpace(|options|)</dfn> meth
 
 </div>
 
-The <dfn attribute for="XRSession">inputSources</dfn> attribute returns the {{XRSession}}'s [=list of active input sources=].
+Each {{XRSession}} has a <dfn>list of active XR input sources</dfn> (a [=/list=] of {{XRInputSource}}) which MUST be initially an empty [=/list=].
+
+The <dfn attribute for="XRSession">inputSources</dfn> attribute returns the {{XRSession}}'s [=list of active XR input sources=].
+
+The user agent MUST monitor any [=XR input source=]s associated with the [=/XR Device=], including detecting when [=XR input source=]s are added, removed, or changed.
+
+<div class="algorithm" data-algorithm="on-input-source-added">
+
+When a new [=XR input source=] becomes available for {{XRSession}} |session|, the user agent MUST run the following steps:
+
+  1. Let |inputSource| be a new {{XRInputSource}}.
+  1. Add |inputSource| to |session|'s [=list of active XR input sources=] associated with the new [=XR input source=].
+  1. [=Queue a task=] that fires a {{XRSessionEvent}} named {{inputsourceschange!!event}} on |session|.
+
+</div>
+
+<div class="algorithm" data-algorithm="on-input-source-removed">
+
+When an [=XR input source=] is no longer available for {{XRSession}} |session|, the user agent MUST run the following steps:
+
+  1. Let |inputSource| be the {{XRInputSource}} in |session|'s [=list of active XR input sources=] associated with the [=XR input source=] that is not longer available.
+  1. Remove |inputSource| from |session|'s [=list of active XR input sources=].
+  1. [=Queue a task=] that fires a {{XRSessionEvent}} named {{inputsourceschange!!event}} on |session|.
+
+</div>
+
+<div class="algorithm" data-algorithm="on-input-source-change">
+
+When the intrinsic properties of an [=XR input source=] change for {{XRSession}} |session|, such as the {{XRInputSource/handedness}}, {{XRInputSource/targetRayMode}}, or presence of a {{XRInputSource/gripSpace}} or {{XRInputSource/gamepad}}, the user agent MUST run the following steps:
+
+  1. Let |oldInputSource| be the {{XRInputSource}} in |session|'s [=list of active XR input sources=] previously associated with the [=XR input source=] that changed.
+  1. Let |newInputSource| be a new {{XRInputSource}}.
+  1. Remove |oldInputSource| from |session|'s [=list of active XR input sources=].
+  1. Add |newInputSource| to |session|'s [=list of active XR input sources=] associated with the [=XR input source=] that changed.
+  1. [=Queue a task=] that fires a {{XRSessionEvent}} named {{inputsourceschange!!event}} on |session|.
+
+</div>
 
 Each {{XRSession}} has a <dfn>environment blending mode</dfn> value, which is a enum which MUST be set to whichever of the following values best matches the behavior of imagery rendered by the session in relation to the user's surrounding environment.
 
@@ -510,8 +546,6 @@ We still need to document what happens when we <dfn>end the session</dfn>. (This
 We still need to document what happens when we <dfn lt="blur all sessions">blur all sessions</dfn>. (This is <a href="https://github.com/immersive-web/webxr/issues/468">filed</a>.)
 
 We still need to document what happens when we <dfn>poll the device pose</dfn> (This is <a href="https://github.com/immersive-web/webxr/issues/480">filed</a>.)
-
-We still need to document how the <dfn>list of active input sources</dfn> is maintained. (This is <a href="https://github.com/immersive-web/webxr/issues/465">filed</a>.)
 
 XRRenderState {#xrrenderstate-interface}
 -------------
@@ -1047,7 +1081,7 @@ The <dfn constructor for="XRRay">XRRay(|transform|)</dfn> constructor MUST perfo
   1. Multiply |ray|'s {{XRRay/direction}} by the |transform|'s {{XRRigidTransform/matrix}} and set |ray| to the result.
   1. [=Normalize=] the {{DOMPointReadOnly/x}}, {{DOMPointReadOnly/y}}, and {{DOMPointReadOnly/z}} components of |ray|'s {{XRRay/direction}}
   1. Return |ray|.
-  
+
 </div>
 
 The <dfn attribute for="XRRay">origin</dfn> attribute defines the 3-dimensional point in space that the ray originates from, given in meters. The {{XRRay/origin}}'s {{DOMPointReadOnly/w}} attribute MUST be <code>1.0</code>.
@@ -1103,7 +1137,7 @@ Input {#input}
 XRInputSource {#xrinputsource-interface}
 -------------
 
-An {{XRInputSource}} represents any input mechanism which allows the user to perform targeted actions in the same virtual space as the [=viewer=].
+An {{XRInputSource}} represents an <dfn>XR input source</dfn>, which is any input mechanism which allows the user to perform targeted actions in the same virtual space as the [=viewer=]. Example [=XR input source=]s include, but are not limited to, handheld controllers, optically tracked hands, and gaze-based input methods that operate on the [=viewer=]'s pose. Input mechanisms which are not explicitly associated with the [=/XR Device=], such as traditional gamepads, mice, or keyboards SHOULD NOT be considered [=XR input source=]s.
 
 <pre class="idl">
 enum XRHandedness {
@@ -1130,7 +1164,7 @@ interface XRInputSource {
 
 Each {{XRInputSource}} SHOULD define a <dfn>primary action</dfn>. The [=primary action=] is a platform-specific action that, when engaged, produces {{selectstart}}, {{selectend}}, and {{XRSession/select}} events. Examples of possible [=primary action=]s are pressing a trigger, touchpad, or button, speaking a command, or making a hand gesture. If the platform guidelines define a recommended primary input then it should be used as the [=primary action=], otherwise the user agent is free to select one.
 
-The <dfn attribute for="XRInputSource">handedness</dfn> attribute describes which hand the input source is associated with, if any. Input sources with no natural handedness (such as headset-mounted controls or standard gamepads) or for which the handedness is not currently known MUST set this attribute {{XRHandedness/none}}.
+The <dfn attribute for="XRInputSource">handedness</dfn> attribute describes which hand the [=XR input source=] is associated with, if any. Input sources with no natural handedness (such as headset-mounted controls or standard gamepads) or for which the handedness is not currently known MUST set this attribute {{XRHandedness/none}}.
 
 The <dfn attribute for="XRInputSource">targetRayMode</dfn> attribute describes the method used to produce the target ray, and indicates how the application should present the target ray to the user if desired.
 
@@ -1138,7 +1172,7 @@ The <dfn attribute for="XRInputSource">targetRayMode</dfn> attribute describes t
   - <dfn enum-value for="XRTargetRayMode">tracked-pointer</dfn> indicates that the target ray originates from either a handheld device or other hand-tracking mechanism and represents that the user is using their hands or the held device for pointing. The orientation of the target ray relative to the tracked object MUST follow platform-specific ergonomics guidelines when available. In the absence of platform-specific guidance, the target ray SHOULD point in the same direction as the user's index finger if it was outstretched.
   - <dfn enum-value for="XRTargetRayMode">screen</dfn> indicates that the input source was an interaction with the canvas element associated with a inline session's output context, such as a mouse click or touch event.
 
-Note: Some input sources, like an {{XRInputSource}} with {{targetRayMode}} set to {{screen}}, will only be added to the session's [=list of active input sources=] immediately before the {{selectstart}} event, and removed from the session's [=list of active input sources=] immediately after the {{selectend}} event.
+Note: Some input sources, like an {{XRInputSource}} with {{targetRayMode}} set to {{screen}}, will only be added to the session's [=list of active XR input sources=] immediately before the {{selectstart}} event, and removed from the session's [=list of active XR input sources=] immediately after the {{selectend}} event.
 
 The <dfn attribute for="XRInputSource">targetRaySpace</dfn> attribute is an {{XRSpace}} that has a [=native origin=] tracking the position and orientation of the preferred pointing ray of the {{XRInputSource}}, as defined by the {{targetRayMode}}.
 
@@ -1146,7 +1180,7 @@ The <dfn attribute for="XRInputSource">gripSpace</dfn> attribute is an {{XRSpace
 
 The {{gripSpace}} MUST be <code>null</code> if the input source isn't inherently trackable such as for input sources with a {{targetRayMode}} of {{XRTargetRayMode/gaze}} or {{XRTargetRayMode/screen}}.
 
-The <dfn attribute for="XRInputSource">gamepad</dfn> attribute is a {{Gamepad}} that describes the state of any buttons and axes on the input device. If the device does not have at least one of the following properties, the {{gamepad}} attribute MUST be <code>null</code>:
+The <dfn attribute for="XRInputSource">gamepad</dfn> attribute is a {{Gamepad}} that describes the state of any buttons and axes on the [=XR input source=]. If the  [=XR input source=] does not have at least one of the following properties, the {{gamepad}} attribute MUST be <code>null</code>:
 
  - Multiple buttons
  - A button which reports analog values
@@ -1659,7 +1693,7 @@ A user agent MAY dispatch a <dfn event for="XRSession">focus</dfn> event on an {
 A user agent MUST dispatch a <dfn event for="XRSession">end</dfn> event on an {{XRSession}} when the session ends, either by the application or the user agent. The event MUST be of type {{XRSessionEvent}}.
 
 <section class="unstable">
-A user agent MUST dispatch a <dfn event for="XRSession">inputsourceschange</dfn> event on an {{XRSession}} when the session's [=list of active input sources=] has changed. The event MUST be of type {{XRSessionEvent}}.
+A user agent MUST dispatch a <dfn event for="XRSession">inputsourceschange</dfn> event on an {{XRSession}} when the session's [=list of active XR input sources=] has changed. The event MUST be of type {{XRSessionEvent}}.
 </section>
 
 A user agent MUST dispatch a <dfn event for="XRSession">selectstart</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s begins its [=primary action=]. The event MUST be of type {{XRInputSourceEvent}}.
