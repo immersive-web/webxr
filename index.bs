@@ -1324,7 +1324,6 @@ interface XRWebGLLayer : XRLayer {
 
   // Methods
   XRViewport? getViewport(XRView view);
-  void requestViewportScaling(double viewportScaleFactor);
 
   // Static Methods
   static double getNativeFramebufferScaleFactor(XRSession session);
@@ -1358,7 +1357,7 @@ The <dfn attribute for="XRWebGLLayer">framebuffer</dfn> attribute of an {{XRWebG
  - An [=opaque framebuffer=]'s attachments cannot be inspected or changed. Calling {{framebufferTexture2D}}, {{framebufferRenderbuffer}}, {{getFramebufferAttachmentParameter}}, or {{getRenderbufferParameter}} with an [=opaque framebuffer=] MUST generate an {{INVALID_OPERATION}} error.
  - An [=opaque framebuffer=] is considered incomplete outside of an {{XRSession/requestAnimationFrame()}} callback. When not in a {{XRSession/requestAnimationFrame()}} callback calls to {{checkFramebufferStatus}} outside of an {{XRSession/requestAnimationFrame()}} callback MUST generate a {{FRAMEBUFFER_UNSUPPORTED}} error and attempts to clear, draw to, or read from the [=opaque framebuffer=] MUST generate an {{INVALID_FRAMEBUFFER_OPERATION}} error.
 
-The <dfn attribute for="XRWebGLLayer">framebufferWidth</dfn> and <dfn attribute for="XRWebGLLayer">framebufferHeight</dfn> attributes return the width and height of the {{framebuffer}}'s attachments, respectively.
+The <dfn attribute for="XRWebGLLayer">framebufferWidth</dfn> and <dfn attribute for="XRWebGLLayer">framebufferHeight</dfn> attributes return the width and height of the {{framebuffer}}'s attachments, respectively. The {{framebuffer}} size cannot be adjusted by the developer after the {{XRWebGLLayer}} has been created.
 
 The <dfn attribute for="XRWebGLLayer">antialias</dfn> attribute is <code>true</code> if the {{framebuffer}} supports antialiasing using a technique of the UAs choosing, and <code>false</code> if no antialiasing will be performed.
 
@@ -1368,7 +1367,7 @@ Depth values stored in the buffer are expected to be between <code>0.0</code> an
 
 NOTE: Making the scene's depth buffer available to the compositor allows some platforms to provide quality and comfort improvements such as improved reprojection.
 
-Each {{XRWebGLLayer}} MUST have a <dfn>list of viewports</dfn> which contains one [=WebGL viewport=] for each {{XRView}} the {{XRSession}} currently exposes. The viewports MUST NOT be overlapping. The {{XRWebGLLayer}} MUST also have a <dfn>viewport scale factor</dfn>, initially set to 1.0, and a <dfn>minimum viewport scale factor</dfn> set to a UA-determined value between 0 and 1.
+Each {{XRWebGLLayer}} MUST have a <dfn>list of viewports</dfn> which contains one [=WebGL viewport=] for each {{XRView}} the {{XRSession}} currently exposes. The viewports MUST NOT be overlapping.
 
 {{getViewport()}} queries the {{XRViewport}} the given {{XRView}} should use when rendering to the layer.
 
@@ -1381,26 +1380,11 @@ The <dfn method for="XRWebGLLayer">getViewport(|view|)</dfn> method, when invoke
   1. Let |viewport| be a new {{XRViewport}} instance.
   1. Initialize |viewport|'s {{XRViewport/x}} to |glViewport|'s <code>x</code> component.
   1. Initialize |viewport|'s {{XRViewport/y}} to |glViewport|'s <code>y</code> component.
-  1. Initialize |viewport|'s {{XRViewport/width}} to |glViewport|'s <code>width</code> component multiplied by the [=viewport scale factor=].
-  1. Initialize |viewport|'s {{XRViewport/height}} to |glViewport|'s <code>height</code> component multiplied by the [=viewport scale factor=].
+  1. Initialize |viewport|'s {{XRViewport/width}} to |glViewport|'s <code>width</code>.
+  1. Initialize |viewport|'s {{XRViewport/height}} to |glViewport|'s <code>height</code>.
   1. Return |viewport|.
 
 </div>
-
-<section class="unstable">
-The {{framebuffer}} size cannot be adjusted by the developer after the {{XRWebGLLayer}} has been created, but it can be useful to adjust the resolution content is rendered at at runtime to aid application performance. To do so, developers can request that the size of the viewports in the [=list of viewports=] be changed using the {{requestViewportScaling()}} method. 
-
-<div class="algorithm" data-algorithm="request-viewport-scaling">
-
-The <dfn method for="XRWebGLLayer">requestViewportScaling(|scaleFactor|)</dfn> method, when invoked, MUST run the following steps:
-
-  1. If |scaleFactor| is greater than 1.0 set |scaleFactor| to 1.0.
-  1. If |scaleFactor| is less than the [=minimum viewport scale factor=] set |scaleFactor| to the [=minimum viewport scale factor=].
-  1. If the [=XR/XR device=] places additional device-specific restrictions on viewport size, adjust |scaleFactor| accordingly.
-  1. Set the [=viewport scale factor=] to |scaleFactor|.
-
-</div>
-</section>
 
 Each {{XRSession}} MUST identify a <dfn>native WebGL framebuffer resolution</dfn>, which is the pixel resolution of a WebGL framebuffer required to match the physical pixel resolution of the [=/XR device=].
 

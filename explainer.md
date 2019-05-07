@@ -458,9 +458,9 @@ Beyond the core APIs described above, the WebXR Device API also exposes several 
 
 ### Controlling rendering quality
 
-While in immersive sessions, the UA is responsible for providing a framebuffer that is correctly optimized for presentation to the `XRSession` in each `XRFrame`. Developers can optionally request either the buffer size or viewport size be scaled, though the UA may not respect the request. Even when the UA honors the scaling requests, the result is not guaranteed to be the exact percentage requested.
+While in immersive sessions, the UA is responsible for providing a framebuffer that is correctly optimized for presentation to the `XRSession` in each `XRFrame`. Developers can optionally request the framebuffer size be scaled, though the UA may not respect the request. Even when the UA honors the scaling requests, the result is not guaranteed to be the exact percentage requested.
 
-The first scaling mechanism is done by specifying a `framebufferScaleFactor` at `XRWebGLLayer` creation time. Each XR device has a default framebuffer size, which corresponds to a `framebufferScaleFactor` of `1.0`. This default size is determined by the UA and should represent a reasonable balance between rendering quality and performance. It may not be the 'native' size for the device (that is, a buffer which would match the native screen resolution 1:1 at point of highest magnification). For example, mobile platforms such as GearVR or Daydream frequently suggest using lower resolutions than their screens are capable of to ensure consistent performance.
+Framebuffer scaling is done by specifying a `framebufferScaleFactor` at `XRWebGLLayer` creation time. Each XR device has a default framebuffer size, which corresponds to a `framebufferScaleFactor` of `1.0`. This default size is determined by the UA and should represent a reasonable balance between rendering quality and performance. It may not be the 'native' size for the device (that is, a buffer which would match the native screen resolution 1:1 at point of highest magnification). For example, mobile platforms such as GearVR or Daydream frequently suggest using lower resolutions than their screens are capable of to ensure consistent performance.
 
 If the `framebufferScaleFactor` is set to a number higher or lower than `1.0` the UA should create a framebuffer that is the default resolution multiplied by the given scale factor. So a `framebufferScaleFactor` of `0.5` would specify a framebuffer with 50% the default height and width, and so on. The UA may clamp the scale factor however it sees fit, or may round it to a desired increment if needed (for example, fitting the buffer dimensions to powers of two if that is known to increase performance.)
 
@@ -485,23 +485,7 @@ function setupNativeScaleWebGLLayer() {
   });
 ```
 
-This technique should be used carefully, since the native resolution on some headsets may be higher than the system is capable of rendering at a stable framerate without use of additional techniques such as foveated rendering. Also note that the UA's scale clamping is allowed to prevent the allocation of native resoltion framebuffers if it deems it necessary to maintain acceptable performance.
-
-The second scaling mechanism is to request a scaled viewport into the `XRWebGLLayer`'s `framebuffer`. For example, under times of heavy load the developer may choose to temporarily render fewer pixels. To do so, developers should call `XRWebGLLayer.requestViewportScaling()` and supply a value between 0.0 and 1.0. The UA may then respond by changing the `XRWebGLLayer`'s `framebuffer` and/or the `XRViewport` values in future XR frames. It is worth noting that the UA may change the viewports for reasons other than developer request, and that not all UAs will respect requested viewport changes; as such, developers must always query the viewport values on each XR frame.
-
-```js
-function onDrawFrame() {
-  // Draw the current frame
-
-  // In response to a performance dip, request the viewport be restricted
-  // to a percentage (ex: 50%) of the layer's actual buffer. This change
-  // will apply to subsequent rendering frames
-  layer.requestViewportScaling(0.5);
-
-  // Register for next frame callback
-  xrSession.requestAnimationFrame(onDrawFrame);
-}
-```
+This technique should be used carefully, since the native resolution on some headsets may be higher than the system is capable of rendering at a stable framerate without use of additional techniques such as foveated rendering. Also note that the UA's scale clamping is allowed to prevent the allocation of native resolution framebuffers if it deems it necessary to maintain acceptable performance.
 
 ### Controlling depth precision
 
@@ -738,7 +722,6 @@ interface XRWebGLLayer : XRLayer {
   readonly attribute WebGLFramebuffer framebuffer;
 
   XRViewport? getViewport(XRView view);
-  Promise<void> requestViewportScaling(double viewportScaleFactor);
 
   static double getNativeFramebufferScaleFactor(XRSession session);
 };
