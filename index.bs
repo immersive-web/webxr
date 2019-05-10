@@ -493,11 +493,7 @@ When <dfn for="XRSession" lt="add input source">new [=XR input source=]s become 
 
 <div class="algorithm" data-algorithm="on-input-source-removed">
 
-<<<<<<< HEAD
 When any previously added <dfn for="XRSession" lt="remove input source">[=XR input source=]s are no longer available</dfn> for {{XRSession}} |session|, the user agent MUST run the following steps:
-=======
-When an <dfn for="XRSession" lt="remove input source">[=XR input source=] is no longer available</dfn> for {{XRSession}} |session|, the user agent MUST run the following steps:
->>>>>>> Define the behavior of transient inputs
 
   1. Let |removed| be a new [=/list=].
   1. For each [=XR input source=] that is no longer available:
@@ -1180,8 +1176,6 @@ interface XRInputSource {
 };
 </pre>
 
-Each {{XRInputSource}} SHOULD define a <dfn>primary action</dfn>. The [=primary action=] is a platform-specific action that, when engaged, produces {{selectstart}}, {{selectend}}, and {{XRSession/select}} events. Examples of possible [=primary action=]s are pressing a trigger, touchpad, or button, speaking a command, or making a hand gesture. If the platform guidelines define a recommended primary input then it should be used as the [=primary action=], otherwise the user agent is free to select one.
-
 The <dfn attribute for="XRInputSource">handedness</dfn> attribute describes which hand the [=XR input source=] is associated with, if any. Input sources with no natural handedness (such as headset-mounted controls or standard gamepads) or for which the handedness is not currently known MUST set this attribute {{XRHandedness/none}}.
 
 The <dfn attribute for="XRInputSource">targetRayMode</dfn> attribute describes the method used to produce the target ray, and indicates how the application should present the target ray to the user if desired.
@@ -1202,16 +1196,46 @@ The <dfn attribute for="XRInputSource">gamepad</dfn> attribute is a {{Gamepad}} 
  - A button which reports analog values
  - An axis
 
-NOTE: {{XRInputSource}}s with a <code>null</code> {{gamepad}} can still fire {{select}}, {{selectstart}}, and {{selectend}} events to report binary inputs.
+Each [=XR input source=] SHOULD define a <dfn>primary action</dfn>. The [=primary action=] is a platform-specific action that, when engaged, produces {{selectstart}}, {{selectend}}, and {{XRSession/select}} events. Examples of possible [=primary action=]s are pressing a trigger, touchpad, or button, speaking a command, or making a hand gesture. If the platform guidelines define a recommended primary input then it should be used as the [=primary action=], otherwise the user agent is free to select one.
+
+<div class="algorithm" data-algorithm="on-input-start">
+
+When an [=XR input source=] for {{XRSession}} |session| begins its [=primary action=] the UA MUST run the following steps:
+
+  1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{selectstart!!event}} on |session|.
+
+</div>
+
+<div class="algorithm" data-algorithm="on-input-end">
+
+When an [=XR input source=] for {{XRSession}} |session| ends its [=primary action=] the UA MUST run the following steps:
+
+  1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{select!!event}} on |session|.
+  1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
+
+</div>
+
+Sometimes platform-specific behavior can result in a [=primary action=] being interrupted or cancelled. For example, a [=/XR input source=] may be removed from the [=/XR device=] after the [=primary action=] is started but before it ends.
+
+<div class="algorithm" data-algorithm="on-input-cancelled">
+
+When an [=XR input source=] for {{XRSession}} |session| has its [=primary action=] cancelled the UA MUST run the following steps:
+
+  1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
+
+</div>
 </section>
 
 Transient input {#transient-input}
------------------------
-Some [=/XR Device=]s may support <dfn>transient input sources</dfn>, where the [=XR input source=] is only meaningful while performing it's [=primary action=]. An example would be mouse, touch, or stylus input against an {{XRSessionMode/inline}} {{XRSession}}, producing an {{XRInputSource}} with a {{targetRayMode}} set to {{screen}}. This type of [=XR input source=] would only be present in the session's [=list of active XR input sources=] for the duration of the the {{selectstart}}, {{select}}, and {{selectend}} event sequence.
+---------------
+
+Some [=/XR Device=]s may support <dfn>transient input sources</dfn>, where the [=XR input source=] is only meaningful while performing it's [=primary action=]. An example would be mouse, touch, or stylus input against an {{XRSessionMode/inline}} {{XRSession}}, which MUST produce a transient {{XRInputSource}} with a {{targetRayMode}} set to {{screen}}. [=Transient input sources=] are only present in the session's [=list of active XR input sources=] for the duration of the the {{selectstart}}, {{select}}, and {{selectend}} event sequence.
+
+[=Transient input sources=] follow a slightly different sequence when firing [=primary action=] events:
 
 <div class="algorithm" data-algorithm="on-transient-input-start">
 
-When a [=transient input source=] for {{XRSession}} |session| begins it's [=primary action=] the UA MUST run the following steps:
+When a [=transient input source=] for {{XRSession}} |session| begins its [=primary action=] the UA MUST run the following steps:
 
   1. Fire any <code>"pointerdown"</code> events produced by the [=XR input source=]'s action, if necessary.
   1. [=add input source|Add the XR input source=] to the [=list of active XR input sources=].
@@ -1221,10 +1245,20 @@ When a [=transient input source=] for {{XRSession}} |session| begins it's [=prim
 
 <div class="algorithm" data-algorithm="on-transient-input-end">
 
-When a [=transient input source=] for {{XRSession}} |session| ends it's [=primary action=] the UA MUST run the following steps:
+When a [=transient input source=] for {{XRSession}} |session| ends its [=primary action=] the UA MUST run the following steps:
 
   1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{select!!event}} on |session|.
   1. Fire any <code>"click"</code> events produced by the [=XR input source=]'s action, if necessary.
+  1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
+  1. [=remove input source|Remove the XR input source=] from the [=list of active XR input sources=].
+  1. Fire any <code>"pointerup"</code> events produced by the [=XR input source=]'s action, if necessary.
+
+</div>
+
+<div class="algorithm" data-algorithm="on-transient-input-cancelled">
+
+When a [=transient input source=] for {{XRSession}} |session| has its [=primary action=] cancelled the UA MUST run the following steps:
+
   1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
   1. [=remove input source|Remove the XR input source=] from the [=list of active XR input sources=].
   1. Fire any <code>"pointerup"</code> events produced by the [=XR input source=]'s action, if necessary.
