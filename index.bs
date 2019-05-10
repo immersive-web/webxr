@@ -797,9 +797,9 @@ An {{XRReferenceSpace}} is one of several common {{XRSpace}}s that applications 
 <pre class="idl">
 enum XRReferenceSpaceType {
   "viewer",
-  "eye-level",
-  "floor-level",
-  "bounded",
+  "local",
+  "local-floor",
+  "bounded-floor",
   "unbounded"
 };
 
@@ -817,15 +817,15 @@ An {{XRReferenceSpace}} is most frequently obtained by calling {{XRSession/reque
 
   - Passing a type of <dfn enum-value for="XRReferenceSpaceType">viewer</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space with a [=native origin=] which tracks the position and orientation of the [=viewer=].
 
-  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">eye-level</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space with a [=native origin=] near the user's head at the time of creation. The exact position and orientation will be initialized based on the conventions of the underlying platform. When using this reference space the user is not expected to move beyond their initial position much, if at all, and tracking is optimized for that purpose. For devices with [=6DoF=] tracking, {{eye-level}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
+  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">local</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space with a [=native origin=] near the user's head at the time of creation. The exact position and orientation will be initialized based on the conventions of the underlying platform. When using this reference space the user is not expected to move beyond their initial position much, if at all, and tracking is optimized for that purpose. For devices with [=6DoF=] tracking, {{local}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
 
-  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">floor-level</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space with a [=native origin=] at the floor in a safe position for the user to stand. The `y` axis equals `0` at floor level, with the `x` and `z` position and orientation initialized based on the conventions of the underlying platform. If the floor level isn't known it MUST be estimated. When using this reference space the user is not expected to move beyond their initial position much, if at all, and tracking is optimized for that purpose. For devices with [=6DoF=] tracking, {{floor-level}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
+  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">local-floor</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space with a [=native origin=] at the floor in a safe position for the user to stand. The `y` axis equals `0` at floor level, with the `x` and `z` position and orientation initialized based on the conventions of the underlying platform. If the floor level isn't known it MUST be estimated. When using this reference space the user is not expected to move beyond their initial position much, if at all, and tracking is optimized for that purpose. For devices with [=6DoF=] tracking, {{local-floor}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
 
-  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">bounded</dfn> creates an {{XRBoundedReferenceSpace}} instance if supported by the [=/XR device=] and the {{XRSession}}. It represents a tracking space with it's [=native origin=] at the floor, where the user is expected to move within a pre-established boundary, given as the {{boundsGeometry}}. Tracking in a {{bounded}} reference space is optimized for keeping the [=native origin=] and {{boundsGeometry}} stable relative to the user's environment.
+  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">bounded-floor</dfn> creates an {{XRBoundedReferenceSpace}} instance if supported by the [=/XR device=] and the {{XRSession}}. It represents a tracking space with it's [=native origin=] at the floor, where the user is expected to move within a pre-established boundary, given as the {{boundsGeometry}}. Tracking in a {{bounded-floor}} reference space is optimized for keeping the [=native origin=] and {{boundsGeometry}} stable relative to the user's environment.
 
   - Passing a type of <dfn enum-value for="XRReferenceSpaceType">unbounded</dfn> creates an {{XRReferenceSpace}} instance if supported by the [=/XR device=] and the {{XRSession}}. It represents a tracking space where the user is expected to move freely around their environment, potentially even long distances from their starting point. Tracking in an {{unbounded}} reference space is optimized for stability around the user's current position, and as such the [=native origin=] may drift over time.
 
-Devices that support {{XRReferenceSpaceType/eye-level}} reference spaces MUST support {{XRReferenceSpaceType/floor-level}} reference spaces, through emulation if necessary, and vice versa.
+Devices that support {{XRReferenceSpaceType/local}} reference spaces MUST support {{XRReferenceSpaceType/local-floor}} reference spaces, through emulation if necessary, and vice versa.
 
 The <dfn attribute for="XRReferenceSpace">onreset</dfn> attribute is an [=Event handler IDL attribute=] for the {{reset}} event type.
 
@@ -835,7 +835,7 @@ When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a ref
 
   1. Let |session| be the {{XRSession}} object that requested creation of a reference space.
   1. Let |type| be set to the {{XRReferenceSpaceType}} passed to {{requestReferenceSpace()}}.
-  1. If |type| is {{bounded}}, let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
+  1. If |type| is {{bounded-floor}}, let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
   1. Else let |referenceSpace| be a new {{XRReferenceSpace}}.
   1. Initialize |referenceSpace|'s [=XRReferenceSpace/type=] to be |type|.
   1. Initialize [=XRSpace/session=] to be |session|.
@@ -869,7 +869,7 @@ interface XRBoundedReferenceSpace : XRReferenceSpace {
 
 The origin of a {{XRBoundedReferenceSpace}} MUST be positioned at the floor, such that the `y` axis equals `0` at floor level. The `x` and `z` position and orientation are initialized based on the conventions of the underlying platform, typically expected to be near the center of the room facing in a logical forward direction.
 
-Note: Other XR platforms sometimes refer to the type of tracking offered by a {{bounded}} reference space as "room scale" tracking. An {{XRBoundedReferenceSpace}} is not intended to describe multi-room spaces, areas with uneven floor levels, or very large open areas. Content that needs to handle those scenarios should use an {{unbounded}} reference space.
+Note: Other XR platforms sometimes refer to the type of tracking offered by a {{bounded-floor}} reference space as "room scale" tracking. An {{XRBoundedReferenceSpace}} is not intended to describe multi-room spaces, areas with uneven floor levels, or very large open areas. Content that needs to handle those scenarios should use an {{unbounded}} reference space.
 
 Each {{XRBoundedReferenceSpace}} has a <dfn for="XRBoundedReferenceSpace">native bounds geometry</dfn> describing the border around the {{XRBoundedReferenceSpace}}, which the user can expect to safely move within. The polygonal boundary is given as an array of {{DOMPointReadOnly}}s, which represents a loop of points at the edges of the safe space. The points describe offsets from the [=XRSpace/native origin=] in meters. Points MUST be given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The {{DOMPointReadOnly/y}} value of each point MUST be <code>0</code> and the {{DOMPointReadOnly/w}} value of each point MUST be <code>1</code>. The bounds can be considered to originate at the floor and extend infinitely high. The shape it describes MAY be convex or concave.
 
