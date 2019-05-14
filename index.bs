@@ -894,12 +894,13 @@ A [=view=] has an associated internal <dfn>view offset</dfn>, which is an {{XRRi
 
 A [=view=] has an associated <dfn for="view">projection matrix</dfn>which is a [=matrix=] describing the projection to be used when rendering the [=view=], provided by the underlying XR device. The [=view/projection matrix=] MAY include transformations such as shearing that prevent the projection from being accurately described by a simple frustum.
 
-A [=view=] has an associated <dfn for="view">eye</dfn>which is an {{XREye}} describing which eye this view is expected to be shown to. If the view does not have an intrinsically associated eye (the display is monoscopic, for example) this value MUST be set to {{XREye/"left"}}.
+A [=view=] has an associated <dfn for="view">eye</dfn>which is an {{XREye}} describing which eye this view is expected to be shown to. If the view does not have an intrinsically associated eye (the display is monoscopic, for example) this value MUST be set to {{XREye/"none"}}.
 
 NOTE: Many HMDs will request that content render two [=views=], one for the left eye and one for the right, while most magic window devices will only request one [=view=], but applications should never assume a specific view configuration. For example: A magic window device may request two views if it is capable of stereo output, but may revert to requesting a single view for performance reasons if the stereo output mode is turned off. Similarly, HMDs may request more than two views to facilitate a wide field of view or displays of different pixel density.
 
 <pre class="idl">
 enum XREye {
+  "none",
   "left",
   "right"
 };

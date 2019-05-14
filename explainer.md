@@ -669,6 +669,7 @@ dictionary XRRenderStateInit {
 };
 
 enum XREye {
+  "none",
   "left",
   "right"
 };
