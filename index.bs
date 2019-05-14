@@ -1210,8 +1210,9 @@ When an [=XR input source=] for {{XRSession}} |session| begins its [=primary act
 
 When an [=XR input source=] for {{XRSession}} |session| ends its [=primary action=] the UA MUST run the following steps:
 
-  1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{select!!event}} on |session|.
-  1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
+  1. [=Queue a task=] to perform the following steps:
+    1. Fire an {{XRInputSourceEvent}} named {{select!!event}} on |session|.
+    1. Fire an {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
 
 </div>
 
@@ -1237,9 +1238,10 @@ Some [=/XR Device=]s may support <dfn>transient input sources</dfn>, where the [
 
 When a [=transient input source=] for {{XRSession}} |session| begins its [=primary action=] the UA MUST run the following steps:
 
-  1. Fire any <code>"pointerdown"</code> events produced by the [=XR input source=]'s action, if necessary.
-  1. [=add input source|Add the XR input source=] to the [=list of active XR input sources=].
-  1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{selectstart!!event}} on |session|.
+  1. [=Queue a task=] to perform the following steps:
+    1. Fire any <code>"pointerdown"</code> events produced by the [=XR input source=]'s action, if necessary.
+    1. [=add input source|Add the XR input source=] to the [=list of active XR input sources=].
+    1. Fire an {{XRInputSourceEvent}} named {{selectstart!!event}} on |session|.
 
 </div>
 
@@ -1247,11 +1249,12 @@ When a [=transient input source=] for {{XRSession}} |session| begins its [=prima
 
 When a [=transient input source=] for {{XRSession}} |session| ends its [=primary action=] the UA MUST run the following steps:
 
-  1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{select!!event}} on |session|.
-  1. Fire any <code>"click"</code> events produced by the [=XR input source=]'s action, if necessary.
-  1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
-  1. [=remove input source|Remove the XR input source=] from the [=list of active XR input sources=].
-  1. Fire any <code>"pointerup"</code> events produced by the [=XR input source=]'s action, if necessary.
+  1. [=Queue a task=] to perform the following steps:
+    1. Fires an {{XRInputSourceEvent}} named {{select!!event}} on |session|.
+    1. Fire any <code>"click"</code> events produced by the [=XR input source=]'s action, if necessary.
+    1. Fires an {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
+    1. [=remove input source|Remove the XR input source=] from the [=list of active XR input sources=].
+    1. Fire any <code>"pointerup"</code> events produced by the [=XR input source=]'s action, if necessary.
 
 </div>
 
@@ -1259,9 +1262,10 @@ When a [=transient input source=] for {{XRSession}} |session| ends its [=primary
 
 When a [=transient input source=] for {{XRSession}} |session| has its [=primary action=] cancelled the UA MUST run the following steps:
 
-  1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
-  1. [=remove input source|Remove the XR input source=] from the [=list of active XR input sources=].
-  1. Fire any <code>"pointerup"</code> events produced by the [=XR input source=]'s action, if necessary.
+  1. [=Queue a task=] to perform the following steps:  
+    1. Fire an {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
+    1. [=remove input source|Remove the XR input source=] from the [=list of active XR input sources=].
+    1. Fire any <code>"pointerup"</code> events produced by the [=XR input source=]'s action, if necessary.
 
 </div>
 
