@@ -91,7 +91,7 @@ function onSessionStarted(session) {
 
 There is no mechanism for getting a floor-relative _unbounded_ reference space. This is because the user may move through a variety of elevations (via stairs, hills, etc), making identification of a single floor plane impossible.
 
-#### Local reference spaces
+### Local reference spaces
 
 A _local_ experience is one which does not require the user to move around in space. Sometimes referred to as "seated", this reference space's origin will be initialized at a position near the viewer's position at the time of creation. The exact `x`, `y`, `z`, and orientation values will be initialized based on the conventions of the underlying platform for `local` experiences. Some platforms may initialize these values to the viewer's exact position/orientation at the time of creation. Other platforms that allow users to reset a common local origin shared across multiple apps may use that origin instead.
 
@@ -119,7 +119,9 @@ function onSessionStarted(session) {
 
 Orientation-only experiences such as 360 photo/video viewers can also be created with an `local` reference space by either explicitly ignoring the pose's positional data or displaying the media "infinitely" far away from the viewer. If such position mitigation steps are not taken the user may perceive the geometry the media is displayed on, leading to discomfort.
 
-#### Local-floor reference spaces
+It is important to note that `XRViewerPose` objects retrieved using `local` reference spaces may include position information as well as rotation information.  For example, hardware which does not support 6DOF tracking (ex: GearVR) may still use neck-modeling to improve user comfort. Similarly, a user may lean side-to-side on a device with 6DOF tracking (ex: HTC Vive). The result is that `local` experiences must be resilient to position changes despite not being dependent on receiving them.
+
+### Local-floor reference spaces
 
 A _local-floor_ experience is, similar to a local experience, one which does not require the user to move around in space but wish to provide the user with a floor plane. The origin of this reference space will be initialized at a position on the floor where it is safe for the user to engage in "standing-scale" experiences, with a `y` value of `0` at floor level. The exact `x`, `z`, and orientation values will be initialized based on the conventions of the underlying platform for standing-scale experiences. Some platforms may initialize these values to the viewer's exact position/orientation at the time of creation. Other platforms may place this standing-scale origin at the viewer's chosen floor-level origin for bounded experiences. It is also worth noting that some XR hardware will be unable to determine the actual floor level and will instead use an emulated or estimated floor.
 
@@ -144,7 +146,7 @@ function onSessionStarted(session) {
 }
 ```
 
-It is important to note that `XRViewerPose` objects retrieved using `local` and `local-floor` reference spaces may include position information as well as rotation information.  For example, hardware which does not support 6DOF tracking (ex: GearVR) may still use neck-modeling to improve user comfort. Similarly, a user may lean side-to-side on a device with 6DOF tracking (ex: HTC Vive). The result is that `local` and `local-floor` experiences must be resilient to position changes despite not being dependent on receiving them.
+As with `local` reference spaces, `XRViewerPose` objects retrieved using `local-floor` reference spaces may include position information as well as rotation information and as such must be resilient to position changes despite not being dependent on receiving them.
 
 ### Viewer reference spaces
 A _viewer_ reference space's origin is always at the position and orientation of the viewer device. This type of reference space is primarily used for creating inline experiences with no tracking of the viewer relative to it's physical environment. Instead, developers may use `XRReferenceSpace.originOffset` which is described in the [Application supplied transforms section](#application-supplied-transforms). An example usage of an _viewer_ reference space is a furniture viewer that will use [click-and-drag controls](#click-and-drag-view-controls) to rotate the furniture. It also supports cases where the developer wishes to avoid displaying any type of tracking consent prompt to the user prior while displaying inline content.
