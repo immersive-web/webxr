@@ -91,41 +91,16 @@ function onSessionStarted(session) {
 
 There is no mechanism for getting a floor-relative _unbounded_ reference space. This is because the user may move through a variety of elevations (via stairs, hills, etc), making identification of a single floor plane impossible.
 
-### Stationary experiences
-A _stationary_ experience is one which does not require the user to move around in space.  This includes several categories of experiences that developers are commonly building today, and multiple reference space types are available to address each class of experience.  "Standing" experiences can be created with a `local-floor` reference space.  "Seated" experiences can be created with an `local` reference space.
+### Local experiences
+A _local_ experience is one which does not require the user to move around in space.  This includes several categories of experiences that developers are commonly building today, and multiple reference space types are available to address each class of experience. "Seated" experiences can be created with an `local` reference space. "Standing" experiences can be created with a `local-floor` reference space.
 
 Orientation-only experiences such as 360 photo/video viewers can also be created with an `local` reference space by either explicitly ignoring the pose's positional data or displaying the media "infinitely" far away from the viewer. If such position mitigation steps are not taken the user may perceive the geometry the media is displayed on, leading to discomfort.
 
-It is important to note that `XRViewerPose` objects retrieved using `local-floor` and `local` reference spaces may include position information as well as rotation information.  For example, hardware which does not support 6DOF tracking (ex: GearVR) may still use neck-modeling to improve user comfort. Similarly, a user may lean side-to-side on a device with 6DOF tracking (ex: HTC Vive). The result is that `local-floor` and `local` experiences must be resilient to position changes despite not being dependent on receiving them.  
-
-#### Local-floor reference spaces
-
-The origin of this reference space will be initialized at a position on the floor where it is safe for the user to engage in "standing-scale" experiences, with a `y` value of `0` at floor level. The exact `x`, `z`, and orientation values will be initialized based on the conventions of the underlying platform for standing-scale experiences. Some platforms may initialize these values to the user's exact position/orientation at the time of creation. Other platforms may place this standing-scale origin at the user's chosen local-floor origin for bounded experiences. It is also worth noting that some XR hardware will be unable to determine the actual floor level and will instead use an emulated or estimated floor.
-
-Some example use cases: 
-* VR chat "room"
-* Fallback for Bounded experience that relies on teleportation instead
-
-```js
-let xrSession = null;
-let xrReferenceSpace = null;
-
-function onSessionStarted(session) {
-  xrSession = session;
-  xrSession.requestReferenceSpace('local-floor')
-  .then((referenceSpace) => {
-    xrReferenceSpace = referenceSpace;
-  })
-  .then(setupWebGLLayer)
-  .then(() => {
-    xrSession.requestAnimationFrame(onDrawFrame);
-  });
-}
-```
+It is important to note that `XRViewerPose` objects retrieved using `local` and `local-floor` reference spaces may include position information as well as rotation information.  For example, hardware which does not support 6DOF tracking (ex: GearVR) may still use neck-modeling to improve user comfort. Similarly, a user may lean side-to-side on a device with 6DOF tracking (ex: HTC Vive). The result is that `local` and `local-floor` experiences must be resilient to position changes despite not being dependent on receiving them.
 
 #### Local reference spaces
 
-Sometimes referred to as "seated", this reference space's origin will be initialized at a position near the user's head at the time of creation. The exact `x`, `y`, `z`, and orientation values will be initialized based on the conventions of the underlying platform for `local` experiences. Some platforms may initialize these values to the user's exact position/orientation at the time of creation. Other platforms that allow users to reset a common local origin shared across multiple apps may use that origin instead.
+Sometimes referred to as "seated", this reference space's origin will be initialized at a position near the viewer's position at the time of creation. The exact `x`, `y`, `z`, and orientation values will be initialized based on the conventions of the underlying platform for `local` experiences. Some platforms may initialize these values to the viewer's exact position/orientation at the time of creation. Other platforms that allow users to reset a common local origin shared across multiple apps may use that origin instead.
 
 Some example use cases: 
 * Immersive 2D video viewer
@@ -139,6 +114,31 @@ let xrReferenceSpace = null;
 function onSessionStarted(session) {
   xrSession = session;
   xrSession.requestReferenceSpace('local')
+  .then((referenceSpace) => {
+    xrReferenceSpace = referenceSpace;
+  })
+  .then(setupWebGLLayer)
+  .then(() => {
+    xrSession.requestAnimationFrame(onDrawFrame);
+  });
+}
+```
+
+#### Local-floor reference spaces
+
+The origin of this reference space will be initialized at a position on the floor where it is safe for the user to engage in "standing-scale" experiences, with a `y` value of `0` at floor level. The exact `x`, `z`, and orientation values will be initialized based on the conventions of the underlying platform for standing-scale experiences. Some platforms may initialize these values to the viewer's exact position/orientation at the time of creation. Other platforms may place this standing-scale origin at the viewer's chosen floor-level origin for bounded experiences. It is also worth noting that some XR hardware will be unable to determine the actual floor level and will instead use an emulated or estimated floor.
+
+Some example use cases: 
+* VR chat "room"
+* Fallback for Bounded experience that relies on teleportation instead
+
+```js
+let xrSession = null;
+let xrReferenceSpace = null;
+
+function onSessionStarted(session) {
+  xrSession = session;
+  xrSession.requestReferenceSpace('local-floor')
   .then((referenceSpace) => {
     xrReferenceSpace = referenceSpace;
   })
@@ -277,13 +277,13 @@ let xrReferenceSpace = null;
 
 function onSessionStarted(session) {
   xrSession = session;
-  // First request an unbounded frame of reference.
-  xrSession.requestReferenceSpace('unbounded').then((referenceSpace) => {
+  // First request an bounded-floor frame of reference.
+  xrSession.requestReferenceSpace('bounded-floor').then((referenceSpace) => {
     xrReferenceSpace = referenceSpace;
   }).catch(() => {
-    // If an unbounded reference space is not available, request an local
-    // frame of reference as a fallback and adjust the experience as necessary.
-    return xrSession.requestReferenceSpace('local').then((referenceSpace) => {
+    // If a bounded-floor reference space isn't available, request a local-floor 
+    // reference space as a fallback and adjust the experience as necessary.
+    return xrSession.requestReferenceSpace('local-floor').then((referenceSpace) => {
       xrReferenceSpace = referenceSpace;
     });
   })
