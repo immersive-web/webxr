@@ -872,6 +872,8 @@ The <dfn method for="XRReferenceSpace">getOffsetReferenceSpace(|originOffset|)</
 
 </div>
 
+Note: It's expected that some applications will use {{getOffsetReferenceSpace()}} to implement scene navigation controls based on mouse, keyboard, touch, or gamepad input. This will result in {{getOffsetReferenceSpace()}} being called frequently, at least once per-frame during periods of active input. As a result UAs are strongly encouraged to make the creation of new {{XRReferenceSpace}}s with {{getOffsetReferenceSpace()}} a lightweight operation.
+
 XRBoundedReferenceSpace {#xrboundedreferencespace-interface}
 ----------------------------
 
