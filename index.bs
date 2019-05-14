@@ -297,8 +297,9 @@ When the <dfn method for="XR">requestSession(|mode|)</dfn> method is invoked, th
   1. If the [=XR/XR device=] is null, [=reject=] |promise| with null.
   1. Else if the [=XR/XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|, [=reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
   1. Else If |immersive| is <code>true</code> and the algorithm is not [=triggered by user activation=], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and abort these steps.
-  1. If |promise| was [=rejected=] and |immersive| is <code>true</code>, set [=pending immersive session=] to <code>false</code>.
-  1. If |promise| was [=rejected=], abort these steps.
+  1. If |promise| was [=rejected=]:
+    1. If |immersive| is <code>true</code>, set [=pending immersive session=] to <code>false</code>.
+    1. Abort these steps.
   1. Let |session| be a new {{XRSession}} object.
   1. [=Initialize the session=] with |session| and |mode|.
   1. If |immersive| is <code>true</code>, set the [=active immersive session=] to |session|, and set [=pending immersive session=] to <code>false</code>.
