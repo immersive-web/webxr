@@ -733,7 +733,7 @@ When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method 
       1. Initialize |xrview|'s {{XRView/eye}} to |view|'s [=view/eye=]
       1. Initialize |xrview|'s {{XRView/projectionMatrix}} to |view|'s [=view/projection matrix=]
       1. Let |offset| be an {{XRRigidTransform}} equal to the [=view offset=] of |view|
-      1. Set |xrview|'s {{XRView/transform}} property to the result of [=multiply transforms|multiplying=] the |offset| transform by the {{XRViewerPose}}'s {{XRPose/transform}}
+      1. Set |xrview|'s {{XRView/transform}} property to the result of [=multiply transforms|multiplying=] the {{XRViewerPose}}'s {{XRPose/transform}} by the |offset| transform
       1. [=list/Append=] |xrview| to |xrviews|
   1. Set |pose|'s {{XRViewerPose/views}} to |xrviews|
   1. Return |pose|.
@@ -851,7 +851,7 @@ The <dfn method for="XRReferenceSpace">getOffsetReferenceSpace(|originOffset|)</
   1. If |base| is an instance of {{XRBoundedReferenceSpace}}, let |offsetSpace| be a new {{XRBoundedReferenceSpace}} and set |offsetSpace|'s {{boundsGeometry}} to |base|'s {{boundsGeometry}}, with each point multiplied by the {{XRRigidTransform/inverse}} of |originOffset|.
   1. Else let |offsetSpace| be a new {{XRReferenceSpace}}.
   1. Set |offsetSpace|'s [=native origin=] to |base|'s [=native origin=].
-  1. Set |offsetSpace|'s [=origin offset=] to the result of [=multiply transforms|multiplying=] |originOffset| by |base|'s [=origin offset=].
+  1. Set |offsetSpace|'s [=origin offset=] to the result of [=multiply transforms|multiplying=] |base|'s [=origin offset=] by |originOffset|.
   1. Return |offsetSpace|.
 
 </div>
@@ -1093,8 +1093,8 @@ The <dfn constructor for="XRRay">XRRay(|transform|)</dfn> constructor MUST perfo
   1. Let |ray| be a new {{XRRay}}.
   1. Initialize |ray|'s {{XRRay/origin}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
   1. Initialize |ray|'s {{XRRay/direction}} to <code>{ x: 0.0, y: 0.0, z: -1.0, w: 0.0 }</code>.
-  1. Multiply |ray|'s {{XRRay/origin}} by the |transform|'s {{XRRigidTransform/matrix}} and set |ray| to the result.
-  1. Multiply |ray|'s {{XRRay/direction}} by the |transform|'s {{XRRigidTransform/matrix}} and set |ray| to the result.
+  1. Transform |ray|'s {{XRRay/origin}} by premultiplying the |transform|'s {{XRRigidTransform/matrix}} and set |ray| to the result.
+  1. Transform |ray|'s {{XRRay/direction}} by premultiplying the |transform|'s {{XRRigidTransform/matrix}} and set |ray| to the result.
   1. [=Normalize=] the {{DOMPointReadOnly/x}}, {{DOMPointReadOnly/y}}, and {{DOMPointReadOnly/z}} components of |ray|'s {{XRRay/direction}}
   1. Return |ray|.
 
