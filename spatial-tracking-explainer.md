@@ -119,7 +119,9 @@ function onSessionStarted(session) {
 
 Orientation-only experiences such as 360 photo/video viewers can also be created with an `local` reference space by either explicitly ignoring the pose's positional data or displaying the media "infinitely" far away from the viewer. If such position mitigation steps are not taken the user may perceive the geometry the media is displayed on, leading to discomfort.
 
-It is important to note that `XRViewerPose` objects retrieved using `local` reference spaces may include position information as well as rotation information.  For example, hardware which does not support 6DOF tracking (ex: GearVR) may still use neck-modeling to improve user comfort. Similarly, a user may lean side-to-side on a device with 6DOF tracking (ex: HTC Vive). The result is that `local` experiences must be resilient to position changes despite not being dependent on receiving them.
+It is important to note that `XRViewerPose` objects retrieved using `local` reference spaces may include position information as well as rotation information.  For example, hardware which does not support 6DOF tracking (ex: GearVR) may still use neck-modeling to improve user comfort. Similarly, a user may lean side-to-side on a device with 6DOF tracking (ex: HTC Vive). The result is that `local` experiences must be resilient to position changes despite not being dependent on receiving them. Experiences are encouraged to fully support head movement in a typical seated range.
+
+For some hardware the poses may even include substantial position offsets, for example if the user stands up from their seated position and walks around. The experience can choose to react to this appropriately, for example by fading out the rendered view when intersecting geometry. Overriding the pose's reported head position, for example clamping to stay within an expected volume, can be very uncomfortable to users and should be avoided.
 
 ### Local-floor reference spaces
 
@@ -146,7 +148,7 @@ function onSessionStarted(session) {
 }
 ```
 
-As with `local` reference spaces, `XRViewerPose` objects retrieved using `local-floor` reference spaces may include position information as well as rotation information and as such must be resilient to position changes despite not being dependent on receiving them.
+As with `local` reference spaces, `XRViewerPose` objects retrieved using `local-floor` reference spaces may include position information as well as rotation information and as such must be resilient to position changes despite not being dependent on receiving them. For example, if a teleport is intended to place the user's feet at a chosen virtual world location, the calculated offset must take into account that the user's current tracked position may be a couple of steps away from the floor-level origin.
 
 ### Viewer reference spaces
 A _viewer_ reference space's origin is always at the position and orientation of the viewer device. This type of reference space is primarily used for creating inline experiences with no tracking of the viewer relative to it's physical environment. Instead, developers may use `XRReferenceSpace.originOffset` which is described in the [Application supplied transforms section](#application-supplied-transforms). An example usage of an _viewer_ reference space is a furniture viewer that will use [click-and-drag controls](#click-and-drag-view-controls) to rotate the furniture. It also supports cases where the developer wishes to avoid displaying any type of tracking consent prompt to the user prior while displaying inline content.

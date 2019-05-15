@@ -74,6 +74,7 @@ spec: Gamepad; urlPrefix: https://w3c.github.io/gamepad/#
     type: attribute; text: connected; for: Gamepad; url: dom-gamepad-connected
     type: attribute; text: buttons; for: Gamepad; url: dom-gamepad-buttons
     type: attribute; text: axes; for: Gamepad; url: dom-gamepad-axes
+spec:html; type:method; for:HTMLCanvasElement; text:getContext(contextId); url: https://html.spec.whatwg.org/multipage/canvas.html#dom-canvas-getcontext
 </pre>
 
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -296,7 +297,7 @@ When the <dfn method for="XR">requestSession(|mode|)</dfn> method is invoked, th
   1. [=ensures an XR device is selected|Ensure an XR device is selected=].
   1. If the [=XR/XR device=] is null, [=reject=] |promise| with null.
   1. Else if the [=XR/XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|, [=reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
-  1. Else If |immersive| is <code>true</code> and the algorithm is not [=triggered by user activation=], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and abort these steps.
+  1. Else if |immersive| is <code>true</code> and the algorithm is not [=triggered by user activation=], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}}.
   1. If |promise| was [=rejected=]:
     1. If |immersive| is <code>true</code>, set [=pending immersive session=] to <code>false</code>.
     1. Abort these steps.
@@ -464,9 +465,9 @@ When requested, the {{XRSession}} MUST <dfn>apply pending render states</dfn> by
 
 <div class="algorithm" data-algorithm="request-reference-space">
 
-When the <dfn method for="XRSession">requestReferenceSpace(|options|)</dfn> method is invoked, the user agent MUST return [=a new Promise=] |promise| and run the following steps [=in parallel=]:
+When the <dfn method for="XRSession">requestReferenceSpace(|type|)</dfn> method is invoked, the user agent MUST return [=a new Promise=] |promise| and run the following steps [=in parallel=]:
 
-  1. [=Create a reference space=], |referenceSpace|, as described by |options|.
+  1. [=Create a reference space=], |referenceSpace|, with the {{XRReferenceSpaceType}} |type|.
   1. If |referenceSpace| is <code>null</code>, [=reject=] |promise| with a {{NotSupportedError}} and abort these steps.
   1. [=/Resolve=] |promise| with |referenceSpace|.
 
@@ -816,7 +817,7 @@ Each {{XRReferenceSpace}} has a <dfn for="XRReferenceSpace">type</dfn>, which is
 
 An {{XRReferenceSpace}} is most frequently obtained by calling {{XRSession/requestReferenceSpace()}}, which creates an instance of an {{XRReferenceSpace}} or an interface extending it, determined by the {{XRReferenceSpaceType}} enum value passed into the call. The type indicates the tracking behavior that the reference space will exhibit:
 
-  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">viewer</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space with a [=native origin=] which tracks the position and orientation of the [=viewer=].
+  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">viewer</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space with a [=native origin=] which tracks the position and orientation of the [=viewer=]. Every {{XRSession}} MUST support {{XRReferenceSpaceType/viewer}} {{XRReferencesSpace}}s.
 
   - Passing a type of <dfn enum-value for="XRReferenceSpaceType">local</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space with a [=native origin=] near the user's head at the time of creation. The exact position and orientation will be initialized based on the conventions of the underlying platform. When using this reference space the user is not expected to move beyond their initial position much, if at all, and tracking is optimized for that purpose. For devices with [=6DoF=] tracking, {{local}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
 
@@ -1558,7 +1559,7 @@ The [=XR compatible=] boolean can be set either at context creation time or afte
 
 <div class="algorithm" data-algorithm="create-with-compatible-xr-device">
 
-When the {{HTMLCanvasElement}}'s getContext() method is invoked with a {{WebGLContextAttributes}} dictionary with {{xrCompatible}} set to <code>true</code>, run the following steps:
+When the {{HTMLCanvasElement}}'s {{HTMLCanvasElement/getContext()}} method is invoked with a {{WebGLContextAttributes}} dictionary with {{xrCompatible}} set to <code>true</code>, run the following steps:
 
   1. [=Create the WebGL context=] as usual, ensuring it is created on a [=compatible graphics adapter=] for the [=XR/XR device=].
   1. Let |context| be the newly created WebGL context.
