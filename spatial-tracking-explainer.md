@@ -210,15 +210,20 @@ An `XRRay` object includes both an `origin` and `direction`, both given as `DOMP
 ### Application-supplied transforms
 Frequently developers will want to provide an additional, artificial transform on top of the user's tracked motion to allow the user to navigate larger virtual scenes than their tracking systems or physical space allows. This effect is traditionally accomplished by mathematically combining the API-provided transform with the desired additional application transforms. WebXR offers developers a simplification to ensure that all tracked values, such as viewer and input poses, are transformed consistently.
 
-Developers can specify application-specific transforms by calling the `getOffsetReferenceSpace()` method of any `XRReferenceSpace`. This returns a new `XRReferenceSpace` with an "effective origin" equal to the native origin of the parent reference space offset by the by the `position` and `orientation` described by the `XRRigidTransform` passed to `getOffsetReferenceSpace()` plus any offset applied to the reference space previously if it was also created with `getOffsetReferenceSpace()`.
+Developers can specify application-specific transforms by calling the getOffsetReferenceSpace() method of any XRReferenceSpace. This returns a new XRReferenceSpace where the XRRigidTransform passed to getOffsetReferenceSpace() describes the position and orientation of the offset space's origin in relation to the base reference space's origin. Specifically, originOffset.position contains the coordinates of the new origin relative to the base reference space's origin. If the base reference space was also created with getOffsetReferenceSpace(), the overall offset is the combination of both transforms.
 
 A common use case for this attribute would be for a "teleportation" mechanic, where the user "jumps" to a new point in the virtual scene, after which the selected point is treated as the new virtual origin which all tracked motion is relative to.
 
 ```js
-// Teleport the user a certain number of meters along the X, Y, and Z axes
-function teleport(deltaX, deltaY, deltaZ) {
+// Teleport the user a certain number of meters along the X, Y, and Z axes,
+// for example deltaX=1 means the virtual world view changes as if the user had
+// taken a 1m step to the right, so the new reference space pose should
+// have its X value increased by 1m.
+function teleportRelative(deltaX, deltaY, deltaZ) {
+  // Move the user by moving the reference space in the opposite direction,
+  // adjusting originOffset's position by the inverse delta.
   xrReferenceSpace = xrReferenceSpace.getOffsetReferenceSpace(
-      new XRRigidTransform({ x: deltaX, y: deltaY, z: deltaZ }));
+      new XRRigidTransform({ x: -deltaX, y: -deltaY, z: -deltaZ });
 }
 ```
 
