@@ -1198,6 +1198,8 @@ The <dfn attribute for="XRInputSource">gamepad</dfn> attribute is a {{Gamepad}} 
  - A button which reports analog values
  - An axis
 
+Note: {{XRInputSource}}s in an {{XRSession}}'s {{XRSession/inputSources}} array are "live". As such values within them, such as the {{gamepad}} button and axis state, are updated in-place. This means that it doesn't work to save a reference to an {{XRInputSource}}'s {{gamepad}} on one frame and compare it to the same {{XRInputSource}}'s {{gamepad}} from a subsequent frame to test for state changes, because they will be the same object. Therefore developers that wish to compare input state from frame to frame should copy the state in question.
+
 Each [=XR input source=] SHOULD define a <dfn>primary action</dfn>. The [=primary action=] is a platform-specific action that, when engaged, produces {{XRSession/selectstart}}, {{XRSession/selectend}}, and {{XRSession/select}} events. Examples of possible [=primary action=]s are pressing a trigger, touchpad, or button, speaking a command, or making a hand gesture. If the platform guidelines define a recommended primary input then it should be used as the [=primary action=], otherwise the user agent is free to select one.
 
 <div class="algorithm" data-algorithm="on-input-start">
