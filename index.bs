@@ -1057,6 +1057,7 @@ To <dfn lt="multiply transforms">multiply two {{XRRigidTransform}}s</dfn>, |B| a
 
 |result| is a transform from |A|'s source space to |B|'s destination space.
 
+NOTE: This is equivalent to constructing an {{XRRigidTransform}} whose {{XRRigidTransform/orientation}} is the composition of the orientation of |A| and |B|, and whose {{XRRigidTransform/position}} is equal to |A|'s {{XRRigidTransform/position}} rotated by |B|'s {{XRRigidTransform/orientation}}, added to |B|'s {{XRRigidTransform/position}}.
 </div>
 
 XRRay {#xrray-interface}
