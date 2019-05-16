@@ -837,11 +837,26 @@ When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a ref
 
   1. Let |session| be the {{XRSession}} object that requested creation of a reference space.
   1. Let |type| be set to the {{XRReferenceSpaceType}} passed to {{requestReferenceSpace()}}.
-  1. If |type| is {{bounded-floor}}, let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
-  1. Else let |referenceSpace| be a new {{XRReferenceSpace}}.
-  1. Initialize |referenceSpace|'s [=XRReferenceSpace/type=] to be |type|.
-  1. Initialize [=XRSpace/session=] to be |session|.
-  1. Return |referenceSpace|.
+  1. If the [=reference space is supported=] for |type| and |session|, run the following steps:
+    1. If |type| is {{bounded-floor}}, let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
+    1. Else let |referenceSpace| be a new {{XRReferenceSpace}}.
+    1. Initialize |referenceSpace|'s [=XRReferenceSpace/type=] to be |type|.
+    1. Initialize [=XRSpace/session=] to be |session|.
+    1. Return |referenceSpace|.
+  1. Else, return <code>null</code>.
+
+</div>
+
+<div class="algorithm" data-algorithm="reference-space-supported">
+To check if a <dfn>reference space is supported</dfn> for a given reference space type |type| and {{XRSession}} |session|, run the following steps:
+
+
+  1. If |type| is {{inline}}, return <code>true</code>.
+  1. If |type| is {{local}} or {{local-floor}}, and |session| is an [=immersive session=], return <code>true</code>.
+  1. If |type| is {{local}} or {{local-floor}}, and the [=/XR device=] supports reporting orientation data, return <code>true</code>.
+  1. If |type| is {{bounded-floor}} and |session| is an [=immersive session=], return if [=bounded reference spaces are supported=] by the [=/XR device=].
+  1. If |type| is {{unbounded}}, |session| is an [=immersive session=], and the [=/XR device=] supports reporting position and orientation data, return <code>true</code>.
+  1. Return <code>false</code>.
 
 </div>
 
@@ -876,6 +891,15 @@ Note: Other XR platforms sometimes refer to the type of tracking offered by a {{
 Each {{XRBoundedReferenceSpace}} has a <dfn for="XRBoundedReferenceSpace">native bounds geometry</dfn> describing the border around the {{XRBoundedReferenceSpace}}, which the user can expect to safely move within. The polygonal boundary is given as an array of {{DOMPointReadOnly}}s, which represents a loop of points at the edges of the safe space. The points describe offsets from the [=XRSpace/native origin=] in meters. Points MUST be given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The {{DOMPointReadOnly/y}} value of each point MUST be <code>0</code> and the {{DOMPointReadOnly/w}} value of each point MUST be <code>1</code>. The bounds can be considered to originate at the floor and extend infinitely high. The shape it describes MAY be convex or concave.
 
 The <dfn attribute for="XRBoundedReferenceSpace">boundsGeometry</dfn> attribute is an array of {{DOMPointReadOnly}}s such that each entry is equal to the entry in the {{XRBoundedReferenceSpace}}'s [=XRBoundedReferenceSpace/native bounds geometry=] premultiplied by the {{XRRigidTransform/inverse}} of the [=XRSpace/origin offset=]. In other words, it provides the same border in {{XRBoundedReferenceSpace}} coordinates relative to the [=XRSpace/effective origin=].
+
+
+<div class="algorithm" data-algorithm="bounded-space-supported">
+To check if <dfn>bounded reference spaces are supported</dfn> run the following steps:
+    1. If the [=/XR device=] cannot report boundaries, return false.
+    1. If the [=/XR device=] cannot identify the height of the user's physical floor, return false.
+    1. Return true.
+</div>
+
 
 Note: Content should not require the user to move beyond the {{boundsGeometry}}. It is possible for the user to move beyond the bounds if their physical surroundings allow for it, resulting in position values outside of the polygon they describe. This is not an error condition and should be handled gracefully by page content.
 
