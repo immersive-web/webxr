@@ -237,8 +237,13 @@ Each time the [=list of XR devices=] changes the user agent should <dfn>select a
   1. Let |oldDevice| be the [=XR/XR device=].
   1. If the [=list of XR devices=] is an empty [=/list=], set the [=XR/XR device=] to null.
   1. If the [=list of XR devices=]'s [=list/size=] is one, set the [=XR/XR device=] to the [=list of XR devices=][0].
-  1. If there are any active {{XRSession}}s and the [=list of XR devices=] [=list/contains=] |oldDevice|, set the [=XR/XR device=] to |oldDevice|.
-  1. Else, set the [=XR/XR device=] to a device of the user agent's choosing.
+  1. Set the [=XR/XR device=] based on the following:
+    <dl class="switch">
+      <dt> If there are any active {{XRSession}}s and the [=list of XR devices=] [=list/contains=] |oldDevice|
+      <dd> Set the [=XR/XR device=] to |oldDevice|
+      <dt> Otherwise
+      <dd> Set the [=XR/XR device=] to a device of the user agent's choosing
+    </dl>
   1. If this is the first time devices have been enumerated or |oldDevice| equals the [=XR/XR device=], abort these steps.
   1. [=Shut down the session|Shut down=] any active {{XRSession}}s.
   1. Set the [=XR compatible=] boolean of all {{WebGLRenderingContextBase}} instances to `false`.
@@ -267,7 +272,7 @@ When the <dfn method for="XR">supportsSession(|mode|)</dfn> method is invoked, i
   1. [=ensures an XR device is selected|Ensure an XR device is selected=].
   1. If the [=XR/XR device=] is null, [=reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}} and abort these steps.
   1. If the [=XR/XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|, [=reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}} and abort these steps.
-  1. Else [=/resolve=] |promise|.
+  1. [=/Resolve=] |promise|.
 
 </div>
 
@@ -293,18 +298,29 @@ When the <dfn method for="XR">requestSession(|mode|)</dfn> method is invoked, th
   1. Let |immersive| be <code>true</code> if |mode| is {{XRSessionMode/"immersive-vr"}} or {{XRSessionMode/"immersive-ar"}}, and <code>false</code> otherwise.
   1. If |immersive| is <code>true</code>: 
     1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and abort these steps.
-    1. Else set [=pending immersive session=] to be <code>true</code>.
+    1. Set [=pending immersive session=] to be <code>true</code>.
   1. [=ensures an XR device is selected|Ensure an XR device is selected=].
-  1. If the [=XR/XR device=] is null, [=reject=] |promise| with null.
-  1. Else if the [=XR/XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|, [=reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
-  1. Else if |immersive| is <code>true</code> and the algorithm is not [=triggered by user activation=], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}}.
+  1. Follow the steps for the first matching conditions:
+      <dl class="switch">
+      <dt> If the [=XR/XR device=] is <code>null</code>
+      <dd> [=Reject=] |promise| with <code>null</code>.
+      <dt> Else if the [=XR/XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|
+      <dd> [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
+      <dt> Else if |immersive| is <code>true</code> and the algorithm is not [=triggered by user activation=]
+      <dd> [=Reject=] |promise| with a "{{SecurityError}}" {{DOMException}}.
+    </dl>
   1. If |promise| was [=rejected=]:
     1. If |immersive| is <code>true</code>, set [=pending immersive session=] to <code>false</code>.
     1. Abort these steps.
   1. Let |session| be a new {{XRSession}} object.
   1. [=Initialize the session=] with |session| and |mode|.
-  1. If |immersive| is <code>true</code>, set the [=active immersive session=] to |session|, and set [=pending immersive session=] to <code>false</code>.
-  1. Else append |session| to the [=list of inline sessions=].
+  1. Potentially set the [=active immersive session=] based on the following:
+    <dl class="switch">
+      <dt> If |immersive| is <code>true</code>
+      <dd> Set the [=active immersive session=] to |session|, and set [=pending immersive session=] to <code>false</code>.
+      <dt> Else
+      <dd> Append |session| to the [=list of inline sessions=].
+    </dl>
   1. [=/Resolve=] |promise| with |session|.
 
 </div>
@@ -593,8 +609,13 @@ When an {{XRRenderState}} object is created for an {{XRSession}} |session|, the 
   1. Let |state| be the newly created {{XRRenderState}} object.
   1. Initialize |state|'s {{XRRenderState/depthNear}} to <code>0.1</code>.
   1. Initialize |state|'s {{XRRenderState/depthFar}} to <code>1000.0</code>.
-  1. If |session| is an [=immersive session=], initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} to <code>null</code>.
-  1. Else initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} to <code>PI * 0.5</code>.
+  1. Initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} based on the following:
+    <dl class="switch">
+      <dt> If |session| is an [=immersive session=]
+      <dd> Initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} to <code>null</code>.
+      <dt> Else
+      <dd> Initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} to <code>PI * 0.5</code>.
+    </dl>
   1. Initialize |state|'s {{XRRenderState/baseLayer}} to <code>null</code>.
   1. Initialize |state|'s {{XRRenderState/outputContext}} to <code>null</code>.
 
@@ -838,12 +859,19 @@ When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a ref
   1. Let |session| be the {{XRSession}} object that requested creation of a reference space.
   1. Let |type| be set to the {{XRReferenceSpaceType}} passed to {{requestReferenceSpace()}}.
   1. If the [=reference space is supported=] for |type| and |session|, run the following steps:
+    1. Initialize |referenceSpace| based on the following:
+      <dl class="switch">
+        <dt> If |type| is {{bounded-floor}}
+        <dd> Let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
+        <dt> Else
+        <dd> Let |referenceSpace| be a new {{XRReferenceSpace}}.
+      </dl>
     1. If |type| is {{bounded-floor}}, let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
     1. Else let |referenceSpace| be a new {{XRReferenceSpace}}.
     1. Initialize |referenceSpace|'s [=XRReferenceSpace/type=] to be |type|.
     1. Initialize |referenceSpace|'s [=XRSpace/session=] to be |session|.
     1. Return |referenceSpace|
-  1. Else, return <code>null</code>.
+  1. Return <code>null</code>.
 
 </div>
 
@@ -864,8 +892,13 @@ To check if a <dfn>reference space is supported</dfn> for a given reference spac
 The <dfn method for="XRReferenceSpace">getOffsetReferenceSpace(|originOffset|)</dfn> method MUST perform the following steps when invoked:
 
   1. Let |base| be the {{XRReferenceSpace}} the method was called on.
-  1. If |base| is an instance of {{XRBoundedReferenceSpace}}, let |offsetSpace| be a new {{XRBoundedReferenceSpace}} and set |offsetSpace|'s {{boundsGeometry}} to |base|'s {{boundsGeometry}}, with each point multiplied by the {{XRRigidTransform/inverse}} of |originOffset|.
-  1. Else let |offsetSpace| be a new {{XRReferenceSpace}}.
+  1. Initialize |offsetSpace| based on the following:
+    <dl class="switch">
+      <dt> If |base| is an instance of {{XRBoundedReferenceSpace}}
+      <dd> Let |offsetSpace| be a new {{XRBoundedReferenceSpace}} and set |offsetSpace|'s {{boundsGeometry}} to |base|'s {{boundsGeometry}}, with each point multiplied by the {{XRRigidTransform/inverse}} of |originOffset|.
+      <dt> Else
+      <dd> Let |offsetSpace| be a new {{XRReferenceSpace}}.
+    </dl>
   1. Set |offsetSpace|'s [=native origin=] to |base|'s [=native origin=].
   1. Set |offsetSpace|'s [=origin offset=] to the result of [=multiply transforms|multiplying=] |base|'s [=origin offset=] by |originOffset|.
   1. Return |offsetSpace|.
@@ -1049,9 +1082,14 @@ The <dfn constructor for="XRRigidTransform">XRRigidTransform(|position|, |orient
   1. Let |transform| be a new {{XRRigidTransform}}.
   1. If |position| is not a {{DOMPointInit}} initialize |transform|'s {{XRRigidTransform/position}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
   1. If |position|'s {{DOMPointReadOnly/w}} value is not 1.0, throw a {{TypeError}}.
-  1. Else initialize |transform|'s {{XRRigidTransform/position}}’s {{DOMPointReadOnly/x}} value to |position|'s x dictionary member, {{DOMPointReadOnly/y}} value to |position|'s y dictionary member, {{DOMPointReadOnly/z}} value to |position|'s z dictionary member and {{DOMPointReadOnly/w}} to <code>1.0</code>.
-  1. If |orientation| is not a {{DOMPointInit}} initialize |transform|'s {{XRRigidTransform/orientation}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
-  1. Else initialize |transform|'s {{XRRigidTransform/orientation}}’s {{DOMPointReadOnly/x}} value to |orientation|'s x dictionary member, {{DOMPointReadOnly/y}} value to |orientation|'s y dictionary member, {{DOMPointReadOnly/z}} value to |orientation|'s z dictionary member and {{DOMPointReadOnly/w}} value to |orientation|'s w dictionary member.
+  1. Initialize |transform|'s {{XRRigidTransform/position}}’s {{DOMPointReadOnly/x}} value to |position|'s x dictionary member, {{DOMPointReadOnly/y}} value to |position|'s y dictionary member, {{DOMPointReadOnly/z}} value to |position|'s z dictionary member and {{DOMPointReadOnly/w}} to <code>1.0</code>.
+  1. Initialize |transform|'s {{XRRigidTransform/orientation}} based on the following:
+    <dl class="switch">
+      <dt> If |orientation| is not a {{DOMPointInit}}
+      <dd> Initialize |transform|'s {{XRRigidTransform/orientation}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
+      <dt> Else
+      <dd> Initialize |transform|'s {{XRRigidTransform/orientation}}’s {{DOMPointReadOnly/x}} value to |orientation|'s x dictionary member, {{DOMPointReadOnly/y}} value to |orientation|'s y dictionary member, {{DOMPointReadOnly/z}} value to |orientation|'s z dictionary member and {{DOMPointReadOnly/w}} value to |orientation|'s w dictionary member.
+    </dl>
   1. [=Normalize=] {{DOMPointReadOnly/x}}, {{DOMPointReadOnly/y}}, {{DOMPointReadOnly/z}}, and {{DOMPointReadOnly/w}} components of |transform|'s {{XRRigidTransform/orientation}}.
   1. Return |transform|.
 
@@ -1105,10 +1143,20 @@ interface XRRay {
 The <dfn constructor for="XRRay">XRRay(|origin|, |direction|)</dfn> constructor MUST perform the following steps when invoked:
 
   1. Let |ray| be a new {{XRRay}}.
-  1. If |origin| is not a {{DOMPointInit}} initialize |ray|'s {{XRRay/origin}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
-  1. Else initialize |ray|'s {{XRRay/origin}}’s {{DOMPointReadOnly/x}} value to |origin|'s x dictionary member, {{DOMPointReadOnly/y}} value to |origin|'s y dictionary member, {{DOMPointReadOnly/z}} value to |origin|'s z dictionary member and {{DOMPointReadOnly/w}} to <code>1.0</code>.
-  1. If |direction| is not a {{DOMPointInit}} initialize |ray|'s {{XRRay/direction}} to <code>{ x: 0.0, y: 0.0, z: -1.0, w: 0.0 }</code>.
-  1. Else initialize |ray|'s {{XRRay/direction}}’s {{DOMPointReadOnly/x}} value to |direction|'s x dictionary member, {{DOMPointReadOnly/y}} value to |direction|'s y dictionary member, {{DOMPointReadOnly/z}} value to |direction|'s z dictionary member and {{DOMPointReadOnly/w}} value to to <code>0.0</code>.
+  1. Initialize |ray|'s {{XRRay/origin}} based on the following:
+    <dl class="switch">
+      <dt> If |origin| is not a {{DOMPointInit}} 
+      <dd> Initialize |ray|'s {{XRRay/origin}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
+      <dt> Else
+      <dd> Initialize |ray|'s {{XRRay/origin}}’s {{DOMPointReadOnly/x}} value to |origin|'s x dictionary member, {{DOMPointReadOnly/y}} value to |origin|'s y dictionary member, {{DOMPointReadOnly/z}} value to |origin|'s z dictionary member and {{DOMPointReadOnly/w}} to <code>1.0</code>.
+    </dl>
+  1. Initialize |ray|'s {{XRRay/direction}} based on the following:
+    <dl class="switch">
+      <dt> If |direction| is not a {{DOMPointInit}} 
+      <dd> Initialize |ray|'s {{XRRay/direction}} to <code>{ x: 0.0, y: 0.0, z: -1.0, w: 0.0 }</code>.
+      <dt> Else
+      <dd> Initialize |ray|'s {{XRRay/direction}}’s {{DOMPointReadOnly/x}} value to |direction|'s x dictionary member, {{DOMPointReadOnly/y}} value to |direction|'s y dictionary member, {{DOMPointReadOnly/z}} value to |direction|'s z dictionary member and {{DOMPointReadOnly/w}} value to to <code>0.0</code>.
+    </dl>
   1. [=Normalize=] the {{DOMPointReadOnly/x}}, {{DOMPointReadOnly/y}}, and {{DOMPointReadOnly/z}} components of |ray|'s {{XRRay/direction}}.
   1. Return |ray|.
   
@@ -1490,8 +1538,13 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
   1. If |context|'s [=XR compatible=] boolean is false, throw an {{InvalidStateError}} and abort these steps.
   1. Initialize |layer|'s {{XRWebGLLayer/context}} to |context|.
   1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layerInit|'s {{XRWebGLLayerInit/antialias}} value.
-  1. If |layerInit|'s {{XRWebGLLayerInit/ignoreDepthValues}} value is <code>false</code> and the [=XR Compositor=] will make use of depth values, Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>false</code>.
-  1. Else Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>true</code>
+  1. Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} as follows:
+    <dl class="switch">
+      <dt> If |layerInit|'s {{XRWebGLLayerInit/ignoreDepthValues}} value is <code>false</code> and the [=XR Compositor=] will make use of depth values
+      <dd> Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>false</code>
+      <dt> Otherwise
+      <dd> Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>true</code>
+    </dl>
   1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] created with |context|.
   1. Initialize the |layer|'s [=swap chain=].
   1. If |layer|'s [=swap chain=] was unable to be created for any reason, throw an {{OperationError}} and abort these steps.
