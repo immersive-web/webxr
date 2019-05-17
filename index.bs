@@ -743,11 +743,11 @@ When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method 
 
 <div class="algorithm unstable" data-algorithm="get-pose">
 
-When the <dfn method for="XRFrame">getPose(|sourceSpace|, |destinationSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
+When the <dfn method for="XRFrame">getPose(|space|, |referenceSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
 
   1. Let |frame| be the target {{XRFrame}}
   1. Let |pose| be a new {{XRPose}} object.
-  1. [=Populate the pose=] of |sourceSpace| in |destinationSpace| at the time represented by |frame| into |pose|.
+  1. [=Populate the pose=] of |space| in |referenceSpace| at the time represented by |frame| into |pose|.
   1. Return |pose|.
 
 </div>
@@ -776,16 +776,16 @@ The [=effective origin=] of an {{XRSpace}} can only be observed in the coordinat
 
 <div class="algorithm" data-algorithm="populate-the-pose">
 
-To <dfn>populate the pose</dfn> of a {{XRSpace}} |sourceSpace| in an  {{XRSpace}} |destinationSpace| at the time represented by a {{XRFrame}} |frame| into an {{XRPose}} |pose|, the user agent MUST run the following steps:
+To <dfn>populate the pose</dfn> of a {{XRSpace}} |space| in an  {{XRSpace}} |referenceSpace| at the time represented by a {{XRFrame}} |frame| into an {{XRPose}} |pose|, the user agent MUST run the following steps:
 
   1. 1. If |frame|'s [=active=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
   1. Let |session| be |frame|'s {{XRFrame/session}} object.
-  1. If |sourceSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
-  1. If |destinationSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
-  1. If |destinationSpace|'s pose cannot be determined relative to |sourceSpace| at the time represented by |frame|, set |pose| to <code>null</code>.
+  1. If |space|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
+  1. If |referenceSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
+  1. If |referenceSpace|'s pose cannot be determined relative to |space| at the time represented by |frame|, set |pose| to <code>null</code>.
   1. Let |transform| be |pose|'s {{XRPose/transform}}.
-  1. Set |transform|'s {{XRRigidTransform/position}} to the location of |sourceSpace|'s [=effective origin=] in |destinationSpace|'s [=coordinate system=].
-  1. Set |transform|'s {{XRRigidTransform/orientation}} to the orientation of |sourceSpace|'s [=effective origin=] in |destinationSpace|'s [=coordinate system=].
+  1. Set |transform|'s {{XRRigidTransform/position}} to the location of |space|'s [=effective origin=] in |referenceSpace|'s [=coordinate system=].
+  1. Set |transform|'s {{XRRigidTransform/orientation}} to the orientation of |space|'s [=effective origin=] in |referenceSpace|'s [=coordinate system=].
 
 </div>
 
@@ -1129,7 +1129,7 @@ An {{XRPose}} describes a position and orientation in space relative to an {{XRS
 };
 </pre>
 
-The <dfn attribute for="XRPose">transform</dfn> attribute describes the position and orientation relative to the underlying {{XRSpace}}.
+The <dfn attribute for="XRPose">transform</dfn> attribute describes the position and orientation relative to the reference {{XRSpace}}.
 
 <section class="unstable">
 The <dfn attribute for="XRPose">emulatedPosition</dfn> attribute MUST be <code>false</code> if the {{XRPose/transform}}.{{XRRigidTransform/position}} values are based on sensor readings, or <code>true</code> if the position values are software estimations, such as those provided by a neck or arm model.
