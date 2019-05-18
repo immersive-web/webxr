@@ -304,10 +304,12 @@ When the <dfn method for="XR">requestSession(|mode|)</dfn> method is invoked, th
       <dl class="switch">
       <dt> If the [=XR/XR device=] is <code>null</code>
       <dd> [=Reject=] |promise| with <code>null</code>.
-      <dt> Else if the [=XR/XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|
+      <dt> If the [=XR/XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|
       <dd> [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
-      <dt> Else if |immersive| is <code>true</code> and the algorithm is not [=triggered by user activation=]
+      <dt> If |immersive| is <code>true</code> and the algorithm is not [=triggered by user activation=]
       <dd> [=Reject=] |promise| with a "{{SecurityError}}" {{DOMException}}.
+      <dt> Otherwise
+      <dd> Continue to the next step.
     </dl>
   1. If |promise| was [=rejected=]:
     1. If |immersive| is <code>true</code>, set [=pending immersive session=] to <code>false</code>.
@@ -318,7 +320,7 @@ When the <dfn method for="XR">requestSession(|mode|)</dfn> method is invoked, th
     <dl class="switch">
       <dt> If |immersive| is <code>true</code>
       <dd> Set the [=active immersive session=] to |session|, and set [=pending immersive session=] to <code>false</code>.
-      <dt> Else
+      <dt> Otherwise
       <dd> Append |session| to the [=list of inline sessions=].
     </dl>
   1. [=/Resolve=] |promise| with |session|.
