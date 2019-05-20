@@ -1201,7 +1201,7 @@ An {{XRPose}} describes a position and orientation in space relative to an {{XRS
 };
 </pre>
 
-The <dfn attribute for="XRPose">transform</dfn> attribute describes the position and orientation relative to the reference {{XRSpace}}.
+The <dfn attribute for="XRPose">transform</dfn> attribute describes the position and orientation relative to the base {{XRSpace}}.
 
 <section class="unstable">
 The <dfn attribute for="XRPose">emulatedPosition</dfn> attribute MUST be <code>false</code> if the {{XRPose/transform}}.{{XRRigidTransform/position}} values are based on sensor readings, or <code>true</code> if the position values are software estimations, such as those provided by a neck or arm model.
