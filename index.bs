@@ -865,7 +865,7 @@ When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a ref
       <dl class="switch">
         <dt> If |type| is {{bounded-floor}}
         <dd> Let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
-        <dt> Else
+        <dt> Otherwise
         <dd> Let |referenceSpace| be a new {{XRReferenceSpace}}.
       </dl>
     1. Initialize |referenceSpace|'s [=XRReferenceSpace/type=] to be |type|.
