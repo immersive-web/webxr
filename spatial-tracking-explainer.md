@@ -247,15 +247,16 @@ const RAD_PER_PIXEL = Math.PI / 180.0; // (1 degree)
 
 // Pan the view any time pointer move events happen over the canvas.
 function onPointerMove(event) {
-  let s = Math.sin(event.movementX * RAD_PER_PIXEL);
-  let c = Math.cos(event.movementX * RAD_PER_PIXEL);
-
   // Computes a quaternion to rotate around the Y axis.
+  let s = Math.sin(event.movementX * RAD_PER_PIXEL * 0.5);
+  let c = Math.cos(event.movementX * RAD_PER_PIXEL * 0.5);
   xrReferenceSpace = xrReferenceSpace.getOffsetReferenceSpace(
     new XRRigidTransform(null, { x: 0, y: s, z: 0, w: c }));
 }
 inlineCanvas.addEventListener('pointermove', onPointerMove);
 ```
+
+It should be noted that by repeatedly applying new offsets to previously offset reference spaces, numerical errors may accumulate over time. Whether that is problematic or not depends on the application, but when precision is necessary a better pattern would be to always call `getOffsetReferenceSpace()` on the original base space with the full offset computed by the application.
 
 ## Practical-usage guidelines
 
