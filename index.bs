@@ -868,8 +868,6 @@ When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a ref
         <dt> Else
         <dd> Let |referenceSpace| be a new {{XRReferenceSpace}}.
       </dl>
-    1. If |type| is {{bounded-floor}}, let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
-    1. Else let |referenceSpace| be a new {{XRReferenceSpace}}.
     1. Initialize |referenceSpace|'s [=XRReferenceSpace/type=] to be |type|.
     1. Initialize |referenceSpace|'s [=XRSpace/session=] to be |session|.
     1. Return |referenceSpace|
