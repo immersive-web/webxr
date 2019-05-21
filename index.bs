@@ -1474,7 +1474,7 @@ In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} t
 
 Additional buttons or axes may be exposed after these reserved indices, and SHOULD appear in order of decreasing importance. Related axes (such both axes of a joystick) SHOULD be grouped and, if applicable, SHOULD appear in X, Y, Z order. Devices that lack one of the inputs listed in the tables above MUST still preserve their place in the {{Gamepad/buttons}} or {{Gamepad/axes}} array. If a device has both a touchpad and a joystick the UA MAY designate whichever it chooses to be the primary axis-based input. Buttons reserved by the UA or platform MUST NOT be exposed.
 
-NOTE: This diagram demonstrates how two potential controllers would be exposed with the `xr-standard` mapping. <img src="images/xr-standard-mapping.svg" />
+NOTE: This diagram demonstrates how two potential controllers would be exposed with the `xr-standard` mapping. <img src="images/xr-standard-mapping.svg" alt="Simple 'xr-standard' controller and Advanced 'xr-standard' controller">
 </section>
 
 Layers {#layers}
