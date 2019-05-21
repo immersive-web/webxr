@@ -1440,7 +1440,7 @@ In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} t
   </tbody>
 </table>
 <br/>
-<table class="tg"s>
+<table class="tg">
   <thead>
     <tr>
       <th>Axes</th>
