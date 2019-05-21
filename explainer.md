@@ -156,7 +156,7 @@ function onSessionStarted(session) {
   // Store the session for use later.
   xrSession = session;
 
-  xrSession.requestReferenceSpace({ type:'stationary', subtype:'eye-level' })
+  xrSession.requestReferenceSpace('local')
   .then((referenceSpace) => {
     xrReferenceSpace = referenceSpace;
   })
