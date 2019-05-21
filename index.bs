@@ -5,6 +5,7 @@ Group: immersivewebwg
 Status: ED
 TR: https://www.w3.org/TR/webxr/
 ED: https://immersive-web.github.io/webxr/
+Previous Version: https://www.w3.org/TR/2019/WD-webxr-20190521/
 Repository: immersive-web/webxr
 Level: 1
 Mailing List Archives: https://lists.w3.org/Archives/Public/public-immersive-web/
@@ -13,8 +14,8 @@ Mailing List Archives: https://lists.w3.org/Archives/Public/public-immersive-web
 !Participate: <a href="https://lists.w3.org/Archives/Public/public-immersive-web/">Mailing list archive</a>
 !Participate: <a href="irc://irc.w3.org:6665/">W3C's #immersive-web IRC</a>
 
-Editor: Brandon Jones, Google http://google.com/, bajones@google.com
-Editor: Nell Waliczek, Amazon [Microsoft until 2018] https://amazon.com/, nhw@amazon.com
+Editor: Brandon Jones 87824, Google http://google.com/, bajones@google.com
+Editor: Nell Waliczek 93109, Amazon [Microsoft until 2018] https://amazon.com/, nhw@amazon.com
 
 Abstract: This specification describes support for accessing virtual reality (VR) and augmented reality (AR) devices, including sensors and head-mounted displays, on the Web.
 
@@ -75,8 +76,8 @@ spec: Gamepad; urlPrefix: https://w3c.github.io/gamepad/#
     type: attribute; text: connected; for: Gamepad; url: dom-gamepad-connected
     type: attribute; text: buttons; for: Gamepad; url: dom-gamepad-buttons
     type: attribute; text: axes; for: Gamepad; url: dom-gamepad-axes
-    type: attribute; text: pressed; for: GamepadButton; url: dom-gamepadbutton-pressed
     type: attribute; text: touched; for: GamepadButton; url: dom-gamepadbutton-touched
+    type: attribute; text: pressed; for: GamepadButton; url: dom-gamepadbutton-pressed
     type: attribute; text: value; for: GamepadButton; url: dom-gamepadbutton-value
 spec:html; type:method; for:HTMLCanvasElement; text:getContext(contextId); url: https://html.spec.whatwg.org/multipage/canvas.html#dom-canvas-getcontext
 </pre>
@@ -1383,6 +1384,8 @@ Gamepad API Integration {#gamepad-api-integration}
   - {{XRInputSource/gamepad}} MUST NOT be included in the array returned by {{navigator.getGamepads()}}.
   - {{XRInputSource/gamepad}}'s {{Gamepad/index}} attribute MUST be <code>0</code>.
   - {{XRInputSource/gamepad}}'s {{Gamepad/connected}} attribute MUST be <code>true</code> until the {{XRInputSource}} is removed from the [=list of active XR input sources=] or the {{XRSession}} is ended.
+  - If an axis reported by the {{XRInputSource/gamepad}}'s {{Gamepad/axes}} array represents an axis of a touchpad, the value MUST be <code>0</code> when the associated {{GamepadButton}}'s {{GamepadButton/touched}} is <code>false</code>.
+
 
 The {{XRInputSource/gamepad}}'s {{Gamepad/id}} also enforces additional behavioral restrictions, and MUST conform to the following rules:
 
@@ -1443,7 +1446,7 @@ In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} t
   </tbody>
 </table>
 <br/>
-<table class="tg"s>
+<table class="tg">
   <thead>
     <tr>
       <th>Axes</th>
@@ -1479,7 +1482,7 @@ Devices that lack one of the optional inputs listed in the tables above MUST pre
 
 Additional buttons or axes may be exposed after these reserved indices, and SHOULD appear in order of decreasing importance. Related axes (such both axes of a joystick) SHOULD be grouped and, if applicable, SHOULD appear in X, Y, Z order. If a device has both a touchpad and a joystick the UA MAY designate whichever it chooses to be the primary axis-based input. Buttons reserved by the UA or platform MUST NOT be exposed.
 
-NOTE: This diagram demonstrates how two potential controllers would be exposed with the `xr-standard` mapping. <img src="images/xr-standard-mapping.svg" />
+NOTE: This diagram demonstrates how two potential controllers would be exposed with the `xr-standard` mapping. <img src="images/xr-standard-mapping.svg" alt="Simple 'xr-standard' controller and Advanced 'xr-standard' controller">
 </section>
 
 Layers {#layers}
