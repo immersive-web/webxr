@@ -66,6 +66,7 @@ spec: WebIDL; urlPrefix: https://www.w3.org/TR/WebIDL-1/#
         text: invoke the Web IDL callback function; url:es-invoking-callback-functions
 spec: Gamepad; urlPrefix: https://w3c.github.io/gamepad/#
     type: interface; text: Gamepad; url: dom-gamepad
+    type: interface; text: GamepadButton; url: dom-gamepadbutton
     type: enum; text: GamepadMappingType; url: dom-gamepadmappingtype
     type: method; text: navigator.getGamepads(); url: dom-navigator-getgamepads
     type: attribute; text: id; for: Gamepad; url: dom-gamepad-id
@@ -74,6 +75,7 @@ spec: Gamepad; urlPrefix: https://w3c.github.io/gamepad/#
     type: attribute; text: connected; for: Gamepad; url: dom-gamepad-connected
     type: attribute; text: buttons; for: Gamepad; url: dom-gamepad-buttons
     type: attribute; text: axes; for: Gamepad; url: dom-gamepad-axes
+    type: attribute; text: touched; for: GamepadButton; url: dom-gamepadbutton-touched
 spec:html; type:method; for:HTMLCanvasElement; text:getContext(contextId); url: https://html.spec.whatwg.org/multipage/canvas.html#dom-canvas-getcontext
 </pre>
 
@@ -1379,7 +1381,8 @@ Gamepad API Integration {#gamepad-api-integration}
   - {{XRInputSource/gamepad}} MUST NOT be included in the array returned by {{navigator.getGamepads()}}.
   - {{XRInputSource/gamepad}}'s {{Gamepad/index}} attribute MUST be <code>0</code>.
   - {{XRInputSource/gamepad}}'s {{Gamepad/connected}} attribute MUST be <code>true</code> until the {{XRInputSource}} is removed from the [=list of active XR input sources=] or the {{XRSession}} is ended.
-  - If an axis reported by the {{XRInputSource/gamepad}}'s {{Gamepad/axes}} array represents an axis of a touchpad, the value MUST be <code>0</code> when the touchpad is not being touched.
+  - If an axis reported by the {{XRInputSource/gamepad}}'s {{Gamepad/axes}} array represents an axis of a touchpad, the value MUST be <code>0</code> when the associated {{GamepadButton}}'s {{GamepadButton/touched}} is <code>false</code>.
+
 
 The {{XRInputSource/gamepad}}'s {{Gamepad/id}} also enforces additional behavioral restrictions, and MUST conform to the following rules:
 
