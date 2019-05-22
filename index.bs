@@ -25,7 +25,7 @@ Warning: custom
 Custom Warning Title: Unstable API
 Custom Warning Text:
   <b>Parts of the API represented in this document are incomplete and may change at any time.</b>
-  <p>While this specification is under development some concepts may be represented better by the <a href="https://github.com/w3c/webvr/blob/master/explainer.md">WebXR Device API Explainer</a>.</p>
+  <p>While this specification is under development some concepts may be represented better by the <a href="https://github.com/immersive-web/webxr/blob/master/explainer.md">WebXR Device API Explainer</a>.</p>
 
 </pre>
 
