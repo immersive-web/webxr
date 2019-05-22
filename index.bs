@@ -482,6 +482,14 @@ When requested, the {{XRSession}} MUST <dfn>apply pending render states</dfn> by
     1. If |newState|'s {{XRRenderStateInit/baseLayer}} is set, set |activeState|'s {{XRRenderState/baseLayer}} to |newState|'s {{XRRenderStateInit/baseLayer}}.
   1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is less than |session|'s [=minimum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=minimum inline field of view=].
   1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is greater than |session|'s [=maximum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=maximum inline field of view=].
+  1. Let |baseLayer| be |activeState|'s {{XRRenderState/baseLayer}}.
+  1. Set  |activeState|'s [=XRRenderState/output canvas=] based on the following:
+    <dl class="switch">
+      <dt> If |baseLayer| is an instance of {{XRWebGLLayer}} with a [=XRWebGLLayer/use default framebuffer=] boolean set to <code>true</code>
+      <dd> Set |activeState|'s [=XRRenderState/output canvas=] to |baseLayer|'s {{XRWebGLLayer/context}}'s {{WebGLRenderingContext|canvas}}.
+      <dt> Otherwise
+      <dd> Set |activeState|'s [=XRRenderState/output canvas=] to <code>null</code>.
+    </dl>
 
 </div>
 
@@ -559,18 +567,6 @@ The <dfn attribute for="XRSession">environmentBlendMode</dfn> attribute returns 
 
 NOTE: Most Virtual Reality devices exhibit {{XREnvironmentBlendMode/opaque}} blending behavior. Augmented Reality devices that use transparent optical elements frequently exhibit {{XREnvironmentBlendMode/additive}} blending behavior, and Augmented Reality devices that use passthrough cameras frequently exhibit {{XREnvironmentBlendMode/alpha-blend}} blending behavior.
 
-Each {{XRSession}} has a <dfn for="XRSession">output canvas</dfn>, which is an {{HTMLCanvasElement}}. The [=XRSession/output canvas=] is the DOM element that will display any content rendered for an {{XRSessionMode/inline}} {{XRSession}}. 
-
-<div class="algorithm" data-algorithm="determine-output-canvas">
-
-To determine the [=XRSession/output canvas=] for an {{XRSession}} |session|, the user agent MUST run the following steps:
-
-  1. Let |baseLayer| be |session|'s {{XRSession/renderState}}'s {{XRRenderState/baseLayer}}.
-  1. If |baseLayer| is an instance of an {{XRWebGLLayer}} with a [=XRWebGLLayer/use default framebuffer=] boolean set to <code>true</code>, return |baseLayer|'s {{XRWebGLLayer/context}}'s {{WebGLRenderingContext|canvas}}.
-  1. return <code>null</code>.
-
-</div>
-
 An {{XRSessionMode/inline}} {{XRSession}} is considered a <dfn for="XRSession">direct output session</dfn> if rendering commands performed for the {{XRSession}} are executed in such a way that they are directly displayed on the page, rather than being processed by the [=XR Compositor=].
 
 <div class="algorithm" data-algorithm="determine-direct-output-session">
@@ -629,6 +625,8 @@ dictionary XRRenderStateInit {
 };
 </pre>
 
+Each {{XRRenderState}} has a <dfn for="XRRenderState">output canvas</dfn>, which is an {{HTMLCanvasElement}}. The [=XRRenderState/output canvas=] is the DOM element that will display any content rendered for an {{XRSessionMode/inline}} {{XRSession}}.
+
 <div class="algorithm" data-algorithm="initialize-renderstate">
 
 When an {{XRRenderState}} object is created for an {{XRSession}} |session|, the user agent MUST <dfn>initialize the render state</dfn> by running the following steps:
@@ -644,6 +642,7 @@ When an {{XRRenderState}} object is created for an {{XRSession}} |session|, the 
       <dd> Initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} to <code>PI * 0.5</code>.
     </dl>
   1. Initialize |state|'s {{XRRenderState/baseLayer}} to <code>null</code>.
+  1. Initialize |state|'s [=XRRenderState/output canvas=] to <code>null</code>.
 
 </div>
 
@@ -651,7 +650,7 @@ The <dfn attribute for="XRRenderState">depthNear</dfn> attribute defines the dis
 
 {{XRRenderState/depthNear}} and {{XRRenderState/depthFar}} is used in the computation of the {{XRView/projectionMatrix}} of {{XRView}}s and determines how the values of an {{XRWebGLLayer}} depth buffer are interpreted. {{XRRenderState/depthNear}} MAY be greater than {{XRRenderState/depthFar}}.
 
-The <dfn attribute for="XRRenderState">inlineVerticalFieldOfView</dfn> attribute defines the default vertical field of view in radians used when computing projection matrices for {{XRSessionMode/inline}} {{XRSession}}s. The projection matrix calculation also takes into account the aspect ratio of the [=XRSession/output canvas=]. This value MUST be <code>null</code> for [=immersive sessions=].
+The <dfn attribute for="XRRenderState">inlineVerticalFieldOfView</dfn> attribute defines the default vertical field of view in radians used when computing projection matrices for {{XRSessionMode/inline}} {{XRSession}}s. The projection matrix calculation also takes into account the aspect ratio of the [=XRRenderState/output canvas=]. This value MUST be <code>null</code> for [=immersive sessions=].
 
 <section class="unstable">
 The <dfn attribute for="XRRenderState">baseLayer</dfn> attribute defines an {{XRWebGLLayer}} which the [=XR compositor=] will obtain images from.
@@ -697,7 +696,7 @@ When an {{XRSession}} |session| receives updated [=viewer=] state from the [=/XR
 
   1. If |session|'s [=list of pending render states=] is not empty, [=apply pending render states=].
   1. If |session|'s {{XRSession/renderState}}'s {{XRRenderState/baseLayer}} is <code>null</code>, abort these steps.
-  1. If |session|'s  [=XRSession/mode=] is {{XRSessionMode/"inline"}} and |session|'s [=XRSession/output canvas=] is <code>null</code>, abort these steps.
+  1. If |session|'s  [=XRSession/mode=] is {{XRSessionMode/"inline"}} and |session|'s {{XRSession/renderState}}'s [=XRRenderState/output canvas=] is <code>null</code>, abort these steps.
   1. Let |callbacks| be a list of the entries in |session|'s [=list of animation frame callback=], in the order in which they were added to the list.
   1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
   1. Set |frame|'s [=active=] boolean to <code>true</code>.
@@ -1597,24 +1596,27 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
   1. If |context| is lost, throw an {{InvalidStateError}} and abort these steps.
   1. If |context|'s [=XR compatible=] boolean is false, throw an {{InvalidStateError}} and abort these steps.
   1. Initialize |layer|'s {{XRWebGLLayer/context}} to |context|.
+  1. Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} as follows:
+    <dl class="switch">
+      <dt> If |layerInit|'s {{XRWebGLLayerInit/ignoreDepthValues}} value is <code>false</code> and the [=XR Compositor=] will make use of depth values
+      <dd> Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>false</code>
+      <dt> Otherwise
+      <dd> Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>true</code>
+    </dl>
   1. Initialize |layer|'s [=XRWebGLLayer/use default framebuffer=] to |layerInit|'s {{XRWebGLLayerInit/useDefaultFramebuffer}}.
-  1. If |layer|'s [=XRWebGLLayer/use default framebuffer=] boolean is <code>false</code>:
-    1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layerInit|'s {{XRWebGLLayerInit/antialias}} value.
-    1. Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} as follows:
-      <dl class="switch">
-        <dt> If |layerInit|'s {{XRWebGLLayerInit/ignoreDepthValues}} value is <code>false</code> and the [=XR Compositor=] will make use of depth values
-        <dd> Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>false</code>
-        <dt> Otherwise
-        <dd> Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>true</code>
-      </dl>
-    1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] created with |context|.
-    1. Initialize the |layer|'s [=swap chain=].
-    1. If |layer|'s [=swap chain=] was unable to be created for any reason, throw an {{OperationError}} and abort these steps.
-  1. Else if |layer|'s [=XRWebGLLayer/use default framebuffer=] boolean is <code>true</code>:
-    1. If |session|'s [=mode=] is not {{XRSessionMode/inline}}, throw an {{InvalidStateError}} and abort these steps.
-    1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layer|'s {{XRWebGLLayer/context}}'s [=actual context parameters=] {{WebGLContextAttributes|antialias}} value.
-    1. Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>true</code>.
-    1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to <code>null</code>.
+  1. <dl class="switch">
+      <dt> If |layer|'s [=XRWebGLLayer/use default framebuffer=] boolean is <code>false</code>:
+      <dd>
+        1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layerInit|'s {{XRWebGLLayerInit/antialias}} value.
+        1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] created with |context|.
+        1. Initialize the |layer|'s [=swap chain=].
+        1. If |layer|'s [=swap chain=] was unable to be created for any reason, throw an {{OperationError}} and abort these steps.
+      <dt> Otherwise
+      <dd>
+        1. If |session|'s [=mode=] is not {{XRSessionMode/inline}}, throw an {{InvalidStateError}} and abort these steps.
+        1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layer|'s {{XRWebGLLayer/context}}'s [=actual context parameters=] {{WebGLContextAttributes|antialias}} value.
+        1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to <code>null</code>.
+    </dl>
   1. Return |layer|.
 
 </div>
@@ -1670,7 +1672,7 @@ The [=native WebGL framebuffer resolution=] is determined by running the followi
 
   1. Let |session| be the target {{XRSession}}.
   1. If |session|'s [=XRSession/mode=] value is not <code>"inline"</code>, set the [=native WebGL framebuffer resolution=] to the resolution required to have a 1:1 ratio between the pixels of a framebuffer large enough to contain all of the session's {{XRView}}s and the physical screen pixels in the area of the display under the highest magnification and abort these steps. If no method exists to determine the native resolution as described, the [=recommended WebGL framebuffer resolution=] MAY be used.
-  1. Else the set the [=native WebGL framebuffer resolution=] to <code>1 x 1</code>.
+  1. If |session|'s [=XRSession/mode=] value is <code>"inline"</code>, set the [=native WebGL framebuffer resolution=] to the size of the |session|'s {{XRSession/renderState}}'s [=XRRenderState/output canvas=] in physical display pixels and reevaluate these steps every time the size of the canvas changes or the [=XRRenderState/output canvas=] is changed.
 
 </div>
 
