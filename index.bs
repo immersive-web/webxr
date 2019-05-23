@@ -1618,6 +1618,8 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
 
 </div>
 
+Note: When a {{XRWebGLLayerInit}}'s {{XRWebGLLayerInit/useDefaultFramebuffer}} is set to <code>true</code> all other values on the {{XRWebGLLayerInit}} object are ignored, since the {{WebGLRenderingContext}}'s default framebuffer was already allocated using the context's [=actual context parameters=] and cannot be overridden.
+
 The <dfn attribute for="XRWebGLLayer">context</dfn> attribute is the {{WebGLRenderingContext}} the {{XRWebGLLayer}} was created with.
 
 Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">use default framebuffer</dfn> boolean which is initially set to <code>false</code>. If set to <code>true</code> it indicates that the {{XRWebGLLayer}} MUST NOT allocate its own {{WebGLFramebuffer}}, and all properties of the {{XRWebGLLayer}} that reflect {{XRWebGLLayer/framebuffer}} properties MUST instead reflect the properties of the {{XRWebGLLayer/context}}'s default framebuffer.
