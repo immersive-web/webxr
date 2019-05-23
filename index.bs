@@ -490,6 +490,13 @@ When requested, the {{XRSession}} MUST <dfn>apply pending render states</dfn> by
       <dt> Otherwise
       <dd> Set |activeState|'s [=XRRenderState/output canvas=] to <code>null</code>.
     </dl>
+  1. Set |activeState|'s [=XRRenderState/direct output=] boolean based on the following:
+    <dl class="switch">
+      <dt> If |session|'s [=XRSession/mode=] is {{XRSessionMode/inline}} and |baseLayer| is an instance of an {{XRWebGLLayer}} with [=XRWebGLLayer/use default framebuffer=] set to <code>true</code>
+      <dd> Set |activeState|'s [=XRRenderState/direct output=] to <code>true</code>
+      <dt> Otherwise
+      <dd> Set |activeState|'s [=XRRenderState/direct output=] boolean to <code>false</code>.
+    </dl>
 
 </div>
 
@@ -567,20 +574,7 @@ The <dfn attribute for="XRSession">environmentBlendMode</dfn> attribute returns 
 
 NOTE: Most Virtual Reality devices exhibit {{XREnvironmentBlendMode/opaque}} blending behavior. Augmented Reality devices that use transparent optical elements frequently exhibit {{XREnvironmentBlendMode/additive}} blending behavior, and Augmented Reality devices that use passthrough cameras frequently exhibit {{XREnvironmentBlendMode/alpha-blend}} blending behavior.
 
-An {{XRSessionMode/inline}} {{XRSession}} is considered a <dfn for="XRSession">direct output session</dfn> if rendering commands performed for the {{XRSession}} are executed in such a way that they are directly displayed on the page, rather than being processed by the [=XR Compositor=].
-
-<div class="algorithm" data-algorithm="determine-direct-output-session">
-
-To determine if an {{XRSession}} |session| is a [=direct output session=], the user agent MUST run the following steps:
-
-  1. If |session|'s [=XRSession/mode=] is not {{XRSessionMode/inline}}, return <code>false</code>.
-  1. Let |baseLayer| be |session|'s {{XRSession/renderState}}'s {{XRRenderState/baseLayer}}.
-  1. If |baseLayer| is an instance of an {{XRWebGLLayer}} with a [=XRWebGLLayer/use default framebuffer=] boolean set to <code>true</code>, return <code>true</code>.
-  1. return <code>false</code>.
-
-</div>
-
-Each {{XRSession}} has a <dfn for="XRSession">viewer reference space</dfn>, which is an {{XRReferenceSpace}} of type {{XRReferenceSpaceType/viewer}} with an [=identity transform=] [=XRSpace/origin offset=]. The [=XRSession/viewer reference space=] has a <dfn for="XRSession/viewer reference space">list of views</dfn>, which is a [=/list=] of [=view=]s corresponding to the views provided by the [=/XR device=]. If the {{XRSession}} is a [=direct output session=] the [=list of views=] MUST contain a single [=view=].
+Each {{XRSession}} has a <dfn for="XRSession">viewer reference space</dfn>, which is an {{XRReferenceSpace}} of type {{XRReferenceSpaceType/viewer}} with an [=identity transform=] [=XRSpace/origin offset=]. The [=XRSession/viewer reference space=] has a <dfn for="XRSession/viewer reference space">list of views</dfn>, which is a [=/list=] of [=view=]s corresponding to the views provided by the [=/XR device=]. If the {{XRSession}}'s {{XRSession/renderState}} is in [=XRRenderState/direct output=] mode the [=list of views=] MUST contain a single [=view=].
 
 <section class="unstable">
 The <dfn attribute for="XRSession">onblur</dfn> attribute is an [=Event handler IDL attribute=] for the {{blur}} event type.
@@ -625,7 +619,11 @@ dictionary XRRenderStateInit {
 };
 </pre>
 
-Each {{XRRenderState}} has a <dfn for="XRRenderState">output canvas</dfn>, which is an {{HTMLCanvasElement}}. The [=XRRenderState/output canvas=] is the DOM element that will display any content rendered for an {{XRSessionMode/inline}} {{XRSession}}.
+Each {{XRRenderState}} has a <dfn for="XRRenderState">output canvas</dfn>, which is an {{HTMLCanvasElement}} initially set to <code>null</code>. The [=XRRenderState/output canvas=] is the DOM element that will display any content rendered for an {{XRSessionMode/inline}} {{XRSession}}.
+
+Each {{XRRenderState}} also has <dfn for="XRRenderState">direct output</dfn> boolean, which is initially <code>false</code>. The {{XRRenderState}} is considered to be in [=XRRenderState/direct output=] mode if rendering commands performed for an {{XRSessionMode/inline}} {{XRSession}} are executed in such a way that they are directly displayed on the page, rather than being processed by the [=XR Compositor=].
+
+Note: At this point the {{XRRenderState}} will only have an [=XRRenderState/output canvas=] if it is in [=XRRenderState/direct output=] mode, but future versions of the specification are likely to introduce methods for setting [=XRRenderState/output canvas=]' that support more advanced uses like mirroring and layer compositing that will not be [=XRRenderState/direct output=].
 
 <div class="algorithm" data-algorithm="initialize-renderstate">
 
@@ -642,7 +640,6 @@ When an {{XRRenderState}} object is created for an {{XRSession}} |session|, the 
       <dd> Initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} to <code>PI * 0.5</code>.
     </dl>
   1. Initialize |state|'s {{XRRenderState/baseLayer}} to <code>null</code>.
-  1. Initialize |state|'s [=XRRenderState/output canvas=] to <code>null</code>.
 
 </div>
 
