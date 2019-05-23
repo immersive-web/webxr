@@ -1106,7 +1106,7 @@ The <dfn attribute for="XRRay">origin</dfn> attribute defines the 3-dimensional 
 The <dfn attribute for="XRRay">direction</dfn> attribute defines the ray's 3-dimensional directional vector. The {{XRRay/direction}}'s {{DOMPointReadOnly/w}} attribute MUST be <code>0.0</code> and the vector MUST be normalized to have a length of <code>1.0</code>.
 
 <section class="unstable">
-The <dfn attribute for="XRRay">matrix</dfn> attribute is a [=matrix=] which represents the transform from a ray originating at <code>[0, 0, 0]</code> and extending down the negative Z axis to the ray described by the {{XRRay}}'s {{XRRay/origin}} and {{XRRay/direction}}. Such a matrix MUST be one that has a rotation component which leaves any vector perpendicular to {{XRRay/direction}} and the <code>Z</code> axis unchanged. This attribute MUST be computed by [=XRRay/obtain the matrix|obtaining the matrix=] for the {{XRRay}}. This attribute SHOULD be lazily evaluated.
+The <dfn attribute for="XRRay">matrix</dfn> attribute is a [=matrix=] which represents a transform that can be used to position objects along the {{XRRay}. It is a transform from a ray originating at <code>[0, 0, 0]</code> and extending down the negative Z axis to the ray described by the {{XRRay}}'s {{XRRay/origin}} and {{XRRay/direction}}. Such a matrix MUST be one that has a rotation component which leaves any vector perpendicular to {{XRRay/direction}} and the <code>Z</code> axis unchanged. This attribute MUST be computed by [=XRRay/obtain the matrix|obtaining the matrix=] for the {{XRRay}}. This attribute SHOULD be lazily evaluated.
 
 NOTE: The {{XRRay}}'s {{XRRay/matrix}} can be used to easily position graphical representations of the ray when rendering.
 
