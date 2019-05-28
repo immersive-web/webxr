@@ -483,19 +483,14 @@ When requested, the {{XRSession}} MUST <dfn>apply pending render states</dfn> by
   1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is less than |session|'s [=minimum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=minimum inline field of view=].
   1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is greater than |session|'s [=maximum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=maximum inline field of view=].
   1. Let |baseLayer| be |activeState|'s {{XRRenderState/baseLayer}}.
-  1. Set  |activeState|'s [=XRRenderState/output canvas=] based on the following:
+  1. Set |activeState|'s [=XRRenderState/composition disabled=] and [=XRRenderState/output canvas=] based on the following:
     <dl class="switch">
-      <dt> If |baseLayer| is an instance of {{XRWebGLLayer}} with a [=XRWebGLLayer/use default framebuffer=] boolean set to <code>true</code>
+      <dt> If |session|'s [=XRSession/mode=] is {{XRSessionMode/inline}} and |baseLayer| is an instance of an {{XRWebGLLayer}} with [=XRWebGLLayer/composition disabled=] set to <code>true</code>
+      <dd> Set |activeState|'s [=XRRenderState/composition disabled=] boolean to <code>true</code>.
       <dd> Set |activeState|'s [=XRRenderState/output canvas=] to |baseLayer|'s {{XRWebGLLayer/context}}'s {{WebGLRenderingContext|canvas}}.
       <dt> Otherwise
+      <dd> Set |activeState|'s [=XRRenderState/composition disabled=] boolean to <code>false</code>.
       <dd> Set |activeState|'s [=XRRenderState/output canvas=] to <code>null</code>.
-    </dl>
-  1. Set |activeState|'s [=XRRenderState/direct output=] boolean based on the following:
-    <dl class="switch">
-      <dt> If |session|'s [=XRSession/mode=] is {{XRSessionMode/inline}} and |baseLayer| is an instance of an {{XRWebGLLayer}} with [=XRWebGLLayer/use default framebuffer=] set to <code>true</code>
-      <dd> Set |activeState|'s [=XRRenderState/direct output=] to <code>true</code>
-      <dt> Otherwise
-      <dd> Set |activeState|'s [=XRRenderState/direct output=] boolean to <code>false</code>.
     </dl>
 
 </div>
@@ -574,7 +569,7 @@ The <dfn attribute for="XRSession">environmentBlendMode</dfn> attribute returns 
 
 NOTE: Most Virtual Reality devices exhibit {{XREnvironmentBlendMode/opaque}} blending behavior. Augmented Reality devices that use transparent optical elements frequently exhibit {{XREnvironmentBlendMode/additive}} blending behavior, and Augmented Reality devices that use passthrough cameras frequently exhibit {{XREnvironmentBlendMode/alpha-blend}} blending behavior.
 
-Each {{XRSession}} has a <dfn for="XRSession">viewer reference space</dfn>, which is an {{XRReferenceSpace}} of type {{XRReferenceSpaceType/viewer}} with an [=identity transform=] [=XRSpace/origin offset=]. The [=XRSession/viewer reference space=] has a <dfn for="XRSession/viewer reference space">list of views</dfn>, which is a [=/list=] of [=view=]s corresponding to the views provided by the [=/XR device=]. If the {{XRSession}}'s {{XRSession/renderState}} is in [=XRRenderState/direct output=] mode the [=list of views=] MUST contain a single [=view=].
+Each {{XRSession}} has a <dfn for="XRSession">viewer reference space</dfn>, which is an {{XRReferenceSpace}} of type {{XRReferenceSpaceType/viewer}} with an [=identity transform=] [=XRSpace/origin offset=]. The [=XRSession/viewer reference space=] has a <dfn for="XRSession/viewer reference space">list of views</dfn>, which is a [=/list=] of [=view=]s corresponding to the views provided by the [=/XR device=]. If the {{XRSession}}'s {{XRSession/renderState}}'s [=XRRenderState/composition disabled=] boolean is set to <code>true</code> the [=list of views=] MUST contain a single [=view=].
 
 <section class="unstable">
 The <dfn attribute for="XRSession">onblur</dfn> attribute is an [=Event handler IDL attribute=] for the {{blur}} event type.
@@ -621,9 +616,9 @@ dictionary XRRenderStateInit {
 
 Each {{XRRenderState}} has a <dfn for="XRRenderState">output canvas</dfn>, which is an {{HTMLCanvasElement}} initially set to <code>null</code>. The [=XRRenderState/output canvas=] is the DOM element that will display any content rendered for an {{XRSessionMode/inline}} {{XRSession}}.
 
-Each {{XRRenderState}} also has <dfn for="XRRenderState">direct output</dfn> boolean, which is initially <code>false</code>. The {{XRRenderState}} is considered to be in [=XRRenderState/direct output=] mode if rendering commands performed for an {{XRSessionMode/inline}} {{XRSession}} are executed in such a way that they are directly displayed on the page, rather than being processed by the [=XR Compositor=].
+Each {{XRRenderState}} also has <dfn for="XRRenderState">composition disabled</dfn> boolean, which is initially <code>false</code>. The {{XRRenderState}} is considered to be have [=XRRenderState/composition disabled=] if rendering commands performed for an {{XRSessionMode/inline}} {{XRSession}} are executed in such a way that they are directly displayed into [=XRRenderState/output canvas=], rather than first being processed by the [=XR Compositor=].
 
-Note: At this point the {{XRRenderState}} will only have an [=XRRenderState/output canvas=] if it is in [=XRRenderState/direct output=] mode, but future versions of the specification are likely to introduce methods for setting [=XRRenderState/output canvas=]' that support more advanced uses like mirroring and layer compositing that will not be [=XRRenderState/direct output=].
+Note: At this point the {{XRRenderState}} will only have an [=XRRenderState/output canvas=] if it has [=XRRenderState/composition disabled=], but future versions of the specification are likely to introduce methods for setting [=XRRenderState/output canvas=]' that support more advanced uses like mirroring and layer compositing that will require composition.
 
 <div class="algorithm" data-algorithm="initialize-renderstate">
 
@@ -1553,7 +1548,7 @@ typedef (WebGLRenderingContext or
          WebGL2RenderingContext) XRWebGLRenderingContext;
 
 dictionary XRWebGLLayerInit {
-  boolean useDefaultFramebuffer = false;
+  boolean compositionDisabled = false;
   boolean antialias = true;
   boolean depth = true;
   boolean stencil = false;
@@ -1600,10 +1595,11 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
       <dt> Otherwise
       <dd> Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>true</code>
     </dl>
-  1. Initialize |layer|'s [=XRWebGLLayer/use default framebuffer=] to |layerInit|'s {{XRWebGLLayerInit/useDefaultFramebuffer}}.
+  1. Initialize |layer|'s [=XRWebGLLayer/composition disabled=] boolean to |layerInit|'s {{XRWebGLLayerInit/compositionDisabled}}.
   1. <dl class="switch">
-      <dt> If |layer|'s [=XRWebGLLayer/use default framebuffer=] boolean is <code>false</code>:
+      <dt> If |layer|'s [=XRWebGLLayer/composition disabled=] boolean is <code>false</code>:
       <dd>
+        1. If |session|'s [=mode=] is {{XRSessionMode/inline}}, throw an {{InvalidStateError}} and abort these steps.
         1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layerInit|'s {{XRWebGLLayerInit/antialias}} value.
         1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] created with |context|.
         1. Initialize the |layer|'s [=swap chain=].
@@ -1618,13 +1614,13 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
 
 </div>
 
-Note: When a {{XRWebGLLayerInit}}'s {{XRWebGLLayerInit/useDefaultFramebuffer}} is set to <code>true</code> all other values on the {{XRWebGLLayerInit}} object are ignored, since the {{WebGLRenderingContext}}'s default framebuffer was already allocated using the context's [=actual context parameters=] and cannot be overridden.
+Note: When a {{XRWebGLLayerInit}}'s {{XRWebGLLayerInit/compositionDisabled}} is set to <code>true</code> all other values on the {{XRWebGLLayerInit}} object are ignored, since the {{WebGLRenderingContext}}'s default framebuffer was already allocated using the context's [=actual context parameters=] and cannot be overridden.
 
 The <dfn attribute for="XRWebGLLayer">context</dfn> attribute is the {{WebGLRenderingContext}} the {{XRWebGLLayer}} was created with.
 
-Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">use default framebuffer</dfn> boolean which is initially set to <code>false</code>. If set to <code>true</code> it indicates that the {{XRWebGLLayer}} MUST NOT allocate its own {{WebGLFramebuffer}}, and all properties of the {{XRWebGLLayer}} that reflect {{XRWebGLLayer/framebuffer}} properties MUST instead reflect the properties of the {{XRWebGLLayer/context}}'s default framebuffer.
+Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">composition disabled</dfn> boolean which is initially set to <code>false</code>. If set to <code>true</code> it indicates that the {{XRWebGLLayer}} MUST NOT allocate its own {{WebGLFramebuffer}}, and all properties of the {{XRWebGLLayer}} that reflect {{XRWebGLLayer/framebuffer}} properties MUST instead reflect the properties of the {{XRWebGLLayer/context}}'s default framebuffer.
 
-The <dfn attribute for="XRWebGLLayer">framebuffer</dfn> attribute of an {{XRWebGLLayer}} is an instance of a {{WebGLFramebuffer}} which has been marked as [=opaque framebuffer|opaque=] if [=XRWebGLLayer/use default framebuffer=] is <code>false</code>, and <code>null</code> otherwise. The {{framebuffer}} size cannot be adjusted by the developer after the {{XRWebGLLayer}} has been created.
+The <dfn attribute for="XRWebGLLayer">framebuffer</dfn> attribute of an {{XRWebGLLayer}} is an instance of a {{WebGLFramebuffer}} which has been marked as [=opaque framebuffer|opaque=] if [=XRWebGLLayer/composition disabled=] is <code>false</code>, and <code>null</code> otherwise. The {{framebuffer}} size cannot be adjusted by the developer after the {{XRWebGLLayer}} has been created.
 
 An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFramebuffer}} with the following changes that make it behave more like the default framebuffer:
  
@@ -1632,7 +1628,7 @@ An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFram
  - An [=opaque framebuffer=]'s attachments cannot be inspected or changed. Calling {{framebufferTexture2D}}, {{framebufferRenderbuffer}}, {{getFramebufferAttachmentParameter}}, or {{getRenderbufferParameter}} with an [=opaque framebuffer=] MUST generate an {{INVALID_OPERATION}} error.
  - An [=opaque framebuffer=] is considered incomplete outside of an {{XRSession/requestAnimationFrame()}} callback. When not in a {{XRSession/requestAnimationFrame()}} callback calls to {{checkFramebufferStatus}} outside of an {{XRSession/requestAnimationFrame()}} callback MUST generate a {{FRAMEBUFFER_UNSUPPORTED}} error and attempts to clear, draw to, or read from the [=opaque framebuffer=] MUST generate an {{INVALID_FRAMEBUFFER_OPERATION}} error.
 
-Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">target framebuffer</dfn>, which is the {{XRWebGLLayer/framebuffer}} if [=XRWebGLLayer/use default framebuffer=] is <code>false</code>, and the {{XRWebGLLayer/context}}'s default framebuffer otherwise.
+Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">target framebuffer</dfn>, which is the {{XRWebGLLayer/framebuffer}} if [=XRWebGLLayer/composition disabled=] is <code>false</code>, and the {{XRWebGLLayer/context}}'s default framebuffer otherwise.
 
 The <dfn attribute for="XRWebGLLayer">framebufferWidth</dfn> and <dfn attribute for="XRWebGLLayer">framebufferHeight</dfn> attributes return the width and height of the [=XRWebGLLayer/target framebuffer=]'s attachments, respectively.
 
@@ -1644,7 +1640,7 @@ Depth values stored in the buffer are expected to be between <code>0.0</code> an
 
 NOTE: Making the scene's depth buffer available to the compositor allows some platforms to provide quality and comfort improvements such as improved reprojection.
 
-Each {{XRWebGLLayer}} MUST have a <dfn>list of viewports</dfn> which is a [=/list=] containing one [=WebGL viewport=] for each {{XRView}} the {{XRSession}} currently exposes. The viewports MUST NOT be overlapping. If [=XRWebGLLayer/use default framebuffer=] is <code>true</code>, the [=list of viewports=] MUST contain a single [=WebGL viewport=] that covers the {{XRWebGLLayer/context}}'s entire default framebuffer.
+Each {{XRWebGLLayer}} MUST have a <dfn>list of viewports</dfn> which is a [=/list=] containing one [=WebGL viewport=] for each {{XRView}} the {{XRSession}} currently exposes. The viewports MUST NOT be overlapping. If [=XRWebGLLayer/composition disabled=] is <code>true</code>, the [=list of viewports=] MUST contain a single [=WebGL viewport=] that covers the {{XRWebGLLayer/context}}'s entire default framebuffer.
 
 {{getViewport()}} queries the {{XRViewport}} the given {{XRView}} should use when rendering to the layer.
 
