@@ -377,9 +377,9 @@ These scenarios can make use of inline sessions to render tracked content to the
 
 The [`RelativeOrientationSensor`](https://w3c.github.io/orientation-sensor/#relativeorientationsensor) and [`AbsoluteOrientationSensor`](https://w3c.github.io/orientation-sensor/#absoluteorientationsensor) interfaces (see [Motion Sensors Explainer](https://w3c.github.io/motion-sensors/)) can be used to polyfill the first case.
 
-To make use of this mode a `XRWebGLLayer` must be created with the `useDefaultFramebuffer` option set to `true`. This instructs the layer to not allocate a new WebGL framebuffer but instead set the `framebuffer` attribute to `null`. That way when `framebuffer` is bound all WebGL commands will naturally execute against the WebGL context's default framebuffer and display on the page like any other WebGL content. When that layer is set as the `XRRenderState`'s `baseLayer` the inline session is able to render it's output to the page.
+To make use of this mode a `XRWebGLLayer` must be created with the `compositionDisabled` option set to `true`. This instructs the layer to not allocate a new WebGL framebuffer but instead set the `framebuffer` attribute to `null`. That way when `framebuffer` is bound all WebGL commands will naturally execute against the WebGL context's default framebuffer and display on the page like any other WebGL content. When that layer is set as the `XRRenderState`'s `baseLayer` the inline session is able to render it's output to the page.
 
-Immersive and inline sessions can use the same render loop, but there are some differences in behavior to be aware of. Most importantly, inline sessions will not pump their render loop if they do not have a `baseLayer` with `useDefaultFramebuffer` set. (This restriction may be lifted in the future to enable more advanced effects.) Instead the session acts as though it has been [suspended](#handling-suspended-sessions) until a valid `baseLayer` has been assigned.
+Immersive and inline sessions can use the same render loop, but there are some differences in behavior to be aware of. Most importantly, inline sessions will not pump their render loop if they do not have a `baseLayer` with `compositionDisabled` set. (This restriction may be lifted in the future to enable more advanced effects.) Instead the session acts as though it has been [suspended](#handling-suspended-sessions) until a valid `baseLayer` has been assigned.
 
 Immersive and inline sessions may run their render loops at at different rates. During immersive sessions the UA runs the rendering loop at the XR device's native refresh rate. During inline sessions the UA runs the rendering loop at the refresh rate of page (aligned with `window.requestAnimationFrame`.) The method of computation of `XRView` projection and view matrices also differs between immersive and inline sessions, with inline sessions taking into account the output canvas dimensions and possibly the position of the users head in relation to the canvas if that can be determined.
 
@@ -393,7 +393,7 @@ function beginInlineXRSession() {
         // Inline sessions must have an appropriately constructed WebGL layer
         // set as the baseLayer prior to rendering. (This code assumes the WebGL
         // context has already been made XR compatible.)
-        let glLayer = new XRWebGLLayer(session, gl, { useDefaultFramebuffer: true });
+        let glLayer = new XRWebGLLayer(session, gl, { compositionDisabled: true });
         session.updateRenderState({ baseLayer: glLayer });
         onSessionStarted(session);
       })
@@ -654,6 +654,7 @@ enum XREye {
 //
 
 dictionary XRWebGLLayerInit {
+  boolean compositionDisabled = false;
   boolean antialias = true;
   boolean depth = true;
   boolean stencil = false;
