@@ -25,7 +25,7 @@ Warning: custom
 Custom Warning Title: Unstable API
 Custom Warning Text:
   <b>Parts of the API represented in this document are incomplete and may change at any time.</b>
-  <p>While this specification is under development some concepts may be represented better by the <a href="https://github.com/immersive-web/webxr/blob/master/explainer.md">WebXR Device API Explainer</a>.</p>
+  <p>For additional context on the use of this API please reference the <a href="https://github.com/immersive-web/webxr/blob/master/explainer.md">WebXR Device API Explainer</a>.</p>
 
 </pre>
 
@@ -345,7 +345,6 @@ navigator.xr.requestSession("immersive-vr").then((session) => {
 </pre>
 </div>
 
-<section class="unstable">
 XRSessionMode {#xrsessionmode-enum}
 -------------------------
 
@@ -366,7 +365,6 @@ enum XRSessionMode {
 An <dfn>immersive session</dfn> refers to either an {{immersive-vr}} or an {{immersive-ar}} session. [=Immersive sessions=] MUST provide some level of [=viewer=] tracking, and content MUST be shown at the proper scale relative to the user and/or the surrounding environment. Additionally, [=Immersive sessions=] MUST be given <dfn>exclusive access</dfn> to the [=/XR device=], meaning that while the [=immersive session=] is not [=blurred=] the HTML document is not shown on the [=/XR device=]'s display, nor is content from other applications shown on the [=/XR device=]'s display.
 
 NOTE: Examples of ways [=exclusive access=] may be presented include stereo content displayed on a virtual reality or augmented reality headset, or augmented reality content displayed fullscreen on a mobile device.
-</section>
 
 Session {#session}
 =======
@@ -571,9 +569,7 @@ The <dfn attribute for="XRSession">onfocus</dfn> attribute is an [=Event handler
 
 The <dfn attribute for="XRSession">onend</dfn> attribute is an [=Event handler IDL attribute=] for the {{end}} event type.
 
-<section class="unstable">
 The <dfn attribute for="XRSession">oninputsourceschange</dfn> attribute is an [=Event handler IDL attribute=] for the {{inputsourceschange}} event type.
-</section>
 
 The <dfn attribute for="XRSession">onselectstart</dfn> attribute is an [=Event handler IDL attribute=] for the {{selectstart}} event type.
 
@@ -634,6 +630,10 @@ The <dfn attribute for="XRRenderState">depthNear</dfn> attribute defines the dis
 {{XRRenderState/depthNear}} and {{XRRenderState/depthFar}} is used in the computation of the {{XRView/projectionMatrix}} of {{XRView}}s and determines how the values of an {{XRWebGLLayer}} depth buffer are interpreted. {{XRRenderState/depthNear}} MAY be greater than {{XRRenderState/depthFar}}.
 
 The <dfn attribute for="XRRenderState">inlineVerticalFieldOfView</dfn> attribute defines the default vertical field of view in radians used when computing projection matrices for {{XRSessionMode/inline}} {{XRSession}}s. The projection matrix calculation also takes into account the aspect ratio of the {{XRRenderState/outputContext}}'s {{XRPresentationContext/canvas}}. This value MUST be <code>null</code> for [=immersive sessions=].
+
+<section class="unstable">
+The <dfn attribute for="XRRenderState">baseLayer</dfn> attribute defines the {{XRLayer}} which the [=XR compositor=] will obtain images from.
+</section>
 
 Animation Frames {#animation-frames}
 ----------------
@@ -770,7 +770,7 @@ When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method 
 
 </div>
 
-<div class="algorithm unstable" data-algorithm="get-pose">
+<div class="algorithm" data-algorithm="get-pose">
 
 When the <dfn method for="XRFrame">getPose(|space|, |baseSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
 
@@ -949,7 +949,6 @@ Note: Content generally should not provide a visualization of the {{boundsGeomet
 Views {#views}
 =====
 
-<section class="unstable">
 XRView {#xrview-interface}
 ------
 
@@ -959,9 +958,9 @@ Each [=view=] corresponds to a display or portion of a display used by an XR dev
 
 A [=view=] has an associated internal <dfn>view offset</dfn>, which is an {{XRRigidTransform}} describing the position and orientation of the [=view=] in the [=XRSession/viewer reference space=]'s [=coordinate system=].
 
-A [=view=] has an associated <dfn for="view">projection matrix</dfn>which is a [=matrix=] describing the projection to be used when rendering the [=view=], provided by the underlying XR device. The [=view/projection matrix=] MAY include transformations such as shearing that prevent the projection from being accurately described by a simple frustum.
+A [=view=] has an associated <dfn for="view">projection matrix</dfn> which is a [=matrix=] describing the projection to be used when rendering the [=view=], provided by the underlying XR device. The [=view/projection matrix=] MAY include transformations such as shearing that prevent the projection from being accurately described by a simple frustum.
 
-A [=view=] has an associated <dfn for="view">eye</dfn>which is an {{XREye}} describing which eye this view is expected to be shown to. If the view does not have an intrinsically associated eye (the display is monoscopic, for example) this value MUST be set to {{XREye/"none"}}.
+A [=view=] has an associated <dfn for="view">eye</dfn> which is an {{XREye}} describing which eye this view is expected to be shown to. If the view does not have an intrinsically associated eye (the display is monoscopic, for example) this value MUST be set to {{XREye/"none"}}.
 
 NOTE: Many HMDs will request that content render two [=views=], one for the left eye and one for the right, while most magic window devices will only request one [=view=], but applications should never assume a specific view configuration. For example: A magic window device may request two views if it is capable of stereo output, but may revert to requesting a single view for performance reasons if the stereo output mode is turned off. Similarly, HMDs may request more than two views to facilitate a wide field of view or displays of different pixel density.
 
@@ -981,7 +980,9 @@ enum XREye {
 
 The <dfn attribute for="XRView">eye</dfn> attribute describes is the [=view/eye=] of the underlying [=view=]. This attribute's primary purpose is to ensure that pre-rendered stereo content can present the correct portion of the content to the correct eye.
 
+<section class="unstable">
 The <dfn attribute for="XRView">projectionMatrix</dfn> attribute is the [=view/projection matrix=] of the underlying [=view=]. It is <b>strongly recommended</b> that applications use this matrix without modification or decomposition. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
+</section>
 
 The <dfn attribute for="XRView">transform</dfn> attribute is the {{XRRigidTransform}} of the viewpoint. It represents the position and orientation of the viewpoint in the {{XRReferenceSpace}} provided in {{XRFrame/getViewerPose()}}.
 
@@ -1205,8 +1206,7 @@ The <dfn attribute for="XRRay">origin</dfn> attribute defines the 3-dimensional 
 
 The <dfn attribute for="XRRay">direction</dfn> attribute defines the ray's 3-dimensional directional vector. The {{XRRay/direction}}'s {{DOMPointReadOnly/w}} attribute MUST be <code>0.0</code> and the vector MUST be normalized to have a length of <code>1.0</code>.
 
-<section class="unstable">
-The <dfn attribute for="XRRay">matrix</dfn> attribute is a [=matrix=] which represents a transform that can be used to position objects along the {{XRRay}. It is a transform from a ray originating at <code>[0, 0, 0]</code> and extending down the negative Z axis to the ray described by the {{XRRay}}'s {{XRRay/origin}} and {{XRRay/direction}}. Such a matrix MUST be one that has a rotation component which leaves any vector perpendicular to {{XRRay/direction}} and the <code>Z</code> axis unchanged. This attribute MUST be computed by [=XRRay/obtain the matrix|obtaining the matrix=] for the {{XRRay}}. This attribute SHOULD be lazily evaluated.
+The <dfn attribute for="XRRay">matrix</dfn> attribute is a [=matrix=] which represents a transform that can be used to position objects along the {{XRRay}}. It is a transform from a ray originating at <code>[0, 0, 0]</code> and extending down the negative Z axis to the ray described by the {{XRRay}}'s {{XRRay/origin}} and {{XRRay/direction}}. Such a matrix MUST be one that has a rotation component which leaves any vector perpendicular to {{XRRay/direction}} and the <code>Z</code> axis unchanged. This attribute MUST be computed by [=XRRay/obtain the matrix|obtaining the matrix=] for the {{XRRay}}. This attribute SHOULD be lazily evaluated.
 
 NOTE: The {{XRRay}}'s {{XRRay/matrix}} can be used to easily position graphical representations of the ray when rendering.
 
@@ -1228,7 +1228,6 @@ To <dfn for=XRRay>obtain the matrix</dfn> for a given {{XRRay}} |ray|
   1. Return |matrix|
 
 </div>
-</section>
 
 Pose {#pose}
 ====
@@ -1269,7 +1268,6 @@ NOTE: The {{XRViewerPose}}'s {{XRPose/transform}} can be used to position graphi
 Input {#input}
 =====
 
-<section class="unstable">
 XRInputSource {#xrinputsource-interface}
 -------------
 
@@ -1349,7 +1347,6 @@ When an [=XR input source=] for {{XRSession}} |session| has its [=primary action
   1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
 
 </div>
-</section>
 
 Transient input {#transient-input}
 ---------------
@@ -1393,7 +1390,6 @@ When a [=transient input source=] for {{XRSession}} |session| has its [=primary 
 
 </div>
 
-<section class="unstable">
 XRInputSourceArray {#xrinputsourcearray-interface}
 ------------------
 
@@ -1411,8 +1407,6 @@ interface XRInputSourceArray {
 The <dfn attribute for="XRInputSourceArray">length</dfn> attribute of {{XRInputSourceArray}} indicates how many {{XRInputSource}}s are contained within the {{XRInputSourceArray}}.
 
 The <dfn export for="XRInputSourceArray">[=/indexed property getter=]</dfn> of {{XRInputSourceArray}} retrieves the {{XRInputSource}} at the provided index.
-
-</section>
 
 <section class="unstable">
 Gamepad API Integration {#gamepad-api-integration}
@@ -1829,7 +1823,6 @@ dictionary XRSessionEventInit : EventInit {
 
 The <dfn attribute for="XRSessionEvent">session</dfn> attribute indicates the {{XRSession}} that generated the event.
 
-<section class="unstable">
 XRInputSourceEvent {#xrinputsourceevent-interface}
 --------------
 
@@ -1866,9 +1859,8 @@ When the user agent fires an {{XRInputSourceEvent}} |event| it MUST run the foll
   1. Set |frame|'s [=active=] boolean to <code>false</code>.
 
 </div>
-</section>
 
-<section class="unstable">
+
 XRInputSourcesChangeEvent {#xrinputsourceschangeevent-interface}
 --------------
 
@@ -1894,8 +1886,7 @@ The <dfn attribute for="XRInputSourcesChangeEvent">session</dfn> attribute indic
 
 The <dfn attribute for="XRInputSourcesChangeEvent">added</dfn> attribute is a [=/list=] of {{XRInputSource}}s that were added to the {{XRSession}} at the time of the event.
 
-The <dfn attribute for="XRInputSourcesChangeEvent">removed</dfn> attribute is a [=/list=] of {{XRInputSource}}s that were removed from the {{XRSession}} at the time of the events.
-</section>
+The <dfn attribute for="XRInputSourcesChangeEvent">removed</dfn> attribute is a [=/list=] of {{XRInputSource}}s that were removed from the {{XRSession}} at the time of the event.
 
 
 XRReferenceSpaceEvent {#xrreferencespaceevent-interface}
