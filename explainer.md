@@ -370,7 +370,7 @@ The UA may choose to present the immersive AR session's content via any type of 
 There are several scenarios where it's beneficial to render a scene whose view is controlled by device tracking within a 2D page. For example:
 
  - Using phone rotation to view panoramic content.
- - Taking advantage of 6DoF tracking on devices (like [Tango](https://get.google.com/tango/) phones) with no associated headset.
+ - Taking advantage of 6DoF tracking on devices with no associated headset, like [ARCore](https://developers.google.com/ar/) or [ARKit](https://developer.apple.com/arkit/) enabled phones. 
  - Making use of head-tracking features for devices like [zSpace](http://zspace.com/) systems.
 
 These scenarios can make use of inline sessions to render tracked content to the page. Using an inline session also enables content to use a single rendering path for both inline and immersive presentation modes. It also makes switching between inline content and immersive presentation of that content easier.
