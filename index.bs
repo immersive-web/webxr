@@ -302,6 +302,7 @@ When the <dfn method for="XR">requestSession(|mode|)</dfn> method is invoked, th
 
   1. Let |immersive| be <code>true</code> if |mode| is {{XRSessionMode/"immersive-vr"}} or {{XRSessionMode/"immersive-ar"}}, and <code>false</code> otherwise.
   1. If |immersive| is <code>true</code>: 
+    1. If the algorithm is not [=triggered by user activation=], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and abort these steps.
     1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and abort these steps.
     1. Set [=pending immersive session=] to be <code>true</code>.
   1. [=ensures an XR device is selected|Ensure an XR device is selected=].
@@ -311,8 +312,6 @@ When the <dfn method for="XR">requestSession(|mode|)</dfn> method is invoked, th
       <dd> [=Reject=] |promise| with <code>null</code>.
       <dt> If the [=XR/XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|
       <dd> [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
-      <dt> If |immersive| is <code>true</code> and the algorithm is not [=triggered by user activation=]
-      <dd> [=Reject=] |promise| with a "{{SecurityError}}" {{DOMException}}.
       <dt> Otherwise
       <dd> Continue to the next step.
     </dl>
