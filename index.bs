@@ -80,6 +80,8 @@ spec: Gamepad; urlPrefix: https://w3c.github.io/gamepad/#
     type: attribute; text: pressed; for: GamepadButton; url: dom-gamepadbutton-pressed
     type: attribute; text: value; for: GamepadButton; url: dom-gamepadbutton-value
 spec:html; type:method; for:HTMLCanvasElement; text:getContext(contextId); url: https://html.spec.whatwg.org/multipage/canvas.html#dom-canvas-getcontext
+spec: ECMAScript; urlPrefix: https://tc39.github.io/ecma262/#
+    type: method; text: IsDetachedBuffer; url: sec-isdetachedbuffer
 </pre>
 
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -1071,13 +1073,15 @@ XRRigidTransform {#xrrigidtransform-interface}
 
 An {{XRRigidTransform}} is a transform described by a {{XRRigidTransform/position}} and {{XRRigidTransform/orientation}}. When interpreting an {{XRRigidTransform}} the {{XRRigidTransform/orientation}} is always applied prior to the {{XRRigidTransform/position}}.
 
+An {{XRRigidTransform}} contains an <dfn for=XRRigidTransform>internal matrix</dfn> which is a [=/matrix=]
+
 <pre class="idl">
 [SecureContext, Exposed=Window,
  Constructor(optional DOMPointInit position, optional DOMPointInit orientation)]
 interface XRRigidTransform {
   [SameObject] readonly attribute DOMPointReadOnly position;
   [SameObject] readonly attribute DOMPointReadOnly orientation;
-  [SameObject] readonly attribute Float32Array matrix;
+  readonly attribute Float32Array matrix;
   [SameObject] readonly attribute XRRigidTransform inverse;
 };
 </pre>
@@ -1097,6 +1101,7 @@ The <dfn constructor for="XRRigidTransform">XRRigidTransform(|position|, |orient
       <dt> Else
       <dd> Initialize |transform|'s {{XRRigidTransform/orientation}}’s {{DOMPointReadOnly/x}} value to |orientation|'s x dictionary member, {{DOMPointReadOnly/y}} value to |orientation|'s y dictionary member, {{DOMPointReadOnly/z}} value to |orientation|'s z dictionary member and {{DOMPointReadOnly/w}} value to |orientation|'s w dictionary member.
     </dl>
+  1. Initialize |transform|'s [=XRRigidTransform/internal matrix=] to <code>null</code>.
   1. [=Normalize=] {{DOMPointReadOnly/x}}, {{DOMPointReadOnly/y}}, {{DOMPointReadOnly/z}}, and {{DOMPointReadOnly/w}} components of |transform|'s {{XRRigidTransform/orientation}}.
   1. Return |transform|.
 
@@ -1106,9 +1111,20 @@ The <dfn attribute for="XRRigidTransform">position</dfn> attribute is a 3-dimens
 
 The <dfn attribute for="XRRigidTransform">orientation</dfn> attribute is a quaternion describing the rotational component of the transform. The {{XRRigidTransform/orientation}} MUST be normalized to have a length of <code>1.0</code>.
 
-The <dfn attribute for="XRRigidTransform">matrix</dfn> attribute returns the transform described by the {{XRRigidTransform/position}} and {{XRRigidTransform/orientation}} attributes as a [=matrix=]. This attribute SHOULD be lazily evaluated.
+The <dfn attribute for="XRRigidTransform">matrix</dfn> attribute returns the transform described by the {{XRRigidTransform/position}} and {{XRRigidTransform/orientation}} attributes as a [=matrix=]. This attribute MUST be computed by [=XRRigidTransform/obtain the matrix|obtaining the matrix=] for the {{XRRigidTransform}}.
 
 NOTE: This matrix when premultiplied onto a column vector will rotate the vector by the 3D rotation described by {{XRRigidTransform/orientation}}, and then translate it by {{XRRigidTransform/position}}. Mathematically in column-vector notation, this is <code>M = T * R</code>, where <code>T</code> is a translation matrix corresponding to {{XRRigidTransform/position}} and  <code>R</code> is a rotation matrix corresponding to {{XRRigidTransform/orientation}}.
+
+<div class=algorithm data-algorithm="obtain-xrrigidtransform-matrix">
+
+To <dfn for=XRRigidTransform>obtain the matrix</dfn> for a given {{XRRigidTransform}} |transform|
+
+ 1. If |transform|'s [=XRRigidTransform/internal matrix=] is not <code>null</code>, perform the following steps:
+  1. If the operation {{IsDetachedBuffer}} on [=XRRigidTransform/internal matrix=] is <code>false</code>, return |transform|'s [=XRRigidTransform/internal matrix=].
+ 1. Set |transform|'s [=XRRigidTransform/internal matrix=] to a new [=matrix=] corresponding to the transform described by the {{XRRigidTransform/position}} and {{XRRigidTransform/orientation}} attributes.
+ 1. Return |transform|'s [=XRRigidTransform/internal matrix=].
+
+</div>
 
 The <dfn attribute for="XRRigidTransform">inverse</dfn> attribute returns a {{XRRigidTransform}} which, if applied to an object that had previously been transformed by the original {{XRRigidTransform}}, would undo the transform and return the object to its initial pose. This attribute SHOULD be lazily evaluated. The {{XRRigidTransform}} returned by {{inverse}} MUST return the originating {{XRRigidTransform}} as its {{inverse}}.
 
