@@ -363,7 +363,7 @@ enum XRSessionMode {
   - A session mode of <dfn enum-value for="XRSessionMode">immersive-vr</dfn> indicates that the session's output will be given [=exclusive access=] to the [=/XR device=] display and that content <b>is not</b> intended to be integrated with the user's environment. The {{environmentBlendMode}} for {{immersive-vr}} sessions is expected to be {{opaque}} when possible, but MAY be {{additive}} if the hardware requires it.
   - <section class="unstable">A session mode of <dfn enum-value for="XRSessionMode">immersive-ar</dfn> indicates that the session's output will be given [=exclusive access=] to the [=/XR device=] display and that content <b>is</b> intended to be integrated with the user's environment. The {{environmentBlendMode}} MUST NOT be {{opaque}} for {{immersive-ar}} sessions.</section>
 
-An <dfn>immersive session</dfn> refers to either an {{immersive-vr}} or an {{immersive-ar}} session. [=Immersive sessions=] MUST provide some level of [=viewer=] tracking, and content MUST be shown at the proper scale relative to the user and/or the surrounding environment. Additionally, [=Immersive sessions=] MUST be given <dfn>exclusive access</dfn> to the [=/XR device=], meaning that while the [=immersive session=] is not [=blurred=] the HTML document is not shown on the [=/XR device=]'s display, nor is content from other applications shown on the [=/XR device=]'s display.
+An <dfn>immersive session</dfn> refers to either an {{immersive-vr}} or an {{immersive-ar}} session. [=Immersive sessions=] MUST provide some level of [=viewer=] tracking, and content MUST be shown at the proper scale relative to the user and/or the surrounding environment. Additionally, [=Immersive sessions=] MUST be given <dfn>exclusive access</dfn> to the [=/XR device=], meaning that while the [=immersive session=] is {{XRVisibilityState/visible}} the HTML document is not shown on the [=/XR device=]'s display, nor is content from other applications shown on the [=/XR device=]'s display.
 
 NOTE: Examples of ways [=exclusive access=] may be presented include stereo content displayed on a virtual reality or augmented reality headset, or augmented reality content displayed fullscreen on a mobile device.
 
@@ -384,9 +384,16 @@ enum XREnvironmentBlendMode {
   "alpha-blend",
 };
 
+enum XRVisibilityState {
+  "visible",
+  "hidden",
+  "background",
+};
+
 [SecureContext, Exposed=Window] interface XRSession : EventTarget {
   // Attributes
   readonly attribute XREnvironmentBlendMode environmentBlendMode;
+  readonly attribute XRVisibilityState visibilityState;
   [SameObject] readonly attribute XRRenderState renderState;
   [SameObject] readonly attribute XRInputSourceArray inputSources;
 
@@ -400,13 +407,12 @@ enum XREnvironmentBlendMode {
   Promise&lt;void&gt; end();
 
   // Events
-  attribute EventHandler onblur;
-  attribute EventHandler onfocus;
   attribute EventHandler onend;
   attribute EventHandler onselect;
   attribute EventHandler oninputsourceschange;
   attribute EventHandler onselectstart;
   attribute EventHandler onselectend;
+  attribute EventHandler onvisibilitychange;
 };
 </pre>
 
@@ -557,7 +563,7 @@ When the {{XRInputSource/handedness}}, {{XRInputSource/targetRayMode}}, or prese
 
 </div>
 
-Each {{XRSession}} has a <dfn>environment blending mode</dfn> value, which is a enum which MUST be set to whichever of the following values best matches the behavior of imagery rendered by the session in relation to the user's surrounding environment.
+Each {{XRSession}} has a <dfn for="XRSession">environment blending mode</dfn> value, which is a enum which MUST be set to whichever of the following values best matches the behavior of imagery rendered by the session in relation to the user's surrounding environment.
 
   - A blend mode of <dfn enum-value for="XREnvironmentBlendMode">opaque</dfn> indicates that the user's surrounding environment is not visible at all. Alpha values in the {{XRRenderState/baseLayer}} will be ignored, with the compositor treating all alpha values as 1.0.
 
@@ -565,17 +571,27 @@ Each {{XRSession}} has a <dfn>environment blending mode</dfn> value, which is a 
 
   - A blend mode of <dfn enum-value for="XREnvironmentBlendMode">alpha-blend</dfn> indicates that the user's surrounding environment is visible and the {{XRRenderState/baseLayer}} will be blended with it according to the alpha values of each pixel. Pixels with an alpha value of 1.0 will be fully opaque and pixels with an alpha value of 0.0 will be fully transparent.
 
-The <dfn attribute for="XRSession">environmentBlendMode</dfn> attribute returns the {{XRSession}}'s [=environment blending mode=]
+The <dfn attribute for="XRSession">environmentBlendMode</dfn> attribute returns the {{XRSession}}'s [=environment blending mode=].
 
 NOTE: Most Virtual Reality devices exhibit {{XREnvironmentBlendMode/opaque}} blending behavior. Augmented Reality devices that use transparent optical elements frequently exhibit {{XREnvironmentBlendMode/additive}} blending behavior, and Augmented Reality devices that use passthrough cameras frequently exhibit {{XREnvironmentBlendMode/alpha-blend}} blending behavior.
 
-Each {{XRSession}} has a <dfn for="XRSession">viewer reference space</dfn>, which is an {{XRReferenceSpace}} of type {{XRReferenceSpaceType/viewer}} with an [=identity transform=] [=XRSpace/origin offset=]. The [=XRSession/viewer reference space=] has a <dfn for="XRSession/viewer reference space">list of views</dfn>, which is a [=/list=] of [=view=]s corresponding to the views provided by the [=/XR device=]. If the {{XRSession}}'s {{XRSession/renderState}}'s [=XRRenderState/composition disabled=] boolean is set to <code>true</code> the [=list of views=] MUST contain a single [=view=].
+Each {{XRSession}} has a <dfn for="XRSession">visibility state</dfn> value, which is a enum which MUST be set to whichever of the following values best matches the state of session.
 
-<section class="unstable">
-The <dfn attribute for="XRSession">onblur</dfn> attribute is an [=Event handler IDL attribute=] for the {{blur}} event type.
+  - A state of <dfn enum-value for="XRVisibilityState">visible</dfn> indicates that imagery rendered by the {{XRSession}} can be seen by the user and {{XRSession/requestAnimationFrame()}} callbacks are processed at the [=/XR device=]'s native refresh rate. Input is processed by the {{XRSession}} normally.
 
-The <dfn attribute for="XRSession">onfocus</dfn> attribute is an [=Event handler IDL attribute=] for the {{focus}} event type.
+  - A state of <dfn enum-value for="XRVisibilityState">hidden</dfn> indicates that imagery rendered by the {{XRSession}} cannot be seen by the user. {{XRSession/requestAnimationFrame()}} callbacks will not be processed until the [=visibility state=] changes. Input is not processed by the {{XRSession}}.
+
+  - A state of <dfn enum-value for="XRVisibilityState">background</dfn> indicates that imagery rendered by the {{XRSession}} may be seen by the user, but is not the primary focus. {{XRSession/requestAnimationFrame()}} callbacks MAY be throttled. Input is not processed by the {{XRSession}}.
+
+The <dfn attribute for="XRSession">visibilityState</dfn> attribute returns the {{XRSession}}'s [=visibility state=]. The <dfn attribute for="XRSession">onvisibilitychange</dfn> attribute is an [=Event handler IDL attribute=] for the {{visibilitychange}} event type.
+
+The [=visibility state=] MAY be changed by the user agent, OS, or XR hardware at any time. Additionally, the {{XRSession}} MUST have it's [=visibility state=] set to {{XRVisibilityState/hidden}} or {{XRVisibilityState/background}} with frame production throttled when the user is interacting with potentially sensitive UI.
+
+<section class="note">
+EXAMPLE: The user agent must change the [=visibility state=] of all {{XRSession}}s that can track the [=viewer=]'s pose when the user is typing a URL into the browser with a virtual keyboard, otherwise the page may be able to guess the URL the user is entering by tracking their head motions.
 </section>
+
+Each {{XRSession}} has a <dfn for="XRSession">viewer reference space</dfn>, which is an {{XRReferenceSpace}} of type {{XRReferenceSpaceType/viewer}} with an [=identity transform=] [=XRSpace/origin offset=]. The [=XRSession/viewer reference space=] has a <dfn for="XRSession/viewer reference space">list of views</dfn>, which is a [=/list=] of [=view=]s corresponding to the views provided by the [=/XR device=]. If the {{XRSession}}'s {{XRSession/renderState}}'s [=XRRenderState/composition disabled=] boolean is set to <code>true</code> the [=list of views=] MUST contain a single [=view=].
 
 The <dfn attribute for="XRSession">onend</dfn> attribute is an [=Event handler IDL attribute=] for the {{end}} event type.
 
@@ -588,8 +604,6 @@ The <dfn attribute for="XRSession">onselectend</dfn> attribute is an [=Event han
 The <dfn attribute for="XRSession">onselect</dfn> attribute is an [=Event handler IDL attribute=] for the {{XRSession/select}} event type.
 
 We still need to document what happens when we <dfn>end the session</dfn>. (This is <a href="https://github.com/immersive-web/webxr/issues/467">filed</a>.)
-
-We still need to document what happens when we <dfn lt="blur all sessions">blur all sessions</dfn>. (This is <a href="https://github.com/immersive-web/webxr/issues/468">filed</a>.)
 
 We still need to document what happens when we <dfn>poll the device pose</dfn> (This is <a href="https://github.com/immersive-web/webxr/issues/480">filed</a>.)
 
@@ -1917,11 +1931,7 @@ The user agent MUST provide the following new events. Registration for and firin
 
 The user agent MAY fire a <dfn event for="XR">devicechange</dfn> event on the {{XR}} object to indicate that the availability of [=/XR device=]s has been changed. The event MUST be of type {{Event}}.
 
-<section class="unstable">
-A user agent MAY dispatch a <dfn event for="XRSession">blur</dfn> event on an {{XRSession}} to indicate that presentation to the {{XRSession}} by the page has been suspended by the user agent, OS, or XR hardware. While an {{XRSession}} is <dfn>blurred</dfn> it remains active but it may have its frame production throttled. This is to prevent tracking while the user interacts with potentially sensitive UI. For example: The user agent SHOULD blur the presenting application when the user is typing a URL into the browser with a virtual keyboard, otherwise the presenting page may be able to guess the URL the user is entering by tracking their head motions. The event MUST be of type {{XRSessionEvent}}.
-
-A user agent MAY dispatch a <dfn event for="XRSession">focus</dfn> event on an {{XRSession}} to indicate that presentation to the {{XRSession}} by the page has resumed after being suspended. The event MUST be of type {{XRSessionEvent}}.
-</section>
+A user agent MAY dispatch a <dfn event for="XRSession">visibilitychange</dfn> event on an {{XRSession}} to indicate that the [=XRSession/visibility state=] of the {{XRSession}} has changed. The event MUST be of type {{XRSessionEvent}}.
 
 A user agent MUST dispatch a <dfn event for="XRSession">end</dfn> event on an {{XRSession}} when the session ends, either by the application or the user agent. The event MUST be of type {{XRSessionEvent}}.
 
@@ -1948,7 +1958,7 @@ Gaze Tracking {#gazetracking-security}
 
 While the API does not yet expose eye tracking capabilities a lot can be inferred about where the user is looking by tracking the orientation of their head. This is especially true of XR devices that have limited input capabilities, such as Google Cardboard, which frequently require users to control a "gaze cursor" with their head orientation. This means that it may be possible for a malicious page to infer what a user is typing on a virtual keyboard or how they are interacting with a virtual UI based solely on monitoring their head movements. For example: if not prevented from doing so a page could estimate what URL a user is entering into the user agent's URL bar.
 
-To prevent this risk the user agent MUST [=blur all sessions=] when the users is interacting with sensitive, trusted UI such as URL bars or system dialogs. Additionally, to prevent a malicious page from being able to monitor input on a other pages the user agent MUST [=blur all sessions=] on non-focused pages.
+To prevent this risk the user agent MUST set the [=visibility state=] of all {{XRSession}}s to {{XRVisibilityState/hidden}} or {{XRVisibilityState/background}} with throttled frame production when the users is interacting with sensitive, trusted UI such as URL bars or system dialogs. Additionally, to prevent a malicious page from being able to monitor input on a other pages the user agent MUST set the [=visibility state=] of all {{XRSession}}s on non-focused pages to {{XRVisibilityState/hidden}}.
 
 Trusted Environment {#trustedenvironment-security}
 -------------------
