@@ -585,7 +585,7 @@ Each {{XRSession}} has a <dfn for="XRSession">visibility state</dfn> value, whic
 
 The <dfn attribute for="XRSession">visibilityState</dfn> attribute returns the {{XRSession}}'s [=visibility state=]. The <dfn attribute for="XRSession">onvisibilitychange</dfn> attribute is an [=Event handler IDL attribute=] for the {{visibilitychange}} event type.
 
-The [=visibility state=] MAY be changed by the user agent, OS, or XR hardware at any time. Additionally, the {{XRSession}} MUST have it's [=visibility state=] set to {{XRVisibilityState/hidden}} or {{XRVisibilityState/background}} with frame production throttled when the user is interacting with potentially sensitive UI.
+The [=visibility state=] MAY be changed by the user agent at any time, and the user agent SHOULD monitor the XR platform when possible to observe when session visibility has been affected external to the user agent and update the [=visibility state=] accordingly. Additionally, the {{XRSession}} MUST have it's [=visibility state=] set to {{XRVisibilityState/hidden}} or {{XRVisibilityState/background}} with frame production throttled when the user is interacting with potentially sensitive UI.
 
 <section class="note">
 EXAMPLE: The user agent must change the [=visibility state=] of all {{XRSession}}s that can track the [=viewer=]'s pose when the user is typing a URL into the browser with a virtual keyboard, otherwise the page may be able to guess the URL the user is entering by tracking their head motions.
@@ -1931,7 +1931,7 @@ The user agent MUST provide the following new events. Registration for and firin
 
 The user agent MAY fire a <dfn event for="XR">devicechange</dfn> event on the {{XR}} object to indicate that the availability of [=/XR device=]s has been changed. The event MUST be of type {{Event}}.
 
-A user agent MAY dispatch a <dfn event for="XRSession">visibilitychange</dfn> event on an {{XRSession}} to indicate that the [=XRSession/visibility state=] of the {{XRSession}} has changed. The event MUST be of type {{XRSessionEvent}}.
+A user agent MUST dispatch a <dfn event for="XRSession">visibilitychange</dfn> event on an {{XRSession}} each time the [=XRSession/visibility state=] of the {{XRSession}} has changed. The event MUST be of type {{XRSessionEvent}}.
 
 A user agent MUST dispatch a <dfn event for="XRSession">end</dfn> event on an {{XRSession}} when the session ends, either by the application or the user agent. The event MUST be of type {{XRSessionEvent}}.
 
