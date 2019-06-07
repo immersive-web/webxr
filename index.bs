@@ -1401,6 +1401,8 @@ interface XRInputSource {
   readonly attribute XRTargetRayMode targetRayMode;
   [SameObject] readonly attribute XRSpace targetRaySpace;
   [SameObject] readonly attribute XRSpace? gripSpace;
+  [SameObject] readonly attribute FrozenArray&lt;DOMString&gt; renderId;
+  [SameObject] readonly attribute FrozenArray&lt;DOMString&gt; gamepadLayout;
   [SameObject] readonly attribute Gamepad? gamepad;
 };
 </pre>
@@ -1418,6 +1420,30 @@ The <dfn attribute for="XRInputSource">targetRaySpace</dfn> attribute is an {{XR
 The <dfn attribute for="XRInputSource">gripSpace</dfn> attribute is an {{XRSpace}} that has a [=native origin=] tracking to the pose that should be used to render virtual objects such that they appear to be held in the user's hand. If the user were to hold a straight rod, this {{XRSpace}} places the [=native origin=] at the centroid of their curled fingers and where the <code>-Z</code> axis points along the length of the rod towards their thumb. The <code>X</code> axis is perpendicular to the back of the hand being described, with back of the users right hand pointing towards <code>+X</code> and the back of the user's left hand pointing towards <code>-X</code>. The <code>Y</code> axis is implied by the relationship between the <code>X</code> and <code>Z</code> axis, with <code>+Y</code> roughly pointing in the direction of the user's arm.
 
 The {{gripSpace}} MUST be <code>null</code> if the input source isn't inherently trackable such as for input sources with a {{targetRayMode}} of {{XRTargetRayMode/gaze}} or {{XRTargetRayMode/screen}}.
+
+The <dfn attribute for="XRInputSource">renderId</dfn> attribute is a [=/list=] of [=input render ID=]s indicating the preffered visual representation of the {{XRInputSource}}. Identifiers are given in decending preference order, with the first value indicating the most specific represenation and the last value representing the most generic.
+
+An <dfn for="XRInputSource">input render ID</dfn> is a lowercase {{DOMString}} containing no spaces, with separate words concatenated with a hyphen (<code>-</code>) character. A descriptive ID should be chosen, using the preferred verbiage of the device vendor when possible. If the platform provides an appropriate identifier, such as a USB vendor and product ID, it MAY be used. Values that uniquely identify the device, such as serial numbers, MUST NOT be used. The [=input render ID=] MUST NOT contain an indication of device handedness. If multiple user agents expose the same device, they SHOULD make an effort to report the same [=input render ID=].
+
+Any [=input render ID=]s given after the first should provide fallback values that represent alternative visual representations of the device. This may include a more generic or prior version of the device, a more widely recognized device that is sufficently visually similar, or a broad description of the device type (such as "touchpad-wand").
+
+<p class="note">
+For example, the Samsung Odyssey controller is a variant of the standard Windows Mixed Reality controller. As a result, the {{XRInputSource/renderId}} for a Samsung Odyssey controller could be: <code>["samsung-odyssey", "windows-mixed-reality"]</code> (Exact strings are examples only. This specification does not make any recommendation for render ID strings.)
+</note>
+
+If the {{XRSession}}'s [=mode=] is {{XRSessionMode/inline}}, {{XRInputSource/renderId}} MUST be an empty array. If the input device cannot be reliably identified, {{XRInputSource/renderId}} MAY be an empty array. The user agent MAY choose to only report generic [=input render ID=]s or an empty array if it wishes to mask the input device being used.
+
+The <dfn attribute for="XRInputSource">gamepadLayout</dfn> attribute is a [=/list=] of [=gamepad layout ID=]s indicating the mapping of the buttons and axes of the {{XRInputSource/gamepad}} to the device. Identifiers are given in decending order of specificity, with the first value indicating the most accurate represenation and the last value representing the most generic.
+
+An <dfn for="XRInputSource">gamepad layout ID</dfn> is a lowercase {{DOMString}} containing no spaces, with separate words concatenated with a hyphen (<code>-</code>) character. A descriptive ID should be chosen, using the preferred verbiage of the device vendor when possible. The [=gamepad layout ID=] MAY use an exemplar device as the basis for the string, but SHOULD prefer strings that describe multiple devices which share the same button layout rather than a string that uniquely describes the device. The [=gamepad layout ID=] MUST NOT contain an indication of device handedness. If multiple user agents expose the same device, they SHOULD make an effort to report the same [=gamepad layout ID=].
+
+Any [=gamepad layout ID=]s given after the first should provide fallback values that describe a subset of the device layout or an alternate ID for backward compatibility.
+
+<p class="note">
+For example, the Valve Index controller is backwards compatible with and provides the same inputs as the HTC Vive controller, but the Index controller has additional buttons and axes. As a result, the {{XRInputSource/gamepadLayout}} for a Valve Index controller could be: <code>["valve-index", "htc-vive"]</code> (Exact strings are examples only. This specification does not make any recommendation for gamepad layout strings.)
+</note>
+
+If {{XRInputSource/gamepad}} is <code>null</code>, {{XRInputSource/gamepadLayout}} MUST be an empty array. If the gamepad cannot be reliably identified or the user agent wishes to mask the gamepad being used, {{XRInputSource/gamepadLayout}} MAY be an empty array.
 
 The <dfn attribute for="XRInputSource">gamepad</dfn> attribute is a {{Gamepad}} that describes the state of any buttons and axes on the [=XR input source=]. If the  [=XR input source=] does not have at least one of the following properties, the {{gamepad}} attribute MUST be <code>null</code>:
 
@@ -1524,16 +1550,10 @@ Gamepad API Integration {#gamepad-api-integration}
 {{Gamepad}} instances returned by an {{XRInputSource}}'s {{XRInputSource/gamepad}} attribute behave as described by the <a href="https://w3c.github.io/gamepad/">Gamepad API</a>, with several additional behavioral restrictions:
 
   - {{XRInputSource/gamepad}} MUST NOT be included in the array returned by {{navigator.getGamepads()}}.
+  - {{XRInputSource/gamepad}}'s {{Gamepad/id}} attribute MUST be an empty string (<code>""</code>).
   - {{XRInputSource/gamepad}}'s {{Gamepad/index}} attribute MUST be <code>-1</code>.
   - {{XRInputSource/gamepad}}'s {{Gamepad/connected}} attribute MUST be <code>true</code> until the {{XRInputSource}} is removed from the [=list of active XR input sources=] or the {{XRSession}} is ended.
   - If an axis reported by the {{XRInputSource/gamepad}}'s {{Gamepad/axes}} array represents an axis of a touchpad, the value MUST be <code>0</code> when the associated {{GamepadButton}}'s {{GamepadButton/touched}} is <code>false</code>.
-
-
-The {{XRInputSource/gamepad}}'s {{Gamepad/id}} also enforces additional behavioral restrictions, and MUST conform to the following rules:
-
-  - If the {{XRSession}}'s [=mode=] is {{XRSessionMode/inline}} the {{XRInputSource/gamepad}}'s {{Gamepad/id}} MUST be <code>"unknown"</code>.
-  - If the input device cannot be reliably identified the {{XRInputSource/gamepad}}'s {{Gamepad/id}} MUST be <code>"unknown"</code>.
-  - If the UA masks the input device type for any reason the {{XRInputSource/gamepad}}'s {{Gamepad/id}} MUST be <code>"unknown"</code>
 
 ISSUE: <a href="https://github.com/immersive-web/webxr/issues/550">GitHub #550</a> - Additional restrictions, still under discussion, will be applied to the formatting of the {{XRInputSource/gamepad}}'s {{Gamepad/id}} attribute. Until those restrictions have been identified, all {{XRInputSource/gamepad}} {{Gamepad/id}}'s should default to <code>"unknown"</code>.
 </section>
