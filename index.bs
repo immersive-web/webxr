@@ -360,7 +360,7 @@ enum XRSessionMode {
 
   - A session mode of <dfn enum-value for="XRSessionMode">inline</dfn> indicates that the session's output will be shown as an element in the HTML document. {{inline}} session content MAY be displayed in mono or stereo and MAY allow for [=viewer=] tracking. User agents MUST allow {{inline}} sessions to be created for any [=/XR device=].
   - A session mode of <dfn enum-value for="XRSessionMode">immersive-vr</dfn> indicates that the session's output will be given [=exclusive access=] to the [=/XR device=] display and that content <b>is not</b> intended to be integrated with the user's environment. The {{environmentBlendMode}} for {{immersive-vr}} sessions is expected to be {{opaque}} when possible, but MAY be {{additive}} if the hardware requires it.
-  - A session mode of <dfn enum-value for="XRSessionMode">immersive-ar</dfn> indicates that the session's output will be given [=exclusive access=] to the [=/XR device=] display and that content <b>is</b> intended to be integrated with the user's environment. The {{environmentBlendMode}} MUST NOT be {{opaque}} for {{immersive-ar}} sessions.
+  - <section class="unstable">A session mode of <dfn enum-value for="XRSessionMode">immersive-ar</dfn> indicates that the session's output will be given [=exclusive access=] to the [=/XR device=] display and that content <b>is</b> intended to be integrated with the user's environment. The {{environmentBlendMode}} MUST NOT be {{opaque}} for {{immersive-ar}} sessions.</section>
 
 An <dfn>immersive session</dfn> refers to either an {{immersive-vr}} or an {{immersive-ar}} session. [=Immersive sessions=] MUST provide some level of [=viewer=] tracking, and content MUST be shown at the proper scale relative to the user and/or the surrounding environment. Additionally, [=Immersive sessions=] MUST be given <dfn>exclusive access</dfn> to the [=/XR device=], meaning that while the [=immersive session=] is not [=blurred=] the HTML document is not shown on the [=/XR device=]'s display, nor is content from other applications shown on the [=/XR device=]'s display.
 
@@ -1145,6 +1145,7 @@ To <dfn lt="multiply transforms">multiply two {{XRRigidTransform}}s</dfn>, |B| a
 NOTE: This is equivalent to constructing an {{XRRigidTransform}} whose {{XRRigidTransform/orientation}} is the composition of the orientation of |A| and |B|, and whose {{XRRigidTransform/position}} is equal to |A|'s {{XRRigidTransform/position}} rotated by |B|'s {{XRRigidTransform/orientation}}, added to |B|'s {{XRRigidTransform/position}}.
 </div>
 
+<section class="unstable">
 XRRay {#xrray-interface}
 -----
 
@@ -1228,6 +1229,7 @@ To <dfn for=XRRay>obtain the matrix</dfn> for a given {{XRRay}} |ray|
   1. Return |matrix|
 
 </div>
+</section>
 
 Pose {#pose}
 ====
