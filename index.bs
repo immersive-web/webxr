@@ -386,8 +386,8 @@ enum XREnvironmentBlendMode {
 
 enum XRVisibilityState {
   "visible",
+  "visible-blurred",
   "hidden",
-  "background",
 };
 
 [SecureContext, Exposed=Window] interface XRSession : EventTarget {
@@ -579,17 +579,19 @@ Each {{XRSession}} has a <dfn for="XRSession">visibility state</dfn> value, whic
 
   - A state of <dfn enum-value for="XRVisibilityState">visible</dfn> indicates that imagery rendered by the {{XRSession}} can be seen by the user and {{XRSession/requestAnimationFrame()}} callbacks are processed at the [=/XR device=]'s native refresh rate. Input is processed by the {{XRSession}} normally.
 
-  - A state of <dfn enum-value for="XRVisibilityState">hidden</dfn> indicates that imagery rendered by the {{XRSession}} cannot be seen by the user. {{XRSession/requestAnimationFrame()}} callbacks will not be processed until the [=visibility state=] changes. Input is not processed by the {{XRSession}}.
+  - A state of <dfn enum-value for="XRVisibilityState">visible-blurred</dfn> indicates that imagery rendered by the {{XRSession}} may be seen by the user, but is not the primary focus. {{XRSession/requestAnimationFrame()}} callbacks MAY be throttled. Input is not processed by the {{XRSession}}.
 
-  - A state of <dfn enum-value for="XRVisibilityState">background</dfn> indicates that imagery rendered by the {{XRSession}} may be seen by the user, but is not the primary focus. {{XRSession/requestAnimationFrame()}} callbacks MAY be throttled. Input is not processed by the {{XRSession}}.
+  - A state of <dfn enum-value for="XRVisibilityState">hidden</dfn> indicates that imagery rendered by the {{XRSession}} cannot be seen by the user. {{XRSession/requestAnimationFrame()}} callbacks will not be processed until the [=visibility state=] changes. Input is not processed by the {{XRSession}}.
 
 The <dfn attribute for="XRSession">visibilityState</dfn> attribute returns the {{XRSession}}'s [=visibility state=]. The <dfn attribute for="XRSession">onvisibilitychange</dfn> attribute is an [=Event handler IDL attribute=] for the {{visibilitychange}} event type.
 
-The [=visibility state=] MAY be changed by the user agent at any time, and the user agent SHOULD monitor the XR platform when possible to observe when session visibility has been affected external to the user agent and update the [=visibility state=] accordingly. Additionally, the {{XRSession}} MUST have it's [=visibility state=] set to {{XRVisibilityState/hidden}} or {{XRVisibilityState/background}} with frame production throttled when the user is interacting with potentially sensitive UI.
+The [=visibility state=] MAY be changed by the user agent at any time, and the user agent SHOULD monitor the XR platform when possible to observe when session visibility has been affected external to the user agent and update the [=visibility state=] accordingly. Additionally, the {{XRSession}} MUST have it's [=visibility state=] set to {{XRVisibilityState/hidden}} or {{XRVisibilityState/visible-blurred}} with frame production throttled when the user is interacting with potentially sensitive UI.
 
 <section class="note">
 EXAMPLE: The user agent must change the [=visibility state=] of all {{XRSession}}s that can track the [=viewer=]'s pose when the user is typing a URL into the browser with a virtual keyboard, otherwise the page may be able to guess the URL the user is entering by tracking their head motions.
 </section>
+
+NOTE: The {{XRSession}}'s [=visibility state=] has no bearing on the visibility of the HTML document. Depending on the system configuration the page may continue to be visible while an [=immersive session=] is active. (For example, a headset connected to a PC may continue to display the page on the monitor while the headset is viewing content from an [=immersive session=].) Developers should continue to rely on the [Page Visibility API](https://w3c.github.io/page-visibility/) to determine page visibility.
 
 Each {{XRSession}} has a <dfn for="XRSession">viewer reference space</dfn>, which is an {{XRReferenceSpace}} of type {{XRReferenceSpaceType/viewer}} with an [=identity transform=] [=XRSpace/origin offset=]. The [=XRSession/viewer reference space=] has a <dfn for="XRSession/viewer reference space">list of views</dfn>, which is a [=/list=] of [=view=]s corresponding to the views provided by the [=/XR device=]. If the {{XRSession}}'s {{XRSession/renderState}}'s [=XRRenderState/composition disabled=] boolean is set to <code>true</code> the [=list of views=] MUST contain a single [=view=].
 
@@ -1958,7 +1960,7 @@ Gaze Tracking {#gazetracking-security}
 
 While the API does not yet expose eye tracking capabilities a lot can be inferred about where the user is looking by tracking the orientation of their head. This is especially true of XR devices that have limited input capabilities, such as Google Cardboard, which frequently require users to control a "gaze cursor" with their head orientation. This means that it may be possible for a malicious page to infer what a user is typing on a virtual keyboard or how they are interacting with a virtual UI based solely on monitoring their head movements. For example: if not prevented from doing so a page could estimate what URL a user is entering into the user agent's URL bar.
 
-To prevent this risk the user agent MUST set the [=visibility state=] of all {{XRSession}}s to {{XRVisibilityState/hidden}} or {{XRVisibilityState/background}} with throttled frame production when the users is interacting with sensitive, trusted UI such as URL bars or system dialogs. Additionally, to prevent a malicious page from being able to monitor input on a other pages the user agent MUST set the [=visibility state=] of all {{XRSession}}s on non-focused pages to {{XRVisibilityState/hidden}}.
+To prevent this risk the user agent MUST set the [=visibility state=] of all {{XRSession}}s to {{XRVisibilityState/hidden}} or {{XRVisibilityState/visible-blurred}} with throttled frame production when the users is interacting with sensitive, trusted UI such as URL bars or system dialogs. Additionally, to prevent a malicious page from being able to monitor input on a other pages the user agent MUST set the [=visibility state=] of all {{XRSession}}s on non-focused pages to {{XRVisibilityState/hidden}}.
 
 Trusted Environment {#trustedenvironment-security}
 -------------------
