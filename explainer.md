@@ -145,7 +145,7 @@ Only one immersive session per XR hardware device is allowed at a time across th
 
 Once the session has started, some setup must be done to prepare for rendering.
 - An `XRReferenceSpace` should be created to establish a space in which `XRViewerPose` data will be defined. See the [Spatial Tracking Explainer](spatial-tracking-explainer.md) for more information.
-- An `XRLayer` must be created and set as the `XRSession`'s `renderState.baseLayer`. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.)
+- An `XRWebGLLayer` must be created and set as the `XRSession`'s `renderState.baseLayer`. (`baseLayer` because future versions of the spec will likely enable multiple layers, at which point this would act like the `firstChild` attribute of a DOM element.)
 - Then `XRSession.requestAnimationFrame` must be called to start the render loop pumping.
 
 ```js
@@ -168,11 +168,11 @@ function onSessionStarted(session) {
 }
 ```
 
-### Setting up an XRLayer
+### Setting up an XRWebGLLayer
 
-The content to present to the device is defined by an `XRLayer`. In the initial version of the spec only one layer type, `XRWebGLLayer`, is defined and only one layer can be used at a time. This is set via the `XRSession`'s `updateRenderState()` function. `updateRenderState()` takes a dictionary containing new values for a variety of options affecting the session's rendering, including `baseLayer`. Only the options specified in the dictionary are updated.
+The content to present to the device is defined by an `XRWebGLLayer`. This is set via the `XRSession`'s `updateRenderState()` function. `updateRenderState()` takes a dictionary containing new values for a variety of options affecting the session's rendering, including `baseLayer`. Only the options specified in the dictionary are updated.
 
-Future iterations of the spec will define new types of `XRLayer`s. For example: a new layer type would be added to enable use with any new graphics APIs that get added to the browser. The ability to use multiple layers at once and have them composited by the UA will likely also be added in a future API revision.
+Future extensions to the spec will define new layer types. For example: a new layer type would be added to enable use with any new graphics APIs that get added to the browser. The ability to use multiple layers at once and have them composited by the UA will likely also be added in a future API revision.
 
 In order for a WebGL canvas to be used with an `XRWebGLLayer`, its context must be _compatible_ with the XR device. This can mean different things for different environments. For example, on a desktop computer this may mean the context must be created against the graphics adapter that the XR device is physically plugged into. On most mobile devices though, that's not a concern so the context will always be compatible. In either case, the WebXR application must take steps to ensure WebGL context compatibility before using it with an `XRWebGLLayer`.
 
@@ -180,7 +180,7 @@ When it comes to ensuring canvas compatibility there's two broad categories that
 
 **XR Enhanced:** The app can take advantage of XR hardware, but it's used as a progressive enhancement rather than a core part of the experience. Most users will probably not interact with the app's XR features, and as such asking them to make XR-centric decisions early in the app lifetime would be confusing and inappropriate. An example would be a news site with an embedded 360 photo gallery or video. (We expect the large majority of early WebXR content to fall into this category.)
 
-This style of application should call `WebGLRenderingContextBase`'s `makeXRCompatible()` method. This will set a compatibility bit on the context that allows it to be used. Contexts without the compatibility bit will fail when attempting to create an `XRLayer` with them. In the event that a context is not already compatible with the XR device the [context will be lost and attempt to recreate itself](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14.13) using the compatible graphics adapter. It is the page's responsibility to handle WebGL context loss properly, recreating any necessary WebGL resources in response. If the context loss is not handled by the page, the promise returned by `makeXRCompatible` will fail. The promise may also fail for a variety of other reasons, such as the context being actively used by a different, incompatible XR device.
+This style of application should call `WebGLRenderingContextBase`'s `makeXRCompatible()` method. This will set a compatibility bit on the context that allows it to be used. Contexts without the compatibility bit will fail when attempting to create an `XRWebGLLayer` with them. In the event that a context is not already compatible with the XR device the [context will be lost and attempt to recreate itself](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14.13) using the compatible graphics adapter. It is the page's responsibility to handle WebGL context loss properly, recreating any necessary WebGL resources in response. If the context loss is not handled by the page, the promise returned by `makeXRCompatible` will fail. The promise may also fail for a variety of other reasons, such as the context being actively used by a different, incompatible XR device.
 
 ```js
 let glCanvas = document.createElement("canvas");
@@ -411,7 +411,7 @@ These scenarios can make use of inline sessions to render tracked content to the
 
 The [`RelativeOrientationSensor`](https://w3c.github.io/orientation-sensor/#relativeorientationsensor) and [`AbsoluteOrientationSensor`](https://w3c.github.io/orientation-sensor/#absoluteorientationsensor) interfaces (see [Motion Sensors Explainer](https://w3c.github.io/motion-sensors/)) can be used to polyfill the first case.
 
-Similar to mirroring, to make use of this mode the  `XRRenderState`'s `outputContext` must be set. At that point content rendered to the `XRRenderState`'s `baseLayer` will be rendered to the canvas associated with the `outputContext`. The UA is also allowed to composite in additional content if desired. (In the future, if multiple `XRLayers` are used their composited result will be what is displayed in the `outputContext`.)
+Similar to mirroring, to make use of this mode the  `XRRenderState`'s `outputContext` must be set. At that point content rendered to the `XRRenderState`'s `baseLayer` will be rendered to the canvas associated with the `outputContext`. The UA is also allowed to composite in additional content if desired. (In the future, if multiple layers are used their composited result will be what is displayed in the `outputContext`.)
 
 Immersive and inline sessions can use the same render loop, but there are some differences in behavior to be aware of. Most importantly, inline sessions will not pump their render loop if they do not have a valid `outputContext`. Instead the session acts as though it has been [suspended](#handling-suspended-sessions) until a valid `outputContext` has been assigned.
 
@@ -646,7 +646,7 @@ dictionary XRRenderStateInit {
   double depthNear;
   double depthFar;
   double inlineVerticalFieldOfView;
-  XRLayer? baseLayer;
+  XRWebGLLayer? baseLayer;
   XRPresentationContext? outputContext
 };
 
@@ -654,7 +654,7 @@ dictionary XRRenderStateInit {
   readonly attribute double depthNear;
   readonly attribute double depthFar;
   readonly attribute double? inlineVerticalFieldOfView;
-  readonly attribute XRLayer? baseLayer;
+  readonly attribute XRWebGLLayer? baseLayer;
   readonly attribute XRPresentationContext? outputContext;
 };
 
@@ -695,8 +695,6 @@ enum XREye {
 // Layers
 //
 
-[SecureContext, Exposed=Window] interface XRLayer {};
-
 dictionary XRWebGLLayerInit {
   boolean antialias = true;
   boolean depth = true;
@@ -713,7 +711,7 @@ typedef (WebGLRenderingContext or
  Constructor(XRSession session,
              XRWebGLRenderingContext context,
              optional XRWebGLLayerInit layerInit)]
-interface XRWebGLLayer : XRLayer {
+interface XRWebGLLayer {
   readonly attribute XRWebGLRenderingContext context;
   readonly attribute boolean antialias;
   readonly attribute boolean ignoreDepthValues;

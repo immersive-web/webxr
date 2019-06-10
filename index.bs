@@ -593,7 +593,7 @@ dictionary XRRenderStateInit {
   double depthNear;
   double depthFar;
   double inlineVerticalFieldOfView;
-  XRLayer? baseLayer;
+  XRWebGLLayer? baseLayer;
   XRPresentationContext? outputContext;
 };
 
@@ -601,7 +601,7 @@ dictionary XRRenderStateInit {
   readonly attribute double depthNear;
   readonly attribute double depthFar;
   readonly attribute double? inlineVerticalFieldOfView;
-  readonly attribute XRLayer? baseLayer;
+  readonly attribute XRWebGLLayer? baseLayer;
   readonly attribute XRPresentationContext? outputContext;
 };
 </pre>
@@ -632,7 +632,7 @@ The <dfn attribute for="XRRenderState">depthNear</dfn> attribute defines the dis
 The <dfn attribute for="XRRenderState">inlineVerticalFieldOfView</dfn> attribute defines the default vertical field of view in radians used when computing projection matrices for {{XRSessionMode/inline}} {{XRSession}}s. The projection matrix calculation also takes into account the aspect ratio of the {{XRRenderState/outputContext}}'s {{XRPresentationContext/canvas}}. This value MUST be <code>null</code> for [=immersive sessions=].
 
 <section class="unstable">
-The <dfn attribute for="XRRenderState">baseLayer</dfn> attribute defines the {{XRLayer}} which the [=XR compositor=] will obtain images from.
+The <dfn attribute for="XRRenderState">baseLayer</dfn> attribute defines an {{XRWebGLLayer}} which the [=XR compositor=] will obtain images from.
 </section>
 
 Animation Frames {#animation-frames}
@@ -1523,14 +1523,7 @@ NOTE: This diagram demonstrates how two potential controllers would be exposed w
 Layers {#layers}
 ======
 
-XRLayer {#xrlayer-interface}
--------
-
-An {{XRLayer}} defines a source of bitmap images and a description of how the image is to be rendered to the [=/XR device=]. Initially only one type of layer, the {{XRWebGLLayer}}, is defined but future revisions of the spec may extend the available layer types.
-
-<pre class="idl">
-[SecureContext, Exposed=Window] interface XRLayer {};
-</pre>
+NOTE: While this specification only defines the {{XRWebGLLayer}} layer, future modules are expected to add additional layer types and the image sources that they draw from.
 
 XRWebGLLayer {#xrwebgllayer-interface}
 -------
@@ -1553,7 +1546,7 @@ dictionary XRWebGLLayerInit {
 [SecureContext, Exposed=Window, Constructor(XRSession session,
              XRWebGLRenderingContext context,
              optional XRWebGLLayerInit layerInit)]
-interface XRWebGLLayer : XRLayer {
+interface XRWebGLLayer {
   // Attributes
   [SameObject] readonly attribute XRWebGLRenderingContext context;
 
