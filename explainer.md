@@ -277,11 +277,11 @@ function drawScene(view) {
 
 Because the `XRViewerPose` inherits from `XRPose` it also contains a `transform` describing the position and orientation of the viewer as a whole relative to the `XRReferenceSpace` origin. This is primarily useful for rendering a visual representation of the viewer for spectator views or multi-user environments.
 
-### Handling sessions visibility
+### Handling session visibility
 
-The UA may temporarily hide a session at any time. While hidden a session has restricted access to the XR device state and frames will not be processed. Hidden sessions can be reasonably be expected to be made visible again at some point, usually when the user has finished performing whatever action triggered the session to hide in the first place.
+The UA may temporarily hide a session at any time. While hidden a session has restricted access to the XR device state and frames will not be processed. Hidden sessions can be reasonably be expected to be made visible again at some point, usually when the user has finished performing whatever action triggered the session to hide in the first place. This is not guaranteed, however, so applications should not rely on it.
 
-The UA may hide a session if allowing the page to continue reading the headset position represents a security or privacy risk (like when the user is entering a password or URL with a virtual keyboard, in which case the head motion may infer the user's input), or if other content is obscuring the page's output.
+The UA may hide a session if allowing the page to continue reading the headset position represents a security or privacy risk (like when the user is entering a password or URL with a virtual keyboard, in which case the head motion may infer the user's input), or if content external to the UA is obscuring the page's output.
 
 In other situations the UA may also choose to keep the session content visible but "blurred", indicating that the session content is still visible but no longer in the foreground. While blurred the page may either refresh the XR device at a slower rate or not at all, poses queried from the device may be less accurate, and all input tracking will be unavailable. If the user is wearing a headset the UA is expected to present a tracked environment (a scene which remains responsive to user's head motion) or reproject the throttled content when the page is being throttled to prevent user discomfort.
 
