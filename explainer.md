@@ -277,27 +277,33 @@ function drawScene(view) {
 
 Because the `XRViewerPose` inherits from `XRPose` it also contains a `transform` describing the position and orientation of the viewer as a whole relative to the `XRReferenceSpace` origin. This is primarily useful for rendering a visual representation of the viewer for spectator views or multi-user environments.
 
-### Handling suspended sessions
+### Handling sessions visibility
 
-The UA may temporarily "suspend" a session at any time. While suspended a session has restricted or throttled access to the XR device state and may process frames slowly or not at all. Suspended sessions can be reasonably be expected to be resumed at some point, usually when the user has finished performing whatever action triggered the suspension in the first place.
+The UA may temporarily hide a session at any time. While hidden a session has restricted access to the XR device state and frames will not be processed. Hidden sessions can be reasonably be expected to be made visible again at some point, usually when the user has finished performing whatever action triggered the session to hide in the first place.
 
-The UA may suspend a session if allowing the page to continue reading the headset position represents a security or privacy risk (like when the user is entering a password or URL with a virtual keyboard, in which case the head motion may infer the user's input), or if other content is obscuring the page's output.
+The UA may hide a session if allowing the page to continue reading the headset position represents a security or privacy risk (like when the user is entering a password or URL with a virtual keyboard, in which case the head motion may infer the user's input), or if other content is obscuring the page's output.
 
-While suspended the page may either refresh the XR device at a slower rate or not at all, and poses queried from the device may be less accurate. If the user is wearing a headset the UA is expected to present a tracked environment (a scene which remains responsive to user's head motion) when the page is being throttled to prevent user discomfort.
+In other situations the UA may also choose to keep the session content visible but "blurred", indicating that the session content is still visible but no longer in the foreground. While blurred the page may either refresh the XR device at a slower rate or not at all, poses queried from the device may be less accurate, and all input tracking will be unavailable. If the user is wearing a headset the UA is expected to present a tracked environment (a scene which remains responsive to user's head motion) or reproject the throttled content when the page is being throttled to prevent user discomfort.
 
-The application should continue requesting and drawing frames while suspended, but should not depend on them being processed at the normal XR hardware device framerate. The UA may use these frames as part of it's tracked environment or page composition, though they may be partially occluded, blurred, or otherwise manipulated. Additionally, poses queried while the session is suspended may not accurately reflect the XR hardware device's physical pose.
+The session should continue requesting and drawing frames while blurred, but should not depend on them being processed at the normal XR hardware device framerate. The UA may use these frames as part of it's tracked environment or page composition, though the exact presentation of frames produced by a blurred session will differ between platforms. They may be partially occluded, literally blurred, greyed out, or otherwise de-emphasized.
 
-Some applications may wish to respond to session suspension by halting game logic, purposefully obscuring content, or pausing media. To do so, the application should listen for the `blur` and `focus` events from the `XRSession`. For example, a 360 media player would do this to pause the video/audio whenever the UA has obscured it.
+Some applications may wish to respond to the session being hidden or blurred by halting game logic, purposefully obscuring content, or pausing media. To do so, the application should listen for the `visibilitychange` events from the `XRSession`. For example, a 360 media player would do this to pause the video/audio whenever the UA has obscured it.
 
 ```js
-xrSession.addEventListener('blur', xrSessionEvent => {
-  pauseMedia();
-  // Allow the render loop to keep running, but just keep rendering the last frame.
-  // Render loop may not run at full framerate.
-});
-
-xrSession.addEventListener('focus', xrSessionEvent => {
-  resumeMedia();
+xrSession.addEventListener('visibilitychange', xrSessionEvent => {
+  switch (xrSessionEvent.session.visibilityState) {
+    case 'visible':
+      resumeMedia();
+      break;
+    case 'visible-blurred':
+      pauseMedia();
+      // Allow the render loop to keep running, but just keep rendering the last
+      // frame. Render loop may not run at full framerate.
+      break;
+    case 'hidden':
+      pauseMedia();
+      break;
+  }
 });
 ```
 
