@@ -1548,7 +1548,6 @@ typedef (WebGLRenderingContext or
          WebGL2RenderingContext) XRWebGLRenderingContext;
 
 dictionary XRWebGLLayerInit {
-  boolean compositionDisabled = false;
   boolean antialias = true;
   boolean depth = true;
   boolean stencil = false;
@@ -1595,7 +1594,13 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
       <dt> Otherwise
       <dd> Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>true</code>
     </dl>
-  1. Initialize |layer|'s [=XRWebGLLayer/composition disabled=] boolean to |layerInit|'s {{XRWebGLLayerInit/compositionDisabled}}.
+  1. Initialize |layer|'s [=XRWebGLLayer/composition disabled=] boolean as follows:
+    <dl class="switch">
+      <dt> If |session| is an [=immersive session=]
+      <dd> Initialize |layer|'s [=XRWebGLLayer/composition disabled=] boolean to <code>false</code>
+      <dt> Otherwise
+      <dd> Initialize |layer|'s [=XRWebGLLayer/composition disabled=] to <code>true</code>
+    </dl>
   1. <dl class="switch">
       <dt> If |layer|'s [=XRWebGLLayer/composition disabled=] boolean is <code>false</code>:
       <dd>
@@ -1614,7 +1619,7 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
 
 </div>
 
-Note: When a {{XRWebGLLayerInit}}'s {{XRWebGLLayerInit/compositionDisabled}} is set to <code>true</code> all other values on the {{XRWebGLLayerInit}} object are ignored, since the {{WebGLRenderingContext}}'s default framebuffer was already allocated using the context's [=actual context parameters=] and cannot be overridden.
+Note: If a {{XRWebGLLayer}}'s {{XRWebGLLayerInit/composition disabled}} boolean is set to <code>true</code> all values on the {{XRWebGLLayerInit}} object are ignored, since the {{WebGLRenderingContext}}'s default framebuffer was already allocated using the context's [=actual context parameters=] and cannot be overridden.
 
 The <dfn attribute for="XRWebGLLayer">context</dfn> attribute is the {{WebGLRenderingContext}} the {{XRWebGLLayer}} was created with.
 
