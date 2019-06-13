@@ -1619,7 +1619,7 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
 
 </div>
 
-Note: If a {{XRWebGLLayer}}'s {{XRWebGLLayerInit/composition disabled}} boolean is set to <code>true</code> all values on the {{XRWebGLLayerInit}} object are ignored, since the {{WebGLRenderingContext}}'s default framebuffer was already allocated using the context's [=actual context parameters=] and cannot be overridden.
+Note: If a {{XRWebGLLayer}}'s {{XRWebGLLayer/composition disabled}} boolean is set to <code>true</code> all values on the {{XRWebGLLayerInit}} object are ignored, since the {{WebGLRenderingContext}}'s default framebuffer was already allocated using the context's [=actual context parameters=] and cannot be overridden.
 
 The <dfn attribute for="XRWebGLLayer">context</dfn> attribute is the {{WebGLRenderingContext}} the {{XRWebGLLayer}} was created with.
 
