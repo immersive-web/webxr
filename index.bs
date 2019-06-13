@@ -585,7 +585,7 @@ Each {{XRSession}} has a <dfn for="XRSession">visibility state</dfn> value, whic
 
 The <dfn attribute for="XRSession">visibilityState</dfn> attribute returns the {{XRSession}}'s [=visibility state=]. The <dfn attribute for="XRSession">onvisibilitychange</dfn> attribute is an [=Event handler IDL attribute=] for the {{visibilitychange}} event type.
 
-The [=visibility state=] MAY be changed by the user agent at any time other than during the processing of an[=XR animation frame=], and the user agent SHOULD monitor the XR platform when possible to observe when session visibility has been affected external to the user agent and update the [=visibility state=] accordingly. Additionally, the {{XRSession}} MUST have it's [=visibility state=] set to {{XRVisibilityState/hidden}} or {{XRVisibilityState/visible-blurred}} with frame production throttled when the user is interacting with potentially sensitive UI from the user agent (such as entering a URL).
+The [=visibility state=] MAY be changed by the user agent at any time other than during the processing of an [=XR animation frame=], and the user agent SHOULD monitor the XR platform when possible to observe when session visibility has been affected external to the user agent and update the [=visibility state=] accordingly.
 
 NOTE: The {{XRSession}}'s [=visibility state=] does not necessarily imply the visibility of the HTML document. Depending on the system configuration the page may continue to be visible while an [=immersive session=] is active. (For example, a headset connected to a PC may continue to display the page on the monitor while the headset is viewing content from an [=immersive session=].) Developers should continue to rely on the [Page Visibility API](https://w3c.github.io/page-visibility/) to determine page visibility.
 
@@ -1964,6 +1964,8 @@ If the virtual environment does not consistently track the user's head motion wi
 Additionally, page content has the ability to make users uncomfortable in ways not related to performance. Badly applied tracking, strobing colors, and content intended to offend, frighten, or intimidate are examples of content which may cause the user to want to quickly exit the XR experience. Removing the XR device in these cases may not always be a fast or practical option. To accommodate this the user agent SHOULD provide users with an action, such as pressing a reserved hardware button or performing a gesture, that escapes out of WebXR content and displays the user agent's trusted UI.
 
 When navigating between pages in XR the user agent should display trusted UI elements informing the user of the security information of the site they are navigating to which is normally presented by the 2D UI, such as the URL and encryption status.
+
+{{XRSession}}s MUST have their [=visibility state=] set to {{XRVisibilityState/hidden}} or {{XRVisibilityState/visible-blurred}} when the user is interacting with potentially sensitive UI from the user agent (such as entering a URL) in the trusted environment.
 
 Context Isolation {#contextisolation-security}
 -----------------
