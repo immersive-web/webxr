@@ -455,7 +455,7 @@ The <dfn method for="XRSession">end()</dfn> method provides a way to manually sh
 
 </div>
 
-Each {{XRSession}} has an <dfn>active render state</dfn> which is a new {{XRRenderState}}, a <dfn>list of pending render states</dfn>, which is initially empty.
+Each {{XRSession}} has an <dfn>active render state</dfn> which is a new {{XRRenderState}}, and a <dfn>pending render state</dfn>, which is an {{XRRenderStateInit}} which is initially <code>null</code>.
 
 The <dfn attribute for="XRSession">renderState</dfn> attribute returns the {{XRSession}}'s [=active render state=].
 
@@ -469,23 +469,22 @@ When the <dfn method for="XRSession">updateRenderState(|newState|)</dfn> method 
   1. If |session|'s [=ended=] value is <code>true</code>, throw an {{InvalidStateError}} and abort these steps.
   1. If |newState|'s {{XRRenderStateInit/baseLayer}}'s was created with an {{XRSession}} other than |session|, throw an {{InvalidStateError}} and abort these steps.
   1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set and |session| is an [=immersive session=], throw an {{InvalidStateError}} and abort these steps.
-  1. Append |newState| to |session|'s [=list of pending render states=].
+  1. Set |session|'s [=pending render state=] to |newState|.
 
 </div>
 
-<div class="algorithm" data-algorithm="apply-pending-render-states">
+<div class="algorithm" data-algorithm="apply-pending-render-state">
 
-When requested, the {{XRSession}} MUST <dfn>apply pending render states</dfn> by running the following steps:
+When requested, the {{XRSession}} MUST <dfn>apply the pending render state</dfn> by running the following steps:
 
   1. Let |session| be the target {{XRSession}}.
   1. Let |activeState| be |session|'s [=active render state=].
-  1. Let |pendingStates| be |session|'s [=list of pending render states=].
-  1. Set |session|'s [=list of pending render states=] to the empty list.
-  1. For each |newState| in |pendingStates|:
-    1. If |newState|'s {{XRRenderStateInit/depthNear}} value is set, set |activeState|'s {{XRRenderState/depthNear}} to |newState|'s {{XRRenderStateInit/depthNear}}.
-    1. If |newState|'s {{XRRenderStateInit/depthFar}} value is set, set |activeState|'s {{XRRenderState/depthFar}} to |newState|'s {{XRRenderStateInit/depthFar}}.
-    1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set, set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}}.
-    1. If |newState|'s {{XRRenderStateInit/baseLayer}} is set, set |activeState|'s {{XRRenderState/baseLayer}} to |newState|'s {{XRRenderStateInit/baseLayer}}.
+  1. Let |newState| be |session|'s [=pending render state=].
+  1. Set |session|'s [=pending render state=] to <code>null</code>.
+  1. If |newState|'s {{XRRenderStateInit/depthNear}} value is set, set |activeState|'s {{XRRenderState/depthNear}} to |newState|'s {{XRRenderStateInit/depthNear}}.
+  1. If |newState|'s {{XRRenderStateInit/depthFar}} value is set, set |activeState|'s {{XRRenderState/depthFar}} to |newState|'s {{XRRenderStateInit/depthFar}}.
+  1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set, set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}}.
+  1. If |newState|'s {{XRRenderStateInit/baseLayer}} is set, set |activeState|'s {{XRRenderState/baseLayer}} to |newState|'s {{XRRenderStateInit/baseLayer}}.
   1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is less than |session|'s [=minimum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=minimum inline field of view=].
   1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is greater than |session|'s [=maximum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=maximum inline field of view=].
   1. Let |baseLayer| be |activeState|'s {{XRRenderState/baseLayer}}.
@@ -696,7 +695,7 @@ When the <dfn method for="XRSession">cancelAnimationFrame(|handle|)</dfn> method
 
 When an {{XRSession}} |session| receives updated [=viewer=] state from the [=/XR device=], it runs an <dfn>XR animation frame</dfn> with a timestamp |now| and an {{XRFrame}} |frame|, which MUST run the following steps regardless of if the [=list of animation frame callbacks=] is empty or not:
 
-  1. If |session|'s [=list of pending render states=] is not empty, [=apply pending render states=].
+  1. If |session|'s [=pending render state=] is not <code>null</code>, [=apply the pending render state=].
   1. If |session|'s {{XRSession/renderState}}'s {{XRRenderState/baseLayer}} is <code>null</code>, abort these steps.
   1. If |session|'s  [=XRSession/mode=] is {{XRSessionMode/"inline"}} and |session|'s {{XRSession/renderState}}'s [=XRRenderState/output canvas=] is <code>null</code>, abort these steps.
   1. Let |callbacks| be a list of the entries in |session|'s [=list of animation frame callback=], in the order in which they were added to the list.
