@@ -469,6 +469,8 @@ Each {{XRSession}} has a <dfn>minimum inline field of view</dfn> and a <dfn>maxi
 
 <div class="algorithm" data-algorithm="update-render-state">
 
+The {{XRSession/updateRenderState()}} method queues an update to the [=active render state=] to be applied on the next frame. Unset fields of the {{XRRenderStateInit}} passed to this method will not be changed.
+
 When the <dfn method for="XRSession">updateRenderState(|newState|)</dfn> method is invoked, the user agent MUST run the following steps:
 
   1. Let |session| be the target {{XRSession}}.
@@ -616,7 +618,7 @@ We still need to document what happens when we <dfn>end the session</dfn>. (This
 XRRenderState {#xrrenderstate-interface}
 -------------
 
-There are multiple values that developers can configure which affect how the session's output is composited. These values are tracked by an {{XRRenderState}} object.
+An {{XRRenderState}} represents a set of configurable values which affect how an {{XRSession}}'s output is composited. The [=active render state=] for a given {{XRSession}} can only change between frame boundaries, and updates can be queued up via {{XRSession/updateRenderState()}}.
 
 <pre class="idl">
 dictionary XRRenderStateInit {
