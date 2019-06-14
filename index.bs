@@ -455,7 +455,7 @@ The <dfn method for="XRSession">end()</dfn> method provides a way to manually sh
 
 </div>
 
-Each {{XRSession}} has an <dfn>active render state</dfn> which is a new {{XRRenderState}}, and a <dfn>pending render state</dfn>, which is an {{XRRenderStateInit}} which is initially <code>null</code>.
+Each {{XRSession}} has an <dfn>active render state</dfn> which is a new {{XRRenderState}}, and a <dfn>pending render state</dfn>, which is an {{XRRenderState}} which is initially <code>null</code>.
 
 The <dfn attribute for="XRSession">renderState</dfn> attribute returns the {{XRSession}}'s [=active render state=].
 
@@ -469,7 +469,12 @@ When the <dfn method for="XRSession">updateRenderState(|newState|)</dfn> method 
   1. If |session|'s [=ended=] value is <code>true</code>, throw an {{InvalidStateError}} and abort these steps.
   1. If |newState|'s {{XRRenderStateInit/baseLayer}}'s was created with an {{XRSession}} other than |session|, throw an {{InvalidStateError}} and abort these steps.
   1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set and |session| is an [=immersive session=], throw an {{InvalidStateError}} and abort these steps.
-  1. Set |session|'s [=pending render state=] to |newState|.
+  1. Let |activeState| be |session|'s [=active render state=].
+  1. If |session|'s [=pending render state=] is <code>null</code>, set it to a copy of |activeState|.
+  1. If |newState|'s {{XRRenderStateInit/depthNear}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/depthNear}} to |newState|'s {{XRRenderStateInit/depthNear}}.
+  1. If |newState|'s {{XRRenderStateInit/depthFar}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/depthFar}} to |newState|'s {{XRRenderStateInit/depthFar}}.
+  1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set, set |session|'s [=pending render state=]'s {{XRRenderState/inlineVerticalFieldOfView}} to |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}}.
+  1. If |newState|'s {{XRRenderStateInit/baseLayer}} is set, set |session|'s [=pending render state=]'s {{XRRenderState/baseLayer}} to |newState|'s {{XRRenderStateInit/baseLayer}}.
 
 </div>
 
@@ -481,10 +486,7 @@ When requested, the {{XRSession}} MUST <dfn>apply the pending render state</dfn>
   1. Let |activeState| be |session|'s [=active render state=].
   1. Let |newState| be |session|'s [=pending render state=].
   1. Set |session|'s [=pending render state=] to <code>null</code>.
-  1. If |newState|'s {{XRRenderStateInit/depthNear}} value is set, set |activeState|'s {{XRRenderState/depthNear}} to |newState|'s {{XRRenderStateInit/depthNear}}.
-  1. If |newState|'s {{XRRenderStateInit/depthFar}} value is set, set |activeState|'s {{XRRenderState/depthFar}} to |newState|'s {{XRRenderStateInit/depthFar}}.
-  1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set, set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}}.
-  1. If |newState|'s {{XRRenderStateInit/baseLayer}} is set, set |activeState|'s {{XRRenderState/baseLayer}} to |newState|'s {{XRRenderStateInit/baseLayer}}.
+  1. Set |activeState| to |newState|.
   1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is less than |session|'s [=minimum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=minimum inline field of view=].
   1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is greater than |session|'s [=maximum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=maximum inline field of view=].
   1. Let |baseLayer| be |activeState|'s {{XRRenderState/baseLayer}}.
