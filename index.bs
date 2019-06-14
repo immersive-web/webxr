@@ -1421,7 +1421,7 @@ The <dfn attribute for="XRInputSource">gripSpace</dfn> attribute is an {{XRSpace
 
 The {{gripSpace}} MUST be <code>null</code> if the input source isn't inherently trackable such as for input sources with a {{targetRayMode}} of {{XRTargetRayMode/gaze}} or {{XRTargetRayMode/screen}}.
 
-The <dfn attribute for="XRInputSource">renderId</dfn> attribute is a [=/list=] of [=input render ID=]s indicating the preffered visual representation of the {{XRInputSource}}. Identifiers are given in decending preference order, with the first value indicating the most specific represenation and the last value representing the most generic.
+The <dfn attribute for="XRInputSource">renderId</dfn> attribute is a [=/list=] of [=input render ID=]s indicating the preffered visual representation of the {{XRInputSource}}. Identifiers are given in decending order of prefence.
 
 An <dfn for="XRInputSource">input render ID</dfn> is a lowercase {{DOMString}} containing no spaces, with separate words concatenated with a hyphen (<code>-</code>) character. A descriptive ID should be chosen, using the preferred verbiage of the device vendor when possible. If the platform provides an appropriate identifier, such as a USB vendor and product ID, it MAY be used. Values that uniquely identify the device, such as serial numbers, MUST NOT be used. The [=input render ID=] MUST NOT contain an indication of device handedness. If multiple user agents expose the same device, they SHOULD make an effort to report the same [=input render ID=].
 
@@ -1433,7 +1433,7 @@ For example, the Samsung Odyssey controller is a variant of the standard Windows
 
 If the {{XRSession}}'s [=mode=] is {{XRSessionMode/inline}}, {{XRInputSource/renderId}} MUST be an empty array. If the input device cannot be reliably identified, {{XRInputSource/renderId}} MAY be an empty array. The user agent MAY choose to only report generic [=input render ID=]s or an empty array if it wishes to mask the input device being used.
 
-The <dfn attribute for="XRInputSource">gamepadLayout</dfn> attribute is a [=/list=] of [=gamepad layout ID=]s indicating the mapping of the buttons and axes of the {{XRInputSource/gamepad}} to the device. Identifiers are given in decending order of specificity, with the first value indicating the most accurate represenation and the last value representing the most generic.
+The <dfn attribute for="XRInputSource">gamepadLayout</dfn> attribute is a [=/list=] of [=gamepad layout ID=]s indicating the mapping of the buttons and axes of the {{XRInputSource/gamepad}} to the device. Identifiers are given in decending order of prefence.
 
 An <dfn for="XRInputSource">gamepad layout ID</dfn> is a lowercase {{DOMString}} containing no spaces, with separate words concatenated with a hyphen (<code>-</code>) character. A descriptive ID should be chosen, using the preferred verbiage of the device vendor when possible. The [=gamepad layout ID=] MAY use an exemplar device as the basis for the string, but SHOULD prefer strings that describe multiple devices which share the same button layout rather than a string that uniquely describes the device. The [=gamepad layout ID=] MUST NOT contain an indication of device handedness. If multiple user agents expose the same device, they SHOULD make an effort to report the same [=gamepad layout ID=].
 

@@ -228,15 +228,19 @@ For `tracked-pointer` input sources, it is often appropriate for the application
 #### Choosing renderable models
 The majority of `tracked-pointer` input sources will have a non-null `gamepad` attribute on the `XRInputSource` object. The `Gamepad`'s `id` is used to determine what should be rendered if the app intends to visualize the input source itself, rather than an alternative virtual object. (See the section on [Button and Axis State](#button-and-axis-state) for more details.)
 
-The WebXR Device API currently does not offer any way to retrieve renderable resources that represent the input devices from the API itself, and as such the `XRInputSource`'s `renderId` must be used to identify and load an appropriate resources from the application's server or a CDN. The `renderId` provides a list of strings that identify the device, ordered from most accurate to least accurate. Applications should iterate through the list until a string is located that corresponds to a known model and display that. The example below presumes that the `getInputSourceRenderableModel` call would do the required lookup and caching.
+The WebXR Device API currently does not offer any way to retrieve renderable resources that represent the input devices from the API itself, and as such the `XRInputSource`'s `renderId` must be used to identify and load an appropriate resources. (For example, from the application's server, a CDN, or a local cache.) The `renderId` provides a list of strings that identify the device, given in descending order of preference.
+
+For example, the Samsung Odyssey controller is a variant of the standard Windows Mixed Reality controller. As a result, the `renderId` for a that controller could be:
+
+```js
+// Exact strings are examples only.
+["samsung-odyssey", "windows-mixed-reality"]
+```
+
+Applications should iterate through the list until a string is located that corresponds to a known model, which should then be used when rendering the input device. The example below presumes that the `getInputSourceRenderableModel` call would do the required lookup and caching.
 
 ```js
 function loadRenderableInputModels(xrInputSource) {
-  // Don't load renderable models if the input source doesn't identify what the
-  // device looks like. 
-  if (!xrInputSource.renderId.length)
-    return;
-
   for (let id of xrInputSource.renderId) {
     // Retrieve a mesh to render based on the gamepad object's id and handedness
     let renderableModel = getInputSourceRenderableModel(id, xrInputSource.handedness);
@@ -247,6 +251,12 @@ function loadRenderableInputModels(xrInputSource) {
       return;
     }
   }
+
+  // If the renderId list was empty or a corresponding model could not be found
+  // for any entry in it the application could respond by not rendering the
+  // device at all or rendering a generic device that is not intended to be a
+  // visual match. This sample chooses the latter approach.
+  scene.inputObjects.add(getDefaultInputSourceRenderableModel(), xrInputSource);
 }
 ```
 
