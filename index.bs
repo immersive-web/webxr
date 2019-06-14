@@ -1571,8 +1571,6 @@ dictionary XRWebGLLayerInit {
              optional XRWebGLLayerInit layerInit)]
 interface XRWebGLLayer {
   // Attributes
-  [SameObject] readonly attribute XRWebGLRenderingContext context;
-
   readonly attribute boolean antialias;
   readonly attribute boolean ignoreDepthValues;
 
@@ -1596,7 +1594,6 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
   1. If |session|'s [=ended=] value is <code>true</code>, throw an {{InvalidStateError}} and abort these steps.
   1. If |context| is lost, throw an {{InvalidStateError}} and abort these steps.
   1. If |context|'s [=XR compatible=] boolean is false, throw an {{InvalidStateError}} and abort these steps.
-  1. Initialize |layer|'s {{XRWebGLLayer/context}} to |context|.
   1. Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} as follows:
     <dl class="switch">
       <dt> If |layerInit|'s {{XRWebGLLayerInit/ignoreDepthValues}} value is <code>false</code> and the [=XR Compositor=] will make use of depth values
