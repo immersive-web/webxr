@@ -307,35 +307,36 @@ The {{XR}} object has a <dfn>pending immersive session</dfn> boolean, which MUST
 When the <dfn method for="XR">requestSession(|mode|)</dfn> method is invoked, the user agent MUST run the following steps:
 
   1. Let |promise| be [=a new Promise=].
+  1. Let |immersive| be <code>true</code> if |mode| is {{XRSessionMode/"immersive-vr"}} or {{XRSessionMode/"immersive-ar"}}, and <code>false</code> otherwise.
+  1. If |immersive| is <code>true</code>:
+    1. If the algorithm is not [=triggered by user activation=], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.
+    1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
+  1. Set [=pending immersive session=] to be <code>true</code>.
   1. Run the following steps [=in parallel=]:
-    1. Let |immersive| be <code>true</code> if |mode| is {{XRSessionMode/"immersive-vr"}} or {{XRSessionMode/"immersive-ar"}}, and <code>false</code> otherwise.
-    1. If |immersive| is <code>true</code>: 
-      1. If the algorithm is not [=triggered by user activation=], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and abort these steps.
-      1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and abort these steps.
-      1. Set [=pending immersive session=] to be <code>true</code>.
     1. [=ensures an XR device is selected|Ensure an XR device is selected=].
-    1. Follow the steps for the first matching conditions:
-        <dl class="switch">
-          <dt> If the [=XR/XR device=] is <code>null</code>
-          <dd> [=Reject=] |promise| with <code>null</code>.
-          <dt> If the [=XR/XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|
-          <dd> [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
-          <dt> Otherwise
-          <dd> Continue to the next step.
-        </dl>
-    1. If |promise| was [=rejected=]:
-      1. If |immersive| is <code>true</code>, set [=pending immersive session=] to <code>false</code>.
-      1. Abort these steps.
-    1. Let |session| be a new {{XRSession}} object.
-    1. [=Initialize the session=] with |session| and |mode|.
-    1. Potentially set the [=active immersive session=] based on the following:
-        <dl class="switch">
-          <dt> If |immersive| is <code>true</code>
-          <dd> Set the [=active immersive session=] to |session|, and set [=pending immersive session=] to <code>false</code>.
-          <dt> Otherwise
-          <dd> Append |session| to the [=list of inline sessions=].
-        </dl>
-    1. [=/Resolve=] |promise| with |session|.
+    1. [=Queue a task=] to perform the following steps:
+        1. Follow the steps for the first matching conditions:
+            <dl class="switch">
+              <dt> If the [=XR/XR device=] is <code>null</code>
+              <dd> [=Reject=] |promise| with <code>null</code>.
+              <dt> If the [=XR/XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|
+              <dd> [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
+              <dt> Otherwise
+              <dd> Continue to the next step.
+            </dl>
+        1. If |promise| was [=rejected=]:
+            1. If |immersive| is <code>true</code>, set [=pending immersive session=] to <code>false</code>.
+            1. Abort these steps.
+        1. Let |session| be a new {{XRSession}} object.
+        1. [=Initialize the session=] with |session| and |mode|.
+        1. Potentially set the [=active immersive session=] based on the following:
+            <dl class="switch">
+              <dt> If |immersive| is <code>true</code>
+              <dd> Set the [=active immersive session=] to |session|, and set [=pending immersive session=] to <code>false</code>.
+              <dt> Otherwise
+              <dd> Append |session| to the [=list of inline sessions=].
+            </dl>
+        1. [=/Resolve=] |promise| with |session|.
   1. Return |promise|.
 
 </div>
