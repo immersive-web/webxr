@@ -1628,8 +1628,8 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
       <dd>
         1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layerInit|'s {{XRWebGLLayerInit/antialias}} value.
         1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] created with |context|.
-        1. Initialize a [=swap chain=] for |layer| that is compatible with |session|'s [=/XR device=].
-        1. If |layer|'s [=swap chain=] was unable to be created for any reason, throw an {{OperationError}} and abort these steps.
+        1. Allocate and initialize resources, including GPU accessible memory buffers, as required to support the compositing of |layer|.
+        1. If |layer|’s resources were unable to be created for any reason, throw an {{OperationError}} and abort these steps.
       <dt> Otherwise
       <dd>
         1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layer|'s {{XRWebGLLayer/context}}'s [=actual context parameters=] {{WebGLContextAttributes|antialias}} value.
@@ -1709,8 +1709,6 @@ The <dfn method for="XRWebGLLayer">getNativeFramebufferScaleFactor(|session|)</d
   1. Return the value that the |session|'s [=recommended WebGL framebuffer resolution=] must be multiplied by to yield the |session|'s [=native WebGL framebuffer resolution=].
 
 </div>
-
-We either need to define the <dfn>swap chain</dfn> or remove references to it.  (This is <a href="https://github.com/immersive-web/webxr/issues/484">filed</a>.)
 
 <section class="unstable">
 WebGL Context Compatibility {#contextcompatibility}
