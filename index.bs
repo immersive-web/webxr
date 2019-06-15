@@ -493,7 +493,7 @@ When requested, the {{XRSession}} MUST <dfn>apply pending render states</dfn> by
     <dl class="switch">
       <dt> If |session|'s [=XRSession/mode=] is {{XRSessionMode/inline}} and |baseLayer| is an instance of an {{XRWebGLLayer}} with [=XRWebGLLayer/composition disabled=] set to <code>true</code>
       <dd> Set |activeState|'s [=XRRenderState/composition disabled=] boolean to <code>true</code>.
-      <dd> Set |activeState|'s [=XRRenderState/output canvas=] to |baseLayer|'s {{XRWebGLLayer/context}}'s {{WebGLRenderingContext|canvas}}.
+      <dd> Set |activeState|'s [=XRRenderState/output canvas=] to |baseLayer|'s [=XRWebGLLayer/context=]'s {{WebGLRenderingContext|canvas}}.
       <dt> Otherwise
       <dd> Set |activeState|'s [=XRRenderState/composition disabled=] boolean to <code>false</code>.
       <dd> Set |activeState|'s [=XRRenderState/output canvas=] to <code>null</code>.
@@ -1586,6 +1586,8 @@ interface XRWebGLLayer {
 };
 </pre>
 
+Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">context</dfn> object, initially <code>null</code>, which is an instance of either a {{WebGLRenderingContext}} or a {{WebGL2RenderingContext}}.
+
 <div class="algorithm" data-algorithm="construct-webgl-layer">
 
 The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |layerInit|)</dfn> constructor MUST perform the following steps when invoked:
@@ -1594,6 +1596,7 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
   1. If |session|'s [=ended=] value is <code>true</code>, throw an {{InvalidStateError}} and abort these steps.
   1. If |context| is lost, throw an {{InvalidStateError}} and abort these steps.
   1. If |context|'s [=XR compatible=] boolean is false, throw an {{InvalidStateError}} and abort these steps.
+  1. Initialize |layer|'s [=XRWebGLLayer/context=] to |context|.
   1. Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} as follows:
     <dl class="switch">
       <dt> If |layerInit|'s {{XRWebGLLayerInit/ignoreDepthValues}} value is <code>false</code> and the [=XR Compositor=] will make use of depth values
@@ -1619,7 +1622,7 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
       <dt> Otherwise
       <dd>
         1. If |session|'s [=mode=] is not {{XRSessionMode/inline}}, throw an {{InvalidStateError}} and abort these steps.
-        1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layer|'s {{XRWebGLLayer/context}}'s [=actual context parameters=] {{WebGLContextAttributes|antialias}} value.
+        1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layer|'s [=XRWebGLLayer/context=]'s [=actual context parameters=] {{WebGLContextAttributes|antialias}} value.
         1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to <code>null</code>.
     </dl>
   1. Return |layer|.
@@ -1630,7 +1633,7 @@ Note: If a {{XRWebGLLayer}}'s {{XRWebGLLayer/composition disabled}} boolean is s
 
 The <dfn attribute for="XRWebGLLayer">context</dfn> attribute is the {{WebGLRenderingContext}} the {{XRWebGLLayer}} was created with.
 
-Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">composition disabled</dfn> boolean which is initially set to <code>false</code>. If set to <code>true</code> it indicates that the {{XRWebGLLayer}} MUST NOT allocate its own {{WebGLFramebuffer}}, and all properties of the {{XRWebGLLayer}} that reflect {{XRWebGLLayer/framebuffer}} properties MUST instead reflect the properties of the {{XRWebGLLayer/context}}'s default framebuffer.
+Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">composition disabled</dfn> boolean which is initially set to <code>false</code>. If set to <code>true</code> it indicates that the {{XRWebGLLayer}} MUST NOT allocate its own {{WebGLFramebuffer}}, and all properties of the {{XRWebGLLayer}} that reflect {{XRWebGLLayer/framebuffer}} properties MUST instead reflect the properties of the [=XRWebGLLayer/context=]'s default framebuffer.
 
 The <dfn attribute for="XRWebGLLayer">framebuffer</dfn> attribute of an {{XRWebGLLayer}} is an instance of a {{WebGLFramebuffer}} which has been marked as [=opaque framebuffer|opaque=] if [=XRWebGLLayer/composition disabled=] is <code>false</code>, and <code>null</code> otherwise. The {{framebuffer}} size cannot be adjusted by the developer after the {{XRWebGLLayer}} has been created.
 
@@ -1640,7 +1643,7 @@ An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFram
  - An [=opaque framebuffer=]'s attachments cannot be inspected or changed. Calling {{framebufferTexture2D}}, {{framebufferRenderbuffer}}, {{getFramebufferAttachmentParameter}}, or {{getRenderbufferParameter}} with an [=opaque framebuffer=] MUST generate an {{INVALID_OPERATION}} error.
  - An [=opaque framebuffer=] is considered incomplete outside of an {{XRSession/requestAnimationFrame()}} callback. When not in a {{XRSession/requestAnimationFrame()}} callback calls to {{checkFramebufferStatus}} outside of an {{XRSession/requestAnimationFrame()}} callback MUST generate a {{FRAMEBUFFER_UNSUPPORTED}} error and attempts to clear, draw to, or read from the [=opaque framebuffer=] MUST generate an {{INVALID_FRAMEBUFFER_OPERATION}} error.
 
-Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">target framebuffer</dfn>, which is the {{XRWebGLLayer/framebuffer}} if [=XRWebGLLayer/composition disabled=] is <code>false</code>, and the {{XRWebGLLayer/context}}'s default framebuffer otherwise.
+Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">target framebuffer</dfn>, which is the {{XRWebGLLayer/framebuffer}} if [=XRWebGLLayer/composition disabled=] is <code>false</code>, and the [=XRWebGLLayer/context=]'s default framebuffer otherwise.
 
 The <dfn attribute for="XRWebGLLayer">framebufferWidth</dfn> and <dfn attribute for="XRWebGLLayer">framebufferHeight</dfn> attributes return the width and height of the [=XRWebGLLayer/target framebuffer=]'s attachments, respectively.
 
@@ -1652,7 +1655,7 @@ Depth values stored in the buffer are expected to be between <code>0.0</code> an
 
 NOTE: Making the scene's depth buffer available to the compositor allows some platforms to provide quality and comfort improvements such as improved reprojection.
 
-Each {{XRWebGLLayer}} MUST have a <dfn>list of viewports</dfn> which is a [=/list=] containing one [=WebGL viewport=] for each {{XRView}} the {{XRSession}} currently exposes. The viewports MUST NOT be overlapping. If [=XRWebGLLayer/composition disabled=] is <code>true</code>, the [=list of viewports=] MUST contain a single [=WebGL viewport=] that covers the {{XRWebGLLayer/context}}'s entire default framebuffer.
+Each {{XRWebGLLayer}} MUST have a <dfn>list of viewports</dfn> which is a [=/list=] containing one [=WebGL viewport=] for each {{XRView}} the {{XRSession}} currently exposes. The viewports MUST NOT be overlapping. If [=XRWebGLLayer/composition disabled=] is <code>true</code>, the [=list of viewports=] MUST contain a single [=WebGL viewport=] that covers the [=XRWebGLLayer/context=]'s entire default framebuffer.
 
 {{getViewport()}} queries the {{XRViewport}} the given {{XRView}} should use when rendering to the layer.
 
@@ -1969,7 +1972,7 @@ Context Isolation {#contextisolation-security}
 
 The trusted UI must be drawn by an independent rendering context whose state is isolated from any rendering contexts used by the page. (For example, any WebGL rendering contexts.) This is to prevent the page from corrupting the state of the trusted UI's context, which may prevent it from properly rendering a tracked environment. It also prevents the possibility of the page being able to capture imagery from the trusted UI, which could lead to private information being leaked.
 
-Also, to prevent CORS-related vulnerabilities each page will see a new instance of objects returned by the API, such as {{XRSession}}. Attributes such as the {{XRWebGLLayer/context}} set by one page must not be able to be read by another. Similarly, methods invoked on the API MUST NOT cause an observable state change on other pages. For example: No method will be exposed that enables a system-level orientation reset, as this could be called repeatedly by a malicious page to prevent other pages from tracking properly. The user agent MUST, however, respect system-level orientation resets triggered by a user gesture or system menu.
+Also, to prevent CORS-related vulnerabilities each page will see a new instance of objects returned by the API, such as {{XRSession}}. Attributes such as the [=XRWebGLLayer/context=] set by one page must not be able to be read by another. Similarly, methods invoked on the API MUST NOT cause an observable state change on other pages. For example: No method will be exposed that enables a system-level orientation reset, as this could be called repeatedly by a malicious page to prevent other pages from tracking properly. The user agent MUST, however, respect system-level orientation resets triggered by a user gesture or system menu.
 
 Fingerprinting {#fingerprinting-security}
 --------------
