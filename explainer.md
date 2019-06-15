@@ -675,7 +675,6 @@ typedef (WebGLRenderingContext or
              XRWebGLRenderingContext context,
              optional XRWebGLLayerInit layerInit)]
 interface XRWebGLLayer {
-  readonly attribute XRWebGLRenderingContext context;
   readonly attribute boolean antialias;
   readonly attribute boolean ignoreDepthValues;
 
