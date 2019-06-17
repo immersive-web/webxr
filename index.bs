@@ -186,7 +186,7 @@ Most applications using the WebXR Device API will follow a similar usage pattern
   * Wait for the user to [=triggered by user activation|trigger a user activation event=] indicating they want to begin viewing XR content.
   * Request an {{XRSession}} within the user activation event with {{XR/requestSession()|navigator.xr.requestSession()}}.
   * If the {{XRSession}} request succeeds, use it to run a [[#frame|frame loop]] to respond to XR input and produce images to display on the [=/XR device=] in response.
-  * Continue running the [[#frame|frame loop]] until the UA [=end the session|ends the session=] or the user indicates they want to exit the XR content.
+  * Continue running the [[#frame|frame loop]] until the [=shut down the session|session is shut down=] by the UA or the user indicates they want to exit the XR content.
 
 </section>
 
@@ -443,8 +443,12 @@ When an {{XRSession}} is shut down the following steps are run:
   1. Set |session|'s [=ended=] value to <code>true</code>.
   1. If the [=active immersive session=] is equal to |session|, set the [=active immersive session=] to <code>null</code>.
   1. Remove |session| from the [=list of inline sessions=].
-  1. [=Reject=] any outstanding promises returned by |session| with an {{InvalidStateError}}.
-  1. If no other features of the user agent are actively using them, perform the necessary platform-specific steps to shut down the device's tracking and rendering capabilities.
+  1. [=Reject=] any outstanding promises returned by |session| with an {{InvalidStateError}}, except for any promises returned by {{XRSession/end()}}.
+  1. If no other features of the user agent are actively using them, perform the necessary platform-specific steps to shut down the device's tracking and rendering capabilities. This MUST include:
+    - Releasing [=exclusive access=] to the [=/XR device=].
+    - Deallocating any framebuffers attached by the |session| to the [=/XR device=].
+    - Putting the [=/XR device=] in a state such that a different source may be able to initiate a session with the same device.
+  1. [=Queue a task=] that fires an {{XRSessionEvent}} named {{end!!event}} on |session|.
 
 </div>
 
@@ -612,8 +616,6 @@ The <dfn attribute for="XRSession">onselectstart</dfn> attribute is an [=Event h
 The <dfn attribute for="XRSession">onselectend</dfn> attribute is an [=Event handler IDL attribute=] for the {{selectend}} event type.
 
 The <dfn attribute for="XRSession">onselect</dfn> attribute is an [=Event handler IDL attribute=] for the {{XRSession/select}} event type.
-
-We still need to document what happens when we <dfn>end the session</dfn>. (This is <a href="https://github.com/immersive-web/webxr/issues/467">filed</a>.)
 
 XRRenderState {#xrrenderstate-interface}
 -------------
