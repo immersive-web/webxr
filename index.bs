@@ -311,20 +311,12 @@ When the <dfn method for="XR">requestSession(|mode|)</dfn> method is invoked, th
   1. If |immersive| is <code>true</code>:
     1. If the algorithm is not [=triggered by user activation=], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.
     1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
-    1. Set [=pending immersive session=] to be <code>true</code>.
+    1. Set [=pending immersive session=] to <code>true</code>.
   1. Run the following steps [=in parallel=]:
     1. [=ensures an XR device is selected|Ensure an XR device is selected=].
     1. [=Queue a task=] to perform the following steps:
-        1. Follow the steps for the first matching conditions:
-            <dl class="switch">
-              <dt> If the [=XR/XR device=] is <code>null</code>
-              <dd> [=Reject=] |promise| with <code>null</code>.
-              <dt> If the [=XR/XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|
-              <dd> [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
-              <dt> Otherwise
-              <dd> Continue to the next step.
-            </dl>
-        1. If |promise| was [=rejected=]:
+        1. If the [=XR/XR device=] is <code>null</code> or [=XR/XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|, run the following steps:
+            1. [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
             1. If |immersive| is <code>true</code>, set [=pending immersive session=] to <code>false</code>.
             1. Abort these steps.
         1. Let |session| be a new {{XRSession}} object.
@@ -913,8 +905,8 @@ When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a ref
           <dt> Otherwise
           <dd> Let |referenceSpace| be a new {{XRReferenceSpace}}.
         </dl>
-    1. Initialize |referenceSpace|'s [=XRReferenceSpace/type=] to be |type|.
-    1. Initialize |referenceSpace|'s [=XRSpace/session=] to be |session|.
+    1. Initialize |referenceSpace|'s [=XRReferenceSpace/type=] to |type|.
+    1. Initialize |referenceSpace|'s [=XRSpace/session=] to |session|.
     1. Return |referenceSpace|
   1. Return <code>null</code>.
 
