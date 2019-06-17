@@ -373,7 +373,7 @@ An <dfn>immersive session</dfn> refers to either an {{immersive-vr}} or an {{imm
 
 NOTE: Examples of ways [=exclusive access=] may be presented include stereo content displayed on a virtual reality or augmented reality headset, or augmented reality content displayed fullscreen on a mobile device.
 
-NOTE: As an example of overlaid UI, the user-agent or operating system in {{immersive-ar}} mode may overlay mandatory "home" and navigational buttons over the user's wrist.
+NOTE: As an example of overlaid UI, the user-agent or operating system in an [=immersive session=] may show notifications over the rendered content. Similarly, in {{immersive-ar}} mode the user-agent or operating system may overlay mandatory "home" and navigational buttons over the user's wrist.
 
 
 Session {#session}
