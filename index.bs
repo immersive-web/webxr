@@ -446,7 +446,7 @@ When an {{XRSession}} is shut down the following steps are run:
   1. [=Reject=] any outstanding promises returned by |session| with an {{InvalidStateError}}, except for any promises returned by {{XRSession/end()}}.
   1. If no other features of the user agent are actively using them, perform the necessary platform-specific steps to shut down the device's tracking and rendering capabilities. This MUST include:
     - Releasing [=exclusive access=] to the [=/XR device=].
-    - Deallocating any framebuffers attached by the |session| to the [=/XR device=].
+    - Deallocating any graphics resources acquired by |session| for presentation to the [=/XR device=].
     - Putting the [=/XR device=] in a state such that a different source may be able to initiate a session with the same device.
   1. [=Queue a task=] that fires an {{XRSessionEvent}} named {{end!!event}} on |session|.
 
