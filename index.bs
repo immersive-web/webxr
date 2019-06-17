@@ -255,7 +255,7 @@ Each time the [=list of XR devices=] changes the user agent should <dfn>select a
   1. If this is the first time devices have been enumerated or |oldDevice| equals the [=XR/XR device=], abort these steps.
   1. [=Shut down the session|Shut down=] any active {{XRSession}}s.
   1. Set the [=XR compatible=] boolean of all {{WebGLRenderingContextBase}} instances to `false`.
-  1. [=Queue a task=] that fires a simple event named {{devicechange!!event}} on the [=context object=].
+  1. [=Queue a task=] to fire a simple event named {{devicechange!!event}} on the [=context object=].
 
 </div>
 
@@ -1365,7 +1365,7 @@ Each [=XR input source=] SHOULD define a <dfn>primary action</dfn>. The [=primar
 
 When an [=XR input source=] for {{XRSession}} |session| begins its [=primary action=] the UA MUST run the following steps:
 
-  1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{selectstart!!event}} on |session|.
+  1. [=Queue a task=] to fire a {{XRInputSourceEvent}} named {{selectstart!!event}} on |session|.
 
 </div>
 
@@ -1385,7 +1385,7 @@ Sometimes platform-specific behavior can result in a [=primary action=] being in
 
 When an [=XR input source=] for {{XRSession}} |session| has its [=primary action=] cancelled the UA MUST run the following steps:
 
-  1. [=Queue a task=] that fires a {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
+  1. [=Queue a task=] to fire a {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
 
 </div>
 
