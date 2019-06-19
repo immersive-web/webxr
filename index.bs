@@ -1251,8 +1251,8 @@ NOTE: The {{XRRay}}'s {{XRRay/matrix}} can be used to easily position graphical 
 
 To <dfn for=XRRay>obtain the matrix</dfn> for a given {{XRRay}} |ray|
 
-  1. If |transform|'s [=XRRigidTransform/internal matrix=] is not <code>null</code>, perform the following steps:
-    1. If the operation {{IsDetachedBuffer}} on [=XRRigidTransform/internal matrix=] is <code>false</code>, return |transform|'s [=XRRigidTransform/internal matrix=].
+  1. If |ray|'s [=XRRay/internal matrix=] is not <code>null</code>, perform the following steps:
+    1. If the operation {{IsDetachedBuffer}} on [=XRRay/internal matrix=] is <code>false</code>, return |ray|'s [=XRRigidTransform/internal matrix=].
   1. Let |z| be the vector <code>[0, 0, -1]</code>
   1. Let |axis| be the vector cross product of |z| and |ray|'s {{XRRay/direction}}, <code>z × direction</code>
   1. Let |angle| be the scalar dot product of |z| and |ray|'s {{XRRay/direction}}, <code>z · direction</code>
@@ -1261,7 +1261,7 @@ To <dfn for=XRRay>obtain the matrix</dfn> for a given {{XRRay}} |ray|
     1. Set |rotation| to the rotation matrix representing a right handed planar rotation around |axis| by |angle|
   1. Let |translation| be the translation matrix with components corresponding to |ray|'s {{XRRay/origin}}
   1. Let |matrix| be the result of premultiplying |rotation| from the left onto |translation| (i.e. <code>translation * rotation</code>) in column-vector notation.
-  1. Set |transform|'s [=XRRigidTransform/internal matrix=] to |matrix|
+  1. Set |ray|'s [=XRRay/internal matrix=] to |matrix|
   1. Return |matrix|
 
 </div>
