@@ -81,6 +81,7 @@ spec: Gamepad; urlPrefix: https://w3c.github.io/gamepad/#
     type: attribute; text: pressed; for: GamepadButton; url: dom-gamepadbutton-pressed
     type: attribute; text: value; for: GamepadButton; url: dom-gamepadbutton-value
 spec:html; type:method; for:HTMLCanvasElement; text:getContext(contextId); url: https://html.spec.whatwg.org/multipage/canvas.html#dom-canvas-getcontext
+spec:html; type:method; for:Window; text:requestAnimationFrame(callback); url: https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#dom-animationframeprovider-requestanimationframe
 spec: ECMAScript; urlPrefix: https://tc39.github.io/ecma262/#
     type: method; text: IsDetachedBuffer; url: sec-isdetachedbuffer
 spec: dom; urlPrefix: https://dom.spec.whatwg.org/#
@@ -722,6 +723,61 @@ When an {{XRSession}} |session| receives updated [=viewer=] state from the [=/XR
     1. If an exception is thrown, [=report the exception=].
   1. Set |frame|'s [=active=] boolean to <code>false</code>.
 
+</div>
+
+<div class="example">
+Depending on the device being used, callbacks supplied to {{Window}} {{Window/requestAnimationFrame()}} may not be processed while and [=immersive session=] is active. (For instance, on a mobile or standalone device where the immersive content completely obscures the HTML document.) As such, developers should not rely on {{Window}} {{Window/requestAnimationFrame()}} callbacks to schedule {{XRSession}} {{XRSession/requestAnimationFrame()}} callbacks and visa-versa, even if they share the same rendering logic, or the applications animation loop may not run properly on all platforms. A more effective pattern for applications that wish to transition between these two types of animation loops is demonstrated below:
+
+<pre highlight="js">
+let xrSession = null;
+let windowAnimationSuspended = false;
+
+function onWindowAnimationFrame(time) {
+  // This may be called while an immersive session is running on some devices,
+  // such as a desktop with a tethered headset. To prevent two animation loops
+  // from running in parallel, pause this one until the session ends.
+  if (xrSession) {
+    windowAnimationSuspended = true;
+    return;
+  }
+
+  window.requestAnimationFrame(onWindowAnimationFrame);
+  renderFrame(time, null);
+}
+// The window animation loop can be started immediately upon the page loading.
+window.requestAnimationFrame(onWindowAnimationFrame);
+
+function onXRAnimationFrame(time, xrFrame) {
+  xrSession.requestAnimationFrame(onXRAnimationFrame);
+  renderFrame(time, xrFrame);
+}
+
+function renderFrame(time, xrFrame) {
+  // Shared rendering logic.
+}
+
+// Assumed to be called by a user gesture event elsewhere in code.
+function startXRSession() {
+  navigator.xr.requestSession('immersive-vr').then((session) => {
+    xrSession = session;
+    xrSession.addEventListener('end', onXRSessionEnded);
+    // Do necessary session setup here.
+    // Begin the session's animation loop.
+    xrSession.requestAnimationFrame(onXRAnimationFrame);
+  });
+}
+
+function onXRSessionEnded() {
+  xrSession = null;
+  // Restart the window's animation loop if necessary
+  if (windowAnimationSuspended) {
+    window.requestAnimationFrame(onWindowAnimationFrame);
+    windowAnimationSuspended = false;
+  }
+}
+</pre>
+
+Applications which use {{XRSessionMode/"inline"}} sessions for rendering to the HTML document do not need to take any special steps to coordinate the animation loops, since the user agent will automatically suspend the animation loops of any {{XRSessionMode/"inline"}} sessions while an [=immersive session=] is active.
 </div>
 
 <section class="unstable">
