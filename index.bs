@@ -278,6 +278,9 @@ The <dfn attribute for="XR">ondevicechange</dfn> attribute is an [=Event handler
 When the <dfn method for="XR">supportsSession(|mode|)</dfn> method is invoked, it MUST run the following steps:
 
   1. Let |promise| be [=a new Promise=]
+  1. If |mode| is {{XRSessionMode/"inline"}}, run the following steps:
+    1. [=/Resolve=] |promise|.
+    1. Return |promise|.
   1. Run the following steps [=in parallel=]:
     1. [=ensures an XR device is selected|Ensure an XR device is selected=].
     1. If the [=XR/XR device=] is null, [=reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}} and abort these steps.
