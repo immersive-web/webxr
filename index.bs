@@ -661,7 +661,7 @@ When an {{XRRenderState}} object is created for an {{XRSession}} |session|, the 
 
 </div>
 
-The <dfn attribute for="XRRenderState">depthNear</dfn> attribute defines the distance, in meters, of the near clip plane from the viewer. The <dfn attribute for="XRRenderState">depthFar</dfn> attribute defines the distance, in meters, of the far clip plane from the viewer. 
+The <dfn attribute for="XRRenderState">depthNear</dfn> attribute defines the distance, in meters, of the near clip plane from the viewer. The <dfn attribute for="XRRenderState">depthFar</dfn> attribute defines the distance, in meters, of the far clip plane from the viewer.
 
 {{XRRenderState/depthNear}} and {{XRRenderState/depthFar}} is used in the computation of the {{XRView/projectionMatrix}} of {{XRView}}s and determines how the values of an {{XRWebGLLayer}} depth buffer are interpreted. {{XRRenderState/depthNear}} MAY be greater than {{XRRenderState/depthFar}}.
 
@@ -820,7 +820,7 @@ When the <dfn method for="XRFrame">getPose(|space|, |baseSpace|)</dfn> method is
 Spaces {#spaces}
 ======
 
-A core feature of the WebXR Device API is the ability to provide spatial tracking. Spaces are the interface that enable applications to reason about how tracked entities are spatially related to the user's physical environment and each other. 
+A core feature of the WebXR Device API is the ability to provide spatial tracking. Spaces are the interface that enable applications to reason about how tracked entities are spatially related to the user's physical environment and each other.
 
 XRSpace {#xrspace-interface}
 ------------------
@@ -829,7 +829,7 @@ An {{XRSpace}} represents a virtual coordinate system with an origin that corres
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRSpace : EventTarget {
-  
+
 };
 </pre>
 
@@ -958,7 +958,7 @@ XRBoundedReferenceSpace {#xrboundedreferencespace-interface}
 [SecureContext, Exposed=Window]
 interface XRBoundedReferenceSpace : XRReferenceSpace {
   readonly attribute FrozenArray&lt;DOMPointReadOnly&gt; boundsGeometry;
-};    
+};
 </pre>
 
 The origin of a {{XRBoundedReferenceSpace}} MUST be positioned at the floor, such that the `y` axis equals `0` at floor level. The `x` and `z` position and orientation are initialized based on the conventions of the underlying platform, typically expected to be near the center of the room facing in a logical forward direction.
@@ -1207,14 +1207,14 @@ The <dfn constructor for="XRRay">XRRay(|origin|, |direction|)</dfn> constructor 
   1. Let |ray| be a new {{XRRay}}.
   1. Initialize |ray|'s {{XRRay/origin}} based on the following:
     <dl class="switch">
-      <dt> If |origin| is not a {{DOMPointInit}} 
+      <dt> If |origin| is not a {{DOMPointInit}}
       <dd> Initialize |ray|'s {{XRRay/origin}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
       <dt> Else
       <dd> Initialize |ray|'s {{XRRay/origin}}’s {{DOMPointReadOnly/x}} value to |origin|'s x dictionary member, {{DOMPointReadOnly/y}} value to |origin|'s y dictionary member, {{DOMPointReadOnly/z}} value to |origin|'s z dictionary member and {{DOMPointReadOnly/w}} to <code>1.0</code>.
     </dl>
   1. Initialize |ray|'s {{XRRay/direction}} based on the following:
     <dl class="switch">
-      <dt> If |direction| is not a {{DOMPointInit}} 
+      <dt> If |direction| is not a {{DOMPointInit}}
       <dd> Initialize |ray|'s {{XRRay/direction}} to <code>{ x: 0.0, y: 0.0, z: -1.0, w: 0.0 }</code>.
       <dt> Else
       <dd> Initialize |ray|'s {{XRRay/direction}}’s {{DOMPointReadOnly/x}} value to |direction|'s x dictionary member, {{DOMPointReadOnly/y}} value to |direction|'s y dictionary member, {{DOMPointReadOnly/z}} value to |direction|'s z dictionary member and {{DOMPointReadOnly/w}} value to to <code>0.0</code>.
@@ -1222,7 +1222,7 @@ The <dfn constructor for="XRRay">XRRay(|origin|, |direction|)</dfn> constructor 
   1. [=Normalize=] the {{DOMPointReadOnly/x}}, {{DOMPointReadOnly/y}}, and {{DOMPointReadOnly/z}} components of |ray|'s {{XRRay/direction}}.
   1. Initialize |ray|'s [=XRRay/internal matrix=] to <code>null</code>.
   1. Return |ray|.
-  
+
 </div>
 
 <div class="algorithm" data-algorithm="construct-ray-transform">
@@ -1255,10 +1255,16 @@ To <dfn for=XRRay>obtain the matrix</dfn> for a given {{XRRay}} |ray|
     1. If the operation {{IsDetachedBuffer}} on [=XRRay/internal matrix=] is <code>false</code>, return |ray|'s [=XRRigidTransform/internal matrix=].
   1. Let |z| be the vector <code>[0, 0, -1]</code>
   1. Let |axis| be the vector cross product of |z| and |ray|'s {{XRRay/direction}}, <code>z × direction</code>
-  1. Let |angle| be the scalar dot product of |z| and |ray|'s {{XRRay/direction}}, <code>z · direction</code>
-  1. Let |rotation| be an identity matrix
-  1. If |axis| and |angle| are both nonzero:
-    1. Set |rotation| to the rotation matrix representing a right handed planar rotation around |axis| by |angle|
+  1. Let |cos_angle| be the scalar dot product of |z| and |ray|'s {{XRRay/direction}}, <code>z · direction</code>
+  1. Set |rotation| based on the following:
+    <dl class="switch">
+      <dt> If |cos_angle| is greater than -1 and less than 1
+      <dd> Set |rotation| to the rotation matrix representing a right handed planar rotation around |axis| by <code>arccos(cos_angle)</code>.
+      <dt> Else, if |cos_angle| is -1
+      <dd> Set |rotation| to the rotation matrix representing a right handed planar rotation around vector <code>[1, 0, 0]</code> by <code>arccos(cos_angle)</code>.
+      <dt> Else
+      <dd> Set |rotation| to an identity matrix.
+    </dl>
   1. Let |translation| be the translation matrix with components corresponding to |ray|'s {{XRRay/origin}}
   1. Let |matrix| be the result of premultiplying |rotation| from the left onto |translation| (i.e. <code>translation * rotation</code>) in column-vector notation.
   1. Set |ray|'s [=XRRay/internal matrix=] to |matrix|
@@ -1286,7 +1292,7 @@ The <dfn attribute for="XRPose">transform</dfn> attribute describes the position
 
 <section class="unstable">
 The <dfn attribute for="XRPose">emulatedPosition</dfn> attribute MUST be <code>false</code> if the {{XRPose/transform}}.{{XRRigidTransform/position}} values are based on sensor readings, or <code>true</code> if the position values are software estimations, such as those provided by a neck or arm model.
-</section> 
+</section>
 
 XRViewerPose {#xrviewerpose-interface}
 -------------
@@ -1421,7 +1427,7 @@ When a [=transient input source=] for {{XRSession}} |session| ends its [=primary
 
 When a [=transient input source=] for {{XRSession}} |session| has its [=primary action=] cancelled the UA MUST run the following steps:
 
-  1. [=Queue a task=] to perform the following steps:  
+  1. [=Queue a task=] to perform the following steps:
     1. Fire an {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
     1. [=remove input source|Remove the XR input source=] from the [=list of active XR input sources=].
     1. Fire any <code>"pointerup"</code> events produced by the [=XR input source=]'s action, if necessary.
@@ -1649,8 +1655,8 @@ Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">composition disabled</dfn> b
 The <dfn attribute for="XRWebGLLayer">framebuffer</dfn> attribute of an {{XRWebGLLayer}} is an instance of a {{WebGLFramebuffer}} which has been marked as [=opaque framebuffer|opaque=] if [=XRWebGLLayer/composition disabled=] is <code>false</code>, and <code>null</code> otherwise. The {{framebuffer}} size cannot be adjusted by the developer after the {{XRWebGLLayer}} has been created.
 
 An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFramebuffer}} with the following changes that make it behave more like the default framebuffer:
- 
- - An [=opaque framebuffer=] MAY support antialiasing, even in WebGL 1.0. 
+
+ - An [=opaque framebuffer=] MAY support antialiasing, even in WebGL 1.0.
  - An [=opaque framebuffer=]'s attachments cannot be inspected or changed. Calling {{framebufferTexture2D}}, {{framebufferRenderbuffer}}, {{getFramebufferAttachmentParameter}}, or {{getRenderbufferParameter}} with an [=opaque framebuffer=] MUST generate an {{INVALID_OPERATION}} error.
  - An [=opaque framebuffer=] is considered incomplete outside of an {{XRSession/requestAnimationFrame()}} callback. When not in a {{XRSession/requestAnimationFrame()}} callback calls to {{checkFramebufferStatus}} outside of an {{XRSession/requestAnimationFrame()}} callback MUST generate a {{FRAMEBUFFER_UNSUPPORTED}} error and attempts to clear, draw to, or read from the [=opaque framebuffer=] MUST generate an {{INVALID_FRAMEBUFFER_OPERATION}} error.
 
@@ -1874,7 +1880,7 @@ The <dfn attribute for="XRInputSourceEvent">buttonIndex</dfn> attribute indicate
 
 When the user agent fires an {{XRInputSourceEvent}} |event| it MUST run the following steps:
 
-  1. Let |frame| be |event|'s {{XRInputSourceEvent/frame}}. 
+  1. Let |frame| be |event|'s {{XRInputSourceEvent/frame}}.
   1. Set |frame|'s [=active=] boolean to <code>true</code>.
   1. [=Dispatch=] |event|.
   1. Set |frame|'s [=active=] boolean to <code>false</code>.
@@ -1899,7 +1905,7 @@ dictionary XRInputSourcesChangeEventInit : EventInit {
   required XRSession session;
   required FrozenArray&lt;XRInputSource&gt; added;
   required FrozenArray&lt;XRInputSource&gt; removed;
-  
+
 };
 </pre>
 
