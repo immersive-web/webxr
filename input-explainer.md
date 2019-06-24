@@ -228,9 +228,9 @@ For `tracked-pointer` input sources, it is often appropriate for the application
 #### Choosing renderable models
 The majority of `tracked-pointer` input sources will have a non-null `gamepad` attribute on the `XRInputSource` object. The `Gamepad`'s `id` is used to determine what should be rendered if the app intends to visualize the input source itself, rather than an alternative virtual object. (See the section on [Button and Axis State](#button-and-axis-state) for more details.)
 
-The WebXR Device API currently does not offer any way to retrieve renderable resources that represent the input devices from the API itself, and as such the `XRInputSource`'s `renderId` must be used to identify and load an appropriate resources. (For example, from the application's server, a CDN, or a local cache.) The `renderId` provides a list of strings that identify the device, given in descending order of preference.
+The WebXR Device API currently does not offer any way to retrieve renderable resources that represent the input devices from the API itself, and as such the `XRInputSource`'s `profiles` must be used to identify and load an appropriate resources. (For example, from the application's server, a CDN, or a local cache.) The `profiles` provides a list of strings that identify the device, given in descending order of preference.
 
-For example, the Samsung Odyssey controller is a variant of the standard Windows Mixed Reality controller. As a result, the `renderId` for a that controller could be:
+For example, the Samsung Odyssey controller is a variant of the standard Windows Mixed Reality controller. As a result, the `profiles` for a that controller could be:
 
 ```js
 // Exact strings are examples only.
@@ -241,9 +241,9 @@ Applications should iterate through the list until a string is located that corr
 
 ```js
 function loadRenderableInputModels(xrInputSource) {
-  for (let id of xrInputSource.renderId) {
-    // Retrieve a mesh to render based on the gamepad object's id and handedness
-    let renderableModel = getInputSourceRenderableModel(id, xrInputSource.handedness);
+  for (let profile of xrInputSource.profiles) {
+    // Retrieve a mesh to render based on the gamepad object's profile and handedness
+    let renderableModel = getInputSourceRenderableModel(profile, xrInputSource.handedness);
     
     if (renderableModel) {
       // Add the model to the imaginary 3D engine's scene.
@@ -252,7 +252,7 @@ function loadRenderableInputModels(xrInputSource) {
     }
   }
 
-  // If the renderId list was empty or a corresponding model could not be found
+  // If the profiles list was empty or a corresponding model could not be found
   // for any entry in it the application could respond by not rendering the
   // device at all or rendering a generic device that is not intended to be a
   // visual match. This sample chooses the latter approach.
@@ -418,9 +418,8 @@ interface XRInputSource {
   readonly attribute XRTargetRayMode targetRayMode;
   readonly attribute XRSpace targetRaySpace;
   readonly attribute XRSpace? gripSpace;
-  readonly attribute FrozenArray<DOMString> renderId;
-  readonly attribute FrozenArray<DOMString> gamepadLayout;
   readonly attribute Gamepad? gamepad;
+  readonly attribute FrozenArray<DOMString> profiles;
 };
 
 [SecureContext, Exposed=Window]

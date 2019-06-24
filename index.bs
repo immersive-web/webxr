@@ -1401,9 +1401,8 @@ interface XRInputSource {
   readonly attribute XRTargetRayMode targetRayMode;
   [SameObject] readonly attribute XRSpace targetRaySpace;
   [SameObject] readonly attribute XRSpace? gripSpace;
-  [SameObject] readonly attribute FrozenArray&lt;DOMString&gt; renderId;
-  [SameObject] readonly attribute FrozenArray&lt;DOMString&gt; gamepadLayout;
   [SameObject] readonly attribute Gamepad? gamepad;
+  [SameObject] readonly attribute FrozenArray&lt;DOMString&gt; profiles;
 };
 </pre>
 
@@ -1421,29 +1420,21 @@ The <dfn attribute for="XRInputSource">gripSpace</dfn> attribute is an {{XRSpace
 
 The {{gripSpace}} MUST be <code>null</code> if the input source isn't inherently trackable such as for input sources with a {{targetRayMode}} of {{XRTargetRayMode/gaze}} or {{XRTargetRayMode/screen}}.
 
-The <dfn attribute for="XRInputSource">renderId</dfn> attribute is a [=/list=] of [=input render ID=]s indicating the preffered visual representation of the {{XRInputSource}}. Identifiers are given in decending order of prefence.
+The <dfn attribute for="XRInputSource">profiles</dfn> attribute is a [=/list=] of [=input profile name=]s indicating both the preffered visual representation and the mapping of the buttons and axes of the {{XRInputSource/gamepad}} attribute of the {{XRInputSource}}. Names are given in decending order of preference.
 
-An <dfn for="XRInputSource">input render ID</dfn> is a lowercase {{DOMString}} containing no spaces, with separate words concatenated with a hyphen (<code>-</code>) character. A descriptive ID should be chosen, using the preferred verbiage of the device vendor when possible. If the platform provides an appropriate identifier, such as a USB vendor and product ID, it MAY be used. Values that uniquely identify the device, such as serial numbers, MUST NOT be used. The [=input render ID=] MUST NOT contain an indication of device handedness. If multiple user agents expose the same device, they SHOULD make an effort to report the same [=input render ID=].
+An <dfn for="XRInputSource">input profile name</dfn> is a lowercase {{DOMString}} containing no spaces, with separate words concatenated with a hyphen (<code>-</code>) character. A descriptive name should be chosen, using the preferred verbiage of the device vendor when possible. If the platform provides an appropriate identifier, such as a USB vendor and product ID, it MAY be used. Values that uniquely identify a single device, such as serial numbers, MUST NOT be used. The [=input profile name=] MUST NOT contain an indication of device handedness. If multiple user agents expose the same device, they SHOULD make an effort to report the same [=input profile name=].
 
-Any [=input render ID=]s given after the first should provide fallback values that represent alternative visual representations of the device. This may include a more generic or prior version of the device, a more widely recognized device that is sufficently visually similar, or a broad description of the device type (such as "touchpad-wand").
+Any [=input profile name=]s given after the first should provide fallback values that represent alternative visual representations and/or {{XRInputSource/gamepad}} layouts of the device. This may include a more generic or prior version of the device, a more widely recognized device that is sufficently similar, or a broad description of the device type (such as "touchpad-wand"). If multiple profiles are given the {{XRInputSource/gamepad}} layouts they describe must all represent a superset or subset of every other profile in the list.
 
-<p class="note">
-For example, the Samsung Odyssey controller is a variant of the standard Windows Mixed Reality controller. As a result, the {{XRInputSource/renderId}} for a Samsung Odyssey controller could be: <code>["samsung-odyssey", "windows-mixed-reality"]</code> (Exact strings are examples only. This specification does not make any recommendation for render ID strings.)
-</note>
-
-If the {{XRSession}}'s [=mode=] is {{XRSessionMode/inline}}, {{XRInputSource/renderId}} MUST be an empty array. If the input device cannot be reliably identified, {{XRInputSource/renderId}} MAY be an empty array. The user agent MAY choose to only report generic [=input render ID=]s or an empty array if it wishes to mask the input device being used.
-
-The <dfn attribute for="XRInputSource">gamepadLayout</dfn> attribute is a [=/list=] of [=gamepad layout ID=]s indicating the mapping of the buttons and axes of the {{XRInputSource/gamepad}} to the device. Identifiers are given in decending order of prefence.
-
-An <dfn for="XRInputSource">gamepad layout ID</dfn> is a lowercase {{DOMString}} containing no spaces, with separate words concatenated with a hyphen (<code>-</code>) character. A descriptive ID should be chosen, using the preferred verbiage of the device vendor when possible. The [=gamepad layout ID=] MAY use an exemplar device as the basis for the string, but SHOULD prefer strings that describe multiple devices which share the same button layout rather than a string that uniquely describes the device. The [=gamepad layout ID=] MUST NOT contain an indication of device handedness. If multiple user agents expose the same device, they SHOULD make an effort to report the same [=gamepad layout ID=].
-
-Any [=gamepad layout ID=]s given after the first should provide fallback values that describe a subset of the device layout or an alternate ID for backward compatibility.
+If the {{XRSession}}'s [=mode=] is {{XRSessionMode/inline}}, {{XRInputSource/profiles}} MUST be an empty list. If the input device cannot be reliably identified, or the user agent wishes to mask the input device being used, it MAY choose to only report generic [=input profile name=]s or an empty list.
 
 <p class="note">
-For example, the Valve Index controller is backwards compatible with and provides the same inputs as the HTC Vive controller, but the Index controller has additional buttons and axes. As a result, the {{XRInputSource/gamepadLayout}} for a Valve Index controller could be: <code>["valve-index", "htc-vive"]</code> (Exact strings are examples only. This specification does not make any recommendation for gamepad layout strings.)
-</note>
+For example, the Samsung Odyssey controller is a design variant of the standard Windows Mixed Reality controller. Both controllers share the same inputs. As a result, the {{XRInputSource/profiles}} for a Samsung Odyssey controller could be: <code>["samsung-odyssey", "windows-mixed-reality", "touchpad-thumbstick-wand"]</code>. Here the first two profiles would indicate the same input layout for the {{XRInputSource/gamepad}} attribute, but the appearance of the controller is more precisely communicated by the first profile in the list, with the second profile describing an acceptable substitue. The last profile is a generic fallback that describes the device in the roughest sense. (It's a wand with a touchpad and thumbstick.)
 
-If {{XRInputSource/gamepad}} is <code>null</code>, {{XRInputSource/gamepadLayout}} MUST be an empty array. If the gamepad cannot be reliably identified or the user agent wishes to mask the gamepad being used, {{XRInputSource/gamepadLayout}} MAY be an empty array.
+Similarly, the Valve Index controller is backwards compatible with the HTC Vive controller, but the Index controller has additional buttons and axes. As a result, the {{XRInputSource/profiles}} for the Valve Index controller could be: <code>["valve-index", "htc-vive", "touchpad-thumbstick-wand"]</code>. In this case the gamepad layout described by the <code>"valve-index"</code> profile must be a superset of the layout described by the <code>"htc-vive"</code> profile. Also, the <code>"valve-index"</code> profile indicates the precise appearance of the controller, while the <code>"htc-vive"</code> controller has a significantly different appearance. In this case the UA would have deemed that difference acceptable. And as in the first example, the last profile is a generic fallback.
+
+(Exact strings are examples only. This specification does not make any recommendation for profile strings.)
+</p>
 
 The <dfn attribute for="XRInputSource">gamepad</dfn> attribute is a {{Gamepad}} that describes the state of any buttons and axes on the [=XR input source=]. If the  [=XR input source=] does not have at least one of the following properties, the {{gamepad}} attribute MUST be <code>null</code>:
 
