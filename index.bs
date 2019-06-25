@@ -726,24 +726,22 @@ When an {{XRSession}} |session| receives updated [=viewer=] state from the [=/XR
 </div>
 
 <div class="example">
-Depending on the device being used, callbacks supplied to {{Window}} {{Window/requestAnimationFrame()}} may not be processed while and [=immersive session=] is active. (For instance, on a mobile or standalone device where the immersive content completely obscures the HTML document.) As such, developers should not rely on {{Window}} {{Window/requestAnimationFrame()}} callbacks to schedule {{XRSession}} {{XRSession/requestAnimationFrame()}} callbacks and visa-versa, even if they share the same rendering logic, or the applications animation loop may not run properly on all platforms. A more effective pattern for applications that wish to transition between these two types of animation loops is demonstrated below:
+Depending on the device being used, callbacks supplied to {{Window}} {{Window/requestAnimationFrame()}} may not be processed while an [=immersive session=] is active. For instance, on a mobile or standalone device where the immersive content completely obscures the HTML document. As such, developers must not rely on {{Window}} {{Window/requestAnimationFrame()}} callbacks to schedule {{XRSession}} {{XRSession/requestAnimationFrame()}} callbacks and visa-versa, even if they share the same rendering logic. Applications that do not follow this guidance may not execute properly on all platforms. A more effective pattern for applications that wish to transition between these two types of animation loops is demonstrated below:
 
 <pre highlight="js">
 let xrSession = null;
-let windowAnimationSuspended = false;
 
 function onWindowAnimationFrame(time) {
-  // This may be called while an immersive session is running on some devices,
-  // such as a desktop with a tethered headset. To prevent two animation loops
-  // from running in parallel, pause this one until the session ends.
-  if (xrSession) {
-    windowAnimationSuspended = true;
-    return;
-  }
-
   window.requestAnimationFrame(onWindowAnimationFrame);
-  renderFrame(time, null);
+
+  // This may be called while an immersive session is running on some devices,
+  // such as a desktop with a tethered headset. To prevent two loops from
+  // rendering in parallel, skip drawing in this one until the session ends.
+  if (!xrSession) {
+    renderFrame(time, null);
+  }
 }
+
 // The window animation loop can be started immediately upon the page loading.
 window.requestAnimationFrame(onWindowAnimationFrame);
 
@@ -769,11 +767,6 @@ function startXRSession() {
 
 function onXRSessionEnded() {
   xrSession = null;
-  // Restart the window's animation loop if necessary
-  if (windowAnimationSuspended) {
-    window.requestAnimationFrame(onWindowAnimationFrame);
-    windowAnimationSuspended = false;
-  }
 }
 </pre>
 
