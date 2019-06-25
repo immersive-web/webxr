@@ -230,11 +230,11 @@ The majority of `tracked-pointer` input sources will have a non-null `gamepad` a
 
 The WebXR Device API currently does not offer any way to retrieve renderable resources that represent the input devices from the API itself, and as such the `XRInputSource`'s `profiles` must be used to identify and load an appropriate resources. (For example, from the application's server, a CDN, or a local cache.) The `profiles` provides a list of strings that identify the device, given in descending order of preference.
 
-For example, the Samsung Odyssey controller is a variant of the standard Windows Mixed Reality controller. As a result, the `profiles` for a that controller could be:
+For example, the Samsung Odyssey controller is a variant of the standard Windows Mixed Reality controller. As a result, the `profiles` for that controller could be:
 
 ```js
 // Exact strings are examples only.
-["samsung-odyssey", "windows-mixed-reality"]
+["samsung-odyssey", "windows-mixed-reality", "touchpad-thumbstick-controller"]
 ```
 
 Applications should iterate through the list until a string is located that corresponds to a known model, which should then be used when rendering the input device. The example below presumes that the `getInputSourceRenderableModel` call would do the required lookup and caching.
@@ -303,7 +303,7 @@ Examples of input sources that may expose their state this way include Oculus To
   - The `Gamepad`'s `index` attribute must be `-1`.
   - The `Gamepad`'s `connected` attribute must be `true` unless the related `XRInputSource` is removed from the `inputSources` array or the related `XRSession` is ended.
 
-The exact button and axes layout is given by the `XRInputSource`'s `gamepadLayout` attribute, which contains an array of strings that identify the button and axes layout or subsets of it, ordered from most specific to least specific.
+The exact button and axes layout is given by the `XRInputSource`'s `profiles` attribute, which contains an array of strings that identify the button and axes layout or subsets of it, ordered from most specific to least specific.
 
 ```js
 function onXRFrame(timestamp, frame) {
