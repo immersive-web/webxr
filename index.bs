@@ -201,7 +201,7 @@ XR device {#xr-device-concept}
 
 An <dfn for="">XR device</dfn> is a physical unit of hardware that can present imagery to the user. On desktop clients, this is usually a headset peripheral. On mobile clients, it may represent the mobile device itself in conjunction with a viewer harness. It may also represent devices without stereo-presentation capabilities but with more advanced tracking.
 
-An [=/XR device=] has a <dfn>list of supported modes</dfn> (a [=/list=] of [=/strings=]) that [=list/contains=] "<code>inline</code>" and all the other enumeration values of {{XRSessionMode}} that the [=/XR device=] supports.
+An [=/XR device=] has a <dfn>list of supported modes</dfn> (a [=/list=] of [=/strings=]) that [=list/contains=] the enumeration values of {{XRSessionMode}} that the [=/XR device=] supports.
 
 Initialization {#initialization}
 ==============
@@ -235,22 +235,22 @@ The user agent MUST create an {{XR}} object when a {{Navigator}} object is creat
 
 An {{XR}} object is the entry point to the API, used to query for XR features available to the user agent and initiate communication with XR hardware via the creation of {{XRSession}}s.
 
-An {{XR}} object has a <dfn>list of XR devices</dfn> (a [=/list=] of [=/XR device=]), which MUST be initially an empty [=/list=].
+An {{XR}} object has a <dfn>list of immersive XR devices</dfn> (a [=/list=] of [=/XR device=]), which MUST be initially an empty [=/list=].
 
-An {{XR}} object has an <dfn for=XR>XR device</dfn> (null or [=/XR device=]) which is initially null and represents the active [=/XR device=] from the [=list of XR devices=].
+An {{XR}} object has an <dfn for=XR>XR device</dfn> (null or [=/XR device=]) which is initially null and represents the active [=/XR device=] from the [=list of immersive XR devices=].
 
-The user agent MUST be able to <dfn>enumerate XR devices</dfn> attached to the system, at which time each available device is placed in the [=list of XR devices=]. Subsequent algorithms requesting enumeration MUST reuse the cached [=list of XR devices=]. Enumerating the devices [=should not initialize device tracking=]. After the first enumeration the user agent MUST begin monitoring device connection and disconnection, adding connected devices to the [=list of XR devices=] and removing disconnected devices.
+The user agent MUST be able to <dfn>enumerate immersive XR devices</dfn> attached to the system, at which time each available device is placed in the [=list of immersive XR devices=]. Subsequent algorithms requesting enumeration MUST reuse the cached [=list of immersive XR devices=]. Enumerating the devices [=should not initialize device tracking=]. After the first enumeration the user agent MUST begin monitoring device connection and disconnection, adding connected devices to the [=list of immersive XR devices=] and removing disconnected devices.
 
 <div class="algorithm" data-algorithm="xr-device-selection">
 
-Each time the [=list of XR devices=] changes the user agent should <dfn>select an XR device</dfn> by running the following steps:
+Each time the [=list of immersive XR devices=] changes the user agent should <dfn>select an immersive XR device</dfn> by running the following steps:
 
   1. Let |oldDevice| be the [=XR/XR device=].
-  1. If the [=list of XR devices=] is an empty [=/list=], set the [=XR/XR device=] to null.
-  1. If the [=list of XR devices=]'s [=list/size=] is one, set the [=XR/XR device=] to the [=list of XR devices=][0].
+  1. If the [=list of immersive XR devices=] is an empty [=/list=], set the [=XR/XR device=] to <code>null</code>.
+  1. If the [=list of immersive XR devices=]'s [=list/size=] is one, set the [=XR/XR device=] to the [=list of immersive XR devices=][0].
   1. Set the [=XR/XR device=] based on the following:
     <dl class="switch">
-      <dt> If there are any active {{XRSession}}s and the [=list of XR devices=] [=list/contains=] |oldDevice|
+      <dt> If there are any active {{XRSession}}s and the [=list of immersive XR devices=] [=list/contains=] |oldDevice|
       <dd> Set the [=XR/XR device=] to |oldDevice|
       <dt> Otherwise
       <dd> Set the [=XR/XR device=] to a device of the user agent's choosing
@@ -262,15 +262,15 @@ Each time the [=list of XR devices=] changes the user agent should <dfn>select a
 
 </div>
 
-NOTE: The user agent is allowed to use any criteria it wishes to [=select an XR device=] when the [=list of XR devices=] contains multiple devices. For example, the user agent may always select the first item in the list, or provide settings UI that allows users to manage device priority. Ideally the algorithm used to select the default device is stable and will result in the same device being selected across multiple browsing sessions.
+NOTE: The user agent is allowed to use any criteria it wishes to [=select an immersive XR device=] when the [=list of immersive XR devices=] contains multiple devices. For example, the user agent may always select the first item in the list, or provide settings UI that allows users to manage device priority. Ideally the algorithm used to select the default device is stable and will result in the same device being selected across multiple browsing sessions.
 
 <div class="algorithm" data-algorithm="ensure-device-selected">
 
-The user agent <dfn>ensures an XR device is selected</dfn> by running the following steps:
+The user agent <dfn>ensures an immersive XR device is selected</dfn> by running the following steps:
 
   1. If the [=context object=]'s [=XR/XR device=] is not null, abort these steps.
-  1. [=Enumerate XR devices=].
-  1. [=Select an XR device=].
+  1. [=Enumerate immersive XR devices=].
+  1. [=Select an immersive XR device=].
 
 </div>
 
@@ -280,9 +280,9 @@ The <dfn attribute for="XR">ondevicechange</dfn> attribute is an [=Event handler
 
 When the <dfn method for="XR">supportsSession(|mode|)</dfn> method is invoked, it MUST run the following steps:
 
-  1. Let |promise| be [=a new Promise=]
+  1. Let |promise| be [=a new Promise=].
   1. Run the following steps [=in parallel=]:
-    1. [=ensures an XR device is selected|Ensure an XR device is selected=].
+    1. [=ensures an immersive XR device is selected|Ensure an immersive XR device is selected=].
     1. If the [=XR/XR device=] is null, [=reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}} and abort these steps.
     1. If the [=XR/XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|, [=reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}} and abort these steps.
     1. [=/Resolve=] |promise|.
@@ -316,7 +316,7 @@ When the <dfn method for="XR">requestSession(|mode|)</dfn> method is invoked, th
     1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
     1. Set [=pending immersive session=] to <code>true</code>.
   1. Run the following steps [=in parallel=]:
-    1. [=ensures an XR device is selected|Ensure an XR device is selected=].
+    1. [=ensures an immersive XR device is selected|Ensure an immersive XR device is selected=].
     1. [=Queue a task=] to perform the following steps:
         1. If the [=XR/XR device=] is <code>null</code> or [=XR/XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|, run the following steps:
             1. [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
