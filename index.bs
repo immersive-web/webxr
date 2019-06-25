@@ -1566,7 +1566,7 @@ The WebXR Device API extends the {{GamepadMappingType}} to describe the mapping 
 
 The <dfn enum-value for="GamepadMappingType">xr-standard</dfn> mapping indicates that the layout of the buttons and axes of the {{XRInputSource/gamepad}} corresponds as closely as possible to the tables below.
 
-In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} the device MUST report an {{XRInputSource/targetRayMode}} of {{XRTargetRayMode/tracked-pointer}} and MUST have a non-<code>null</code> {{XRInputSource/gripSpace}}. It also MUST have at least one touchpad or thumbstick and MUST have at least one primary button, often a trigger, separate from the touchpad or thumbstick. If a device does not meet the requirements for the {{GamepadMappingType/xr-standard}} mapping it may still be exposed on an {{XRInputSource}} with the <code>""</code> (empty string) mapping. The {{GamepadMappingType/xr-standard}} mapping MUST only be used by {{Gamepad}} instances reported by an {{XRInputSource}}.
+In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} the device MUST report an {{XRInputSource/targetRayMode}} of {{XRTargetRayMode/tracked-pointer}} and MUST have a non-<code>null</code> {{XRInputSource/gripSpace}}. It also MUST have at least one touchpad or thumbstick and MUST have at least one primary button, often a trigger, separate from the touchpad or thumbstick. If a device does not meet the requirements for the {{GamepadMappingType/xr-standard}} mapping it may still expose a {{XRInputSource/gamepad}} with a {{Gamepad/mapping}} of <code>""</code> (empty string). The {{GamepadMappingType/xr-standard}} mapping MUST only be used by {{Gamepad}} instances reported by an {{XRInputSource}}.
 
 <table class="tg">
   <thead>
@@ -1634,10 +1634,14 @@ In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} t
 
 Devices that lack one of the optional inputs listed in the tables above MUST preserve their place in the {{Gamepad/buttons}} or {{Gamepad/axes}} array, reporting a <dfn>placeholder button</dfn> or <dfn>placeholder axis</dfn>, respectively. A [=placeholder button=] MUST report <code>0</code> for {{GamepadButton/value}}, <code>false</code> for {{GamepadButton/pressed}}, and <code>false</code> for {{GamepadButton/touched}}. A [=placeholder axis=] MUST report <code>0</code>. [=Placeholder buttons=] and [=placeholder axis|axes=] MUST be omitted if they are the last element in the array or all following elements are also [=placeholder buttons=] or [=placeholder axis|axes=].
 
-Additional buttons or axes may be exposed after these reserved indices, and SHOULD appear in order of decreasing importance. Related axes (such both axes of a thumbstick) SHOULD be grouped and, if applicable, SHOULD appear in X, Y, Z order. Buttons reserved by the UA or platform MUST NOT be exposed.
+Additional buttons or axes may be exposed after these reserved indices, and SHOULD appear in order of decreasing importance. Related axes (such as both axes of a thumbstick) SHOULD be grouped and, if applicable, SHOULD appear in X, Y, Z order. Buttons reserved by the UA or platform MUST NOT be exposed.
 
 <section class="note">
+<<<<<<< HEAD
 This diagram demonstrates how two potential controllers would be exposed with the {{GamepadMappingType/xr-standard}} mapping. <img src="images/xr-standard-mapping.svg" alt="Simple 'xr-standard' controller and Advanced 'xr-standard' controller">
+=======
+This diagram demonstrates how two example controllers would be exposed with the {{GamepadMappingType/xr-standard}} mapping. Images are not intended to represent any particular device and are used for reference purposes only. <img src="images/xr-standard-mapping.svg" alt="Simple 'xr-standard' controller and Advanced 'xr-standard' controller">
+>>>>>>> Addressed Nell's feedback
 </section>
 
 Layers {#layers}
