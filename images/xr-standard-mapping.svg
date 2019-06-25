@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
-   sodipodi:docname="controller.svg">
+   sodipodi:docname="xr-standard-mapping.svg">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8"
-     inkscape:cx="381.21983"
-     inkscape:cy="311.364"
+     inkscape:zoom="1.979899"
+     inkscape:cx="399.47711"
+     inkscape:cy="703.73681"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -397,7 +397,7 @@
          x="74.415047"
          y="113.79053"
          style="font-size:4.23333311px;line-height:0.5;text-align:center;text-anchor:middle;stroke-width:0.26458332"
-         id="tspan5165-0-8">(Touchpad Click)</tspan></text>
+         id="tspan5165-0-8">(Touchpad Press)</tspan></text>
     <path
        style="fill:none;stroke:#ff0909;stroke-width:0.46500009;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.93000006, 0.46500004;stroke-dashoffset:0;stroke-opacity:1"
        d="m 33.889438,98.965592 4.881146,7.959928 h 20.312485"
@@ -477,44 +477,44 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:0.5;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="64.945122"
+       x="66.003456"
        y="199.14392"
        id="text5155-1-6-8"><tspan
          sodipodi:role="line"
-         x="64.945122"
+         x="66.003456"
          y="199.14392"
          style="font-size:4.23333311px;line-height:0.5;text-align:center;text-anchor:middle;fill:#2109ff;fill-opacity:1;stroke:none;stroke-width:0.26458332;stroke-opacity:1"
-         id="tspan5161-9-84-1">axes[1]</tspan><tspan
+         id="tspan5161-9-84-1">axes[3]</tspan><tspan
          sodipodi:role="line"
-         x="64.945122"
+         x="66.003456"
          y="204.67264"
          style="font-size:4.23333311px;line-height:0.5;text-align:center;text-anchor:middle;stroke-width:0.26458332"
-         id="tspan5165-0-2-8">(Joystick Y)</tspan></text>
+         id="tspan5165-0-2-8">(Thumbstick Y)</tspan></text>
     <path
        style="fill:none;stroke:#2809ff;stroke-width:0.46500012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.93000007, 0.46500005;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 29.157323,215.3292 13.907715,-17.25414 12.532396,0.13364"
+       d="m 29.157323,215.3292 13.907715,-17.25414 13.467839,0.13364"
        id="path5167-2-8-54"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccc" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:0.5;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="57.86248"
+       x="58.920815"
        y="187.55022"
        id="text5155-1-6-4-6"><tspan
          sodipodi:role="line"
-         x="57.86248"
+         x="58.920815"
          y="187.55022"
          style="font-size:4.23333311px;line-height:0.5;text-align:center;text-anchor:middle;fill:#2109ff;fill-opacity:1;stroke:none;stroke-width:0.26458332;stroke-opacity:1"
-         id="tspan5161-9-84-2-7">axes[0]</tspan><tspan
+         id="tspan5161-9-84-2-7">axes[2]</tspan><tspan
          sodipodi:role="line"
-         x="57.86248"
+         x="58.920815"
          y="193.07893"
          style="font-size:4.23333311px;line-height:0.5;text-align:center;text-anchor:middle;stroke-width:0.26458332"
-         id="tspan5165-0-2-4-0">(Joystick X)</tspan></text>
+         id="tspan5165-0-2-4-0">(Thumbstick X)</tspan></text>
     <path
        style="fill:none;stroke:#2109ff;stroke-width:0.46500012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.93000008, 0.46500005;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 29.157323,215.3292 6.023264,-29.38238 12.828939,0.13363"
+       d="m 29.157323,215.3292 6.023264,-29.38238 14.298921,0.13363"
        id="path5167-2-8-5-3"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccc" />
@@ -528,12 +528,12 @@
          x="76.370033"
          y="210.47946"
          style="font-size:4.23333311px;line-height:0.5;text-align:center;text-anchor:middle;fill:#ff0909;fill-opacity:1;stroke:none;stroke-width:0.26458332;stroke-opacity:1"
-         id="tspan5161-9-8-3">buttons[1]</tspan><tspan
+         id="tspan5161-9-8-3">buttons[3]</tspan><tspan
          sodipodi:role="line"
          x="76.370033"
          y="216.00818"
          style="font-size:4.23333311px;line-height:0.5;text-align:center;text-anchor:middle;stroke-width:0.26458332"
-         id="tspan5361">(Joystick Click)</tspan></text>
+         id="tspan5361">(Thumbstick Press)</tspan></text>
     <path
        style="fill:none;stroke:#ff0909;stroke-width:0.46500012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.93000007, 0.46500005;stroke-dashoffset:0;stroke-opacity:1"
        d="m 29.157323,215.3292 14.24094,-5.91862 h 20.312485"
@@ -688,17 +688,19 @@
          x="103.03984"
          y="283.68451"
          style="font-size:4.23333311px;line-height:0.5;text-align:center;text-anchor:middle;fill:#ff0909;fill-opacity:1;stroke-width:0.26458332"
-         id="tspan5165-0-0-0"><tspan
+         id="tspan1063"><tspan
    style="fill:#000000;fill-opacity:1"
-   id="tspan5533">NOTE: </tspan>buttons[3]<tspan
+   id="tspan5533">NOTE: For this device <tspan
+   style="fill:#0000ff;fill-opacity:1"
+   id="tspan1066">axes[0]</tspan>, <tspan
+   style="fill:#0000ff;fill-opacity:1"
+   id="tspan1078">axes[1]</tspan>, and </tspan>buttons[1]<tspan
    style="fill:#000000;fill-opacity:1"
-   id="tspan5539"> is left empty, since it is reserved</tspan></tspan><tspan
+   id="tspan5539"> are</tspan></tspan><tspan
          sodipodi:role="line"
          x="103.03984"
          y="289.21323"
-         style="font-size:4.23333311px;line-height:0.5;text-align:center;text-anchor:middle;fill:#ff0909;fill-opacity:1;stroke-width:0.26458332"
-         id="tspan5531"><tspan
-           style="fill:#000000;fill-opacity:1"
-           id="tspan5541">for a secondary joystick or touchpad click</tspan></tspan></text>
+         style="font-size:4.23333311px;line-height:0.5;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:0.26458332"
+         id="tspan5531">placeholders, since they are reserved for Touchpad inputs</tspan></text>
   </g>
 </svg>

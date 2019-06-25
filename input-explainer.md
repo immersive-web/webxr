@@ -313,7 +313,7 @@ function onXRFrame(timestamp, frame) {
   if (inputSource && inputSource.gamepad) {
     let gamepad = inputSource.gamepad;
     
-    // Use joystick or touchpad values for movement.
+    // Use touchpad values for movement.
     if (gamepad.axes.length >= 2) {
       MoveUser(gamepad.axes[0], gamepad.axes[1]);
     }
@@ -336,29 +336,29 @@ The UA may update the `gamepad` state at any point, but it must remain constant 
 
 ### XR gamepad mapping
 
-The WebXR Device API also introduces a new standard controller layout indicated by the `mapping` value of `xr-standard`. (Additional mapping variants may be added in the future if necessary.) This defines a specific layout for the inputs most commonly found on XR controller devices today. The following table describes the buttons/axes and their physical locations:
+The WebXR Device API also introduces a new standard controller layout indicated by the `mapping` value of `xr-standard`. (Additional mapping variants may be added in the future if necessary.) This defines a specific layout for the inputs most commonly found on XR controller devices today. The following table describes the buttons/axes and their associated physical inputs:
 
-| Button     | `xr-standard` Location            |
-| ---------- | --------------------------------- |
-| buttons[0] | Primary trigger                   |
-| buttons[1] | Primary Touchpad/Joystick click   |
-| buttons[2] | Grip/Secondary trigger            |
-| buttons[3] | Secondary Touchpad/Joystick click |
+| Button     | `xr-standard` Binding  |
+| ---------- | -----------------------|
+| buttons[0] | Primary trigger        |
+| buttons[1] | Touchpad press         |
+| buttons[2] | Grip/Secondary trigger |
+| buttons[3] | Thumbstick press       |
 
-| Axis    | `xr-standard` Location        |
-| ------- | ----------------------------- |
-| axes[0] | Primary Touchpad/Joystick X   |
-| axes[1] | Primary Touchpad/Joystick Y   |
-| axes[2] | Secondary Touchpad/Joystick X |
-| axes[3] | Secondary Touchpad/Joystick Y |
+| Axis    | `xr-standard` Binding |
+| ------- | ----------------------|
+| axes[0] | Touchpad X            |
+| axes[1] | Touchpad Y            |
+| axes[2] | Thumbstick X          |
+| axes[3] | Thumbstick Y          |
 
-Additional device-specific inputs may be exposed after these reserved indices, but devices that lack one of the canonical inputs must still preserve their place in the array. If a device has both a touchpad and a joystick the UA should designate one of them to be the primary axis-based input and expose the other at axes[2] and axes[3] with an associated button at button[3].
+Additional device-specific inputs may be exposed after these reserved indices, but devices that lack one of the canonical inputs must still preserve their place in the array.
 
 In order to make use of the `xr-standard` mapping, a device must meet **at least** the following criteria:
 
  - Is a `tracked-pointer` device. 
  - Has a trigger or similarly accessed button
- - Has at least one touchpad or joystick
+ - Has at least one touchpad or thumbstick
 
 devices that lack one of those elements may still expose `gamepad` data, but must not claim the `xr-standard` mapping. For example: The controls on the side of a Gear VR would not qualify for the `xr-standard` mapping because they represent a `gaze`-style input. Similarly, a Daydream controller would not qualify for the `xr-standard` mapping since it lacks a trigger.
 
@@ -368,13 +368,16 @@ Some native APIs rely on what's commonly referred to as an "action mapping" syst
 
 When using an API that limits reading controller input to use of an action map, it is suggested that a mapping be created with one action per possible input, given the same name as the target input. For example, an similar mapping to the following may be used for each device:
 
-| Button/Axis | Action name      | Sample binding            |
-|-------------|------------------|---------------------------|
-| button[0]   | "trigger"        | "[device]/trigger"        |
-| button[1]   | "touchpad-click" | "[device]/touchpad/click" |
-| button[2]   | "grip"           | "[device]/grip"           |
-| axis[0]     | "touchpad-x"     | "[device]/touchpad/x"     |
-| axis[1]     | "touchpad-y"     | "[device]/touchpad/y"     |
+| Button/Axis | Action name        | Sample binding              |
+|-------------|--------------------|-----------------------------|
+| button[0]   | "trigger"          | "[device]/trigger"          |
+| button[1]   | "touchpad-click"   | "[device]/touchpad/click"   |
+| button[2]   | "grip"             | "[device]/grip"             |
+| button[3]   | "thumbstick-click" | "[device]/thumbstick/click" |
+| axis[0]     | "touchpad-x"       | "[device]/touchpad/x"       |
+| axis[1]     | "touchpad-y"       | "[device]/touchpad/y"       |
+| axis[2]     | "thumbstick-x"     | "[device]/thumbstick/x"     |
+| axis[3]     | "thumbstick-y"     | "[device]/thumbstick/y"     |
 
 If the API does not provided a way to enumerate the available input devices, the UA should provide bindings for the left and right hand instead of a specific device and expose a `Gamepad` for any hand that has at least one non-`null` input.
 

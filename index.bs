@@ -1551,7 +1551,6 @@ Gamepad API Integration {#gamepad-api-integration}
 ISSUE: <a href="https://github.com/immersive-web/webxr/issues/550">GitHub #550</a> - Additional restrictions, still under discussion, will be applied to the formatting of the {{XRInputSource/gamepad}}'s {{Gamepad/id}} attribute. Until those restrictions have been identified, all {{XRInputSource/gamepad}} {{Gamepad/id}}'s should default to <code>"unknown"</code>.
 </section>
 
-<section class="unstable">
 "xr-standard" Gamepad Mapping {#xr-standard-gamepad-mapping}
 -----------------------------
 
@@ -1567,13 +1566,13 @@ The WebXR Device API extends the {{GamepadMappingType}} to describe the mapping 
 
 The <dfn enum-value for="GamepadMappingType">xr-standard</dfn> mapping indicates that the layout of the buttons and axes of the {{XRInputSource/gamepad}} corresponds as closely as possible to the tables below.
 
-In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} the device MUST report an {{XRInputSource/targetRayMode}} of {{XRTargetRayMode/tracked-pointer}} and MUST have a non-<code>null</code> {{XRInputSource/gripSpace}}. It also MUST have at least one touchpad or joystick and MUST have at least one primary button, often a trigger, separate from the touchpad or joystick. If a device does not meet the requirements for the {{GamepadMappingType/xr-standard}} mapping it may still be exposed on an {{XRInputSource}} with the <code>""</code> (empty string) mapping. The {{GamepadMappingType/xr-standard}} mapping MUST only be used by {{Gamepad}} instances reported by an {{XRInputSource}}.
+In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} the device MUST report an {{XRInputSource/targetRayMode}} of {{XRTargetRayMode/tracked-pointer}} and MUST have a non-<code>null</code> {{XRInputSource/gripSpace}}. It also MUST have at least one touchpad or thumbstick and MUST have at least one primary button, often a trigger, separate from the touchpad or thumbstick. If a device does not meet the requirements for the {{GamepadMappingType/xr-standard}} mapping it may still be exposed on an {{XRInputSource}} with the <code>""</code> (empty string) mapping. The {{GamepadMappingType/xr-standard}} mapping MUST only be used by {{Gamepad}} instances reported by an {{XRInputSource}}.
 
 <table class="tg">
   <thead>
     <tr>
       <th>Buttons</th>
-      <th><code>xr-standard</code> Location</th>
+      <th><code>xr-standard</code> Binding</th>
       <th>Required</th>
     </tr>
   </thead>
@@ -1585,8 +1584,8 @@ In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} t
     </tr>
     <tr>
       <td>buttons[1]</td>
-      <td>Primary Touchpad/Joystick Button</td>
-      <td>Yes</td>
+      <td>Touchpad Press</td>
+      <td>If thumbstick is not present</td>
     </tr>
     <tr>
       <td>buttons[2]</td>
@@ -1595,8 +1594,8 @@ In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} t
     </tr>
     <tr>
       <td>buttons[3]</td>
-      <td>Secondary Touchpad/Joystick Button</td>
-      <td>No</td>
+      <td>Thumbstick Press</td>
+      <td>If touchpad is not present</td>
     </tr>
   </tbody>
 </table>
@@ -1605,39 +1604,40 @@ In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} t
   <thead>
     <tr>
       <th>Axes</th>
-      <th><code>xr-standard</code> Location</th>
+      <th><code>xr-standard</code> Binding</th>
       <th>Required</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td>axes[0]</td>
-      <td>Primary Touchpad/Joystick X</td>
-      <td>Yes</td>
+      <td>Touchpad X</td>
+      <td>If thumbstick is not present</td>
     </tr>
     <tr>
       <td>axes[1]</td>
-      <td>Primary Touchpad/Joystick Y</td>
-      <td>Yes</td>
+      <td>Touchpad Y</td>
+      <td>If thumbstick is not present</td>
     </tr>
     <tr>
       <td>axes[2]</td>
-      <td>Secondary Touchpad/Joystick X</td>
-      <td>No</td>
+      <td>Thumbstick X</td>
+      <td>If touchpad is not present</td>
     </tr>
     <tr>
       <td>axes[3]</td>
-      <td>Secondary Touchpad/Joystick Y</td>
-      <td>No</td>
+      <td>Thumbstick Y</td>
+      <td>If touchpad is not present</td>
     </tr>
   </tbody>
 </table>
 
 Devices that lack one of the optional inputs listed in the tables above MUST preserve their place in the {{Gamepad/buttons}} or {{Gamepad/axes}} array, reporting a <dfn>placeholder button</dfn> or <dfn>placeholder axis</dfn>, respectively. A [=placeholder button=] MUST report <code>0</code> for {{GamepadButton/value}}, <code>false</code> for {{GamepadButton/pressed}}, and <code>false</code> for {{GamepadButton/touched}}. A [=placeholder axis=] MUST report <code>0</code>. [=Placeholder buttons=] and [=placeholder axis|axes=] MUST be omitted if they are the last element in the array or all following elements are also [=placeholder buttons=] or [=placeholder axis|axes=].
 
-Additional buttons or axes may be exposed after these reserved indices, and SHOULD appear in order of decreasing importance. Related axes (such both axes of a joystick) SHOULD be grouped and, if applicable, SHOULD appear in X, Y, Z order. If a device has both a touchpad and a joystick the UA MAY designate whichever it chooses to be the primary axis-based input. Buttons reserved by the UA or platform MUST NOT be exposed.
+Additional buttons or axes may be exposed after these reserved indices, and SHOULD appear in order of decreasing importance. Related axes (such both axes of a thumbstick) SHOULD be grouped and, if applicable, SHOULD appear in X, Y, Z order. Buttons reserved by the UA or platform MUST NOT be exposed.
 
-NOTE: This diagram demonstrates how two potential controllers would be exposed with the {{GamepadMappingType/xr-standard}} mapping. <img src="images/xr-standard-mapping.svg" alt="Simple 'xr-standard' controller and Advanced 'xr-standard' controller">
+<section class="note">
+This diagram demonstrates how two potential controllers would be exposed with the {{GamepadMappingType/xr-standard}} mapping. <img src="images/xr-standard-mapping.svg" alt="Simple 'xr-standard' controller and Advanced 'xr-standard' controller">
 </section>
 
 Layers {#layers}
