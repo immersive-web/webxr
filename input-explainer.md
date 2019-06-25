@@ -382,6 +382,17 @@ If the API does not provided a way to enumerate the available input devices, the
 
 The UA must not make any attempt to circumvent user remapping of the inputs.
 
+### Generic Profiles
+
+The strings returned in the `profiles` array of an `XRInputSource` describe the device being used with varying levels of detail, ranging from exactly identifying the device to only giving a broad description of it's shape and capabilities. It's highly recommended that, when applicable, the last profile in the array be from a list of well-known "generic" profiles, given below.
+
+ - **"button-controller":** A controller with at least one button/trigger but no touchpad or thumbstick. Controllers with this profile must not use the `xr-standard` Gamepad mapping.
+ - **"touchpad-controller"** A controller with a touchpad, but no thumbstick. If the controller also has at least one additional button or trigger it must use the `xr-standard` Gamepad mapping.
+ - **"thumbstick-controller"** A controller with a thumbstick, but no touchpad. If the controller also has at least one additional button or trigger it must use the `xr-standard` Gamepad mapping.
+ - **"touchpad-thumbstick-controller"** A controller with both a touchpad and a thumbstick. If the controller also has at least one additional button or trigger it must use the `xr-standard` Gamepad mapping.
+
+More generic profiles may be added to this list over time as new common form factors are observed.
+
 ## Appendix A: Proposed partial IDL
 This is a partial IDL and is considered additive to the core IDL found in the main [explainer](explainer.md).
 ```webidl
