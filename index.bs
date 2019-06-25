@@ -1634,7 +1634,7 @@ In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} t
 
 Devices that lack one of the optional inputs listed in the tables above MUST preserve their place in the {{Gamepad/buttons}} or {{Gamepad/axes}} array, reporting a <dfn>placeholder button</dfn> or <dfn>placeholder axis</dfn>, respectively. A [=placeholder button=] MUST report <code>0</code> for {{GamepadButton/value}}, <code>false</code> for {{GamepadButton/pressed}}, and <code>false</code> for {{GamepadButton/touched}}. A [=placeholder axis=] MUST report <code>0</code>. [=Placeholder buttons=] and [=placeholder axis|axes=] MUST be omitted if they are the last element in the array or all following elements are also [=placeholder buttons=] or [=placeholder axis|axes=].
 
-Additional buttons or axes may be exposed after these reserved indices, and SHOULD appear in order of decreasing importance. Related axes (such as both axes of a thumbstick) SHOULD be grouped and, if applicable, SHOULD appear in X, Y, Z order. Buttons reserved by the UA or platform MUST NOT be exposed.
+Additional buttons or axes may be exposed after these reserved indices, and SHOULD appear in order of decreasing importance. Related axes (such as both axes of a thumbstick) MUST be grouped and, if applicable, MUST appear in X, Y, Z order. Buttons reserved by the UA or platform MUST NOT be exposed.
 
 <section class="note">
 <<<<<<< HEAD
