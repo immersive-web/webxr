@@ -1637,11 +1637,7 @@ Devices that lack one of the optional inputs listed in the tables above MUST pre
 Additional buttons or axes may be exposed after these reserved indices, and SHOULD appear in order of decreasing importance. Related axes (such as both axes of a thumbstick) MUST be grouped and, if applicable, MUST appear in X, Y, Z order. Buttons reserved by the UA or platform MUST NOT be exposed.
 
 <section class="note">
-<<<<<<< HEAD
-This diagram demonstrates how two potential controllers would be exposed with the {{GamepadMappingType/xr-standard}} mapping. <img src="images/xr-standard-mapping.svg" alt="Simple 'xr-standard' controller and Advanced 'xr-standard' controller">
-=======
 This diagram demonstrates how two example controllers would be exposed with the {{GamepadMappingType/xr-standard}} mapping. Images are not intended to represent any particular device and are used for reference purposes only. <img src="images/xr-standard-mapping.svg" alt="Simple 'xr-standard' controller and Advanced 'xr-standard' controller">
->>>>>>> Addressed Nell's feedback
 </section>
 
 Layers {#layers}
