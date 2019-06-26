@@ -341,8 +341,8 @@ The WebXR Device API also introduces a new standard controller layout indicated 
 | Button     | `xr-standard` Binding  |
 | ---------- | -----------------------|
 | buttons[0] | Primary trigger        |
-| buttons[1] | Touchpad press         |
-| buttons[2] | Grip/Secondary trigger |
+| buttons[1] | Grip/Secondary trigger |
+| buttons[2] | Touchpad press         |
 | buttons[3] | Thumbstick press       |
 
 | Axis    | `xr-standard` Binding |
@@ -371,8 +371,8 @@ When using an API that limits reading controller input to use of an action map, 
 | Button/Axis | Action name        | Sample binding              |
 |-------------|--------------------|-----------------------------|
 | button[0]   | "trigger"          | "[device]/trigger"          |
-| button[1]   | "touchpad-click"   | "[device]/touchpad/click"   |
-| button[2]   | "grip"             | "[device]/grip"             |
+| button[1]   | "grip"             | "[device]/grip"             |
+| button[2]   | "touchpad-click"   | "[device]/touchpad/click"   |
 | button[3]   | "thumbstick-click" | "[device]/thumbstick/click" |
 | axis[0]     | "touchpad-x"       | "[device]/touchpad/x"       |
 | axis[1]     | "touchpad-y"       | "[device]/touchpad/y"       |

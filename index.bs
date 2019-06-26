@@ -1584,13 +1584,13 @@ In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} t
     </tr>
     <tr>
       <td>buttons[1]</td>
-      <td>Touchpad Press</td>
-      <td>If thumbstick is not present</td>
+      <td>Secondary Button/Grip Trigger</td>
+      <td>No</td>
     </tr>
     <tr>
       <td>buttons[2]</td>
-      <td>Secondary Button/Grip Trigger</td>
-      <td>No</td>
+      <td>Touchpad Press</td>
+      <td>If thumbstick is not present</td>
     </tr>
     <tr>
       <td>buttons[3]</td>
