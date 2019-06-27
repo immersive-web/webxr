@@ -357,10 +357,9 @@ Additional device-specific inputs may be exposed after these reserved indices, b
 In order to make use of the `xr-standard` mapping, a device must meet **at least** the following criteria:
 
  - Is a `tracked-pointer` device. 
- - Has a trigger or similarly accessed button
- - Has at least one touchpad or thumbstick
+ - Has a trigger or similarly accessed button separate from any touchpads or thumbsticks
 
-devices that lack one of those elements may still expose `gamepad` data, but must not claim the `xr-standard` mapping. For example: The controls on the side of a Gear VR would not qualify for the `xr-standard` mapping because they represent a `gaze`-style input. Similarly, a Daydream controller would not qualify for the `xr-standard` mapping since it lacks a trigger.
+devices that do not meet that criteria may still expose `gamepad` data, but must not claim the `xr-standard` mapping. For example: The controls on the side of a Gear VR would not qualify for the `xr-standard` mapping because they represent a `gaze`-style input. Similarly, a Daydream controller would not qualify for the `xr-standard` mapping since it lacks a trigger.
 
 ### Exposing button/axis values with action maps
 
