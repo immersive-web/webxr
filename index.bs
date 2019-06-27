@@ -2067,7 +2067,7 @@ Gaze Tracking {#gazetracking-security}
 
 While the API does not yet expose eye tracking capabilities a lot can be inferred about where the user is looking by tracking the orientation of their head. This is especially true of XR devices that have limited input capabilities, such as Google Cardboard, which frequently require users to control a "gaze cursor" with their head orientation. This means that it may be possible for a malicious page to infer what a user is typing on a virtual keyboard or how they are interacting with a virtual UI based solely on monitoring their head movements. For example: if not prevented from doing so a page could estimate what URL a user is entering into the user agent's URL bar.
 
-To prevent this risk the user agent MUST set the [=visibility state=] of all {{XRSession}}s to {{XRVisibilityState/hidden}} or {{XRVisibilityState/visible-blurred}} when the users is interacting with sensitive, trusted UI such as URL bars or system dialogs. Additionally, to prevent a malicious page from being able to monitor input on a other pages the user agent MUST set the [=visibility state=] of all {{XRSession}}s on non-focused pages to {{XRVisibilityState/hidden}}.
+To prevent this risk the user agent MUST set the [=visibility state=] of all {{XRSession}}s to {{XRVisibilityState/hidden}} when the users is interacting with sensitive, trusted UI such as URL bars or system dialogs. Additionally, to prevent a malicious page from being able to monitor input on a other pages the user agent MUST set the [=visibility state=] of all {{XRSession}}s on non-focused pages to {{XRVisibilityState/hidden}}.
 
 Trusted Environment {#trustedenvironment-security}
 -------------------
@@ -2078,7 +2078,7 @@ Additionally, page content has the ability to make users uncomfortable in ways n
 
 When navigating between pages in XR the user agent should display trusted UI elements informing the user of the security information of the site they are navigating to which is normally presented by the 2D UI, such as the URL and encryption status.
 
-{{XRSession}}s MUST have their [=visibility state=] set to {{XRVisibilityState/hidden}} or {{XRVisibilityState/visible-blurred}} when the user is interacting with potentially sensitive UI from the user agent (such as entering a URL) in the trusted environment.
+{{XRSession}}s MUST have their [=visibility state=] set to {{XRVisibilityState/hidden}} when the user is interacting with potentially sensitive UI from the user agent (such as entering a URL) in the trusted environment.
 
 Context Isolation {#contextisolation-security}
 -----------------
