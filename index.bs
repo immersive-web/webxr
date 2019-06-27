@@ -205,7 +205,7 @@ An [=/XR device=] has a <dfn>list of supported modes</dfn> (a [=/list=] of [=/st
 
 The user-agent MUST have an <dfn>inline XR Device</dfn>, which is an [=/XR Device=] that MUST [=list/contains|contain=] {{XRSessionMode/"inline"}} in its [=list of supported modes=]. The [=Inline XR Device=] will report as much pose information of the physical device the browser is rendering to as possible.
 
-NOTE: On phones, the [=inline XR Device=] will report gyroscopic pose information of the phone itself. On desktops and laptops without gyroscopes, the [=inline XR Device=] will not be able to report a pose (and thus {{local}} and {{local-floor}} {{XRSpace}}s will not be [=reference space is supported|supported=]). In case the browser is already running on an [=/XR device=], the [=inline XR device=] will be the same device, and may support multiple [=view|views=].
+NOTE: On phones, the [=inline XR Device=] will report gyroscopic pose information of the phone itself. On desktops and laptops without gyroscopes, the [=inline XR Device=] will not be able to report a pose. In case the browser is already running on an [=/XR device=], the [=inline XR device=] will be the same device, and may support multiple [=view|views=].
 
 Initialization {#initialization}
 ==============
@@ -461,7 +461,7 @@ When an {{XRSession}} is shut down the following steps are run:
   1. If no other features of the user agent are actively using them, perform the necessary platform-specific steps to shut down the device's tracking and rendering capabilities. This MUST include:
     - Releasing [=exclusive access=] to the [=XRSession/XR device=] if |session| is an [=immersive session=].
     - Deallocating any graphics resources acquired by |session| for presentation to the [=XRSession/XR device=].
-    - Putting the [=XRSession/XR device=] in a state such that a different source may be able to initiate a session with the same device.
+    - Putting the [=XRSession/XR device=] in a state such that a different source may be able to initiate a session with the same device if |session| is an [=immersive session=].
   1. [=Queue a task=] that fires an {{XRSessionEvent}} named {{end!!event}} on |session|.
 
 </div>
@@ -1739,7 +1739,7 @@ WebGL Context Compatibility {#contextcompatibility}
 
 In order for a WebGL context to be used as a source for immersive XR imagery it must be created on a <dfn>compatible graphics adapter</dfn> for the [=XR/immersive XR device=]. What is considered a [=compatible graphics adapter=] is platform dependent, but is understood to mean that the graphics adapter can supply imagery to the [=XR/immersive XR device=] without undue latency. If a WebGL context was not already created on the [=compatible graphics adapter=], it typically must be re-created on the adapter in question before it can be used with an {{XRWebGLLayer}}.
 
-Note: On an XR platform with a single GPU, it can safely be assumed that the GPU is compatible with the [=XR/immersive XR device=]s advertised by the platform, and thus any hardware accelerated WebGL contexts are compatible as well. On PCs with both an integrated and discreet GPU the discreet GPU is often considered the [=compatible graphics adapter=] since it generally a higher performance chip. On desktop PCs with multiple graphics adapters installed, the one with the [=XR/immersive XR device=] physically connected to it is likely to be considered the [=compatible graphics adapter=].
+Note: On an XR platform with a single GPU, it can safely be assumed that the GPU is compatible with the [=XR/immersive XR device=]s advertised by the platform, and thus any hardware accelerated WebGL contexts are compatible as well. On PCs with both an integrated and discrete GPU the discrete GPU is often considered the [=compatible graphics adapter=] since it generally a higher performance chip. On desktop PCs with multiple graphics adapters installed, the one with the [=XR/immersive XR device=] physically connected to it is likely to be considered the [=compatible graphics adapter=].
 
 Note: {{XRSessionMode/"inline"}} sessions render using the same graphics adapter as canvases, and thus do not need {{WebGLContextAttributes/xrCompatible}} contexts.
 
@@ -1961,7 +1961,7 @@ Event Types {#event-types}
 
 The user agent MUST provide the following new events. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
 
-The user agent MAY fire a <dfn event for="XR">devicechange</dfn> event on the {{XR}} object to indicate that the availability of [=XR/immersive XR device=]s has been changed. The event MUST be of type {{Event}}.
+The user agent MUST fire a <dfn event for="XR">devicechange</dfn> event on the {{XR}} object to indicate that the availability of [=XR/immersive XR device=]s has been changed. The event MUST be of type {{Event}}.
 
 A user agent MUST dispatch a <dfn event for="XRSession">visibilitychange</dfn> event on an {{XRSession}} each time the [=XRSession/visibility state=] of the {{XRSession}} has changed. The event MUST be of type {{XRSessionEvent}}.
 
