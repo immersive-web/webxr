@@ -1555,7 +1555,6 @@ The <dfn attribute for="XRInputSourceArray">length</dfn> attribute of {{XRInputS
 
 The <dfn export for="XRInputSourceArray">[=/indexed property getter=]</dfn> of {{XRInputSourceArray}} retrieves the {{XRInputSource}} at the provided index.
 
-<section class="unstable">
 Gamepad API Integration {#gamepad-api-integration}
 -----------------------
 
@@ -1566,9 +1565,6 @@ Gamepad API Integration {#gamepad-api-integration}
   - {{XRInputSource/gamepad}}'s {{Gamepad/index}} attribute MUST be <code>-1</code>.
   - {{XRInputSource/gamepad}}'s {{Gamepad/connected}} attribute MUST be <code>true</code> until the {{XRInputSource}} is removed from the [=list of active XR input sources=] or the {{XRSession}} is ended.
   - If an axis reported by the {{XRInputSource/gamepad}}'s {{Gamepad/axes}} array represents an axis of a touchpad, the value MUST be <code>0</code> when the associated {{GamepadButton}}'s {{GamepadButton/touched}} is <code>false</code>.
-
-ISSUE: <a href="https://github.com/immersive-web/webxr/issues/550">GitHub #550</a> - Additional restrictions, still under discussion, will be applied to the formatting of the {{XRInputSource/gamepad}}'s {{Gamepad/id}} attribute. Until those restrictions have been identified, all {{XRInputSource/gamepad}} {{Gamepad/id}}'s should default to <code>"unknown"</code>.
-</section>
 
 "xr-standard" Gamepad Mapping {#xr-standard-gamepad-mapping}
 -----------------------------
