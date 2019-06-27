@@ -18,13 +18,6 @@ Editor: Brandon Jones 87824, Google http://google.com/, bajones@google.com
 Editor: Nell Waliczek 93109, Amazon [Microsoft until 2018] https://amazon.com/, nhw@amazon.com
 
 Abstract: This specification describes support for accessing virtual reality (VR) and augmented reality (AR) devices, including sensors and head-mounted displays, on the Web.
-
-Warning: custom
-Custom Warning Title: Unstable API
-Custom Warning Text:
-  <b>Parts of the API represented in this document are incomplete and may change at any time.</b>
-  <p>For additional context on the use of this API please reference the <a href="https://github.com/immersive-web/webxr/blob/master/explainer.md">WebXR Device API Explainer</a>.</p>
-
 </pre>
 
 <pre class="link-defaults">
