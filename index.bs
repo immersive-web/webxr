@@ -1572,7 +1572,7 @@ In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} t
   <thead>
     <tr>
       <th>Buttons</th>
-      <th><code>xr-standard</code> Binding</th>
+      <th><code>xr-standard</code> Mapping</th>
       <th>Required</th>
     </tr>
   </thead>
@@ -1604,7 +1604,7 @@ In order to report a {{Gamepad/mapping}} of {{GamepadMappingType/xr-standard}} t
   <thead>
     <tr>
       <th>Axes</th>
-      <th><code>xr-standard</code> Binding</th>
+      <th><code>xr-standard</code> Mapping</th>
       <th>Required</th>
     </tr>
   </thead>

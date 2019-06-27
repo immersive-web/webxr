@@ -338,14 +338,14 @@ The UA may update the `gamepad` state at any point, but it must remain constant 
 
 The WebXR Device API also introduces a new standard controller layout indicated by the `mapping` value of `xr-standard`. (Additional mapping variants may be added in the future if necessary.) This defines a specific layout for the inputs most commonly found on XR controller devices today. The following table describes the buttons/axes and their associated physical inputs:
 
-| Button     | `xr-standard` Binding  |
-| ---------- | -----------------------|
-| buttons[0] | Primary trigger        |
-| buttons[1] | Grip/Secondary trigger |
-| buttons[2] | Touchpad press         |
-| buttons[3] | Thumbstick press       |
+| Button     | `xr-standard` Mapping    |
+| ---------- | -------------------------|
+| buttons[0] | Primary button/trigger   |
+| buttons[1] | Secondary button/trigger |
+| buttons[2] | Touchpad press           |
+| buttons[3] | Thumbstick press         |
 
-| Axis    | `xr-standard` Binding |
+| Axis    | `xr-standard` Mapping |
 | ------- | ----------------------|
 | axes[0] | Touchpad X            |
 | axes[1] | Touchpad Y            |
