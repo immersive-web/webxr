@@ -80,8 +80,10 @@ spec: Gamepad; urlPrefix: https://w3c.github.io/gamepad/#
     type: attribute; text: touched; for: GamepadButton; url: dom-gamepadbutton-touched
     type: attribute; text: pressed; for: GamepadButton; url: dom-gamepadbutton-pressed
     type: attribute; text: value; for: GamepadButton; url: dom-gamepadbutton-value
-spec:html; type:method; for:HTMLCanvasElement; text:getContext(contextId); url: https://html.spec.whatwg.org/multipage/canvas.html#dom-canvas-getcontext
-spec:html; type:method; for:Window; text:requestAnimationFrame(callback); url: https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#dom-animationframeprovider-requestanimationframe
+spec:html; urlPrefix: https://html.spec.whatwg.org/multipage/
+    type:method; for:HTMLCanvasElement; text:getContext(contextId); url: canvas.html#dom-canvas-getcontext
+    type:method; for:Window; text:requestAnimationFrame(callback); url: imagebitmap-and-animations.html#dom-animationframeprovider-requestanimationframe
+    type: dfn; text: currently focused area; url: interaction.html#currently-focused-area-of-a-top-level-browsing-context
 spec: ECMAScript; urlPrefix: https://tc39.github.io/ecma262/#
     type: method; text: IsDetachedBuffer; url: sec-isdetachedbuffer
 spec: dom; urlPrefix: https://dom.spec.whatwg.org/#
@@ -2067,7 +2069,7 @@ Gaze Tracking {#gazetracking-security}
 
 While the API does not yet expose eye tracking capabilities a lot can be inferred about where the user is looking by tracking the orientation of their head. This is especially true of XR devices that have limited input capabilities, such as Google Cardboard, which frequently require users to control a "gaze cursor" with their head orientation. This means that it may be possible for a malicious page to infer what a user is typing on a virtual keyboard or how they are interacting with a virtual UI based solely on monitoring their head movements. For example: if not prevented from doing so a page could estimate what URL a user is entering into the user agent's URL bar.
 
-To prevent this risk the user agent MUST set the [=visibility state=] of all {{XRSession}}s to {{XRVisibilityState/hidden}} when the users is interacting with sensitive, trusted UI such as URL bars or system dialogs. Additionally, to prevent a malicious page from being able to monitor input on a other pages the user agent MUST set the [=visibility state=] of all {{XRSession}}s on non-focused pages to {{XRVisibilityState/hidden}}.
+To prevent this risk the user agent MUST set the [=visibility state=] of all {{XRSession}}s to {{XRVisibilityState/"hidden"}} when the user is interacting with sensitive, trusted UI such as URL bars or system dialogs. Additionally, to prevent a malicious page from being able to monitor input on other pages the user agent MUST set the {{XRSession}}'s [=visibility state=] to {{XRVisibilityState/"hidden"}} if the [=currently focused area=] does belong to the document which created the {{XRSession}}.
 
 Trusted Environment {#trustedenvironment-security}
 -------------------
