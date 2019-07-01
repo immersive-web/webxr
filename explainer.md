@@ -421,7 +421,10 @@ Developers communicate their feature requirements by categorizing them into one 
 * **Required** This feature must be available in order for the experience to function at all. If [explicit consent](privacy-security-explainer.md#explicit-consent) is necessary, users will be prompted in response to `xr.requestSession()`. Session creation will be rejected if the feature is unavailable for the XR device or if the UA determines the user does not wish the feature enabled.
 * **Optional** The experience would like to use this feature for the entire session, but can function without it. Again, if [explicit consent](privacy-security-explainer.md#explicit-consent) is necessary, users will be prompted in response to `xr.requestSession()`. However, session creation will succeed regardless of the feature's hardware support or user intent. Developers must not assume optional features are available in the session and check the result from attempting to use them.
 
-If the UA does not recognize an entry in `XRSession.requiredFeatures` the session will not be created. Under some circumstances, features recognized by the UA but not explicitly listed in these arrays may be implicitly added to `XRSessionInit.optionalFeatures`. For example, if a feature does not require a signal of [user intent](privacy-security-explainer.md#user-intent). Or, if the requested session mode implies consent, such as `immersive-vr` does for `local` and `local-floor` reference spaces. 
+If the UA does not recognize an entry in `XRSession.requiredFeatures` the session will not be created. Some features recognized by the UA but not explicitly listed in these arrays may be enabled by default for a session. This is only allowed if the feature does not require a signal of [user intent](privacy-security-explainer.md#user-intent) nor impact performance or the behavior of other features when enabled. At this time, only the following features may be enabled by default:
+| Feature | Circumstances |
+| ------ | ------- |
+| `local` | Successfully created session of mode `immersive-ar` or `immersive-vr` |
 
 The following sample code represents the likely behavior of the guided tour example above. It depends on having an [`unbounded` reference space](spatial-tracking-explainer.md#unbounded-reference-space) and will reject creating the session if not available.
 
