@@ -417,14 +417,11 @@ WebXR allows the following features to be requested:
 
 This list is currently limited to a subset of reference space types, but in the future will expand to include additional features. Some potential future features under discussion that would be candidates for this list are: eye tracking, plane detection, geo alignment, etc.
 
-Developers communicate their feature requirements by categorizing them into one of the following groups:
-* **Required** This feature must be available in order for the experience to function at all. If [explicit consent](privacy-security-explainer.md#explicit-consent) is necessary, users will be prompted in response to `xr.requestSession()`. Session creation will be rejected if the feature is unavailable for the XR device or if the UA determines the user does not wish the feature enabled.
-* **Optional** The experience would like to use this feature for the entire session, but can function without it. Again, if [explicit consent](privacy-security-explainer.md#explicit-consent) is necessary, users will be prompted in response to `xr.requestSession()`. However, session creation will succeed regardless of the feature's hardware support or user intent. Developers must not assume optional features are available in the session and check the result from attempting to use them.
+Developers communicate their feature requirements by categorizing them into one of the following sequences in the `XRSessionInit` that can be passed into `xr.requestSession()`:
+* **`requiredFeatures`** This feature must be available in order for the experience to function at all. If [explicit consent](privacy-security-explainer.md#explicit-consent) is necessary, users will be prompted in response to `xr.requestSession()`. Session creation will be rejected if the feature is unavailable for the XR device, if the UA determines the user does not wish the feature enabled, or if the UA does not recognize the feature being requested. 
+* **`optionalFeatures`** The experience would like to use this feature for the entire session, but can function without it. Again, if [explicit consent](privacy-security-explainer.md#explicit-consent) is necessary, users will be prompted in response to `xr.requestSession()`. However, session creation will succeed regardless of the feature's hardware support or user intent. Developers must not assume optional features are available in the session and check the result from attempting to use them.
 
-If the UA does not recognize an entry in `XRSession.requiredFeatures` the session will not be created. Some features recognized by the UA but not explicitly listed in these arrays may be enabled by default for a session. This is only allowed if the feature does not require a signal of [user intent](privacy-security-explainer.md#user-intent) nor impact performance or the behavior of other features when enabled. At this time, only the following features may be enabled by default:
-| Feature | Circumstances |
-| ------ | ------- |
-| `local` | Successfully created session of mode `immersive-ar` or `immersive-vr` |
+(NOTE: `xr.supportsSession()` does not accept an `XRSessionInit` parameter and supplying one will have no effect)
 
 The following sample code represents the likely behavior of the guided tour example above. It depends on having an [`unbounded` reference space](spatial-tracking-explainer.md#unbounded-reference-space) and will reject creating the session if not available.
 
@@ -457,6 +454,11 @@ function onSessionStarted(session) {
   });
 }
 ```
+
+Some features recognized by the UA but not explicitly listed in these arrays will be enabled by default for a session. This is only done if the feature does not require a signal of [user intent](privacy-security-explainer.md#user-intent) nor impact performance or the behavior of other features when enabled. At this time, only the following features will be enabled by default:
+| Feature | Circumstances |
+| ------ | ------- |
+| `local` | Successfully created session of mode `immersive-ar` or `immersive-vr` |
 
 ### Controlling rendering quality
 
@@ -602,10 +604,15 @@ partial interface Navigator {
   readonly attribute XR xr;
 };
 
+dictionary XRSessionInit {
+  sequence<DOMString> requiredFeatures;
+  sequence<DOMString> optionalFeatures;
+}
+
 [SecureContext, Exposed=Window] interface XR : EventTarget {
   attribute EventHandler ondevicechange;
   Promise<void> supportsSession(XRSessionMode mode);
-  Promise<XRSession> requestSession(XRSessionMode mode);
+  Promise<XRSession> requestSession(XRSessionMode mode, optional XRSessionInit);
 };
 
 //
@@ -616,11 +623,6 @@ enum XRSessionMode {
   "inline",
   "immersive-vr",
   "immersive-ar"
-}
-
-dictionary XRSessionInit {
-  sequence<DOMString> requiredFeatures;
-  sequence<DOMString> optionalFeatures;
 }
 
 [SecureContext, Exposed=Window] interface XRSession : EventTarget {
