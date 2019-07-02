@@ -393,10 +393,14 @@ NOTE: Examples of ways [=exclusive access=] may be presented include stereo cont
 
 NOTE: As an example of overlaid UI, the user-agent or operating system in an [=immersive session=] may show notifications over the rendered content. Similarly, in {{immersive-ar}} mode the user-agent or operating system may overlay mandatory "home" and navigational buttons over the user's wrist.
 
-Session Features {#session-features}
-----------------
+Feature Dependencies {#feature-dependencies}
+--------------------
 
-Some features of {{XRSession}} may require the user's consent to access, and will be inaccessable by default unless the features are explicitly requested when calling {{XR/requestSession()}}. These features are passed via {{XRSessionInit}} object.
+Some features of an {{XRSession}} may not be universally available for a number of reasons, among which is the fact not all XR devices can support the full set of features. Another consideration is that some features expose [=sensitive information=] which may require a clear signal of [=user intent=] before functioning.
+
+Since it is a poor user experience to to initialize the underlying XR platform and create an {{XRSession}} only to immediately notify the user that the applications cannot function correctly, developers can indicate <dfn>required features</dfn> by passing an {{XRSessionInit}} dictionary to {{XR/requestSession()}}. This will block the creation of the {{XRSession}} if any of the [=required features=] are unavailable due to device limitations or in the absense of a clear signal of [=user intent=] to expose [=sensitive information=] related to the feature.
+
+Additionally, developers are encouraged to design experiences which progressively enchance their funcionality when run one more capable devices. <dfn>Optional features</dfn> which the experience does not required but will take advantage of when available must also be indicated in an {{XRSessionInit}} dictionary to ensure that [=user intent=] can be determined before enabling the feature if necessary.
 
 <pre class="idl">
 dictionary XRSessionInit {
@@ -405,16 +409,15 @@ dictionary XRSessionInit {
 };
 </pre>
 
-Requested features are split into two groups:
+The <dfn dict-member for="XRSessionInit">requiredFeatures</dfn> array contains any [=Required features=] for the experience. If any value in the list is not a recognized [=feature name=] the {{XRSession}} will not be created. If any feature listed in the {{XRSessionInit/requiredFeatures}} array is not supported by the [=XRSession/XR Device=] or, if necessary, has not received a clear signal of [=user intent=] the {{XRSession}} will not be created.
 
- - Required features are passed by via the <dfn dict-member for="XRSessionInit">requiredFeatures</dfn> array. If any value in the list is not a recognized [=feature name=] the {{XRSession}} will not be created. All features listed in the {{XRSessionInit/requiredFeatures}} array MUST be supported by the [=XRSession/XR Device=] and, if necessary, consented to by the user or the {{XRSession}} will not be created.
- - Optional features are passed via the <dfn dict-member for="XRSessionInit">optionalFeatures</dfn> array. If any value in the list is not a recognized [=feature name=] it will be ignored. Features listed in the {{XRSessionInit/optionalFeatures}} array will be enabled if supported by the [=XRSession/XR Device=] and, if necessary, consented to by the user, but will not block creation of the {{XRSession}} if absent. 
+The <dfn dict-member for="XRSessionInit">optionalFeatures</dfn> array contains any [=Optional features=] for the experience. If any value in the list is not a recognized [=feature name=] it will be ignored. Features listed in the {{XRSessionInit/optionalFeatures}} array will be enabled if supported by the [=XRSession/XR Device=] and, if necessary, given a clear signal of [=user intent=], but will not block creation of the {{XRSession}} if absent. 
 
 The feature lists accept any string. However, in order to be a considered a valid <dfn>feature name</dfn>, the string must be a value from the following enums:
 
  - {{XRReferenceSpaceType}}
 
-Some {{XRSessionMode}}s request certain [=feature names=] as optional features by default. The following table described the <dfn>default features</dfn> associated with each {{XRSessionMode}}:
+Some {{XRSessionMode}}s request certain [=feature names=] as [=optional features=] by default. This is only done if the feature does not require a signal of [=user intent=] nor impact performance or the behavior of other features when enabled. The following table described the <dfn>default features</dfn> associated with each {{XRSessionMode}}:
 
 <table class="tg">
   <thead>
@@ -425,13 +428,17 @@ Some {{XRSessionMode}}s request certain [=feature names=] as optional features b
   </thead>
   <tbody>
     <tr>
+      <td>{{XRReferenceSpaceType/"viewer"}}</td>
+      <td>{{XRSessionMode/"inline"}}, {{XRSessionMode/"immersive-vr"}}</td>
+    </tr>
+    <tr>
       <td>{{XRReferenceSpaceType/"local"}}</td>
       <td>{{XRSessionMode/"immersive-vr"}}</td>
     </tr>
   </tbody>
 </table>
 
-ISSUE: Define what it means when a feature <dfn>requires consent</dfn>, how user agents can <dfn>request user consent</dfn>, and what it means when a user <dfn>denied consent</dfn>.
+ISSUE: Define <dfn>sensitive information</dfn>, what qualifies as a signal of <dfn>user intent</dfn>, when <dfn>explicit consent</dfn> is necessary, and how user agents can <dfn>request user consent</dfn>.
 
 <div class="algorithm" data-algorithm="resolve-features">
 
@@ -442,24 +449,23 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
   1. For each |feature| in |requiredFeatures| perform the following steps:
     1. If |feature| is not a valid [=feature name=], return <code>false</code>.
     1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=], return <code>false</code>.
-    1. If the functionality described by |feature| [=requires consent=], append it to |consentRequired|.
+    1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentRequired|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. For each |feature| in |optionalFeatures| perform the following steps:
     1. If |feature| is not a valid [=feature name=], continue to the next entry.
     1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=], continue to the next entry.
-    1. If the functionality described by |feature| [=requires consent=], append it to |consentOptional|.
+    1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentOptional|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. For each |feature| in the [=default features=] table perform the following steps:
     1. If |session|'s [=XRSession/mode=] is not one of the modes associated with |feature| in the [=default features=], continue to the next entry.
     1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=], continue to the next entry.
-    1. If the functionality described by |feature| [=requires consent=], append it to |consentOptional|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. If |consentRequired| or |consentOptional| are not empty, [=request user consent=] to use the functionality described by those features.
-  1. For each |feature| in |requiredFeatures| perform the following steps:
-    1. If the user [=denied consent=] to use |feature|, return <code>false</code>.
+  1. For each |feature| in |consentRequired| perform the following steps:
+    1. If a clear signal of [=user intent=] to enable |feature| has not been given, return <code>false</code>.
     1. Else append |feature| to |session|'s [=list of enabled features=].
-  1. For each |feature| in |requiredFeatures| perform the following steps:
-    1. If the user [=denied consent=] to use |feature|, continue to the next entry.
+  1. For each |feature| in |consentOptional| perform the following steps:
+    1. If a clear signal of [=user intent=] to enable |feature| has not been given, continue to the next entry.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. Return <code>true</code>
 
@@ -1050,8 +1056,8 @@ When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a ref
 <div class="algorithm" data-algorithm="reference-space-supported">
 To check if a <dfn>reference space is supported</dfn> for a given reference space type |type| and {{XRSession}} |session|, run the following steps:
 
-  1. If |type| is {{viewer}}, return <code>true</code>.
   1. If |type| is not [=list/contain|contained=] in |session|'s [=list of enabled features=] return <code>false</code>.
+  1. If |type| is {{viewer}}, return <code>true</code>.
   1. If |type| is {{local}} or {{local-floor}}, and |session| is an [=immersive session=], return <code>true</code>.
   1. If |type| is {{local}} or {{local-floor}}, and the [=XRSession/XR device=] supports reporting orientation data, return <code>true</code>.
   1. If |type| is {{bounded-floor}} and |session| is an [=immersive session=], return if [=bounded reference spaces are supported=] by the [=XRSession/XR device=].

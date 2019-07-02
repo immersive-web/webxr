@@ -458,6 +458,7 @@ function onSessionStarted(session) {
 Some features recognized by the UA but not explicitly listed in these arrays will be enabled by default for a session. This is only done if the feature does not require a signal of [user intent](privacy-security-explainer.md#user-intent) nor impact performance or the behavior of other features when enabled. At this time, only the following features will be enabled by default:
 | Feature | Circumstances |
 | ------ | ------- |
+| `viewer` | Successfully created any session |
 | `local` | Successfully created session of mode `immersive-ar` or `immersive-vr` |
 
 ### Controlling rendering quality
