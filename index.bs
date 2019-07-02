@@ -80,6 +80,12 @@ spec:html; urlPrefix: https://html.spec.whatwg.org/multipage/
     type:method; for:HTMLCanvasElement; text:getContext(contextId); url: canvas.html#dom-canvas-getcontext
     type:method; for:Window; text:requestAnimationFrame(callback); url: imagebitmap-and-animations.html#dom-animationframeprovider-requestanimationframe
     type: dfn; text: currently focused area; url: interaction.html#currently-focused-area-of-a-top-level-browsing-context
+    type: dfn; text: responsible; url: webappapis.html#responsible-document
+    type: dfn; text: same origin-domain; url: origin.html#same-origin-domain
+    type: dfn; text: active document; url: browsers.html#active-document
+spec: SecureContexts; urlPrefix: https://w3c.github.io/webappsec-secure-contexts/#
+    type: dfn; text: secure context; url: secure-contexts
+
 spec: ECMAScript; urlPrefix: https://tc39.github.io/ecma262/#
     type: method; text: IsDetachedBuffer; url: sec-isdetachedbuffer
 spec: dom; urlPrefix: https://dom.spec.whatwg.org/#
@@ -433,8 +439,6 @@ Some {{XRSessionMode}}s enable certain [=feature names=] as [=optional features=
     </tr>
   </tbody>
 </table>
-
-ISSUE(immersive-web/webxr#757): Define <dfn>sensitive information</dfn>, what qualifies as a signal of <dfn>user intent</dfn>, when <dfn>explicit consent</dfn> is necessary and how user agents can request it.
 
 <div class="algorithm" data-algorithm="resolve-features">
 
@@ -2099,6 +2103,43 @@ Security, Privacy, and Comfort Considerations {#security}
 
 The WebXR Device API provides powerful new features which bring with them several unique privacy, security, and comfort risks that user agents must take steps to mitigate.
 
+Sensitive Information {#sensitive-information-header}
+---------------------
+
+In the context of XR, <dfn>sensitive information</dfn> includes, but is not limited to, user configurable data such as interpupillary distance (IPD) and sensor-based data such as {{XRPose}}s. All {{XRSessionMode/"immersive-vr"}} and {{XRSessionMode/"immersive-ar"}} sessions will expose some amount of sensitive data, due to the user's pose being necessary to render anything. However, in some cases, the same sensitive information will also be exposed via {{XRSessionMode/"inline"}} sessions.
+
+Trustworthy Documents and Origins {#trustworthy-documents}
+---------------------------------
+
+In order to expose any [=sensitive information=] the requesting document must be considered [=trustworthy=].
+
+<div class="algorithm" data-algorithm="document-is-trustworthy">
+
+To determine if a given {{Document}} |document| is <dfn>trustworthy</dfn> the user agent MUST run the following steps:
+
+  1. If |document| is not a [=responsible=] document, return <code>false</code>
+  1. If |document| is not of a [=secure context=], return <code>false</code>
+  1. If the [=currently focused area=] does not belong to |document|, return <code>false</code>
+  1. If |document| is not of the [=same origin-domain=] as the [=active document=], return <code>false</code>
+  1. If |document|'s origin is blocked by [[#feature-policy|feature policy]], return <code>false</code>
+
+</div>
+
+User intention {#user-intention}
+--------------
+It is often necessary to be sure of <dfn>user intent</dfn> before exposing sensitive information or allowing actions with a significant effect on the user's experience. This intent may be communicated or observed in a number of ways.
+
+### User activation ### {#user-activation}
+Events which are [=triggered by user activation=] can serve as an indication of [=user intent=] in some scenarios.
+
+### Implicit and Explicit consent ### {#user-consent}
+A user agent may use <dfn>implied consent</dfn> based, for example, on the install status of a web application or frequency and recency of visits. Given the sensitivity of XR data, caution is strongly advised when relying on implicit signals. 
+
+It is often useful to get <dfn>explicit consent</dfn> from the user before exposing [=sensitive information=]. When gathering explicit user consent, user agents present an explanation of what is being requested and provide users the option to decline. Requests for user consent can be presented in many visual forms based on the features being protected and user agent choice.
+
+### Duration of consent ### {#consent-duration}
+It is recommended that once [=explicit consent=] is granted for a specific [=/origin=] that this consent persist until the [=/browsing context=] has ended. User agents may choose to lengthen or shorten this consent duration based upon implicit or explicit signals of [=user intent=], but implementations are advised to exercise caution when deviating from this recommendation, particularly when relying on implicit signals.
+
 <section class="unstable">
 Gaze Tracking {#gazetracking-security}
 -------------
@@ -2128,7 +2169,7 @@ Also, to prevent CORS-related vulnerabilities each page will see a new instance 
 Fingerprinting {#fingerprinting-security}
 --------------
 
-Given that the API describes hardware available to the user and its capabilities it will inevitably provide additional surface area for fingerprinting. While it's impossible to completely avoid this, steps can be taken to mitigate the issue. This spec limits reporting of available hardware to only a single device at a time, which prevents using the rare cases of multiple headsets being connected as a fingerprinting signal. Also, the devices that are reported have no string identifiers and expose very little information about the devices capabilities until an XRSession is created, which may only be triggered via user activation in the most sensitive case.
+Given that the API describes hardware available to the user and its capabilities it will inevitably provide additional surface area for fingerprinting. While it's impossible to completely avoid this, steps can be taken to mitigate the issue. This spec limits reporting of available hardware to only a single device at a time, which prevents using the rare cases of multiple headsets being connected as a fingerprinting signal. Also, the devices that are reported have no string identifiers and expose very little information about the devices capabilities until an XRSession is created, which may only be [=triggered by user activation=] in the most sensitive case.
 </section>
 
 Integrations {#integrations}
@@ -2141,6 +2182,8 @@ This specification defines a [=policy-controlled feature=] that controls whether
 The feature identifier for this feature is <code>"xr"</code>.
 
 The [=default allowlist=] for this feature is <code>["self"]</code>.
+
+In addition to the <code>"xr"</code> feature policy, feature policies for underlying sensors must also be respected if a site could isolate and extract sensor data that would otherwise be blocked by those feature policies.
 
 Acknowledgements {#ack}
 ================
