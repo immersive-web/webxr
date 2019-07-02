@@ -440,12 +440,12 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
   1. Let |consentRequired| be an empty [=/list=] of {{DOMString}}.
   1. Let |consentOptional| be an empty [=/list=] of {{DOMString}}.
   1. For each |feature| in |requiredFeatures| perform the following steps:
-    1. If |feature| is not a value in the {{XRReferenceSpaceType}} enum, return <code>false</code>.
+    1. If |feature| is not a valid [=feature name=], return <code>false</code>.
     1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=], return <code>false</code>.
     1. If the functionality described by |feature| [=requires consent=], append it to |consentRequired|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. For each |feature| in |optionalFeatures| perform the following steps:
-    1. If |feature| is not a value in the {{XRReferenceSpaceType}} enum, continue to the next entry.
+    1. If |feature| is not a valid [=feature name=], continue to the next entry.
     1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=], continue to the next entry.
     1. If the functionality described by |feature| [=requires consent=], append it to |consentOptional|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
