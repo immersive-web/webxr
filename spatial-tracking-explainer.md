@@ -324,9 +324,9 @@ function onSessionStarted(session) {
   xrSession.requestReferenceSpace('bounded-floor').then((referenceSpace) => {
     xrReferenceSpace = referenceSpace;
   }).catch(() => {
-    // If a bounded-floor reference space isn't available, request a local-floor 
+    // If a bounded-floor reference space isn't available, request a local
     // reference space as a fallback and adjust the experience as necessary.
-    return xrSession.requestReferenceSpace('local-floor').then((referenceSpace) => {
+    return xrSession.requestReferenceSpace('local').then((referenceSpace) => {
       xrReferenceSpace = referenceSpace;
     });
   })

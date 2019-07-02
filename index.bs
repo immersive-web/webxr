@@ -340,12 +340,12 @@ When the <dfn method for="XR">requestSession(|mode|, |options|)</dfn> method is 
             1. If |immersive| is <code>true</code>, set [=pending immersive session=] to <code>false</code>.
             1. Abort these steps.
         1. Let |session| be a new {{XRSession}} object.
+        1. [=Initialize the session=] with |session|, |mode|, and |device|.
         1. [=Resolve the requested features=] given by |options|' {{XRSessionInit/requiredFeatures}} and |options|' {{XRSessionInit/optionalFeatures}} values for |session|, and let |resolved| be the returned value.
         1. If |resolved| is <code>false</code>, run the following steps:
             1. [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
             1. If |immersive| is <code>true</code>, set [=pending immersive session=] to <code>false</code>.
             1. Abort these steps.
-        1. [=Initialize the session=] with |session|, |mode|, and |device|.
         1. Potentially set the [=active immersive session=] based on the following:
             <dl class="switch">
               <dt> If |immersive| is <code>true</code>
@@ -417,7 +417,7 @@ The feature lists accept any string. However, in order to be a considered a vali
 
  - {{XRReferenceSpaceType}}
 
-Some {{XRSessionMode}}s request certain [=feature names=] as [=optional features=] by default. This is only done if the feature does not require a signal of [=user intent=] nor impact performance or the behavior of other features when enabled. The following table described the <dfn>default features</dfn> associated with each {{XRSessionMode}}:
+Some {{XRSessionMode}}s enable certain [=feature names=] as [=optional features=] by default. This is only done if the feature does not require a signal of [=user intent=] nor impact performance or the behavior of other features when enabled. The following table describes the <dfn>default features</dfn> associated with each {{XRSessionMode}}:
 
 <table class="tg">
   <thead>
@@ -429,11 +429,11 @@ Some {{XRSessionMode}}s request certain [=feature names=] as [=optional features
   <tbody>
     <tr>
       <td>{{XRReferenceSpaceType/"viewer"}}</td>
-      <td>{{XRSessionMode/"inline"}}, {{XRSessionMode/"immersive-vr"}}</td>
+      <td>{{XRSessionMode/"inline"}}, {{XRSessionMode/"immersive-vr"}}, {{XRSessionMode/"immersive-ar"}}</td>
     </tr>
     <tr>
       <td>{{XRReferenceSpaceType/"local"}}</td>
-      <td>{{XRSessionMode/"immersive-vr"}}</td>
+      <td>{{XRSessionMode/"immersive-vr"}}, {{XRSessionMode/"immersive-ar"}}</td>
     </tr>
   </tbody>
 </table>
@@ -448,17 +448,17 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
   1. Let |consentOptional| be an empty [=/list=] of {{DOMString}}.
   1. For each |feature| in |requiredFeatures| perform the following steps:
     1. If |feature| is not a valid [=feature name=], return <code>false</code>.
-    1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=], return <code>false</code>.
+    1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=] or the user agent has otherwise determined to reject the feature, return <code>false</code>.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentRequired|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. For each |feature| in |optionalFeatures| perform the following steps:
     1. If |feature| is not a valid [=feature name=], continue to the next entry.
-    1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=], continue to the next entry.
+    1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=] or the user agent has otherwise determined to reject the feature, continue to the next entry.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentOptional|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. For each |feature| in the [=default features=] table perform the following steps:
     1. If |session|'s [=XRSession/mode=] is not one of the modes associated with |feature| in the [=default features=], continue to the next entry.
-    1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=], continue to the next entry.
+    1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=] or the user agent has otherwise determined to reject the feature, continue to the next entry.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. If |consentRequired| or |consentOptional| are not empty, [=request user consent=] to use the functionality described by those features.
   1. For each |feature| in |consentRequired| perform the following steps:
