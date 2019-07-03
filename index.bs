@@ -438,7 +438,7 @@ Some {{XRSessionMode}}s enable certain [=feature names=] as [=optional features=
   </tbody>
 </table>
 
-ISSUE: Define <dfn>sensitive information</dfn>, what qualifies as a signal of <dfn>user intent</dfn>, when <dfn>explicit consent</dfn> is necessary and how user agents can request it.
+ISSUE(immersive-web/webxr#757): Define <dfn>sensitive information</dfn>, what qualifies as a signal of <dfn>user intent</dfn>, when <dfn>explicit consent</dfn> is necessary and how user agents can request it.
 
 <div class="algorithm" data-algorithm="resolve-features">
 
