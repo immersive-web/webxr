@@ -438,7 +438,7 @@ Some {{XRSessionMode}}s enable certain [=feature names=] as [=optional features=
   </tbody>
 </table>
 
-ISSUE: Define <dfn>sensitive information</dfn>, what qualifies as a signal of <dfn>user intent</dfn>, when <dfn>explicit consent</dfn> is necessary, and how user agents can <dfn>request user consent</dfn>.
+ISSUE: Define <dfn>sensitive information</dfn>, what qualifies as a signal of <dfn>user intent</dfn>, when <dfn>explicit consent</dfn> is necessary and how user agents can request it.
 
 <div class="algorithm" data-algorithm="resolve-features">
 
@@ -460,7 +460,7 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
     1. If |session|'s [=XRSession/mode=] is not one of the modes associated with |feature| in the [=default features=], continue to the next entry.
     1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=] or the user agent has otherwise determined to reject the feature, continue to the next entry.
     1. Else append |feature| to |session|'s [=list of enabled features=].
-  1. If |consentRequired| or |consentOptional| are not empty, [=request user consent=] to use the functionality described by those features.
+  1. If |consentRequired| or |consentOptional| are not empty, request [=explicit consent=] to use the functionality described by those features.
   1. For each |feature| in |consentRequired| perform the following steps:
     1. If a clear signal of [=user intent=] to enable |feature| has not been given, return <code>false</code>.
     1. Else append |feature| to |session|'s [=list of enabled features=].
