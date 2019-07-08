@@ -2137,6 +2137,7 @@ To determine if a given {{Document}} |document| is <dfn>active and focused</dfn>
 
 User intention {#user-intention}
 --------------
+
 It is often necessary to be sure of <dfn>user intent</dfn> before exposing sensitive information or allowing actions with a significant effect on the user's experience. This intent may be communicated or observed in a number of ways.
 
 ### User activation ### {#user-activation}
