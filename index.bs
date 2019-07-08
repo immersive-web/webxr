@@ -2108,10 +2108,8 @@ Sensitive Information {#sensitive-information-header}
 
 In the context of XR, <dfn>sensitive information</dfn> includes, but is not limited to, user configurable data such as interpupillary distance (IPD) and sensor-based data such as {{XRPose}}s. All {{XRSessionMode/"immersive-vr"}} and {{XRSessionMode/"immersive-ar"}} sessions will expose some amount of sensitive data, due to the user's pose being necessary to render anything. However, in some cases, the same sensitive information will also be exposed via {{XRSessionMode/"inline"}} sessions.
 
-Trustworthy Documents and Origins {#trustworthy-documents}
----------------------------------
-
-In order to expose any [=sensitive information=] the requesting document must be considered [=trustworthy=].
+### Trustworthy documents and origins ### {#trustworthy-documents}
+In order to expose any [=sensitive information=] the requesting document MUST be considered [=trustworthy=].
 
 <div class="algorithm" data-algorithm="document-is-trustworthy">
 
@@ -2119,9 +2117,21 @@ To determine if a given {{Document}} |document| is <dfn>trustworthy</dfn> the us
 
   1. If |document| is not a [=responsible=] document, return <code>false</code>
   1. If |document| is not of a [=secure context=], return <code>false</code>
+  1. If |document|'s origin is blocked by [[#feature-policy|feature policy]], return <code>false</code>
+  1. Return <code>true</code>
+
+</div>
+
+### Active and focused document ### {#active-and-focused-document}
+In addition to being [=trustworthy=], a document MUST be [=active and focused=] at the time that [=sensitive information=] is requested.
+
+<div class="algorithm" data-algorithm="document-is-active-and-focused">
+
+To determine if a given {{Document}} |document| is <dfn>active and focused</dfn> the user agent MUST run the following steps:
+
   1. If the [=currently focused area=] does not belong to |document|, return <code>false</code>
   1. If |document| is not of the [=same origin-domain=] as the [=active document=], return <code>false</code>
-  1. If |document|'s origin is blocked by [[#feature-policy|feature policy]], return <code>false</code>
+  1. Return <code>true</code>
 
 </div>
 
@@ -2138,7 +2148,7 @@ A user agent may use <dfn>implicit consent</dfn> based, for example, on the inst
 It is often useful to get <dfn>explicit consent</dfn> from the user before exposing [=sensitive information=]. When gathering explicit user consent, user agents present an explanation of what is being requested and provide users the option to decline. Requests for user consent can be presented in many visual forms based on the features being protected and user agent choice.
 
 ### Duration of consent ### {#consent-duration}
-It is recommended that once [=explicit consent=] is granted for a specific [=/origin=] that this consent persist until the [=/browsing context=] has ended. User agents may choose to lengthen or shorten this consent duration based upon implicit or explicit signals of [=user intent=], but implementations are advised to exercise caution when deviating from this recommendation, particularly when relying on implicit signals.
+It is recommended that once [=explicit consent=] is granted for a specific [=/origin=] that this consent persist until the [=/browsing context=] has ended. User agents may choose to lengthen or shorten this consent duration based upon implicit or explicit signals of [=user intent=], but implementations are advised to exercise caution when deviating from this recommendation, particularly when relying on implicit signals. For example, it may be appropriate for a web application installed with the express intent of running immersive content to persist the user's consent, but not for an installed web application where immersive content is a secondary feature.
 
 Regardless of how long the user agent chooses to persist the user's consent, [=sensitive information=] MUST only be exposed by an {{XRSession}} which has not [=ended=]. 
 
