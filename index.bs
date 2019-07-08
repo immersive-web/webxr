@@ -2133,12 +2133,14 @@ It is often necessary to be sure of <dfn>user intent</dfn> before exposing sensi
 Events which are [=triggered by user activation=] can serve as an indication of [=user intent=] in some scenarios.
 
 ### Implicit and Explicit consent ### {#user-consent}
-A user agent may use <dfn>implied consent</dfn> based, for example, on the install status of a web application or frequency and recency of visits. Given the sensitivity of XR data, caution is strongly advised when relying on implicit signals. 
+A user agent may use <dfn>implicit consent</dfn> based, for example, on the install status of a web application or frequency and recency of visits. Given the sensitivity of XR data, caution is strongly advised when relying on implicit signals. 
 
 It is often useful to get <dfn>explicit consent</dfn> from the user before exposing [=sensitive information=]. When gathering explicit user consent, user agents present an explanation of what is being requested and provide users the option to decline. Requests for user consent can be presented in many visual forms based on the features being protected and user agent choice.
 
 ### Duration of consent ### {#consent-duration}
 It is recommended that once [=explicit consent=] is granted for a specific [=/origin=] that this consent persist until the [=/browsing context=] has ended. User agents may choose to lengthen or shorten this consent duration based upon implicit or explicit signals of [=user intent=], but implementations are advised to exercise caution when deviating from this recommendation, particularly when relying on implicit signals.
+
+Regardless of how long the user agent chooses to persist the user's consent, [=sensitive information=] MUST only be exposed by an {{XRSession}} which has not [=ended=]. 
 
 <section class="unstable">
 Gaze Tracking {#gazetracking-security}
@@ -2169,7 +2171,7 @@ Also, to prevent CORS-related vulnerabilities each page will see a new instance 
 Fingerprinting {#fingerprinting-security}
 --------------
 
-Given that the API describes hardware available to the user and its capabilities it will inevitably provide additional surface area for fingerprinting. While it's impossible to completely avoid this, steps can be taken to mitigate the issue. This spec limits reporting of available hardware to only a single device at a time, which prevents using the rare cases of multiple headsets being connected as a fingerprinting signal. Also, the devices that are reported have no string identifiers and expose very little information about the devices capabilities until an XRSession is created, which may only be [=triggered by user activation=] in the most sensitive case.
+Given that the API describes hardware available to the user and its capabilities it will inevitably provide additional surface area for fingerprinting. While it's impossible to completely avoid this, user agents should take steps to mitigate the issue. This spec limits reporting of available hardware to only a single device at a time, which prevents using the rare cases of multiple headsets being connected as a fingerprinting signal. Also, the devices that are reported have no string identifiers and expose very little information about the devices capabilities until an XRSession is created, which requires additional protections when [=sensitive information=] will be exposed.
 </section>
 
 Integrations {#integrations}
