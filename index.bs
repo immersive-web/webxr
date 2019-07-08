@@ -1060,7 +1060,7 @@ To check if a <dfn>reference space is supported</dfn> for a given reference spac
   1. If |type| is {{viewer}}, return <code>true</code>.
   1. If |type| is {{local}} or {{local-floor}}, and |session| is an [=immersive session=], return <code>true</code>.
   1. If |type| is {{local}} or {{local-floor}}, and the [=XRSession/XR device=] supports reporting orientation data, return <code>true</code>.
-  1. If |type| is {{bounded-floor}} and |session| is an [=immersive session=], return if [=bounded reference spaces are supported=] by the [=XRSession/XR device=].
+  1. If |type| is {{bounded-floor}} and |session| is an [=immersive session=], return <code>true</code> if [=bounded reference spaces are supported=] by the [=XRSession/XR device=].
   1. If |type| is {{unbounded}}, |session| is an [=immersive session=], and the [=XRSession/XR device=] supports stable tracking near the user over an unlimited distance, return <code>true</code>.
   1. Return <code>false</code>.
 
