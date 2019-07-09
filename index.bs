@@ -322,7 +322,7 @@ When the <dfn method for="XR">requestSession(|mode|, |options|)</dfn> method is 
   1. Let |promise| be [=a new Promise=].
   1. Let |immersive| be <code>true</code> if |mode| is {{XRSessionMode/"immersive-vr"}} or {{XRSessionMode/"immersive-ar"}}, and <code>false</code> otherwise.
   1. If |immersive| is <code>true</code>:
-    1. If the algorithm is not [=triggered by user activation=], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.
+    1. Check if an [=immersive session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.
     1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
     1. Set [=pending immersive session=] to <code>true</code>.
   1. Run the following steps [=in parallel=]:
@@ -964,6 +964,7 @@ To <dfn>populate the pose</dfn> of an {{XRSpace}} |space| in an {{XRSpace}} |bas
   1. Let |session| be |frame|'s {{XRFrame/session}} object.
   1. If |space|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
   1. If |baseSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
+  1. Check if [=poses may be reported=] and, if not, throw a {{SecurityError}} and abort these steps.
   1. Let |transform| be |pose|'s {{XRPose/transform}}.
   1. Query the [=/XR device=]'s tracking system for |space|'s pose relative to |baseSpace| at the time represented by |frame|, then perform the following steps:
     <dl class="switch">
@@ -2160,6 +2161,68 @@ There are multiple non-XR APIs which cause user agents to request [=explicit con
 
 Note: This limitation is to ensure that there is behavioral parity between all user agents until consensus is reached about how user agents should manage mid-session [=explicit consent=]. It is not expected to be a long term requirement. 
 
+Data adjustments {#data-adjustments-header}
+----------------
+
+In some cases, security and privacy threats can be mitigated through <dfn>data adjustment</dfn>s such as throttling, quantizing, rounding, limiting, or otherwise manipulating the data reported from the [=/XR device=]. This may sometimes be necessary to avoid fingerprinting, even in situations when [=user intent=] has been established.  However, [=data adjustment=] mitigations MUST only be used in situations which would not result in user discomfort.
+
+### Throttling ### {#throttling}
+Throttling is when [=sensitive information=] is reported at a lower frequency than otherwise possible. This mitigation has the potential to reduce a site's ability to infer user intent, location, or perform user profiling. However, when not used appropriately throttling runs a significant risk of causing user discomfort. In addition, under many circumstances it may be inadequate to provide a complete mitigation.
+
+### Rounding, quantization, and fuzzing ### {#rounding-and-friends}
+Rounding, quantization, and fuzzing are three categories of mitigations that modify the raw data that would otherwise be returned to the developer. Rounding decreases the precision of data by reducing the number of digits used to express it. Quantization constrains continuous data to instead report a discrete subset of values. Fuzzing is the introduction of slight, random errors into the the data. Collectively, these mitigations are useful to avoid fingerprinting, and are especially useful when doing so does not cause noticeable impact on user comfort.
+
+### Limiting ### {#limiting}
+Limiting is when data is reported only when it is within a specific range. For example, it is possible to comfortably limit reporting positional pose data when a user has moved beyond a specific distance away from an approved location. Care should be taken to ensure that the user experience is not negatively affected when employing this mitigation. It is often desireable to avoid a 'hard stop' at the at the end of a range as this may cause disruptive user experiences.
+
+Protected functionality {#protected-functionality}
+-----------------------
+
+The [=sensitive information=] exposed by the API can be divided into categories that share threat profiles and necessary protections against those threats.
+
+### Immersiveness ### {#protect-immersiveness}
+Users must be in control of when immersive sessions are created because the creation causes invasive changes on a user's machine. For example, starting an [=immersive session=] will engage the [=/XR device=] sensors, take over access to the device's display, and begin presentating immersive content which may terminate another application's access to the XR hardware. It may also incur significant power or performance overhead on some systems or trigger the launching of a status tray or storefront.
+
+<div class="algorithm" data-algorithm="immersive-session-allowed">
+
+To determine if an <dfn>immersive session request is allowed</dfn> the user agent MUST run the following steps:
+
+  1. If the request was not [=triggered by user activation=], return <code>false</code>
+  1. If the request does not originate from a [=trustworthy=] document and origin, return <code>false</code>
+  1. If the request does not originate from a document that is [=active and focused=], return <code>false</code>
+  1. If the request does not originates from a document that is allowed to use the WebXR [[#feature-policy|feature policy]] as well as the [=underlying sensors=]' feature policies, return <code>false</code>
+  1. If [=user intent=] is not well understood, either via [=explicit consent=] or [=implicit consent=], return <code>false</code>
+  1. Return <code>true</code>
+
+</div>
+
+### Poses ### {#protect-poses}
+When based on sensor data, {{XRPose}} and {{XRViewerPose}} will expose [=sensitive information=] that may be misused in a number of ways, including input sniffing, gaze tracking, or fingerprinting.
+
+<div class="algorithm" data-algorithm="poses-allowed">
+
+To determine if <dfn>poses may be reported</dfn> to an {{XRSession}} |session|, the user agent MUST run the following steps:
+
+  1. Let |document| be the document that owns |session|.
+  1. If the request does not originate from |document|, return <code>false</code>.
+  1. If |document| is not [=active and focused=], return <code>false</code>.
+  1. If |session|'s {{XRSession/visibilityState}} in not {{XRVisibilityState/"visible"}}, return <code>false</code>.
+  1. Determine if the pose data can be returned as follows:
+    <dl class="switch">
+      <dt> If [=user intent=] is well understood, either via [=explicit consent=] or [=implicit consent=]
+      <dd> Return <code>true</code>.
+      <dt> If [=data adjustments=] will be applied to the underlying sensor data to prevent fingerprinting or profiling
+      <dd> Return <code>true</code>.
+      <dt> Otherwise
+      <dd> Return <code>false</code>.
+    </dl>
+
+</div>
+
+The primary difference between {{XRViewerPose}} and {{XRPose}} is the inclusion of {{XRView}} information. When more than one view is present and the physical relationship between these views is configurable by the user, the relationship between these views is considered [=sensitive information=] as it can be used to fingerprint or profile the user.
+
+If the relationship between {{XRView}}s could uniquely identify the [=/XR device=], then the user agent MUST anonymized the {{XRView}} data to prevent fingerprinting. The method of anonymization is at the discretion of the user agent. Furthermore, if the relationship between {{XRView}}s is affected by a user-configured interpupillary distance, then it is strongly recommended that the user agent require [=explicit consent=] prior to reporting any {{XRView}} data.
+
 <section class="unstable">
 Gaze Tracking {#gazetracking-security}
 -------------
@@ -2204,7 +2267,7 @@ The feature identifier for this feature is <code>"xr"</code>.
 
 The [=default allowlist=] for this feature is <code>["self"]</code>.
 
-In addition to the <code>"xr"</code> feature policy, feature policies for underlying sensors must also be respected if a site could isolate and extract sensor data that would otherwise be blocked by those feature policies.
+In addition to the <code>"xr"</code> feature policy, feature policies for <dfn>underlying sensors</dfn> must also be respected if a site could isolate and extract sensor data that would otherwise be blocked by those feature policies.
 
 Acknowledgements {#ack}
 ================
