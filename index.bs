@@ -2250,25 +2250,21 @@ Note: Furthermore, if the relationship between {{XRView}}s is affected by a user
 ### Reference spaces ### {#protect-reference-spaces}
 Various reference space types have restrictions places on their use to prevent the unintentional exposure of [=sensitive information=].
 
- - Any group of {{XRReferenceSpaceType/"local"}}, {{XRReferenceSpaceType/"local-floor"}}, and {{XRReferenceSpaceType/"bounded-floor"}} reference spaces that are capable of being related to one another must share a common [=native origin=]; This restriction does not apply when {{XRReferenceSpaceType/"unbounded"}} reference spaces are also able to be created.
+For any {{XRReferenceSpaceType}} included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure the document is allowed to use all policy-controlled features associated with the sensor types used to track the [=native origin=] of the {{XRReferenceSpaceType}} or the feature MUST be rejected.
+
+Any group of {{XRReferenceSpaceType/"local"}}, {{XRReferenceSpaceType/"local-floor"}}, and {{XRReferenceSpaceType/"bounded-floor"}} reference spaces that are capable of being related to one another must share a common [=native origin=]; This restriction does not apply when {{XRReferenceSpaceType/"unbounded"}} reference spaces are also able to be created.
 
 #### unbounded #### {#unbounded-privacy}
 {{XRReferenceSpaceType/"unbounded"}} reference spaces reveal the largest amount of spatial data and may result in user profiling and fingerprinting. For example, this data may enable determining user's specific geographic location or to perform gait analysis.
 
-If {{XRReferenceSpaceType/"unbounded"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure the following prior to enabling the feature:
-  - The document is allowed to use all the policy-controlled features associated with the sensor types used to track the native origin of an unbounded reference space.
-  - [=User intent=] is well understood, either via [=explicit consent=] or [=implicit consent=].
-  - The [=XRSession/XR device=] is capable of {{XRReferenceSpaceType/"unbounded"}} tracking.
+If {{XRReferenceSpaceType/"unbounded"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure [=user intent=] to allow {{XRReferenceSpaceType/"unbounded"}} tracking is well understood, either via [=explicit consent=] or [=implicit consent=], or the feature MUST be rejected.
 
 #### bounded-floor #### {#bounded-floor-privacy}
 {{XRReferenceSpaceType/"bounded-floor"}} reference spaces, when sufficiently constrained in size, do not enable developers to determine geographic location. However, because the floor level is established and users are able to walk around, it may be possible for a site to infer the user's height or perform gait analysis, allowing user profiling and fingerprinting. In addition, it may be possible perform fingerprinting using the bounds reported by a bounded reference space.
 
-If {{XRReferenceSpaceType/"bounded-floor"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure the following prior to enabling the feature:
-  - The document is allowed to use all the policy-controlled features associated with the sensor types used to track the native origin of a bounded reference space.
-  - [=User intent=] is well understood, either via [=explicit consent=] or [=implicit consent=].
-  - The [=XRSession/XR device=] is capable of {{XRReferenceSpaceType/"bounded-floor"}} tracking.
+If {{XRReferenceSpaceType/"bounded-floor"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure [=user intent=] to allow {{XRReferenceSpaceType/"bounded-floor"}} tracking is well understood, either via [=explicit consent=] or [=implicit consent=], or the feature MUST be rejected.
 
-Once enabled, any {{XRReferenceSpaceType/"bounded-floor"}} reference spaces MUST respect the following restrictions:
+Any {{XRReferenceSpaceType/"bounded-floor"}} reference spaces MUST respect the following restrictions:
   - Each point in the {{XRBoundedReferenceSpace/boundsGeometry}} must be [=limiting|limited=] to a reasonable distance from the reference space's [=native origin=]; the suggested distance is 15 meters in all directions.
   - Each point in the {{XRBoundedReferenceSpace/boundsGeometry}} must be [=rounding|rounded=] sufficiently to prevent fingerprinting. Rounding to the nearest 5cm is suggested. For user's safety, rounded points values MUST NOT fall outside the original bounds.
   - The <code>Y</code> value of the [=native origin=] must be [=rounding|rounded=] sufficiently to prevent fingerprinting of lower-order bits; rounding to the nearest 1cm is suggested.
@@ -2277,24 +2273,18 @@ Once enabled, any {{XRReferenceSpaceType/"bounded-floor"}} reference spaces MUST
 #### local-floor #### {#local-floor-privacy}
 On devices which support [=6DoF=] tracking, {{XRReferenceSpaceType/"local-floor"}} reference spaces may be used to perform gait analysis, allowing user profiling and fingerprinting. In addition, because the {{XRReferenceSpaceType/"local-floor"}} reference spaces provide an established floor level, it may be possible for a site to infer the user's height, allowing user profiling and fingerprinting.
 
-If {{XRReferenceSpaceType/"local-floor"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure the following prior to enabling the feature:
-  - The document is allowed to use all the policy-controlled features associated with the sensor types used to track the native origin of a bounded reference space.
-  - [=User intent=] is well understood, either via [=explicit consent=] or [=implicit consent=].
-  - The [=XRSession/XR device=] is capable of {{XRReferenceSpaceType/"local-floor"}} tracking.
+If {{XRReferenceSpaceType/"local-floor"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure [=user intent=] to allow {{XRReferenceSpaceType/"local-floor"}} tracking is well understood, either via [=explicit consent=] or [=implicit consent=], or the feature MUST be rejected.
 
-Once enabled, any {{XRReferenceSpaceType/"local-floor"}} reference spaces MUST respect the following restrictions:
+Any {{XRReferenceSpaceType/"local-floor"}} reference spaces MUST respect the following restrictions:
   - If the floor level is based on sensor data or is set to a non-default emulated value, the <code>Y</code> value of the [=native origin=] must be [=rounding|rounded=] sufficiently to prevent fingerprinting of lower-order bits; rounding to the nearest 1cm is suggested.
   - All poses returned relative to a {{XRReferenceSpaceType/"local-floor"}} reference space MUST be [=limiting|limited=] to a reasonable distance from the reference space's [=native origin=]; the suggested distance is 15 meters in all directions.
 
 #### local #### {#local-privacy}
 On devices which support [=6DoF=] tracking, {{XRReferenceSpaceType/"local"}} reference spaces may be used to perform gait analysis, allowing user profiling and fingerprinting.
 
-If {{XRReferenceSpaceType/"local"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure the following prior to enabling the feature:
-  - The document is allowed to use all the policy-controlled features associated with the sensor types used to track the native origin of a bounded reference space.
-  - If the {{XRSession}}'s [=XRSession/mode=] is {{XRSessionMode/"inline"}}, [=user intent=] is well understood, either via [=explicit consent=] or [=implicit consent=].
-  - The [=XRSession/XR device=] is capable of {{XRReferenceSpaceType/"local"}} tracking.
+If {{XRReferenceSpaceType/"local"}} is included in an {{XRSession}}'s [=requested features=] and the {{XRSession}}'s [=XRSession/mode=] is {{XRSessionMode/"inline"}}, the user agent MUST ensure [=user intent=] to allow {{XRReferenceSpaceType/"local"}} tracking is well understood, either via [=explicit consent=] or [=implicit consent=], or the feature MUST be rejected.
 
-Once enabled, any {{XRReferenceSpaceType/"local"}} reference spaces MUST respect the following restrictions:
+Any {{XRReferenceSpaceType/"local"}} reference spaces MUST respect the following restrictions:
   - All poses returned relative to a {{XRReferenceSpaceType/"local"}} reference space MUST be [=limiting|limited=] to a reasonable distance from the reference space's [=native origin=]; the suggested distance is 15 meters in all directions.
 
 <section class="unstable">
