@@ -2267,7 +2267,6 @@ If {{XRReferenceSpaceType/"bounded-floor"}} is included in an {{XRSession}}'s [=
 Any {{XRReferenceSpaceType/"bounded-floor"}} reference spaces MUST respect the following restrictions:
   - Each point in the {{XRBoundedReferenceSpace/boundsGeometry}} must be [=limiting|limited=] to a reasonable distance from the reference space's [=native origin=]; the suggested distance is 15 meters in all directions.
   - Each point in the {{XRBoundedReferenceSpace/boundsGeometry}} must be [=rounding|rounded=] sufficiently to prevent fingerprinting. Rounding to the nearest 5cm is suggested. For user's safety, rounded points values MUST NOT fall outside the original bounds.
-  - The <code>Y</code> value of the [=native origin=] must be [=rounding|rounded=] sufficiently to prevent fingerprinting of lower-order bits; rounding to the nearest 1cm is suggested.
   - All poses returned relative to a {{XRReferenceSpaceType/"bounded-floor"}} reference space MUST be [=limiting|limited=] to a reasonable distance beyond the {{XRBoundedReferenceSpace/boundsGeometry}} in all directions; the suggested distance is 1 meter beyond the bounds in all directions.
 
 #### local-floor #### {#local-floor-privacy}
@@ -2276,13 +2275,15 @@ On devices which support [=6DoF=] tracking, {{XRReferenceSpaceType/"local-floor"
 If {{XRReferenceSpaceType/"local-floor"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure [=user intent=] to allow {{XRReferenceSpaceType/"local-floor"}} tracking is well understood, either via [=explicit consent=] or [=implicit consent=], or the feature MUST be rejected.
 
 Any {{XRReferenceSpaceType/"local-floor"}} reference spaces MUST respect the following restrictions:
-  - If the floor level is based on sensor data or is set to a non-default emulated value, the <code>Y</code> value of the [=native origin=] must be [=rounding|rounded=] sufficiently to prevent fingerprinting of lower-order bits; rounding to the nearest 1cm is suggested.
+  - If the [=viewer=]'s offset from the floor is determined with a non-default emulated value, the {{XRRigidTransform/position}}'s {{DOMPointReadOnly/y}} value of poses returned relative to the reference space must be [=rounding|rounded=] sufficiently to prevent fingerprinting of lower-order bits; rounding to the nearest 1cm is suggested.
   - All poses returned relative to a {{XRReferenceSpaceType/"local-floor"}} reference space MUST be [=limiting|limited=] to a reasonable distance from the reference space's [=native origin=]; the suggested distance is 15 meters in all directions.
 
 #### local #### {#local-privacy}
 On devices which support [=6DoF=] tracking, {{XRReferenceSpaceType/"local"}} reference spaces may be used to perform gait analysis, allowing user profiling and fingerprinting.
 
-If {{XRReferenceSpaceType/"local"}} is included in an {{XRSession}}'s [=requested features=] and the {{XRSession}}'s [=XRSession/mode=] is {{XRSessionMode/"inline"}}, the user agent MUST ensure [=user intent=] to allow {{XRReferenceSpaceType/"local"}} tracking is well understood, either via [=explicit consent=] or [=implicit consent=], or the feature MUST be rejected.
+If {{XRReferenceSpaceType/"local"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure [=user intent=] to allow {{XRReferenceSpaceType/"local"}} tracking is well understood, either via [=explicit consent=] or [=implicit consent=], or the feature MUST be rejected.
+
+Note: {{XRReferenceSpaceType/"local"}} is always included in the [=requested features=] of {{XRSessionMode/"immersive-vr"}} and {{XRSessionMode/"immersive-ar"}} sessions as a [=default feature=], as as such {{XRSessionMode/"immersive-vr"}} or {{XRSessionMode/"immersive-ar"}} sessions always need to obtain [=explicit consent=] or [=implicit consent=] to use {{XRReferenceSpaceType/"local"}} reference spaces.
 
 Any {{XRReferenceSpaceType/"local"}} reference spaces MUST respect the following restrictions:
   - All poses returned relative to a {{XRReferenceSpaceType/"local"}} reference space MUST be [=limiting|limited=] to a reasonable distance from the reference space's [=native origin=]; the suggested distance is 15 meters in all directions.
