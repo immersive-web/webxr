@@ -325,6 +325,8 @@ When the <dfn method for="XR">requestSession(|mode|, |options|)</dfn> method is 
     1. Check if an [=immersive session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.
     1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
     1. Set [=pending immersive session=] to <code>true</code>.
+  1. If |immersive| is <code>false</code>:
+    1. Check if an [=inline session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.
   1. Run the following steps [=in parallel=]:
     1. Choose |device| based on the following:
         <dl class="switch">
@@ -439,6 +441,8 @@ Some {{XRSessionMode}}s enable certain [=feature names=] as [=optional features=
     </tr>
   </tbody>
 </table>
+
+The combined list of [=feature names=] given by the {{XRSessionInit/requiredFeatures}}, {{XRSessionInit/optionalFeatures}}, and [=default features=] are collectively considered the <dfn>requested features</dfn> for an {{XRSession}}.
 
 <div class="algorithm" data-algorithm="resolve-features">
 
@@ -2109,6 +2113,19 @@ Sensitive Information {#sensitive-information-header}
 
 In the context of XR, <dfn>sensitive information</dfn> includes, but is not limited to, user configurable data such as interpupillary distance (IPD) and sensor-based data such as {{XRPose}}s. All {{XRSessionMode/"immersive-vr"}} and {{XRSessionMode/"immersive-ar"}} sessions will expose some amount of sensitive data, due to the user's pose being necessary to render anything. However, in some cases, the same sensitive information will also be exposed via {{XRSessionMode/"inline"}} sessions.
 
+### Active and focused document ### {#active-and-focused-document}
+A document MUST be [=active and focused=] at the time that [=sensitive information=] is requested.
+
+<div class="algorithm" data-algorithm="document-is-active-and-focused">
+
+To determine if a given {{Document}} |document| is <dfn>active and focused</dfn> the user agent MUST run the following steps:
+
+  1. If the [=currently focused area=] does not belong to |document|, return <code>false</code>
+  1. If |document| is not of the [=same origin-domain=] as the [=active document=], return <code>false</code>
+  1. Return <code>true</code>
+
+</div>
+
 ### Trustworthy documents and origins ### {#trustworthy-documents}
 In order to expose any [=sensitive information=] the requesting document MUST be considered [=trustworthy=].
 
@@ -2117,21 +2134,8 @@ In order to expose any [=sensitive information=] the requesting document MUST be
 To determine if a given {{Document}} |document| is <dfn>trustworthy</dfn> the user agent MUST run the following steps:
 
   1. If |document| is not a [=responsible=] document, return <code>false</code>
-  1. If |document| is not of a [=secure context=], return <code>false</code>
-  1. If |document|'s origin is blocked by [[#feature-policy|feature policy]], return <code>false</code>
-  1. Return <code>true</code>
-
-</div>
-
-### Active and focused document ### {#active-and-focused-document}
-In addition to being [=trustworthy=], a document MUST be [=active and focused=] at the time that [=sensitive information=] is requested.
-
-<div class="algorithm" data-algorithm="document-is-active-and-focused">
-
-To determine if a given {{Document}} |document| is <dfn>active and focused</dfn> the user agent MUST run the following steps:
-
-  1. If the [=currently focused area=] does not belong to |document|, return <code>false</code>
-  1. If |document| is not of the [=same origin-domain=] as the [=active document=], return <code>false</code>
+  1. If |document| is not [=active and focused=], return <code>false</code>
+  1. If |document|'s origin is not allowed to use the WebXR [[#feature-policy|feature policy]] or the [=underlying sensors=]' feature policies, return <code>false</code>
   1. Return <code>true</code>
 
 </div>
@@ -2188,10 +2192,20 @@ Users must be in control of when immersive sessions are created because the crea
 To determine if an <dfn>immersive session request is allowed</dfn> the user agent MUST run the following steps:
 
   1. If the request was not [=triggered by user activation=], return <code>false</code>
-  1. If the request does not originate from a [=trustworthy=] document and origin, return <code>false</code>
-  1. If the request does not originate from a document that is [=active and focused=], return <code>false</code>
-  1. If the request does not originates from a document that is allowed to use the WebXR [[#feature-policy|feature policy]] as well as the [=underlying sensors=]' feature policies, return <code>false</code>
-  1. If [=user intent=] is not well understood, either via [=explicit consent=] or [=implicit consent=], return <code>false</code>
+  1. If the requesting document is not considered [=trustworthy=], return <code>false</code>
+  1. If [=user intent=] to begin an [=immersive session=] is not well understood, either via [=explicit consent=] or [=implicit consent=], return <code>false</code>
+  1. Return <code>true</code>
+
+</div>
+
+Starting an {{XRSessionMode/"inline"}} session does not implicitly carry the same requirements, though additional requirements may be imposed depending on the session's [=requested features=].
+
+<div class="algorithm" data-algorithm="inline-session-allowed">
+
+To determine if an <dfn>inline session request is allowed</dfn> the user agent MUST run the following steps:
+
+  1. If the requesting document is not [=responsible=], return <code>false</code>
+  1. If requesting document's origin is not allowed to use the WebXR [[#feature-policy|feature policy]] or the [=underlying sensors=]' feature policies, return <code>false</code>
   1. Return <code>true</code>
 
 </div>
@@ -2205,19 +2219,23 @@ To determine if <dfn>poses may be reported</dfn> to an {{XRSession}} |session|, 
 
   1. Let |document| be the document that owns |session|.
   1. If the request does not originate from |document|, return <code>false</code>.
-  1. If |document| is not [=active and focused=], return <code>false</code>.
+  1. If |document| is not considered [=trustworthy=], return <code>false</code>.
   1. If |session|'s {{XRSession/visibilityState}} in not {{XRVisibilityState/"visible"}}, return <code>false</code>.
   1. Determine if the pose data can be returned as follows:
     <dl class="switch">
-      <dt> If [=user intent=] is well understood, either via [=explicit consent=] or [=implicit consent=]
+      <dt> If the pose data is known by the user agent to not expose fingerprintable sensor data
       <dd> Return <code>true</code>.
       <dt> If [=data adjustments=] will be applied to the underlying sensor data to prevent fingerprinting or profiling
+      <dd> Return <code>true</code>.
+      <dt> If [=user intent=] is well understood, either via [=explicit consent=] or [=implicit consent=]
       <dd> Return <code>true</code>.
       <dt> Otherwise
       <dd> Return <code>false</code>.
     </dl>
 
 </div>
+
+Note: The method by which a user agent determines that poses do not expose fingerprintable data is left to the user agent's discretion.
 
 The primary difference between {{XRViewerPose}} and {{XRPose}} is the inclusion of {{XRView}} information. When more than one view is present and the physical relationship between these views is configurable by the user, the relationship between these views is considered [=sensitive information=] as it can be used to fingerprint or profile the user.
 
