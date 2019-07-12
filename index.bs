@@ -2267,7 +2267,7 @@ The feature identifier for this feature is <code>"xr"</code>.
 
 The [=default allowlist=] for this feature is <code>["self"]</code>.
 
-In addition to the <code>"xr"</code> feature policy, feature policies for <dfn>underlying sensors</dfn> must also be respected if a site could isolate and extract sensor data that would otherwise be blocked by those feature policies.
+In addition to the <code>"xr"</code> feature policy, feature policies for <dfn>underlying sensors</dfn> must also be respected if a site could isolate and extract sensor data that would otherwise be explicitly blocked by those feature policies' origin allow list.
 
 Acknowledgements {#ack}
 ================
