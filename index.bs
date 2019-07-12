@@ -2221,7 +2221,7 @@ To determine if <dfn>poses may be reported</dfn> to an {{XRSession}} |session|, 
 
 The primary difference between {{XRViewerPose}} and {{XRPose}} is the inclusion of {{XRView}} information. When more than one view is present and the physical relationship between these views is configurable by the user, the relationship between these views is considered [=sensitive information=] as it can be used to fingerprint or profile the user.
 
-If the relationship between {{XRView}}s could uniquely identify the [=/XR device=], then the user agent MUST anonymized the {{XRView}} data to prevent fingerprinting. The method of anonymization is at the discretion of the user agent. Furthermore, if the relationship between {{XRView}}s is affected by a user-configured interpupillary distance, then it is strongly recommended that the user agent require [=explicit consent=] prior to reporting any {{XRView}} data.
+If the relationship between {{XRView}}s could uniquely identify the [=/XR device=], then the user agent MUST anonymized the {{XRView}} data to prevent fingerprinting. The method of anonymization is at the discretion of the user agent. Furthermore, if the relationship between {{XRView}}s is affected by a user-configured interpupillary distance, then it is strongly recommended that the user agent require [=explicit consent=] during session creation, prior to reporting any {{XRView}} data.
 
 <section class="unstable">
 Gaze Tracking {#gazetracking-security}
