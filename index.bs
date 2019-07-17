@@ -2151,7 +2151,14 @@ It is often useful to get <dfn>explicit consent</dfn> from the user before expos
 ### Duration of consent ### {#consent-duration}
 It is recommended that once [=explicit consent=] is granted for a specific [=/origin=] that this consent persist until the [=/browsing context=] has ended. User agents may choose to lengthen or shorten this consent duration based upon implicit or explicit signals of [=user intent=], but implementations are advised to exercise caution when deviating from this recommendation, particularly when relying on implicit signals. For example, it may be appropriate for a web application installed with the express intent of running immersive content to persist the user's consent, but not for an installed web application where immersive content is a secondary feature.
 
-Regardless of how long the user agent chooses to persist the user's consent, [=sensitive information=] MUST only be exposed by an {{XRSession}} which has not [=ended=]. 
+Regardless of how long the user agent chooses to persist the user's consent, [=sensitive information=] MUST only be exposed by an {{XRSession}} which has not [=ended=].
+
+Mid-session consent {#mid-session-consent}
+-------------------
+
+There are multiple non-XR APIs which cause user agents to request [=explicit consent=] to use a feature. If the user agent will request the user's consent while there is an [=active immersive session=], the user agent MUST [=shut down the session=] prior to displaying the consent request to the user. If the user's consent for the feature had been granted prior to the [=active immersive session=] being created the session does not need to be terminated. 
+
+Note: This limitation is to ensure that there is behavioral parity between all user agents until consensus is reached about how to securely display these types of prompts. It is not expected to be a long term requirement. 
 
 <section class="unstable">
 Gaze Tracking {#gazetracking-security}
@@ -2190,6 +2197,7 @@ Integrations {#integrations}
 
 Feature Policy {#feature-policy}
 --------------
+
 This specification defines a [=policy-controlled feature=] that controls whether the {{Navigator/xr}} attribute is exposed on the {{Navigator}} object.
 
 The feature identifier for this feature is <code>"xr"</code>.
