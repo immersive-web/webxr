@@ -1821,7 +1821,7 @@ Each {{XRWebGLLayer}} MUST have a <dfn>list of viewports</dfn> which is a [=/lis
 The <dfn method for="XRWebGLLayer">getViewport(|view|)</dfn> method, when invoked, MUST run the following steps:
 
   1. Let |layer| be the target {{XRWebGLLayer}}.
-  1. If |layer| was created with a different {{XRSession}} than the one that produced |view| return <code>null</code>.
+  1. If |layer| was created with a different {{XRSession}} than the one that produced |view|, throw an {{InvalidStateError}} and abort these steps.
   1. Let |glViewport| be the [=WebGL viewport=] from the [=list of viewports=] associated with |view|.
   1. Let |viewport| be a new {{XRViewport}} instance.
   1. Initialize |viewport|'s {{XRViewport/x}} to |glViewport|'s <code>x</code> component.
