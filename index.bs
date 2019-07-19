@@ -2248,7 +2248,7 @@ If the relationship between {{XRView}}s could uniquely identify the [=/XR device
 Note: Furthermore, if the relationship between {{XRView}}s is affected by a user-configured interpupillary distance, then it is strongly recommended that the user agent require [=explicit consent=] during session creation, prior to reporting any {{XRView}} data.
 
 ### Reference spaces ### {#protect-reference-spaces}
-Various reference space types have restrictions places on their use to prevent the unintentional exposure of [=sensitive information=].
+Various reference space types have restrictions placed on their creation to ensure [=sensitive information=] is exposed safely.
 
 For any {{XRReferenceSpaceType}} included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure the document is allowed to use all policy-controlled features associated with the sensor types used to track the [=native origin=] of the {{XRReferenceSpaceType}} or the feature MUST be rejected.
 
