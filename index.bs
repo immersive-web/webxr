@@ -702,7 +702,7 @@ Each {{XRSession}} has a <dfn for="XRSession">visibility state</dfn> value, whic
 
   - A state of <dfn enum-value for="XRVisibilityState">visible</dfn> indicates that imagery rendered by the {{XRSession}} can be seen by the user and {{XRSession/requestAnimationFrame()}} callbacks are processed at the [=XRSession/XR device=]'s native refresh rate. Input is processed by the {{XRSession}} normally.
 
-  - A state of <dfn enum-value for="XRVisibilityState">visible-blurred</dfn> indicates that imagery rendered by the {{XRSession}} may be seen by the user, but is not the primary focus. {{XRSession/requestAnimationFrame()}} callbacks MAY be throttled. Input is not processed by the {{XRSession}}.
+  - A state of <dfn enum-value for="XRVisibilityState">visible-blurred</dfn> indicates that imagery rendered by the {{XRSession}} may be seen by the user, but is not the primary focus. {{XRSession/requestAnimationFrame()}} callbacks MAY be [=throttling|throttled=]. Input is not processed by the {{XRSession}}.
 
   - A state of <dfn enum-value for="XRVisibilityState">hidden</dfn> indicates that imagery rendered by the {{XRSession}} cannot be seen by the user. {{XRSession/requestAnimationFrame()}} callbacks will not be processed until the [=visibility state=] changes. Input is not processed by the {{XRSession}}.
 
@@ -2173,8 +2173,8 @@ Data adjustments {#data-adjustments-header}
 
 In some cases, security and privacy threats can be mitigated through <dfn>data adjustment</dfn>s such as throttling, quantizing, rounding, limiting, or otherwise manipulating the data reported from the [=/XR device=]. This may sometimes be necessary to avoid fingerprinting, even in situations when [=user intent=] has been established.  However, [=data adjustment=] mitigations MUST only be used in situations which would not result in user discomfort.
 
-### Throttling ### {#throttling}
-Throttling is when [=sensitive information=] is reported at a lower frequency than otherwise possible. This mitigation has the potential to reduce a site's ability to infer user intent, infer location, or perform user profiling. However, when not used appropriately throttling runs a significant risk of causing user discomfort. In addition, under many circumstances it may be inadequate to provide a complete mitigation.
+### Throttling ### {#throttling-header}
+<dfn>Throttling</dfn> is when [=sensitive information=] is reported at a lower frequency than otherwise possible. This mitigation has the potential to reduce a site's ability to infer user intent, infer location, or perform user profiling. However, when not used appropriately throttling runs a significant risk of causing user discomfort. In addition, under many circumstances it may be inadequate to provide a complete mitigation.
 
 ### Rounding, quantization, and fuzzing ### {#rounding-and-friends}
 Rounding, quantization, and fuzzing are three categories of mitigations that modify the raw data that would otherwise be returned to the developer. <dfn>Rounding</dfn> decreases the precision of data by reducing the number of digits used to express it. Quantization constrains continuous data to instead report a discrete subset of values. Fuzzing is the introduction of slight, random errors into the the data. Collectively, these mitigations are useful to avoid fingerprinting, and are especially useful when doing so does not cause noticeable impact on user comfort.
@@ -2252,7 +2252,7 @@ Various reference space types have restrictions places on their use to prevent t
 
 For any {{XRReferenceSpaceType}} included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure the document is allowed to use all policy-controlled features associated with the sensor types used to track the [=native origin=] of the {{XRReferenceSpaceType}} or the feature MUST be rejected.
 
-Any group of {{XRReferenceSpaceType/"local"}}, {{XRReferenceSpaceType/"local-floor"}}, and {{XRReferenceSpaceType/"bounded-floor"}} reference spaces that are capable of being related to one another must share a common [=native origin=]; This restriction does not apply when {{XRReferenceSpaceType/"unbounded"}} reference spaces are also able to be created.
+Any group of {{XRReferenceSpaceType/"local"}}, {{XRReferenceSpaceType/"local-floor"}}, and {{XRReferenceSpaceType/"bounded-floor"}} reference spaces that are capable of being related to one another must share a common [=native origin=]; This restriction does not apply when the creation of {{XRReferenceSpaceType/"unbounded"}} reference spaces has not been restricted.
 
 #### unbounded #### {#unbounded-privacy}
 {{XRReferenceSpaceType/"unbounded"}} reference spaces reveal the largest amount of spatial data and may result in user profiling and fingerprinting. For example, this data may enable determining user's specific geographic location or to perform gait analysis.
