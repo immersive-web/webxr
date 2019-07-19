@@ -969,6 +969,7 @@ To <dfn>populate the pose</dfn> of an {{XRSpace}} |space| in an {{XRSpace}} |bas
   1. If |space|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
   1. If |baseSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
   1. Check if [=poses may be reported=] and, if not, throw a {{SecurityError}} and abort these steps.
+  1. If [=poses must be limited=] between |space| and |baseSpace|, return <code>null</code>.
   1. Let |transform| be |pose|'s {{XRPose/transform}}.
   1. Query the [=/XR device=]'s tracking system for |space|'s pose relative to |baseSpace| at the time represented by |frame|, then perform the following steps:
     <dl class="switch">
@@ -1027,7 +1028,9 @@ An {{XRReferenceSpace}} is most frequently obtained by calling {{XRSession/reque
 
   - Passing a type of <dfn enum-value for="XRReferenceSpaceType">local</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space with a [=native origin=] near the user's head at the time of creation. The exact position and orientation will be initialized based on the conventions of the underlying platform. When using this reference space the user is not expected to move beyond their initial position much, if at all, and tracking is optimized for that purpose. For devices with [=6DoF=] tracking, {{local}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
 
-  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">local-floor</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space with a [=native origin=] at the floor in a safe position for the user to stand. The <code>y</code> axis equals <code>0</code> at floor level, with the <code>x</code> and <code>z</code> position and orientation initialized based on the conventions of the underlying platform. If the floor level isn't known it MUST be estimated. When using this reference space the user is not expected to move beyond their initial position much, if at all, and tracking is optimized for that purpose. For devices with [=6DoF=] tracking, {{local-floor}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
+  - Passing a type of <dfn enum-value for="XRReferenceSpaceType">local-floor</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space with a [=native origin=] at the floor in a safe position for the user to stand. The <code>y</code> axis equals <code>0</code> at floor level, with the <code>x</code> and <code>z</code> position and orientation initialized based on the conventions of the underlying platform. If the floor level isn't known it MUST be estimated. If the estimated floor level is determined with a non-default value, it MUST be [=rounding|rounded=] sufficiently to prevent fingerprinting. When using this reference space the user is not expected to move beyond their initial position much, if at all, and tracking is optimized for that purpose. For devices with [=6DoF=] tracking, {{local-floor}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
+
+    Note: It the floor level of a {{XRReferenceSpaceType/"local-floor"}} reference space is adjusted to prevent fingerprinting, [=rounding|rounded=] to the nearest 1cm is suggested.
 
   - Passing a type of <dfn enum-value for="XRReferenceSpaceType">bounded-floor</dfn> creates an {{XRBoundedReferenceSpace}} instance if supported by the [=XRSession/XR device=] and the {{XRSession}}. It represents a tracking space with it's [=native origin=] at the floor, where the user is expected to move within a pre-established boundary, given as the {{boundsGeometry}}. Tracking in a {{bounded-floor}} reference space is optimized for keeping the [=native origin=] and {{boundsGeometry}} stable relative to the user's environment.
 
@@ -1107,6 +1110,14 @@ The origin of an {{XRBoundedReferenceSpace}} MUST be positioned at the floor, su
 Note: Other XR platforms sometimes refer to the type of tracking offered by a {{bounded-floor}} reference space as "room scale" tracking. An {{XRBoundedReferenceSpace}} is not intended to describe multi-room spaces, areas with uneven floor levels, or very large open areas. Content that needs to handle those scenarios should use an {{unbounded}} reference space.
 
 Each {{XRBoundedReferenceSpace}} has a <dfn for="XRBoundedReferenceSpace">native bounds geometry</dfn> describing the border around the {{XRBoundedReferenceSpace}}, which the user can expect to safely move within. The polygonal boundary is given as an array of {{DOMPointReadOnly}}s, which represents a loop of points at the edges of the safe space. The points describe offsets from the [=XRSpace/native origin=] in meters. Points MUST be given in a clockwise order as viewed from above, looking towards the negative end of the Y axis. The {{DOMPointReadOnly/y}} value of each point MUST be <code>0</code> and the {{DOMPointReadOnly/w}} value of each point MUST be <code>1</code>. The bounds can be considered to originate at the floor and extend infinitely high. The shape it describes MAY be convex or concave.
+
+Each point in the [=native bounds geometry=] MUST be [=limiting|limited=] to a reasonable distance from the reference space's [=native origin=].
+
+Note: It is suggested that points of the [=native bounds geometry=] be [=limiting|limited=] to 15 meters from the [=XRSpace/native origin=] in all directions.
+
+Each point in the [=native bounds geometry=] MUST also be [=rounding|rounded=] sufficiently to prevent fingerprinting.  For user's safety, rounded points values MUST NOT fall outside the bounds reported by the platform.
+
+Note: It is suggested that points of the [=native bounds geometry=] be [=rounding|rounded=] to the nearest 5cm.
 
 The <dfn attribute for="XRBoundedReferenceSpace">boundsGeometry</dfn> attribute is an array of {{DOMPointReadOnly}}s such that each entry is equal to the entry in the {{XRBoundedReferenceSpace}}'s [=XRBoundedReferenceSpace/native bounds geometry=] premultiplied by the {{XRRigidTransform/inverse}} of the [=XRSpace/origin offset=]. In other words, it provides the same border in {{XRBoundedReferenceSpace}} coordinates relative to the [=XRSpace/effective origin=].
 
@@ -2254,6 +2265,20 @@ For any {{XRReferenceSpaceType}} included in an {{XRSession}}'s [=requested feat
 
 Any group of {{XRReferenceSpaceType/"local"}}, {{XRReferenceSpaceType/"local-floor"}}, and {{XRReferenceSpaceType/"bounded-floor"}} reference spaces that are capable of being related to one another must share a common [=native origin=]; This restriction does not apply when the creation of {{XRReferenceSpaceType/"unbounded"}} reference spaces has not been restricted.
 
+<div class="algorithm" data-algorithm="poses-limited">
+
+To determine if <dfn>poses must be limited</dfn> between two spaces, |space| and |baseSpace|, the user agent MUST run the following steps:
+
+  1. If either |space| or |baseSpace| are an {{XRReferenceSpace}} with a [=XRReferenceSpace/type=] of {{XRReferenceSpaceType/"local"}} or {{XRReferenceSpaceType/"local-floor"}} and the distance between the space's [=native origin=]'s is greater than a reasonable distance determined by the user agent, return <code>true</code>.
+  1. If either |space| or |baseSpace| are an {{XRBoundedReferenceSpace}} and the other space's [=native origin=]'s falls further outside the [=native bounds geometry=] than a reasonable distance determined by the user agent, return true.
+  1. Return false.
+
+</div>
+
+Note: Is is suggested that poses reported relative to a {{XRReferenceSpaceType/"local"}} or {{XRReferenceSpaceType/"local-floor"}} reference space be [=limiting|limited=] to a distance of 15 meters from the {{XRReferenceSpace}}'s [=native origin=].
+
+Note: Is is suggested that poses reported relative to a {{XRBoundedReferenceSpace}} be [=limiting|limited=] to a distance of 1 meter outside the {{XRBoundedReferenceSpace}}'s [=native bounds geometry=].
+
 #### unbounded #### {#unbounded-privacy}
 {{XRReferenceSpaceType/"unbounded"}} reference spaces reveal the largest amount of spatial data and may result in user profiling and fingerprinting. For example, this data may enable determining user's specific geographic location or to perform gait analysis.
 
@@ -2264,19 +2289,10 @@ If {{XRReferenceSpaceType/"unbounded"}} is included in an {{XRSession}}'s [=requ
 
 If {{XRReferenceSpaceType/"bounded-floor"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure [=user intent=] to allow {{XRReferenceSpaceType/"bounded-floor"}} tracking is well understood, either via [=explicit consent=] or [=implicit consent=], or the feature MUST be rejected.
 
-Any {{XRReferenceSpaceType/"bounded-floor"}} reference spaces MUST respect the following restrictions:
-  - Each point in the {{XRBoundedReferenceSpace/boundsGeometry}} must be [=limiting|limited=] to a reasonable distance from the reference space's [=native origin=]; the suggested distance is 15 meters in all directions.
-  - Each point in the {{XRBoundedReferenceSpace/boundsGeometry}} must be [=rounding|rounded=] sufficiently to prevent fingerprinting. Rounding to the nearest 5cm is suggested. For user's safety, rounded points values MUST NOT fall outside the original bounds.
-  - All poses returned relative to a {{XRReferenceSpaceType/"bounded-floor"}} reference space MUST be [=limiting|limited=] to a reasonable distance beyond the {{XRBoundedReferenceSpace/boundsGeometry}} in all directions; the suggested distance is 1 meter beyond the bounds in all directions.
-
 #### local-floor #### {#local-floor-privacy}
 On devices which support [=6DoF=] tracking, {{XRReferenceSpaceType/"local-floor"}} reference spaces may be used to perform gait analysis, allowing user profiling and fingerprinting. In addition, because the {{XRReferenceSpaceType/"local-floor"}} reference spaces provide an established floor level, it may be possible for a site to infer the user's height, allowing user profiling and fingerprinting.
 
 If {{XRReferenceSpaceType/"local-floor"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure [=user intent=] to allow {{XRReferenceSpaceType/"local-floor"}} tracking is well understood, either via [=explicit consent=] or [=implicit consent=], or the feature MUST be rejected.
-
-Any {{XRReferenceSpaceType/"local-floor"}} reference spaces MUST respect the following restrictions:
-  - If the [=viewer=]'s offset from the floor is determined with a non-default emulated value, the {{XRRigidTransform/position}}'s {{DOMPointReadOnly/y}} value of poses returned relative to the reference space must be [=rounding|rounded=] sufficiently to prevent fingerprinting of lower-order bits; rounding to the nearest 1cm is suggested.
-  - All poses returned relative to a {{XRReferenceSpaceType/"local-floor"}} reference space MUST be [=limiting|limited=] to a reasonable distance from the reference space's [=native origin=]; the suggested distance is 15 meters in all directions.
 
 #### local #### {#local-privacy}
 On devices which support [=6DoF=] tracking, {{XRReferenceSpaceType/"local"}} reference spaces may be used to perform gait analysis, allowing user profiling and fingerprinting.
@@ -2284,9 +2300,6 @@ On devices which support [=6DoF=] tracking, {{XRReferenceSpaceType/"local"}} ref
 If {{XRReferenceSpaceType/"local"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure [=user intent=] to allow {{XRReferenceSpaceType/"local"}} tracking is well understood, either via [=explicit consent=] or [=implicit consent=], or the feature MUST be rejected.
 
 Note: {{XRReferenceSpaceType/"local"}} is always included in the [=requested features=] of {{XRSessionMode/"immersive-vr"}} and {{XRSessionMode/"immersive-ar"}} sessions as a [=default feature=], as as such {{XRSessionMode/"immersive-vr"}} or {{XRSessionMode/"immersive-ar"}} sessions always need to obtain [=explicit consent=] or [=implicit consent=] to use {{XRReferenceSpaceType/"local"}} reference spaces.
-
-Any {{XRReferenceSpaceType/"local"}} reference spaces MUST respect the following restrictions:
-  - All poses returned relative to a {{XRReferenceSpaceType/"local"}} reference space MUST be [=limiting|limited=] to a reasonable distance from the reference space's [=native origin=]; the suggested distance is 15 meters in all directions.
 
 <section class="unstable">
 Gaze Tracking {#gazetracking-security}
