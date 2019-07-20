@@ -969,16 +969,16 @@ To <dfn>populate the pose</dfn> of an {{XRSpace}} |space| in an {{XRSpace}} |bas
   1. If |space|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
   1. If |baseSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
   1. Check if [=poses may be reported=] and, if not, throw a {{SecurityError}} and abort these steps.
-  1. If [=poses must be limited=] between |space| and |baseSpace|, return <code>null</code>.
+  1. Let |limit| be whether [=poses must be limited=] between |space| and |baseSpace|.
   1. Let |transform| be |pose|'s {{XRPose/transform}}.
   1. Query the [=/XR device=]'s tracking system for |space|'s pose relative to |baseSpace| at the time represented by |frame|, then perform the following steps:
     <dl class="switch">
-      <dt> If the tracking system provides a [=6DoF=] pose whose position is actively tracked or statically known for |space|'s pose relative to |baseSpace|:
+      <dt> If |limit| is <code>false</code> and the tracking system provides a [=6DoF=] pose whose position is actively tracked or statically known for |space|'s pose relative to |baseSpace|:
         <dd> Set |transform|'s {{XRRigidTransform/orientation}} to the orientation of |space|'s [=effective origin=] in |baseSpace|'s [=coordinate system=].
         <dd> Set |transform|'s {{XRRigidTransform/position}} to the position of |space|'s [=effective origin=] in |baseSpace|'s [=coordinate system=].
         <dd> Set |pose|'s {{XRPose/emulatedPosition}} to <code>false</code>.
 
-      <dt> Else if the tracking system provides a [=3DoF=] pose or a [=6DoF=] pose whose position is neither actively tracked nor statically known for |space|'s pose relative to |baseSpace|:
+      <dt> Else if |limit| is <code>false</code> the tracking system provides a [=3DoF=] pose or a [=6DoF=] pose whose position is neither actively tracked nor statically known for |space|'s pose relative to |baseSpace|:
         <dd> Set |transform|'s {{XRRigidTransform/orientation}} to the orientation of |space|'s [=effective origin=] in |baseSpace|'s [=coordinate system=].
         <dd> Set |transform|'s {{XRRigidTransform/position}} to the tracking system's best estimate of the position of |space|'s [=effective origin=] in |baseSpace|'s [=coordinate system=]. This MAY include a computed offset such as a neck or arm model. If a position estimate is not available, the last known position MUST be used.
         <dd> Set |pose|'s {{XRPose/emulatedPosition}} to <code>true</code>.
@@ -1030,7 +1030,7 @@ An {{XRReferenceSpace}} is most frequently obtained by calling {{XRSession/reque
 
   - Passing a type of <dfn enum-value for="XRReferenceSpaceType">local-floor</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space with a [=native origin=] at the floor in a safe position for the user to stand. The <code>y</code> axis equals <code>0</code> at floor level, with the <code>x</code> and <code>z</code> position and orientation initialized based on the conventions of the underlying platform. If the floor level isn't known it MUST be estimated. If the estimated floor level is determined with a non-default value, it MUST be [=rounding|rounded=] sufficiently to prevent fingerprinting. When using this reference space the user is not expected to move beyond their initial position much, if at all, and tracking is optimized for that purpose. For devices with [=6DoF=] tracking, {{local-floor}} reference spaces should emphasize keeping the origin stable relative to the user's environment.
 
-    Note: It the floor level of a {{XRReferenceSpaceType/"local-floor"}} reference space is adjusted to prevent fingerprinting, [=rounding|rounded=] to the nearest 1cm is suggested.
+    Note: If the floor level of a {{XRReferenceSpaceType/"local-floor"}} reference space is adjusted to prevent fingerprinting, [=rounding|rounded=] to the nearest 1cm is suggested.
 
   - Passing a type of <dfn enum-value for="XRReferenceSpaceType">bounded-floor</dfn> creates an {{XRBoundedReferenceSpace}} instance if supported by the [=XRSession/XR device=] and the {{XRSession}}. It represents a tracking space with it's [=native origin=] at the floor, where the user is expected to move within a pre-established boundary, given as the {{boundsGeometry}}. Tracking in a {{bounded-floor}} reference space is optimized for keeping the [=native origin=] and {{boundsGeometry}} stable relative to the user's environment.
 
@@ -1117,7 +1117,7 @@ Note: It is suggested that points of the [=native bounds geometry=] be [=limitin
 
 Each point in the [=native bounds geometry=] MUST also be [=rounding|rounded=] sufficiently to prevent fingerprinting.  For user's safety, rounded points values MUST NOT fall outside the bounds reported by the platform.
 
-Note: It is suggested that points of the [=native bounds geometry=] be [=rounding|rounded=] to the nearest 5cm.
+Note: It is suggested that points of the [=native bounds geometry=] be [=quantization|quantized=] to the nearest 5cm.
 
 The <dfn attribute for="XRBoundedReferenceSpace">boundsGeometry</dfn> attribute is an array of {{DOMPointReadOnly}}s such that each entry is equal to the entry in the {{XRBoundedReferenceSpace}}'s [=XRBoundedReferenceSpace/native bounds geometry=] premultiplied by the {{XRRigidTransform/inverse}} of the [=XRSpace/origin offset=]. In other words, it provides the same border in {{XRBoundedReferenceSpace}} coordinates relative to the [=XRSpace/effective origin=].
 
@@ -2188,7 +2188,7 @@ In some cases, security and privacy threats can be mitigated through <dfn>data a
 <dfn>Throttling</dfn> is when [=sensitive information=] is reported at a lower frequency than otherwise possible. This mitigation has the potential to reduce a site's ability to infer user intent, infer location, or perform user profiling. However, when not used appropriately throttling runs a significant risk of causing user discomfort. In addition, under many circumstances it may be inadequate to provide a complete mitigation.
 
 ### Rounding, quantization, and fuzzing ### {#rounding-and-friends}
-Rounding, quantization, and fuzzing are three categories of mitigations that modify the raw data that would otherwise be returned to the developer. <dfn>Rounding</dfn> decreases the precision of data by reducing the number of digits used to express it. Quantization constrains continuous data to instead report a discrete subset of values. Fuzzing is the introduction of slight, random errors into the the data. Collectively, these mitigations are useful to avoid fingerprinting, and are especially useful when doing so does not cause noticeable impact on user comfort.
+Rounding, quantization, and fuzzing are three categories of mitigations that modify the raw data that would otherwise be returned to the developer. <dfn>Rounding</dfn> decreases the precision of data by reducing the number of digits used to express it. <dfn>Quantization</dfn> constrains continuous data to instead report a discrete subset of values. Fuzzing is the introduction of slight, random errors into the the data. Collectively, these mitigations are useful to avoid fingerprinting, and are especially useful when doing so does not cause noticeable impact on user comfort.
 
 ### Limiting ### {#limiting-header}
 <dfn>Limiting</dfn> is when data is reported only when it is within a specific range. For example, it is possible to comfortably limit reporting positional pose data when a user has moved beyond a specific distance away from an approved location. Care should be taken to ensure that the user experience is not negatively affected when employing this mitigation. It is often desireable to avoid a 'hard stop' at the at the end of a range as this may cause disruptive user experiences.
@@ -2269,8 +2269,8 @@ Any group of {{XRReferenceSpaceType/"local"}}, {{XRReferenceSpaceType/"local-flo
 
 To determine if <dfn>poses must be limited</dfn> between two spaces, |space| and |baseSpace|, the user agent MUST run the following steps:
 
-  1. If either |space| or |baseSpace| are an {{XRReferenceSpace}} with a [=XRReferenceSpace/type=] of {{XRReferenceSpaceType/"local"}} or {{XRReferenceSpaceType/"local-floor"}} and the distance between the space's [=native origin=]'s is greater than a reasonable distance determined by the user agent, return <code>true</code>.
   1. If either |space| or |baseSpace| are an {{XRBoundedReferenceSpace}} and the other space's [=native origin=]'s falls further outside the [=native bounds geometry=] than a reasonable distance determined by the user agent, return true.
+  1. If either |space| or |baseSpace| are an {{XRReferenceSpace}} with a [=XRReferenceSpace/type=] of {{XRReferenceSpaceType/"local"}} or {{XRReferenceSpaceType/"local-floor"}} and the distance between the space's [=native origin=]'s is greater than a reasonable distance determined by the user agent, return <code>true</code>.
   1. Return false.
 
 </div>
@@ -2299,7 +2299,7 @@ On devices which support [=6DoF=] tracking, {{XRReferenceSpaceType/"local"}} ref
 
 If {{XRReferenceSpaceType/"local"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure [=user intent=] to allow {{XRReferenceSpaceType/"local"}} tracking is well understood, either via [=explicit consent=] or [=implicit consent=], or the feature MUST be rejected.
 
-Note: {{XRReferenceSpaceType/"local"}} is always included in the [=requested features=] of {{XRSessionMode/"immersive-vr"}} and {{XRSessionMode/"immersive-ar"}} sessions as a [=default feature=], as as such {{XRSessionMode/"immersive-vr"}} or {{XRSessionMode/"immersive-ar"}} sessions always need to obtain [=explicit consent=] or [=implicit consent=] to use {{XRReferenceSpaceType/"local"}} reference spaces.
+Note: {{XRReferenceSpaceType/"local"}} is always included in the [=requested features=] of {{XRSessionMode/"immersive-vr"}} and {{XRSessionMode/"immersive-ar"}} sessions as a [=default feature=], and as such {{XRSessionMode/"immersive-vr"}} or {{XRSessionMode/"immersive-ar"}} sessions always need to obtain [=explicit consent=] or [=implicit consent=].
 
 <section class="unstable">
 Gaze Tracking {#gazetracking-security}
