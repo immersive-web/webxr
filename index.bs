@@ -2207,6 +2207,7 @@ Starting an {{XRSessionMode/"inline"}} session does not implicitly carry the sam
 
 To determine if an <dfn>inline session request is allowed</dfn> the user agent MUST run the following steps:
 
+  1. If the session request contained any [=required features=] or [=optional features=] and the request was not [=triggered by user activation=] or [=launching a web application=], return <code>false</code>
   1. If the requesting document is not [=responsible=], return <code>false</code>
   1. If requesting document's origin is not allowed to use the WebXR [[#feature-policy|feature policy]] return <code>false</code>
   1. Return <code>true</code>
