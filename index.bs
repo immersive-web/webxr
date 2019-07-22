@@ -456,7 +456,7 @@ Some [=feature names=], when present in the [=requested features=] list, require
   <tbody>
     <tr>
       <td>{{XRReferenceSpaceType/"local"}}</td>
-      <td>Always requires consent</td>
+      <td>{{XRSessionMode/"inline"}} sessions require consent</td>
     </tr>
     <tr>
       <td>{{XRReferenceSpaceType/"local-floor"}}</td>
@@ -1146,7 +1146,7 @@ Each point in the [=native bounds geometry=] MUST be [=limiting|limited=] to a r
 
 Note: It is suggested that points of the [=native bounds geometry=] be [=limiting|limited=] to 15 meters from the [=XRSpace/native origin=] in all directions.
 
-Each point in the [=native bounds geometry=] MUST also be [=rounding|rounded=] sufficiently to prevent fingerprinting.  For user's safety, rounded points values MUST NOT fall outside the bounds reported by the platform.
+Each point in the [=native bounds geometry=] MUST also be [=quantization|quantized=] sufficiently to prevent fingerprinting.  For user's safety, rounded points values MUST NOT fall outside the bounds reported by the platform.
 
 Note: It is suggested that points of the [=native bounds geometry=] be [=quantization|quantized=] to the nearest 5cm.
 
@@ -2304,7 +2304,7 @@ As a result the various reference space types have restrictions placed on their 
 
 Most reference spaces require that [=user intent=] to use the reference space is well understood, either via [=explicit consent=] or [=implicit consent=]. See the [=require consent|features which require consent=] table for details.
  
-Any group of {{XRReferenceSpaceType/"local"}}, {{XRReferenceSpaceType/"local-floor"}}, and {{XRReferenceSpaceType/"bounded-floor"}} reference spaces that are capable of being related to one another must share a common [=native origin=]; This restriction does not apply when the creation of {{XRReferenceSpaceType/"unbounded"}} reference spaces has not been restricted.
+Any group of {{XRReferenceSpaceType/"local"}}, {{XRReferenceSpaceType/"local-floor"}}, and {{XRReferenceSpaceType/"bounded-floor"}} reference spaces that are capable of being related to one another MUST share a common [=native origin=]; This restriction only applies when the creation of {{XRReferenceSpaceType/"unbounded"}} reference spaces has been restricted.
 
 <div class="algorithm" data-algorithm="poses-limited">
 
