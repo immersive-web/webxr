@@ -1146,7 +1146,7 @@ Each point in the [=native bounds geometry=] MUST be [=limiting|limited=] to a r
 
 Note: It is suggested that points of the [=native bounds geometry=] be [=limiting|limited=] to 15 meters from the [=XRSpace/native origin=] in all directions.
 
-Each point in the [=native bounds geometry=] MUST also be [=quantization|quantized=] sufficiently to prevent fingerprinting.  For user's safety, rounded points values MUST NOT fall outside the bounds reported by the platform.
+Each point in the [=native bounds geometry=] MUST also be [=quantization|quantized=] sufficiently to prevent fingerprinting.  For user's safety, quantized points values MUST NOT fall outside the bounds reported by the platform.
 
 Note: It is suggested that points of the [=native bounds geometry=] be [=quantization|quantized=] to the nearest 5cm.
 
