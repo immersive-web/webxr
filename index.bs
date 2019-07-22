@@ -444,6 +444,37 @@ Some {{XRSessionMode}}s enable certain [=feature names=] as [=optional features=
 
 The combined list of [=feature names=] given by the {{XRSessionInit/requiredFeatures}}, {{XRSessionInit/optionalFeatures}}, and [=default features=] are collectively considered the <dfn>requested features</dfn> for an {{XRSession}}.
 
+Some [=feature names=], when present in the [=requested features=] list, require that [=user intent=] to use the feature is well understood, via either [=explicit consent=] or [=implicit consent=]. The following table describes which features <dfn>require consent</dfn> prior to being enabled:
+
+<table class="tg">
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Criteria</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{XRReferenceSpaceType/"local"}}</td>
+      <td>Always requires consent</td>
+    </tr>
+    <tr>
+      <td>{{XRReferenceSpaceType/"local-floor"}}</td>
+      <td>Always requires consent</td>
+    </tr>
+    <tr>
+      <td>{{XRReferenceSpaceType/"bounded-floor"}}</td>
+      <td>Always requires consent</td>
+    </tr>
+    <tr>
+      <td>{{XRReferenceSpaceType/"unbounded"}}</td>
+      <td>Always requires consent</td>
+    </tr>
+  </tbody>
+</table>
+
+Note: {{XRReferenceSpaceType/"local"}} is always included in the [=requested features=] of {{XRSessionMode/"immersive-vr"}} and {{XRSessionMode/"immersive-ar"}} sessions as a [=default feature=], and as such {{XRSessionMode/"immersive-vr"}} or {{XRSessionMode/"immersive-ar"}} sessions always need to obtain [=explicit consent=] or [=implicit consent=].
+
 <div class="algorithm" data-algorithm="resolve-features">
 
 To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optionalFeatures| for an {{XRSession}} |session|, the user agent MUST run the following steps:
@@ -2259,10 +2290,20 @@ If the relationship between {{XRView}}s could uniquely identify the [=/XR device
 Note: Furthermore, if the relationship between {{XRView}}s is affected by a user-configured interpupillary distance, then it is strongly recommended that the user agent require [=explicit consent=] during session creation, prior to reporting any {{XRView}} data.
 
 ### Reference spaces ### {#protect-reference-spaces}
-Various reference space types have restrictions placed on their creation to ensure [=sensitive information=] is exposed safely.
+Depending on the reference spaces used, several different types of [=sensitive information=] may be exposed to the application.
 
-For any {{XRReferenceSpaceType}} included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure the document is allowed to use all policy-controlled features associated with the sensor types used to track the [=native origin=] of the {{XRReferenceSpaceType}} or the feature MUST be rejected.
+ - On devices which support [=6DoF=] tracking, {{XRReferenceSpaceType/"local"}} reference spaces may be used to perform gait analysis, allowing user profiling and fingerprinting.
 
+ - On devices which support [=6DoF=] tracking, {{XRReferenceSpaceType/"local-floor"}} reference spaces may be used to perform gait analysis, allowing user profiling and fingerprinting. In addition, because the {{XRReferenceSpaceType/"local-floor"}} reference spaces provide an established floor level, it may be possible for a site to infer the user's height, allowing user profiling and fingerprinting.
+
+ - {{XRReferenceSpaceType/"bounded-floor"}} reference spaces, when sufficiently constrained in size, do not enable developers to determine geographic location. However, because the floor level is established and users are able to walk around, it may be possible for a site to infer the user's height or perform gait analysis, allowing user profiling and fingerprinting. In addition, it may be possible perform fingerprinting using the bounds reported by a bounded reference space.
+
+ - {{XRReferenceSpaceType/"unbounded"}} reference spaces reveal the largest amount of spatial data and may result in user profiling and fingerprinting. For example, this data may enable determining user's specific geographic location or to perform gait analysis.
+
+As a result the various reference space types have restrictions placed on their creation to ensure the [=sensitive information=] expose is handled safely:
+
+Most reference spaces require that [=user intent=] to use the reference space is well understood, either via [=explicit consent=] or [=implicit consent=]. See the [=require consent|features which require consent=] table for details.
+ 
 Any group of {{XRReferenceSpaceType/"local"}}, {{XRReferenceSpaceType/"local-floor"}}, and {{XRReferenceSpaceType/"bounded-floor"}} reference spaces that are capable of being related to one another must share a common [=native origin=]; This restriction does not apply when the creation of {{XRReferenceSpaceType/"unbounded"}} reference spaces has not been restricted.
 
 <div class="algorithm" data-algorithm="poses-limited">
@@ -2278,28 +2319,6 @@ To determine if <dfn>poses must be limited</dfn> between two spaces, |space| and
 Note: Is is suggested that poses reported relative to a {{XRReferenceSpaceType/"local"}} or {{XRReferenceSpaceType/"local-floor"}} reference space be [=limiting|limited=] to a distance of 15 meters from the {{XRReferenceSpace}}'s [=native origin=].
 
 Note: Is is suggested that poses reported relative to a {{XRBoundedReferenceSpace}} be [=limiting|limited=] to a distance of 1 meter outside the {{XRBoundedReferenceSpace}}'s [=native bounds geometry=].
-
-#### unbounded #### {#unbounded-privacy}
-{{XRReferenceSpaceType/"unbounded"}} reference spaces reveal the largest amount of spatial data and may result in user profiling and fingerprinting. For example, this data may enable determining user's specific geographic location or to perform gait analysis.
-
-If {{XRReferenceSpaceType/"unbounded"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure [=user intent=] to allow {{XRReferenceSpaceType/"unbounded"}} tracking is well understood, either via [=explicit consent=] or [=implicit consent=], or the feature MUST be rejected.
-
-#### bounded-floor #### {#bounded-floor-privacy}
-{{XRReferenceSpaceType/"bounded-floor"}} reference spaces, when sufficiently constrained in size, do not enable developers to determine geographic location. However, because the floor level is established and users are able to walk around, it may be possible for a site to infer the user's height or perform gait analysis, allowing user profiling and fingerprinting. In addition, it may be possible perform fingerprinting using the bounds reported by a bounded reference space.
-
-If {{XRReferenceSpaceType/"bounded-floor"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure [=user intent=] to allow {{XRReferenceSpaceType/"bounded-floor"}} tracking is well understood, either via [=explicit consent=] or [=implicit consent=], or the feature MUST be rejected.
-
-#### local-floor #### {#local-floor-privacy}
-On devices which support [=6DoF=] tracking, {{XRReferenceSpaceType/"local-floor"}} reference spaces may be used to perform gait analysis, allowing user profiling and fingerprinting. In addition, because the {{XRReferenceSpaceType/"local-floor"}} reference spaces provide an established floor level, it may be possible for a site to infer the user's height, allowing user profiling and fingerprinting.
-
-If {{XRReferenceSpaceType/"local-floor"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure [=user intent=] to allow {{XRReferenceSpaceType/"local-floor"}} tracking is well understood, either via [=explicit consent=] or [=implicit consent=], or the feature MUST be rejected.
-
-#### local #### {#local-privacy}
-On devices which support [=6DoF=] tracking, {{XRReferenceSpaceType/"local"}} reference spaces may be used to perform gait analysis, allowing user profiling and fingerprinting.
-
-If {{XRReferenceSpaceType/"local"}} is included in an {{XRSession}}'s [=requested features=] the user agent MUST ensure [=user intent=] to allow {{XRReferenceSpaceType/"local"}} tracking is well understood, either via [=explicit consent=] or [=implicit consent=], or the feature MUST be rejected.
-
-Note: {{XRReferenceSpaceType/"local"}} is always included in the [=requested features=] of {{XRSessionMode/"immersive-vr"}} and {{XRSessionMode/"immersive-ar"}} sessions as a [=default feature=], and as such {{XRSessionMode/"immersive-vr"}} or {{XRSessionMode/"immersive-ar"}} sessions always need to obtain [=explicit consent=] or [=implicit consent=].
 
 <section class="unstable">
 Gaze Tracking {#gazetracking-security}
