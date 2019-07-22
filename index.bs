@@ -2135,7 +2135,7 @@ To determine if a given {{Document}} |document| is <dfn>trustworthy</dfn> the us
 
   1. If |document| is not a [=responsible=] document, return <code>false</code>
   1. If |document| is not [=active and focused=], return <code>false</code>
-  1. If |document|'s origin is not allowed to use the WebXR [[#feature-policy|feature policy]] or the [=underlying sensors=]' feature policies, return <code>false</code>
+  1. If |document|'s origin is not allowed to use the WebXR [[#feature-policy|feature policy]], return <code>false</code>
   1. Return <code>true</code>
 
 </div>
@@ -2208,7 +2208,7 @@ Starting an {{XRSessionMode/"inline"}} session does not implicitly carry the sam
 To determine if an <dfn>inline session request is allowed</dfn> the user agent MUST run the following steps:
 
   1. If the requesting document is not [=responsible=], return <code>false</code>
-  1. If requesting document's origin is not allowed to use the WebXR [[#feature-policy|feature policy]] or the [=underlying sensors=]' feature policies, return <code>false</code>
+  1. If requesting document's origin is not allowed to use the WebXR [[#feature-policy|feature policy]] return <code>false</code>
   1. Return <code>true</code>
 
 </div>
@@ -2289,8 +2289,6 @@ This specification defines a [=policy-controlled feature=] that controls whether
 The feature identifier for this feature is <code>"xr"</code>.
 
 The [=default allowlist=] for this feature is <code>["self"]</code>.
-
-In addition to the <code>"xr"</code> feature policy, feature policies for <dfn>underlying sensors</dfn> must also be respected if a site could isolate and extract sensor data that would otherwise be explicitly blocked by those feature policies' origin allow list.
 
 Acknowledgements {#ack}
 ================
