@@ -698,7 +698,7 @@ When the {{XRInputSource/handedness}}, {{XRInputSource/targetRayMode}}, or prese
 
 </div>
 
-Each {{XRSession}} has a <dfn for="XRSession">environment blending mode</dfn> value, which is a enum which MUST be set to whichever of the following values best matches the behavior of imagery rendered by the session in relation to the user's surrounding environment.
+Each {{XRSession}} has an <dfn for="XRSession">environment blending mode</dfn> value, which is an enum which MUST be set to whichever of the following values best matches the behavior of imagery rendered by the session in relation to the user's surrounding environment.
 
   - A blend mode of <dfn enum-value for="XREnvironmentBlendMode">opaque</dfn> indicates that the user's surrounding environment is not visible at all. Alpha values in the {{XRRenderState/baseLayer}} will be ignored, with the compositor treating all alpha values as 1.0.
 
@@ -710,7 +710,7 @@ The <dfn attribute for="XRSession">environmentBlendMode</dfn> attribute returns 
 
 Note: Most Virtual Reality devices exhibit {{XREnvironmentBlendMode/"opaque"}} blending behavior. Augmented Reality devices that use transparent optical elements frequently exhibit {{XREnvironmentBlendMode/"additive"}} blending behavior, and Augmented Reality devices that use passthrough cameras frequently exhibit {{XREnvironmentBlendMode/"alpha-blend"}} blending behavior.
 
-Each {{XRSession}} has a <dfn for="XRSession">visibility state</dfn> value, which is a enum which MUST be set to whichever of the following values best matches the state of session.
+Each {{XRSession}} has a <dfn for="XRSession">visibility state</dfn> value, which is an enum which MUST be set to whichever of the following values best matches the state of session.
 
   - A state of <dfn enum-value for="XRVisibilityState">visible</dfn> indicates that imagery rendered by the {{XRSession}} can be seen by the user and {{XRSession/requestAnimationFrame()}} callbacks are processed at the [=XRSession/XR device=]'s native refresh rate. Input is processed by the {{XRSession}} normally.
 
@@ -912,7 +912,7 @@ An {{XRFrame}} represents a snapshot of the state of all of the tracked objects 
 };
 </pre>
 
-Each {{XRFrame}} has a <dfn for="XRFrame">active</dfn> boolean which is initially set to <code>false</code>, and an <dfn for="XRFrame">animationFrame</dfn> boolean which is initially set to <code>false</code>.
+Each {{XRFrame}} has an <dfn for="XRFrame">active</dfn> boolean which is initially set to <code>false</code>, and an <dfn for="XRFrame">animationFrame</dfn> boolean which is initially set to <code>false</code>.
 
 The <dfn attribute for="XRFrame">session</dfn> attribute returns the {{XRSession}} that produced the {{XRFrame}}.
 
@@ -1413,7 +1413,7 @@ The <dfn attribute for="XRInputSource">targetRayMode</dfn> attribute describes t
 
   - <dfn enum-value for="XRTargetRayMode">gaze</dfn> indicates the target ray will originate at the user's head and follow the direction they are looking (this is commonly referred to as a "gaze input" device).
   - <dfn enum-value for="XRTargetRayMode">tracked-pointer</dfn> indicates that the target ray originates from either a handheld device or other hand-tracking mechanism and represents that the user is using their hands or the held device for pointing. The orientation of the target ray relative to the tracked object MUST follow platform-specific ergonomics guidelines when available. In the absence of platform-specific guidance, the target ray SHOULD point in the same direction as the user's index finger if it was outstretched.
-  - <dfn enum-value for="XRTargetRayMode">screen</dfn> indicates that the input source was an interaction with the canvas element associated with a inline session's output context, such as a mouse click or touch event.
+  - <dfn enum-value for="XRTargetRayMode">screen</dfn> indicates that the input source was an interaction with the canvas element associated with an inline session's output context, such as a mouse click or touch event.
 
 The <dfn attribute for="XRInputSource">targetRaySpace</dfn> attribute is an {{XRSpace}} that has a [=native origin=] tracking the position and orientation of the preferred pointing ray of the {{XRInputSource}}, as defined by the {{targetRayMode}}.s
 
@@ -1913,9 +1913,9 @@ The user agent MUST fire a <dfn event for="XR">devicechange</dfn> event on the {
 
 A user agent MUST dispatch a <dfn event for="XRSession">visibilitychange</dfn> event on an {{XRSession}} each time the [=XRSession/visibility state=] of the {{XRSession}} has changed. The event MUST be of type {{XRSessionEvent}}.
 
-A user agent MUST dispatch a <dfn event for="XRSession">end</dfn> event on an {{XRSession}} when the session ends, either by the application or the user agent. The event MUST be of type {{XRSessionEvent}}.
+A user agent MUST dispatch an <dfn event for="XRSession">end</dfn> event on an {{XRSession}} when the session ends, either by the application or the user agent. The event MUST be of type {{XRSessionEvent}}.
 
-A user agent MUST dispatch a <dfn event for="XRSession">inputsourceschange</dfn> event on an {{XRSession}} when the session's [=list of active XR input sources=] has changed. The event MUST be of type {{XRInputSourcesChangeEvent}}.
+A user agent MUST dispatch an <dfn event for="XRSession">inputsourceschange</dfn> event on an {{XRSession}} when the session's [=list of active XR input sources=] has changed. The event MUST be of type {{XRInputSourcesChangeEvent}}.
 
 A user agent MUST dispatch a <dfn event for="XRSession">selectstart</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s begins its [=primary action=]. The event MUST be of type {{XRInputSourceEvent}}.
 
