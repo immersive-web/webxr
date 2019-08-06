@@ -1935,7 +1935,7 @@ The WebXR Device API provides powerful new features which bring with them severa
 Sensitive Information {#sensitive-information-header}
 ---------------------
 
-In the context of XR, <dfn>sensitive information</dfn> includes, but is not limited to, user configurable data such as interpupillary distance (IPD) and sensor-based data such as {{XRPose}}s. All [=immersive sessions=] will expose some amount of sensitive data, due to the user's pose being necessary to render anything. However, in some cases, the same sensitive information will also be exposed via {{XRSessionMode/"inline"}} sessions.
+In the context of XR, <dfn>sensitive information</dfn> includes, but is not limited to, user-configurable data such as interpupillary distance (IPD) and sensor-based data such as {{XRPose}}s. All [=immersive sessions=] will expose some amount of sensitive data, due to the user's pose being necessary to render anything. However, in some cases, the same sensitive information will also be exposed via {{XRSessionMode/"inline"}} sessions.
 
 ### Active and focused document ### {#active-and-focused-document}
 A document MUST be [=active and focused=] at the time that [=sensitive information=] is requested.
@@ -2069,7 +2069,7 @@ The primary difference between {{XRViewerPose}} and {{XRPose}} is the inclusion 
 
 If the relationship between {{XRView}}s could uniquely identify the [=/XR device=], then the user agent MUST anonymize the {{XRView}} data to prevent fingerprinting. The method of anonymization is at the discretion of the user agent.
 
-Note: Furthermore, if the relationship between {{XRView}}s is affected by a user-configured interpupillary distance, then it is strongly recommended that the user agent require [=explicit consent=] during session creation, prior to reporting any {{XRView}} data.
+Note: Furthermore, if the relationship between {{XRView}}s is affected by a user-configured interpupillary distance (IPD), then it is strongly recommended that the user agent require [=explicit consent=] during session creation, prior to reporting any {{XRView}} data.
 
 ### Reference spaces ### {#protect-reference-spaces}
 Depending on the reference spaces used, several different types of [=sensitive information=] may be exposed to the application.
