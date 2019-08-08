@@ -26,6 +26,8 @@ spec:infra;
 </pre>
 
 <pre class="anchors">
+spec:infra; urlPrefix: https://infra.spec.whatwg.org/
+    type:dfn; for:list; text:extend; url: list-extend
 spec: High Resolution Time; urlPrefix: https://www.w3.org/TR/hr-time/
     type: typedef; text: DOMHighResTimeStamp; url: dom-domhighrestimestamp
 spec: WebGL; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
@@ -1238,7 +1240,7 @@ Matrices returned from the WebXR Device API will be a 16 element {{Float32Array}
 [a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15]
 </pre>
 
-Applying this matrix as a transform to a column vector specified as a {{DOMPointReadOnly}} lik so:
+Applying this matrix as a transform to a column vector specified as a {{DOMPointReadOnly}} like so:
 <pre>{x:X, y:Y, z:Z, w:1}</pre>
 
 Produces the following result:
@@ -1425,7 +1427,7 @@ The <dfn attribute for="XRInputSource">profiles</dfn> attribute is a [=/list=] o
 
 An <dfn for="XRInputSource">input profile name</dfn> is a lowercase {{DOMString}} containing no spaces, with separate words concatenated with a hyphen (<code>-</code>) character. A descriptive name should be chosen, using the prefered verbiage of the device vendor when possible. If the platform provides an appropriate identifier, such as a USB vendor and product ID, it MAY be used. Values that uniquely identify a single device, such as serial numbers, MUST NOT be used. The [=input profile name=] MUST NOT contain an indication of device handedness. If multiple user agents expose the same device, they SHOULD make an effort to report the same [=input profile name=].
 
-Profiles are given in descending order of specificity. Any [=input profile name=]s given after the first entry in the list should provide fallback values that represent alternative representations of the device. This may include a more generic or prior version of the device, a more widely recognized device that is sufficently similar, or a broad description of the device type (such as "touchpad-wand"). If multiple profiles are given, the layouts they describe must all represent a superset or subset of every other profile in the list.
+Profiles are given in descending order of specificity. Any [=input profile name=]s given after the first entry in the list should provide fallback values that represent alternative representations of the device. This may include a more generic or prior version of the device, a more widely recognized device that is sufficiently similar, or a broad description of the device type (such as "touchpad-wand"). If multiple profiles are given, the layouts they describe must all represent a superset or subset of every other profile in the list.
 
 If the {{XRSession}}'s [=mode=] is {{XRSessionMode/"inline"}}, {{XRInputSource/profiles}} MUST be an empty list.
 
@@ -2004,7 +2006,7 @@ In some cases, security and privacy threats can be mitigated through <dfn>data a
 Rounding, quantization, and fuzzing are three categories of mitigations that modify the raw data that would otherwise be returned to the developer. <dfn>Rounding</dfn> decreases the precision of data by reducing the number of digits used to express it. <dfn>Quantization</dfn> constrains continuous data to instead report a discrete subset of values. Fuzzing is the introduction of slight, random errors into the the data. Collectively, these mitigations are useful to avoid fingerprinting, and are especially useful when doing so does not cause noticeable impact on user comfort.
 
 ### Limiting ### {#limiting-header}
-<dfn>Limiting</dfn> is when data is reported only when it is within a specific range. For example, it is possible to comfortably limit reporting positional pose data when a user has moved beyond a specific distance away from an approved location. Care should be taken to ensure that the user experience is not negatively affected when employing this mitigation. It is often desireable to avoid a 'hard stop' at the at the end of a range as this may cause disruptive user experiences.
+<dfn>Limiting</dfn> is when data is reported only when it is within a specific range. For example, it is possible to comfortably limit reporting positional pose data when a user has moved beyond a specific distance away from an approved location. Care should be taken to ensure that the user experience is not negatively affected when employing this mitigation. It is often desirable to avoid a 'hard stop' at the at the end of a range as this may cause disruptive user experiences.
 
 Protected functionality {#protected-functionality}
 -----------------------
