@@ -1455,11 +1455,12 @@ When an [=XR input source=] for {{XRSession}} |session| begins its [=primary act
 
 <div class="algorithm" data-algorithm="on-input-end">
 
-When an [=XR input source=] for {{XRSession}} |session| ends its [=primary action=] the UA MUST run the following steps:
+When an [=XR input source=] |source| for {{XRSession}} |session| ends its [=primary action=] the UA MUST run the following steps:
 
+  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| for the time the event occurred.
   1. [=Queue a task=] to perform the following steps:
-    1. Fire an {{XRInputSourceEvent}} named {{select!!event}} on |session|.
-    1. Fire an {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
+    1. [=Fire an input source event=] with name {{select!!event}}, frame |frame|, and source |source|.
+    1. [=Fire an input source event=] with name {{selectend!!event}}, frame |frame|, and source |source|.
 
 </div>
 
@@ -1467,9 +1468,10 @@ Sometimes platform-specific behavior can result in a [=primary action=] being in
 
 <div class="algorithm" data-algorithm="on-input-cancelled">
 
-When an [=XR input source=] for {{XRSession}} |session| has its [=primary action=] cancelled the UA MUST run the following steps:
+When an [=XR input source=] |source| for {{XRSession}} |session| has its [=primary action=] cancelled the UA MUST run the following steps:
 
-  1. [=Queue a task=] to [=fire an event|fire=] an {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
+  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| for the time the event occurred.
+  1. [=Queue a task=] to [=fire an input source event=] an {{XRInputSourceEvent}} with name {{selectend!!event}}, frame |frame|, and source |source|.
 
 </div>
 
@@ -1482,23 +1484,25 @@ Some [=/XR Device=]s may support <dfn>transient input sources</dfn>, where the [
 
 <div class="algorithm" data-algorithm="on-transient-input-start">
 
-When a [=transient input source=] for {{XRSession}} |session| begins its [=primary action=] the UA MUST run the following steps:
+When a [=transient input source=] |source| for {{XRSession}} |session| begins its [=primary action=] the UA MUST run the following steps:
 
+  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| for the time the event occurred.
   1. [=Queue a task=] to perform the following steps:
     1. Fire any <code>"pointerdown"</code> events produced by the [=XR input source=]'s action, if necessary.
     1. [=add input source|Add the XR input source=] to the [=list of active XR input sources=].
-    1. Fire an {{XRInputSourceEvent}} named {{selectstart!!event}} on |session|.
+    1. [=Fire an input source event=] with name {{selectstart!!event}}, frame |frame|, and source |source|.
 
 </div>
 
 <div class="algorithm" data-algorithm="on-transient-input-end">
 
-When a [=transient input source=] for {{XRSession}} |session| ends its [=primary action=] the UA MUST run the following steps:
+When a [=transient input source=] |source| for {{XRSession}} |session| ends its [=primary action=] the UA MUST run the following steps:
 
+  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| for the time the event occurred.
   1. [=Queue a task=] to perform the following steps:
-    1. Fires an {{XRInputSourceEvent}} named {{select!!event}} on |session|.
+    1. [=Fire an input source event=] with name {{select!!event}}, frame |frame|, and source |source|.
     1. Fire any <code>"click"</code> events produced by the [=XR input source=]'s action, if necessary.
-    1. Fires an {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
+    1. [=Fire an input source event=] with name {{selectend!!event}}, frame |frame|, and source |source|.
     1. [=remove input source|Remove the XR input source=] from the [=list of active XR input sources=].
     1. Fire any <code>"pointerup"</code> events produced by the [=XR input source=]'s action, if necessary.
 
@@ -1506,10 +1510,11 @@ When a [=transient input source=] for {{XRSession}} |session| ends its [=primary
 
 <div class="algorithm" data-algorithm="on-transient-input-cancelled">
 
-When a [=transient input source=] for {{XRSession}} |session| has its [=primary action=] cancelled the UA MUST run the following steps:
+When a [=transient input source=] |source| for {{XRSession}} |session| has its [=primary action=] cancelled the UA MUST run the following steps:
 
+  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| for the time the event occurred.
   1. [=Queue a task=] to perform the following steps:
-    1. Fire an {{XRInputSourceEvent}} named {{selectend!!event}} on |session|.
+    1. [=Fire an input source event=] with name {{selectend!!event}}, frame |frame|, and source |source|.
     1. [=remove input source|Remove the XR input source=] from the [=list of active XR input sources=].
     1. Fire any <code>"pointerup"</code> events produced by the [=XR input source=]'s action, if necessary.
 
@@ -1846,11 +1851,11 @@ The <dfn attribute for="XRInputSourceEvent">frame</dfn> attribute is an {{XRFram
 
 <div class="algorithm" data-algorithm="fire-input-source-event">
 
-When the user agent fires an {{XRInputSourceEvent}} |event| it MUST run the following steps:
+When the user agent has to <dfn>fire an input source event</dfn> with name |name|, {{XRFrame}} |frame|, and {{XRInputSource}} |source| it MUST run the following steps:
 
-  1. Let |frame| be |event|'s {{XRInputSourceEvent/frame}}.
+  1. Create an {{XRInputSourceEvent}} |event| with {{Event/type}} |name|, {{XRInputSourceEvent/frame}} |frame|, and {{XRInputSourceEvent/inputSource}} |source|
   1. Set |frame|'s [=active=] boolean to <code>true</code>.
-  1. [=Dispatch=] |event|.
+  1. [=Dispatch=] |event| on |frame|'s {{XRFrame/session}}
   1. Set |frame|'s [=active=] boolean to <code>false</code>.
 
 </div>
