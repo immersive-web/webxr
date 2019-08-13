@@ -1581,6 +1581,8 @@ interface XRWebGLLayer {
 
 Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">context</dfn> object, initially <code>null</code>, which is an instance of either a {{WebGLRenderingContext}} or a {{WebGL2RenderingContext}}.
 
+Each {{XRWebGLLayer}} has an associated <dfn for="XRWebGLLayer">session</dfn>, which is the {{XRSession}} it was created with.
+
 <div class="algorithm" data-algorithm="construct-webgl-layer">
 
 The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |layerInit|)</dfn> constructor MUST perform the following steps when invoked:
@@ -1590,6 +1592,7 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
   1. If |context| is lost, throw an {{InvalidStateError}} and abort these steps.
   1. If |session| is an [=immersive session=] and |context|'s [=XR compatible=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
   1. Initialize |layer|'s [=XRWebGLLayer/context=] to |context|.
+  1. Initialize |layer|'s [=XRWebGLLayer/session=] to |session|.
   1. Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} as follows:
     <dl class="switch">
       <dt> If |layerInit|'s {{XRWebGLLayerInit/ignoreDepthValues}} value is <code>false</code> and the [=XR Compositor=] will make use of depth values
@@ -1652,10 +1655,10 @@ Each {{XRWebGLLayer}} MUST have a <dfn>list of viewports</dfn> which is a [=/lis
 
 <div class="algorithm" data-algorithm="get-viewport">
 
-The <dfn method for="XRWebGLLayer">getViewport(|view|)</dfn> method, when invoked on an {{XRSession}} |session|, MUST run the following steps:
+The <dfn method for="XRWebGLLayer">getViewport(|view|)</dfn> method, when invoked on an {{XRWebGLLayer}} |layer|, MUST run the following steps:
 
   1. Let |frame| be |view|'s [=XRView/frame=].
-  1. If |frame|'s {{XRFrame/session}} is not equal to |session|, throw an {{InvalidStateError}} and abort these steps.
+  1. If |frame|'s {{XRFrame/session}} is not equal to |layer|'s [=XRWebGLLayer/session=], throw an {{InvalidStateError}} and abort these steps.
   1. If |frame|'s [=XRFrame/active=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
   1. Let |glViewport| be the [=WebGL viewport=] from the [=list of viewports=] associated with |view|.
   1. Let |viewport| be a new {{XRViewport}} instance.
