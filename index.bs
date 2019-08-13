@@ -267,8 +267,9 @@ The user agent <dfn>ensures an immersive XR device is selected</dfn> by running 
 The <dfn attribute for="XR">ondevicechange</dfn> attribute is an [=Event handler IDL attribute=] for the {{devicechange}} event type.
 
 <div class="algorithm" data-algorithm="supports-session">
+The <dfn method for="XR">supportsSession(|mode|)</dfn> method queries if a given |mode| is supported by the user agent and the [=immersive XR device=].
 
-When the <dfn method for="XR">supportsSession(|mode|)</dfn> method is invoked, it MUST run the following steps:
+When this method is invoked, it MUST run the following steps:
 
   1. Let |promise| be [=a new Promise=].
   1. If |mode| is {{XRSessionMode/"inline"}}, [=/resolve=] |promise| and return it.
@@ -298,7 +299,9 @@ The {{XR}} object has a <dfn>pending immersive session</dfn> boolean, which MUST
 
 <div class="algorithm" data-algorithm="request-session">
 
-When the <dfn method for="XR">requestSession(|mode|, |options|)</dfn> method is invoked, the user agent MUST run the following steps:
+The <dfn method for="XR">requestSession(|mode|, |options|)</dfn> method attempts to initialize an {{XRSession}} for the given |mode| if possible, entering immersive mode if necessary.
+
+When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |promise| be [=a new Promise=].
   1. Let |immersive| be <code>true</code> if |mode| is {{XRSessionMode/"immersive-vr"}}, and <code>false</code> otherwise.
@@ -592,9 +595,9 @@ Each {{XRSession}} has a <dfn>minimum inline field of view</dfn> and a <dfn>maxi
 
 <div class="algorithm" data-algorithm="update-render-state">
 
-The {{XRSession/updateRenderState()}} method queues an update to the [=active render state=] to be applied on the next frame. Unset fields of the {{XRRenderStateInit}} passed to this method will not be changed.
+The <dfn method for="XRSession">updateRenderState(|newState|)</dfn> method queues an update to the [=active render state=] to be applied on the next frame. Unset fields of the {{XRRenderStateInit}} |newState| passed to this method will not be changed.
 
-When the <dfn method for="XRSession">updateRenderState(|newState|)</dfn> method is invoked, the user agent MUST run the following steps:
+When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |session| be the target {{XRSession}}.
   1. If |session|'s [=ended=] value is <code>true</code>, throw an {{InvalidStateError}} and abort these steps.
@@ -634,8 +637,9 @@ When requested, the {{XRSession}} MUST <dfn>apply the pending render state</dfn>
 </div>
 
 <div class="algorithm" data-algorithm="request-reference-space">
+The <dfn method for="XRSession">requestReferenceSpace(|type|)</dfn> method constructs a new {{XRReferenceSpace}} for a given |type|, if possible.
 
-When the <dfn method for="XRSession">requestReferenceSpace(|type|)</dfn> method is invoked, the user agent MUST run the following steps:
+When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |promise| be [=a new Promise=].
   1. Run the following steps [=in parallel=]:
@@ -806,7 +810,9 @@ Each {{XRSession}} has a <dfn>list of animation frame callbacks</dfn>, which is 
 
 <div class="algorithm" data-algorithm="request-animation-frame">
 
-When the <dfn method for="XRSession">requestAnimationFrame(|callback|)</dfn> method is invoked, the user agent MUST run the following steps:
+The <dfn method for="XRSession">requestAnimationFrame(|callback|)</dfn> method queues up |callback| for being run the next time the user agent wishes to run an animation frame for the device.
+
+When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |session| be the target {{XRSession}} object.
   1. Increment |session|'s [=animation frame callback identifier=] by one.
@@ -817,7 +823,9 @@ When the <dfn method for="XRSession">requestAnimationFrame(|callback|)</dfn> met
 
 <div class="algorithm" data-algorithm="cancel-animation-frame">
 
-When the <dfn method for="XRSession">cancelAnimationFrame(|handle|)</dfn> method is invoked, the user agent MUST run the following steps:
+The <dfn method for="XRSession">cancelAnimationFrame(|handle|)</dfn> method cancels an existing animation frame callback given its [=animation frame callback identifier=] |handle|.
+
+When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |session| be the target {{XRSession}} object.
   1. Find the entry in |session|'s [=list of animation frame callbacks=] that is associated with the value |handle|.
@@ -920,7 +928,9 @@ The <dfn attribute for="XRFrame">session</dfn> attribute returns the {{XRSession
 
 <div class="algorithm" data-algorithm="get-viewer-pose">
 
-When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
+The <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method provides the pose of the viewer relative to |referenceSpace| as an {{XRViewerPose}}, at the time represented by the {{XRFrame}}.
+
+When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |frame| be the target {{XRFrame}}
   1. Let |session| be |frame|'s {{XRFrame/session}} object.
@@ -943,7 +953,9 @@ When the <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method 
 
 <div class="algorithm" data-algorithm="get-pose">
 
-When the <dfn method for="XRFrame">getPose(|space|, |baseSpace|)</dfn> method is invoked, the user agent MUST run the following steps:
+The <dfn method for="XRFrame">getPose(|space|, |baseSpace|)</dfn> method provides the pose of |space| relative to |baseSpace| as an {{XRPose}}, at the time represented by the {{XRFrame}}.
+
+When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |frame| be the target {{XRFrame}}
   1. Let |pose| be a new {{XRPose}} object.
@@ -1741,8 +1753,9 @@ function onXRSessionStarted(xrSession) {
 To set the [=XR compatible=] boolean after the context has been created, the {{makeXRCompatible()}} method is used.
 
 <div class="algorithm" data-algorithm="make-xr-compatible">
+The <dfn method for="WebGLRenderingContextBase">makeXRCompatible()</dfn> method ensures the {{WebGLRenderingContextBase}} is running on a [=compatible graphics adapter=] for the [=XR/immersive XR device=].
 
-When the <dfn method for="WebGLRenderingContextBase">makeXRCompatible()</dfn> method is invoked, the user agent MUST run the following steps:
+When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |promise| be [=a new Promise=].
     1. Run the following steps [=in parallel=]:
