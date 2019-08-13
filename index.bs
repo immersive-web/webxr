@@ -590,6 +590,8 @@ The <dfn attribute for="XRSession">renderState</dfn> attribute returns the {{XRS
 
 Each {{XRSession}} has a <dfn>minimum inline field of view</dfn> and a <dfn>maximum inline field of view</dfn>, defined in radians. The values MUST be determined by the user agent and MUST fall in the range of <code>0</code> to <code>PI</code>.
 
+Each {{XRSession}} has a <dfn>minimum near clip plane</dfn> and a <dfn>maximum far clip plane</dfn>, defined in meters. The values MUST be determined by the user agent and MUST be non-negative. The [=minimum near clip plane=] SHOULD be less than <code>0.1</code>. The [=maximum far clip plane=] SHOULD be greater than <code>1000.0</code> (and MAY be infinite).
+
 <div class="algorithm" data-algorithm="update-render-state">
 
 The {{XRSession/updateRenderState()}} method queues an update to the [=active render state=] to be applied on the next frame. Unset fields of the {{XRRenderStateInit}} passed to this method will not be changed.
@@ -620,6 +622,8 @@ When requested, the {{XRSession}} MUST <dfn>apply the pending render state</dfn>
   1. Set |activeState| to |newState|.
   1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is less than |session|'s [=minimum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=minimum inline field of view=].
   1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is greater than |session|'s [=maximum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=maximum inline field of view=].
+  1. If |activeState|'s {{XRRenderState/depthNear}} is less than |session|'s [=minimum near clip plane=] set |activeState|'s {{XRRenderState/depthNear}} to |session|'s [=minimum near clip plane=].
+  1. If |activeState|'s {{XRRenderState/depthFar}} is less than |session|'s [=maximum far clip plane=] set |activeState|'s {{XRRenderState/depthFar}} to |session|'s [=maximum far clip plane=].
   1. Let |baseLayer| be |activeState|'s {{XRRenderState/baseLayer}}.
   1. Set |activeState|'s [=XRRenderState/composition disabled=] and [=XRRenderState/output canvas=] based on the following:
     <dl class="switch">
