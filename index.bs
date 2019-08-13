@@ -50,6 +50,7 @@ spec: WebGL; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: dfn; text: handle the context loss; url:#CONTEXT_LOST
     type: dfn; text: Restore the context; url: #restore-the-drawing-buffer
     type: dfn; text: actual context parameters; url: #actual-context-parameters
+    type: dfn; text: create a drawing buffer; url: #create-a-drawing-buffer
 spec: WebGL 2.0; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/2.0/
     type: interface; text: WebGL2RenderingContext; url: WebGL2RenderingContext
 spec: Orientation Sensor; urlPrefix: https://w3c.github.io/orientation-sensor/
@@ -1605,7 +1606,7 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
       <dt> If |layer|'s [=XRWebGLLayer/composition disabled=] boolean is <code>false</code>:
       <dd>
         1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layerInit|'s {{XRWebGLLayerInit/antialias}} value.
-        1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] created with |context|.
+        1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] created with |context| and |layerInit|'s {{XRWebGLLayerInit/depth}}, {{XRWebGLLayerInit/stencil}}, and {{XRWebGLLayerInit/alpha}} values.
         1. Allocate and initialize resources compatible with |session|'s [=XRSession/XR device=], including GPU accessible memory buffers, as required to support the compositing of |layer|.
         1. If |layer|’s resources were unable to be created for any reason, throw an {{OperationError}} and abort these steps.
       <dt> Otherwise
@@ -1630,6 +1631,11 @@ An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFram
  - An [=opaque framebuffer=] MAY support antialiasing, even in WebGL 1.0.
  - An [=opaque framebuffer=]'s attachments cannot be inspected or changed. Calling {{framebufferTexture2D}}, {{framebufferRenderbuffer}}, {{getFramebufferAttachmentParameter}}, or {{getRenderbufferParameter}} with an [=opaque framebuffer=] MUST generate an {{INVALID_OPERATION}} error.
  - An [=opaque framebuffer=] is considered incomplete outside of a {{XRSession/requestAnimationFrame()}} callback. When not in a {{XRSession/requestAnimationFrame()}} callback calls to {{checkFramebufferStatus}} outside of a {{XRSession/requestAnimationFrame()}} callback MUST generate a {{FRAMEBUFFER_UNSUPPORTED}} error and attempts to clear, draw to, or read from the [=opaque framebuffer=] MUST generate an {{INVALID_FRAMEBUFFER_OPERATION}} error.
+ - An [=opaque framebuffer=] initialized with {{XRWebGLLayerInit/depth}} <code>false</code> will not have an attached depth buffer.
+ - An [=opaque framebuffer=] initialized with {{XRWebGLLayerInit/stencil}} <code>false</code> will not have an attached stencil buffer.
+ - An [=opaque framebuffer=]'s color buffer will have an alpha channel if and only if {{XRWebGLLayerInit/alpha}} is <code>true</code>.
+
+NOTE: User agents are not required to respect <code>true</code> values of {{XRWebGLLayerInit/depth}} and {{XRWebGLLayerInit/stencil}}, which is similar to WebGL's behavior when [=create a drawing buffer|creating a drawing buffer=]
 
 Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">target framebuffer</dfn>, which is the {{XRWebGLLayer/framebuffer}} if [=XRWebGLLayer/composition disabled=] is <code>false</code>, and the [=XRWebGLLayer/context=]'s default framebuffer otherwise.
 
