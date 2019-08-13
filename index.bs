@@ -1328,7 +1328,15 @@ To <dfn for=XRRigidTransform>obtain the matrix</dfn> for a given {{XRRigidTransf
 
  1. If |transform|'s [=XRRigidTransform/internal matrix=] is not <code>null</code>, perform the following steps:
   1. If the operation {{IsDetachedBuffer}} on [=XRRigidTransform/internal matrix=] is <code>false</code>, return |transform|'s [=XRRigidTransform/internal matrix=].
- 1. Set |transform|'s [=XRRigidTransform/internal matrix=] to a new [=matrix=] corresponding to the transform described by the {{XRRigidTransform/position}} and {{XRRigidTransform/orientation}} attributes.
+ 1. Let |translation| be a new [=matrix=] which is a column-vector translation matrix corresponding to {{XRRigidTransform/position}}. Mathematically, if {{XRRigidTransform/position}} is <code>(x, y, z)</code>, this matrix is
+
+      <img src="images/translation_matrix.svg" />
+ 1. Let |rotation| be a new [=matrix=] which is a column-vector rotation matrix corresponding to {{XRRigidTransform/orientation}}. Mathematically, if {{XRRigidTransform/orientation}} is the unit quaternion <code>(q<sub>x</sub>, q<sub>y</sub>, q<sub>z</sub>, q<sub>w</sub>)</code>, this matrix is
+ 
+      <img src="images/rotation_matrix.svg" />
+ 1. Set |transform|'s [=XRRigidTransform/internal matrix=] to a new [=matrix=] set to the result of multiplying |translation| and |rotation| with |translation| on the left (<code>translation * rotation</code>). Mathematically, this matrix is
+
+      <img src="images/rigid_matrix.svg" />
  1. Return |transform|'s [=XRRigidTransform/internal matrix=].
 
 </div>
