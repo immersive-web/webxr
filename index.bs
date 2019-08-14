@@ -267,7 +267,7 @@ The user agent <dfn>ensures an immersive XR device is selected</dfn> by running 
 The <dfn attribute for="XR">ondevicechange</dfn> attribute is an [=Event handler IDL attribute=] for the {{devicechange}} event type.
 
 <div class="algorithm" data-algorithm="supports-session">
-The <dfn method for="XR">supportsSession(|mode|)</dfn> method queries if a given |mode| is supported by the user agent and the [=immersive XR device=].
+The <dfn method for="XR">supportsSession(|mode|)</dfn> method queries if a given |mode| is supported by the user agent and device capabilities.
 
 When this method is invoked, it MUST run the following steps:
 
@@ -637,7 +637,7 @@ When requested, the {{XRSession}} MUST <dfn>apply the pending render state</dfn>
 </div>
 
 <div class="algorithm" data-algorithm="request-reference-space">
-The <dfn method for="XRSession">requestReferenceSpace(|type|)</dfn> method constructs a new {{XRReferenceSpace}} for a given |type|, if possible.
+The <dfn method for="XRSession">requestReferenceSpace(|type|)</dfn> method constructs a new {{XRReferenceSpace}} of a given |type|, if possible.
 
 When this method is invoked, the user agent MUST run the following steps:
 
@@ -928,7 +928,7 @@ The <dfn attribute for="XRFrame">session</dfn> attribute returns the {{XRSession
 
 <div class="algorithm" data-algorithm="get-viewer-pose">
 
-The <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method provides the pose of the viewer relative to |referenceSpace| as an {{XRViewerPose}}, at the time represented by the {{XRFrame}}.
+The <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method provides the pose of the [=viewer=] relative to |referenceSpace| as an {{XRViewerPose}}, at the time represented by the {{XRFrame}}.
 
 When this method is invoked, the user agent MUST run the following steps:
 
