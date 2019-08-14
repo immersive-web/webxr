@@ -395,8 +395,8 @@ Additionally, developers are encouraged to design experiences which progressivel
 
 <pre class="idl">
 dictionary XRSessionInit {
-  sequence&lt;DOMString&gt; requiredFeatures;
-  sequence&lt;DOMString&gt; optionalFeatures;
+  sequence&lt;any&gt; requiredFeatures;
+  sequence&lt;any&gt; optionalFeatures;
 };
 </pre>
 
@@ -404,9 +404,11 @@ The <dfn dict-member for="XRSessionInit">requiredFeatures</dfn> array contains a
 
 The <dfn dict-member for="XRSessionInit">optionalFeatures</dfn> array contains any [=Optional features=] for the experience. If any value in the list is not a recognized [=feature name=] it will be ignored. Features listed in the {{XRSessionInit/optionalFeatures}} array will be enabled if supported by the [=XRSession/XR Device=] and, if necessary, given a clear signal of [=user intent=], but will not block creation of the {{XRSession}} if absent.
 
-The feature lists accept any string. However, in order to be a considered a valid <dfn>feature name</dfn>, the string must be a value from the following enums:
+The feature lists accept any value. However, in order to be a considered a valid <dfn>feature name</dfn>, the value must be a string from the following enums:
 
  - {{XRReferenceSpaceType}}
+
+Note: Features are accepted as an array of <code>any</code> values to ensure forwards compatibility. It allows unrecognized optional values to be properly ignored in the event that non-string features are introduced.
 
 Some {{XRSessionMode}}s enable certain [=feature names=] as [=optional features=] by default. This is only done if the feature does not require a signal of [=user intent=] nor impact performance or the behavior of other features when enabled. The following table describes the <dfn>default features</dfn> associated with each session:
 
