@@ -400,19 +400,19 @@ dictionary XRSessionInit {
 };
 </pre>
 
-The <dfn dict-member for="XRSessionInit">requiredFeatures</dfn> array contains any [=Required features=] for the experience. If any value in the list is not a recognized [=feature value=] the {{XRSession}} will not be created. If any feature listed in the {{XRSessionInit/requiredFeatures}} array is not supported by the [=XRSession/XR Device=] or, if necessary, has not received a clear signal of [=user intent=] the {{XRSession}} will not be created.
+The <dfn dict-member for="XRSessionInit">requiredFeatures</dfn> array contains any [=Required features=] for the experience. If any value in the list is not a recognized [=feature descriptor=] the {{XRSession}} will not be created. If any feature listed in the {{XRSessionInit/requiredFeatures}} array is not supported by the [=XRSession/XR Device=] or, if necessary, has not received a clear signal of [=user intent=] the {{XRSession}} will not be created.
 
-The <dfn dict-member for="XRSessionInit">optionalFeatures</dfn> array contains any [=Optional features=] for the experience. If any value in the list is not a recognized [=feature value=] it will be ignored. Features listed in the {{XRSessionInit/optionalFeatures}} array will be enabled if supported by the [=XRSession/XR Device=] and, if necessary, given a clear signal of [=user intent=], but will not block creation of the {{XRSession}} if absent.
+The <dfn dict-member for="XRSessionInit">optionalFeatures</dfn> array contains any [=Optional features=] for the experience. If any value in the list is not a recognized [=feature descriptor=] it will be ignored. Features listed in the {{XRSessionInit/optionalFeatures}} array will be enabled if supported by the [=XRSession/XR Device=] and, if necessary, given a clear signal of [=user intent=], but will not block creation of the {{XRSession}} if absent.
 
-Values given in the feature lists are considered a valid <dfn>feature value</dfn> if the value is one of the following:
+Values given in the feature lists are considered a valid <dfn>feature descriptor</dfn> if the value is one of the following:
 
  - Any {{XRReferenceSpaceType}} enum value
 
-Future iterations of this specification and additional modules may expand the list of accepted [=feature values=].
+Future iterations of this specification and additional modules may expand the list of accepted [=feature descriptors=].
 
-Note: Features are accepted as an array of <code>any</code> values to ensure forwards compatibility. It allows unrecognized optional values to be properly ignored as new [=feature value=] types are added.
+Note: Features are accepted as an array of <code>any</code> values to ensure forwards compatibility. It allows unrecognized optional values to be properly ignored as new [=feature descriptor=] types are added.
 
-Some {{XRSessionMode}}s enable certain [=feature values=] as [=optional features=] by default. This is only done if the feature does not require a signal of [=user intent=] nor impact performance or the behavior of other features when enabled. The following table describes the <dfn>default features</dfn> associated with each session:
+Some {{XRSessionMode}}s enable certain [=feature descriptors=] as [=optional features=] by default. This is only done if the feature does not require a signal of [=user intent=] nor impact performance or the behavior of other features when enabled. The following table describes the <dfn>default features</dfn> associated with each session:
 
 <table class="tg">
   <thead>
@@ -433,9 +433,9 @@ Some {{XRSessionMode}}s enable certain [=feature values=] as [=optional features
   </tbody>
 </table>
 
-The combined list of [=feature values=] given by the {{XRSessionInit/requiredFeatures}}, {{XRSessionInit/optionalFeatures}}, and [=default features=] are collectively considered the <dfn>requested features</dfn> for an {{XRSession}}.
+The combined list of [=feature descriptors=] given by the {{XRSessionInit/requiredFeatures}}, {{XRSessionInit/optionalFeatures}}, and [=default features=] are collectively considered the <dfn>requested features</dfn> for an {{XRSession}}.
 
-Some [=feature values=], when present in the [=requested features=] list, require that [=user intent=] to use the feature is well understood, via either [=explicit consent=] or [=implicit consent=]. The following table describes which features <dfn>require consent</dfn> prior to being enabled:
+Some [=feature descriptors=], when present in the [=requested features=] list, require that [=user intent=] to use the feature is well understood, via either [=explicit consent=] or [=implicit consent=]. The following table describes which features <dfn>require consent</dfn> prior to being enabled:
 
 <table class="tg">
   <thead>
@@ -473,12 +473,12 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
   1. Let |consentRequired| be an empty [=/list=] of {{DOMString}}.
   1. Let |consentOptional| be an empty [=/list=] of {{DOMString}}.
   1. For each |feature| in |requiredFeatures| perform the following steps:
-    1. If |feature| is not a valid [=feature value=], return <code>false</code>.
+    1. If |feature| is not a valid [=feature descriptor=], return <code>false</code>.
     1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=] or the user agent has otherwise determined to reject the feature, return <code>false</code>.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentRequired|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. For each |feature| in |optionalFeatures| perform the following steps:
-    1. If |feature| is not a valid [=feature value=], continue to the next entry.
+    1. If |feature| is not a valid [=feature descriptor=], continue to the next entry.
     1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=] or the user agent has otherwise determined to reject the feature, continue to the next entry.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentOptional|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
@@ -585,7 +585,7 @@ The <dfn method for="XRSession">end()</dfn> method provides a way to manually sh
 
 </div>
 
-Each {{XRSession}} has a <dfn for="XRSession">list of enabled features</dfn>, which is a [=/list=] of [=feature values=] which MUST be initially an empty [=/list=]
+Each {{XRSession}} has a <dfn for="XRSession">list of enabled features</dfn>, which is a [=/list=] of [=feature descriptors=] which MUST be initially an empty [=/list=]
 
 Each {{XRSession}} has an <dfn>active render state</dfn> which is a new {{XRRenderState}}, and a <dfn>pending render state</dfn>, which is an {{XRRenderState}} which is initially <code>null</code>.
 
