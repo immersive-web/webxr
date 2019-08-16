@@ -1775,8 +1775,12 @@ When this method is invoked, the user agent MUST run the following steps:
   1. Let |promise| be [=a new Promise=].
     1. Run the following steps [=in parallel=]:
     1. Let |context| be the target {{WebGLRenderingContextBase}} object.
-    1. If |context|'s [=WebGL context lost flag=] is set, [=reject=] |promise| with an {{InvalidStateError}} and abort these abort these steps.
+    1. If |context|'s [=WebGL context lost flag=] is set, [=reject=] |promise| with an {{InvalidStateError}} and abort these steps.
     1. If |context|'s [=XR compatible=] boolean is <code>true</code>, [=/resolve=] |promise| and abort these steps.
+    1. [=ensures an immersive XR device is selected|Ensure an immersive XR device is selected=].
+    1. If the [=XR/immersive XR device=] is <code>null</code>:
+        1. Set |context|'s [=XR compatible=] boolean to <code>true</code>.
+        1. [=Reject=] |promise| with an {{InvalidStateError}} and abort these steps.
     1. If |context| was created on a [=compatible graphics adapter=] for the [=XR/immersive XR device=]:
         1. Set |context|'s [=XR compatible=] boolean to <code>true</code>.
         1. [=/Resolve=] |promise| and abort these steps.
