@@ -550,7 +550,7 @@ There's understandably some confusion between the WebXR and an API that some bro
 
 In the meantime the group that developed WebVR recognized the issues with the initial API, in part through feedback from developers and standards bodies, and worked towards resolving them. Eventually they recognized that in order to create a more scalable and more ergonomic API they would have to break backwards compatibility with WebVR. This new revision of the API was referred to as WebVR 2.0 for a while, but eventually was officially renamed **WebXR** in recognition of the fact that the new API would support both VR and AR content. Developement of WebXR has been able to benefit not only from the group's experience with WebVR but also from a more mature landscape of immersive computing devices that now includes multiple commercial headsets, the emergence of both mobile and headset AR, and multiple mature native APIs.
 
-WebXR is intended to completely replace WebVR in the coming years. All browsers that initially shipped WebVR have committed to shipping WebXR in it's place once the API design is finished. In addition, the WebXR Polyfill provides an implementation of WebXR that can utilize WebVR if the browser exposes it instead, allowing developers to make use of the newer API in all cases.
+WebXR is intended to completely replace WebVR in the coming years. All browsers that initially shipped WebVR have committed to shipping WebXR in it's place once the API design is finished. In the meanwhile, developers can code against WebXR, relying on the [WebXR Polyfill](https://github.com/immersive-web/webxr-polyfill) to ensure their code runs in browsers with only WebVR implementations.
 
 ## Appendix B: Proposed IDL
 
