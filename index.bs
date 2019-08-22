@@ -549,7 +549,7 @@ To <dfn>initialize the session</dfn>, given |session|, |mode|, and |device|, the
   1. [=Initialize the render state=].
   1. If no other features of the user agent have done so already, perform the necessary platform-specific steps to initialize the device's tracking and rendering capabilities, including showing any necessary instructions to the user.
 
-Note: Some devices require additional user instructions for activation, for example going into immersive mode on a phone-based headset device requires inserting the phone into the headset, and doing so on a desktop browser connected to an external headset requires wearing the headset. It is the responsibility of the user agent &mdash; not the author &mdash; to ensure any such instructions are shown.
+Note: Some devices require additional user instructions for activation. For example, going into immersive mode on a phone-based headset device requires inserting the phone into the headset, and doing so on a desktop browser connected to an external headset requires wearing the headset. It is the responsibility of the user agent &mdash; not the author &mdash; to ensure any such instructions are shown.
 
 </div>
 
