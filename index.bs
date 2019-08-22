@@ -503,7 +503,7 @@ Session {#session}
 XRSession {#xrsession-interface}
 ---------
 
-Any interaction with XR hardware is done via an {{XRSession}} object, which can only be retrieved by calling {{requestSession()}} on the {{XR}} object. Once a session has been successfully acquired it can be used to {{XRFrame/getViewerPose()|poll the viewer pose}}, query information about the user's environment and, present imagery to the user.
+Any interaction with XR hardware is done via an {{XRSession}} object, which can only be retrieved by calling {{requestSession()}} on the {{XR}} object. Once a session has been successfully acquired, it can be used to {{XRFrame/getViewerPose()|poll the viewer pose}}, query information about the user's environment, and present imagery to the user.
 
 The user agent, when possible, <dfn>SHOULD NOT initialize device tracking</dfn> or rendering capabilities until an {{XRSession}} has been acquired. This is to prevent unwanted side effects of engaging the XR systems when they're not actively being used, such as increased battery usage or related utility applications from appearing when first navigating to a page that only wants to test for the presence of XR hardware in order to advertise XR features. Not all XR platforms offer ways to detect the hardware's presence without initializing tracking, however, so this is only a strong recommendation.
 
