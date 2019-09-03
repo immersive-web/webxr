@@ -159,11 +159,6 @@ but may be allowed to access device tracking information and use it to render co
 
 
 [//]: # "Why is inline the default?"
-[//]: # "What if the supportsSession method instead returned an enum indicating whether"
-[//]: # "the supported mode was immersive, implying that inline is also available,"
-[//]: # "or inline, or none?"
-
-[//]: # (e.g. `let xr-mode = await navigator.xr.supportsSessionType\(\)`)
 
 **`immersive-vr`**: Immersive VR content is presented directly to the XR device (for example: displayed on a VR headset).
 
@@ -195,8 +190,6 @@ async function checkForXRSupport() {
     });
 }
 ```
-
-[//]: # "Where did `reason` come from? The return type in the IDL is `Promise<void>`."
 
 #### Detecting availability changes
 
@@ -286,8 +279,6 @@ Depending on whether the application is [XR enhanced](#xr-enhanced) or [XR centr
 #### XR Enhanced: use `makeXRCompatible()`
 
 XR-enhanced applications should call `WebGLRenderingContextBase`'s [`makeXRCompatible()`](#webglrenderingcontextbase) method. This will set a compatibility bit on the context that allows it to be used. 
-
-[//]: # (What is WebGLRenderingContextBase as opposed to WebGLRenderingContext? Is that defined only in this explainer?)
 
 ```js
 let glCanvas = document.createElement("canvas");
