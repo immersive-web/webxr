@@ -90,7 +90,7 @@ Querying for support this way is necessary because it allows the application to 
 
 There are two XR modes that can be requested:
 
-**Inline**: The default mode when requesting a session, but can be explicitly specified with the `'inline'` enum value. Inline sessions do not have the ability to display content on the XR device, but may be allowed to access device tracking information and use it to render content on the page. (This technique, where a scene rendered to the page is responsive to device movement, is sometimes referred to as "Magic Window" mode.) UAs implementing the WebXR Device API must guarantee that inline sessions can be created, regardless of XR device presence, unless blocked by page feature policy.
+**Inline**: Requested with the mode enum `'inline'`. Inline sessions do not have the ability to display content on the XR device, but may be allowed to access device tracking information and use it to render content on the page. (This technique, where a scene rendered to the page is responsive to device movement, is sometimes referred to as "Magic Window" mode.) UAs implementing the WebXR Device API must guarantee that inline sessions can be created, regardless of XR device presence, unless blocked by page feature policy.
 
 **Immersive VR**: Requested with the mode enum `'immersive-vr'`. Immersive VR content is presented directly to the XR device (for example: displayed on a VR headset). Immersive VR sessions must be requested within a user activation event or within another callback that has been explicitly indicated to allow immersive session requests.
 
