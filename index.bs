@@ -935,8 +935,8 @@ When this method is invoked, the user agent MUST run the following steps:
   1. Let |xrviews| be an empty [=/list=].
   1. For each [=view=] |view| in the [=XRSession/viewer reference space/list of views=] on the[=XRSession/viewer reference space=] of {{XRFrame/session}}, perform the following steps:
       1. Let |xrview| be a new {{XRView}} object.
-      1. Initialize |xrview|'s {{XRView/eye}} to |view|'s [=view/eye=]
-      1. Initialize |xrview|'s {{XRView/projectionMatrix}} to |view|'s [=view/projection matrix=]
+      1. Initialize |xrview|'s [=XRView/underlying view=] to |view|.
+      1. Initialize |xrview|'s {{XRView/eye}} to |view|'s [=view/eye=].
       1. Initialize |xrview|'s [=XRView/frame=] to |frame|.
       1. Let |offset| be an {{XRRigidTransform}} equal to the [=view offset=] of |view|
       1. Set |xrview|'s {{XRView/transform}} property to the result of [=multiply transforms|multiplying=] the {{XRViewerPose}}'s {{XRPose/transform}} by the |offset| transform
@@ -1182,20 +1182,37 @@ enum XREye {
 
 [SecureContext, Exposed=Window] interface XRView {
   readonly attribute XREye eye;
-  [SameObject] readonly attribute Float32Array projectionMatrix;
+  readonly attribute Float32Array projectionMatrix;
   [SameObject] readonly attribute XRRigidTransform transform;
 };
 </pre>
 
 The <dfn attribute for="XRView">eye</dfn> attribute describes is the [=view/eye=] of the underlying [=view=]. This attribute's primary purpose is to ensure that pre-rendered stereo content can present the correct portion of the content to the correct eye.
 
-The <dfn attribute for="XRView">projectionMatrix</dfn> attribute is the [=view/projection matrix=] of the underlying [=view=]. It is <b>strongly recommended</b> that applications use this matrix without modification or decomposition. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort.
+The <dfn attribute for="XRView">projectionMatrix</dfn> attribute is the [=view/projection matrix=] of the underlying [=view=]. It is <b>strongly recommended</b> that applications use this matrix without modification or decomposition. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort. This attribute MUST be computed by [=XRView/obtain the projection matrix|obtaining the projection matrix=] for the {{XRView}}.
 
 The <dfn attribute for="XRView">transform</dfn> attribute is the {{XRRigidTransform}} of the viewpoint. It represents the position and orientation of the viewpoint in the {{XRReferenceSpace}} provided in {{XRFrame/getViewerPose()}}.
 
 Each {{XRView}} has an associated <dfn for="XRView">frame</dfn> which is the {{XRFrame}} that produced it.
 
+Each {{XRView}} has an associated <dfn for="XRView">underlying view</dfn> which is the underlying [=view=] that it represents.
+
+Each {{XRView}} has an associated <dfn for="XRView">internal projection matrix</dfn> which stores the [=view/projection matrix=] of its [=XRView/underlying view=]. It is initially <code>null</code>.
+
 Note: The {{XRView/transform}} can be used to position camera objects in many rendering libraries. If a more traditional view matrix is needed by the application one can be retrieved by calling <code>view.transform.inverse.matrix</code>.
+
+
+<div class=algorithm data-algorithm="obtain-xrview-projection">
+
+To <dfn for=XRView>obtain the projection matrix</dfn> for a given {{XRView}} |view|
+
+ 1. If |view|'s [=XRView/internal projection matrix=] is not <code>null</code>, perform the following steps:
+  1. If the operation {{IsDetachedBuffer}} on [=XRView/internal projection matrix=]  is <code>false</code>, return |view|'s [=XRView/internal projection matrix=].
+ 1. Set |view|'s [=XRView/internal projection matrix=] to a new [=matrix=] which is equal to |view|'s [=XRView/underlying view=]'s [=view/projection matrix=].
+ 1. Return |view|'s [=XRView/internal projection matrix=].
+
+</div>
+
 
 XRViewport {#xrviewport-interface}
 ----------
