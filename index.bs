@@ -306,12 +306,17 @@ When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |promise| be [=a new Promise=].
   1. Let |immersive| be <code>true</code> if |mode| is {{XRSessionMode/"immersive-vr"}}, and <code>false</code> otherwise.
-  1. If |immersive| is <code>true</code>:
-    1. Check if an [=immersive session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.
-    1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
-    1. Set [=pending immersive session=] to <code>true</code>.
-  1. If |immersive| is <code>false</code>:
-    1. Check if an [=inline session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.
+  1. Check whether the session request is allowed based on the following:
+      <dl class="switch">
+        <dt>If |immersive| is <code>true</code></dt>
+        <dd>
+          1. Check if an [=immersive session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.
+          1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
+          1. Set [=pending immersive session=] to <code>true</code>.
+        </dd>
+        <dt>Otherwise</dt>
+        <dd>Check if an [=inline session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.</dd>
+      </dl>
   1. Run the following steps [=in parallel=]:
     1. Choose |device| based on the following:
         <dl class="switch">
