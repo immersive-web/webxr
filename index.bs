@@ -770,10 +770,10 @@ When an {{XRRenderState}} object is created for an {{XRSession}} |session|, the 
   1. Initialize |state|'s {{XRRenderState/depthFar}} to <code>1000.0</code>.
   1. Initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} based on the following:
     <dl class="switch">
-      <dt> If |session| is an [=immersive session=]
-      <dd> Initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} to <code>null</code>.
-      <dt> Else
+      <dt> If |session| is an [=inline session=]
       <dd> Initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} to <code>PI * 0.5</code>.
+      <dt> Else
+      <dd> Initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} to <code>null</code>.
     </dl>
   1. Initialize |state|'s {{XRRenderState/baseLayer}} to <code>null</code>.
 
@@ -990,7 +990,7 @@ To <dfn>populate the pose</dfn> of an {{XRSpace}} |space| in an {{XRSpace}} |bas
   1. If |space|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
   1. If |baseSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
   1. Check if [=poses may be reported=] and, if not, throw a {{SecurityError}} and abort these steps.
-  1. Let |limit| be whether [=poses must be limited=] between |space| and |baseSpace|.
+  1. Let |limit| be the result of whether [=poses must be limited=] between |space| and |baseSpace|.
   1. Let |transform| be |pose|'s {{XRPose/transform}}.
   1. Query the [=/XR device=]'s tracking system for |space|'s pose relative to |baseSpace| at the time represented by |frame|, then perform the following steps:
     <dl class="switch">
@@ -1089,7 +1089,7 @@ To check if a <dfn>reference space is supported</dfn> for a given reference spac
   1. If |type| is {{viewer}}, return <code>true</code>.
   1. If |type| is {{local}} or {{local-floor}}, and |session| is an [=immersive session=], return <code>true</code>.
   1. If |type| is {{local}} or {{local-floor}}, and the [=XRSession/XR device=] supports reporting orientation data, return <code>true</code>.
-  1. If |type| is {{bounded-floor}} and |session| is an [=immersive session=], return if [=bounded reference spaces are supported=] by the [=XRSession/XR device=].
+  1. If |type| is {{bounded-floor}} and |session| is an [=immersive session=], return the result of whether [=bounded reference spaces are supported=] by the [=XRSession/XR device=].
   1. If |type| is {{unbounded}}, |session| is an [=immersive session=], and the [=XRSession/XR device=] supports stable tracking near the user over an unlimited distance, return <code>true</code>.
   1. Return <code>false</code>.
 
@@ -1638,10 +1638,10 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
     </dl>
   1. Initialize |layer|'s [=XRWebGLLayer/composition disabled=] boolean as follows:
     <dl class="switch">
-      <dt> If |session| is an [=immersive session=]
-      <dd> Initialize |layer|'s [=XRWebGLLayer/composition disabled=] boolean to <code>false</code>
-      <dt> Otherwise
+      <dt> If |session| is an [=inline session=]
       <dd> Initialize |layer|'s [=XRWebGLLayer/composition disabled=] to <code>true</code>
+      <dt> Otherwise
+      <dd> Initialize |layer|'s [=XRWebGLLayer/composition disabled=] boolean to <code>false</code>
     </dl>
   1. <dl class="switch">
       <dt> If |layer|'s [=XRWebGLLayer/composition disabled=] boolean is <code>false</code>:
