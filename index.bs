@@ -1967,7 +1967,7 @@ dictionary XRReferenceSpaceEventInit : EventInit {
 
 The <dfn attribute for="XRReferenceSpaceEvent">referenceSpace</dfn> attribute indicates the {{XRReferenceSpace}} that generated this event.
 
-The <dfn attribute for="XRReferenceSpaceEvent">transform</dfn> attribute describes the transform the {{XRReferenceSpaceEvent/referenceSpace}} underwent during this event, if applicable.
+The <dfn attribute for="XRReferenceSpaceEvent">transform</dfn> attribute describes the post-event position and orientation of the {{XRReferenceSpaceEvent/referenceSpace}}'s [=native origin=] in the pre-event coordinate system.
 
 Event Types {#event-types}
 -----------
