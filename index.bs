@@ -2215,7 +2215,7 @@ Integrations {#integrations}
 Feature Policy {#feature-policy}
 --------------
 
-This specification defines a [=policy-controlled feature=] that controls whether the {{Navigator/xr}} attribute is exposed on the {{Navigator}} object.
+This specification defines a [=policy-controlled feature=] that controls whether the any {{XRSession}}s may be returned by {{XR/requestSession()}} and whether {{XR/isSessionSupported()}} indicates that any session mode is supported.
 
 The feature identifier for this feature is <code>"xr"</code>.
 
