@@ -313,9 +313,9 @@ When this method is invoked, the user agent MUST run the following steps:
           1. Check if an [=immersive session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.
           1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
           1. Set [=pending immersive session=] to <code>true</code>.
-        </dd>
-        <dt>Otherwise</dt>
-        <dd>Check if an [=inline session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.</dd>
+              </dd>
+            <dt>Otherwise</dt>
+            <dd>Check if an [=inline session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.</dd>
       </dl>
   1. Run the following steps [=in parallel=]:
     1. Choose |device| based on the following:
@@ -471,6 +471,10 @@ Some [=feature descriptors=], when present in the [=requested features=] list, r
 
 Note: {{XRReferenceSpaceType/"local"}} is always included in the [=requested features=] of [=immersive sessions=] as a [=default feature=], and as such [=immersive sessions=] always need to obtain [=explicit consent=] or [=implicit consent=].
 
+[=Requested features=] can only be enabled for a session if the [=XRSession/XR Device=] is <dfn>capable of supporting</dfn> the feature, which means that the feature is known to be supported by the [=XRSession/XR Device=] in some configurations, even if the current configuration has not yet been verified as supporting the feature. The user agent MAY apply more rigorous constraints if desired in order to yield a more consistent user experience.
+
+Note: For example, several VR devices support either configuring a safe boundary for the user to move around within or skipping boundary configuration and operating in a mode where the user is expected to stand in place. Such a device can be considered to be [=capable of supporting=] {{"bounded-floor"}} {{XRReferenceSpace}}s even if they are currently not configured with safety boundaries, because it's expected that the user could configure the device appropriately if the experience required it. This is to allow user agents to avoid fully initializing the [=XRSession/XR Device=] or waiting for the user's environment to be recognized prior to [=resolve the requested features|resolving the requested features=] if desired. If, however, the user agent knows that the boundary state at the time the session is requested without additional initialization it may choose to reject the {{"bounded-floor"}} feature if the safety boundary not already configured.
+
 <div class="algorithm" data-algorithm="resolve-features">
 
 To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optionalFeatures| for an {{XRSession}} |session|, the user agent MUST run the following steps:
@@ -479,17 +483,17 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
   1. Let |consentOptional| be an empty [=/list=] of {{DOMString}}.
   1. For each |feature| in |requiredFeatures| perform the following steps:
     1. If |feature| is not a valid [=feature descriptor=], return <code>false</code>.
-    1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=] or the user agent has otherwise determined to reject the feature, return <code>false</code>.
+    1. If |session|'s [=XRSession/XR Device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, return <code>false</code>.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentRequired|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. For each |feature| in |optionalFeatures| perform the following steps:
     1. If |feature| is not a valid [=feature descriptor=], continue to the next entry.
-    1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=] or the user agent has otherwise determined to reject the feature, continue to the next entry.
+    1. If |session|'s [=XRSession/XR Device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, continue to the next entry.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentOptional|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. For each |feature| in the [=default features=] table perform the following steps:
     1. If |session|'s [=XRSession/mode=] is not one of the modes associated with |feature| in the [=default features=], continue to the next entry.
-    1. If the functionality described by |feature| is not supported by |session|'s [=XRSession/XR Device=] or the user agent has otherwise determined to reject the feature, continue to the next entry.
+    1. If |session|'s [=XRSession/XR Device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, continue to the next entry.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. If |consentRequired| or |consentOptional| are not empty, request [=explicit consent=] to use the functionality described by those features.
   1. For each |feature| in |consentRequired| perform the following steps:
