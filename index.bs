@@ -1984,7 +1984,7 @@ Event Types {#event-types}
 
 The user agent MUST provide the following new events. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
 
-The user agent MUST fire a <dfn event for="XR">devicechange</dfn> event on the {{XR}} object to indicate that the availability of [=XR/immersive XR device=]s has been changed. The event MUST be of type {{Event}}.
+The user agent MUST fire a <dfn event for="XR">devicechange</dfn> event on the {{XR}} object to indicate that the availability of [=XR/immersive XR device=]s has been changed unless the document's origin is not allowed to use the WebXR [[#feature-policy|feature policy]]. The event MUST be of type {{Event}}.
 
 A user agent MUST dispatch a <dfn event for="XRSession">visibilitychange</dfn> event on an {{XRSession}} each time the [=XRSession/visibility state=] of the {{XRSession}} has changed. The event MUST be of type {{XRSessionEvent}}.
 
@@ -2215,7 +2215,11 @@ Integrations {#integrations}
 Feature Policy {#feature-policy}
 --------------
 
+<<<<<<< HEAD
 This specification defines a [=policy-controlled feature=] that controls whether the any {{XRSession}}s may be returned by {{XR/requestSession()}} and whether {{XR/isSessionSupported()}} indicates that any session mode is supported.
+=======
+This specification defines a [=policy-controlled feature=] that controls whether the any {{XRSession}}s may be returned by {{XR/requestSession()}}, whether {{XR/isSessionSupported()}} indicates that any session mode is supported, and whether {{devicechange}} events fire on the {{Navigator/xr|navigator.xr}} object.
+>>>>>>> Added devicechange events to the list of feature policy-controlled interfaces.
 
 The feature identifier for this feature is <code>"xr"</code>.
 
