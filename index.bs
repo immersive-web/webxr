@@ -275,6 +275,7 @@ When this method is invoked, it MUST run the following steps:
   1. Let |promise| be [=a new Promise=].
   1. If |mode| is {{XRSessionMode/"inline"}}, [=/resolve=] |promise| with <code>true</code> and return it.
   1. Run the following steps [=in parallel=]:
+    1. If the requesting document's origin is not allowed to use the "xr-spatial-tracking" [[#feature-policy|feature policy]], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and abort these steps.
     1. [=ensures an immersive XR device is selected|Ensure an immersive XR device is selected=].
     1. If the [=XR/immersive XR device=] is null, [=/resolve=] |promise| with <code>false</code> and abort these steps.
     1. If the [=XR/immersive XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|, [=/resolve=] |promise| with <code>false</code> and abort these steps.
@@ -421,53 +422,61 @@ Future iterations of this specification and additional modules may expand the li
 
 Note: Features are accepted as an array of <code>any</code> values to ensure forwards compatibility. It allows unrecognized optional values to be properly ignored as new [=feature descriptor=] types are added.
 
-Some {{XRSessionMode}}s enable certain [=feature descriptors=] as [=optional features=] by default. This is only done if the feature does not require a signal of [=user intent=] nor impact performance or the behavior of other features when enabled. The following table describes the <dfn>default features</dfn> associated with each session:
+Depending on the {{XRSessionMode}} requested, certain [=feature descriptors=] are added to the {{XRSessionInit/requiredFeatures}} or {{XRSessionInit/optionalFeatures}} lists by default. This is only done if the feature does not require a signal of [=user intent=] nor impact performance or the behavior of other features when enabled. The following table describes the <dfn>default features</dfn> associated with each session type and feature list:
 
 <table class="tg">
   <thead>
     <tr>
       <th>Feature</th>
       <th>Sessions</th>
+      <th>List</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td>{{XRReferenceSpaceType/"viewer"}}</td>
       <td>[=Inline sessions=] and [=immersive sessions=]</td>
+      <td>{{XRSessionInit/requiredFeatures}}</td>
     </tr>
     <tr>
       <td>{{XRReferenceSpaceType/"local"}}</td>
       <td>[=Immersive sessions=]</td>
+      <td>{{XRSessionInit/requiredFeatures}}</td>
     </tr>
   </tbody>
 </table>
 
-The combined list of [=feature descriptors=] given by the {{XRSessionInit/requiredFeatures}}, {{XRSessionInit/optionalFeatures}}, and [=default features=] are collectively considered the <dfn>requested features</dfn> for an {{XRSession}}.
+The combined list of [=feature descriptors=] given by the {{XRSessionInit/requiredFeatures}} and {{XRSessionInit/optionalFeatures}} are collectively considered the <dfn>requested features</dfn> for an {{XRSession}}.
 
-Some [=feature descriptors=], when present in the [=requested features=] list, require that [=user intent=] to use the feature is well understood, via either [=explicit consent=] or [=implicit consent=]. The following table describes which features <dfn>require consent</dfn> prior to being enabled:
+Some [=feature descriptors=], when present in the [=requested features=] list, are subject to [[#feature-policy|feature policy]] and/or requirements that [=user intent=] to use the feature is well understood, via either [=explicit consent=] or [=implicit consent=]. The following table describes the <dfn>feature requirements</dfn> that must be satisfied prior to being enabled:
 
 <table class="tg">
   <thead>
     <tr>
       <th>Feature</th>
-      <th>Criteria</th>
+      <th>Feature Policy Required</th>
+      <th>Consent Required</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td>{{XRReferenceSpaceType/"local"}}</td>
+      <td>"xr-spatial-tracking"</td>
       <td>[=Inline sessions=] require consent</td>
     </tr>
     <tr>
       <td>{{XRReferenceSpaceType/"local-floor"}}</td>
+      <td>"xr-spatial-tracking"</td>
       <td>Always requires consent</td>
     </tr>
     <tr>
       <td>{{XRReferenceSpaceType/"bounded-floor"}}</td>
+      <td>"xr-spatial-tracking"</td>
       <td>Always requires consent</td>
     </tr>
     <tr>
       <td>{{XRReferenceSpaceType/"unbounded"}}</td>
+      <td>"xr-spatial-tracking"</td>
       <td>Always requires consent</td>
     </tr>
   </tbody>
@@ -485,19 +494,18 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
 
   1. Let |consentRequired| be an empty [=/list=] of {{DOMString}}.
   1. Let |consentOptional| be an empty [=/list=] of {{DOMString}}.
+  1. Add every [=feature descriptor=] in the [=default features=] table associated with |session|'s [=XRSession/mode=] to the indicated feature list if it is not already present.
   1. For each |feature| in |requiredFeatures| perform the following steps:
     1. If |feature| is not a valid [=feature descriptor=], return <code>false</code>.
     1. If |session|'s [=XRSession/XR Device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, return <code>false</code>.
+    1. If the requesting document's origin is not allowed to use any [[#feature-policy|feature policy]] required by |feature| as indicated by the [=feature requirements=] table, return <code>false</code>.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentRequired|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. For each |feature| in |optionalFeatures| perform the following steps:
     1. If |feature| is not a valid [=feature descriptor=], continue to the next entry.
     1. If |session|'s [=XRSession/XR Device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, continue to the next entry.
+    1. If the requesting document's origin is not allowed to use any [[#feature-policy|feature policy]] required by |feature| as indicated by the [=feature requirements=] table, continue to the next entry.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentOptional|.
-    1. Else append |feature| to |session|'s [=list of enabled features=].
-  1. For each |feature| in the [=default features=] table perform the following steps:
-    1. If |session|'s [=XRSession/mode=] is not one of the modes associated with |feature| in the [=default features=], continue to the next entry.
-    1. If |session|'s [=XRSession/XR Device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, continue to the next entry.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. If |consentRequired| or |consentOptional| are not empty, request [=explicit consent=] to use the functionality described by those features.
   1. For each |feature| in |consentRequired| perform the following steps:
@@ -1984,7 +1992,7 @@ Event Types {#event-types}
 
 The user agent MUST provide the following new events. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
 
-The user agent MUST fire a <dfn event for="XR">devicechange</dfn> event on the {{XR}} object to indicate that the availability of [=XR/immersive XR device=]s has been changed unless the document's origin is not allowed to use the WebXR [[#feature-policy|feature policy]]. The event MUST be of type {{Event}}.
+The user agent MUST fire a <dfn event for="XR">devicechange</dfn> event on the {{XR}} object to indicate that the availability of [=XR/immersive XR device=]s has been changed unless the document's origin is not allowed to use the "xr-spatial-tracking" [[#feature-policy|feature policy]]. The event MUST be of type {{Event}}.
 
 A user agent MUST dispatch a <dfn event for="XRSession">visibilitychange</dfn> event on an {{XRSession}} each time the [=XRSession/visibility state=] of the {{XRSession}} has changed. The event MUST be of type {{XRSessionEvent}}.
 
@@ -2034,7 +2042,6 @@ To determine if a given {{Document}} |document| is <dfn>trustworthy</dfn> the us
 
   1. If |document| is not a [=responsible=] document, return <code>false</code>
   1. If |document| is not [=active and focused=], return <code>false</code>
-  1. If |document|'s origin is not allowed to use the WebXR [[#feature-policy|feature policy]], return <code>false</code>
   1. Return <code>true</code>
 
 </div>
@@ -2108,7 +2115,6 @@ To determine if an <dfn>inline session request is allowed</dfn> the user agent M
 
   1. If the session request contained any [=required features=] or [=optional features=] and the request was not [=triggered by user activation=] or [=launching a web application=], return <code>false</code>
   1. If the requesting document is not [=responsible=], return <code>false</code>
-  1. If requesting document's origin is not allowed to use the WebXR [[#feature-policy|feature policy]] return <code>false</code>
   1. Return <code>true</code>
 
 </div>
@@ -2159,7 +2165,7 @@ Depending on the reference spaces used, several different types of [=sensitive i
 
 As a result the various reference space types have restrictions placed on their creation to ensure the [=sensitive information=] expose is handled safely:
 
-Most reference spaces require that [=user intent=] to use the reference space is well understood, either via [=explicit consent=] or [=implicit consent=]. See the [=require consent|features which require consent=] table for details.
+Most reference spaces require that [=user intent=] to use the reference space is well understood, either via [=explicit consent=] or [=implicit consent=]. See the [=feature requirements=] table for details.
  
 Any group of {{XRReferenceSpaceType/"local"}}, {{XRReferenceSpaceType/"local-floor"}}, and {{XRReferenceSpaceType/"bounded-floor"}} reference spaces that are capable of being related to one another MUST share a common [=native origin=]; This restriction only applies when the creation of {{XRReferenceSpaceType/"unbounded"}} reference spaces has been restricted.
 
@@ -2215,13 +2221,9 @@ Integrations {#integrations}
 Feature Policy {#feature-policy}
 --------------
 
-<<<<<<< HEAD
-This specification defines a [=policy-controlled feature=] that controls whether the any {{XRSession}}s may be returned by {{XR/requestSession()}} and whether {{XR/isSessionSupported()}} indicates that any session mode is supported.
-=======
-This specification defines a [=policy-controlled feature=] that controls whether the any {{XRSession}}s may be returned by {{XR/requestSession()}}, whether {{XR/isSessionSupported()}} indicates that any session mode is supported, and whether {{devicechange}} events fire on the {{Navigator/xr|navigator.xr}} object.
->>>>>>> Added devicechange events to the list of feature policy-controlled interfaces.
+This specification defines a [=policy-controlled feature=] that controls whether the any {{XRSession}}s may be returned by {{XR/requestSession()}} that makes use of spatial tracking, and whether support for sessions modes that require spatial tracking may be indicated by either {{XR/isSessionSupported()}} or {{devicechange}} events on the {{Navigator/xr|navigator.xr}} object.
 
-The feature identifier for this feature is <code>"xr"</code>.
+The feature identifier for this feature is <code>"xr-spatial-tracking"</code>.
 
 The [=default allowlist=] for this feature is <code>["self"]</code>.
 
