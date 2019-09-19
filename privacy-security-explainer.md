@@ -2,6 +2,46 @@
 
 The WebXR Device API enables developers to build content for AR and VR hardware that uses one or more sensors to infer information about the real world, and may then present information about the real world either to developers or directly to the end user. In such systems there are a wide range of input sensor types used (cameras, accelerometers, etc), and a variety of real-world data generated. This data is what allows web developers to author WebXR-based experiences. It also enables developers to infer information about users such as profiling them, fingerprinting their device, and input sniffing. Due to the nature of the Web, WebXR has a higher responsibility to protect users from malicious data usage than XR experiences delivered through closed ecosystem app stores.
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Contents
+
+  - [Concepts](#concepts)
+    - [Sensitive information](#sensitive-information)
+    - [Device Fingerprinting](#device-fingerprinting)
+    - [User Profiling](#user-profiling)
+    - [Private Browsing modes](#private-browsing-modes)
+- [Protection types](#protection-types)
+  - [Trustworthy documents and origins](#trustworthy-documents-and-origins)
+    - [Focus and visibility](#focus-and-visibility)
+    - [Feature policy](#feature-policy)
+      - [Underlying sensors feature policy](#underlying-sensors-feature-policy)
+  - [Trusted UI](#trusted-ui)
+  - [User intention](#user-intention)
+    - [User activation](#user-activation)
+    - [Implied consent](#implied-consent)
+    - [Explicit consent](#explicit-consent)
+    - [Duration of consent](#duration-of-consent)
+    - [Querying consent status](#querying-consent-status)
+  - [Data adjustments](#data-adjustments)
+    - [Throttling](#throttling)
+    - [Rounding, quantization, and fuzzing](#rounding-quantization-and-fuzzing)
+    - [Limiting](#limiting)
+- [Protected functionality](#protected-functionality)
+  - [Immersiveness](#immersiveness)
+  - [Poses](#poses)
+    - [XRPose](#xrpose)
+    - [XRViewerPose](#xrviewerpose)
+  - [Reference spaces](#reference-spaces)
+    - [Unbounded reference spaces](#unbounded-reference-spaces)
+    - [Bounded reference spaces](#bounded-reference-spaces)
+    - [Local-floor spaces](#local-floor-spaces)
+    - [Local reference spaces](#local-reference-spaces)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Concepts
+
 ### Sensitive information
 In the context of XR, sensitive information includes, but is not limited to, user configurable data such as interpupillary distance (IPD) and sensor-based data such as poses. All `immersive` sessions will expose some amount of sensitive data, due to the user's pose being necessary to render anything. However, in some cases, the same sensitive information will also be exposed via `inline` sessions.
 

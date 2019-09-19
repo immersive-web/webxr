@@ -3,14 +3,16 @@
   "description": "WebXR Device API Specification",
   "version": "0.0.1",
   "devDependencies": {
-    "browser-sync": "^2.18.8"
+    "browser-sync": "^2.18.8",
+    "doctoc": "^1.4.0"
   },
   "scripts": {
     "start": "npm run dev",
     "dev": "cross-env NODE_ENV=development npm run server",
     "prod": "cross-env NODE_ENV=production npm run server",
     "server": "browser-sync start --config scripts/browsersync-config.js",
-    "build": "make"
+    "build": "make",
+    "doctoc": "doctoc --title '## Contents' explainer.md input-explainer.md privacy-security-explainer.md spatial-tracking-explainer.md"
   },
   "dependencies": {
     "cross-env": "^4.0.0"

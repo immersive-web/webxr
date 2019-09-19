@@ -1,6 +1,35 @@
 # WebXR Device API - Input
 This document explains the portion of the WebXR APIs for managing input across the range of XR hardware. For context, it may be helpful to have first read about [WebXR Session Establishment](explainer.md) and [Spatial Tracking](spatial-tracking-explainer.md).
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Contents
+
+- [Concepts](#concepts)
+  - [Targeting categories](#targeting-categories)
+    - [Gaze](#gaze)
+    - [Tracked Pointer](#tracked-pointer)
+    - [Screen](#screen)
+  - [Selection styles](#selection-styles)
+- [Basic usage](#basic-usage)
+  - [Enumerating input sources](#enumerating-input-sources)
+  - [Targeting ray pose](#targeting-ray-pose)
+- [Input events](#input-events)
+  - [Transient input sources](#transient-input-sources)
+  - [Choosing a preferred input source](#choosing-a-preferred-input-source)
+- [Rendering Input](#rendering-input)
+  - [Visualizing targeting hints](#visualizing-targeting-hints)
+    - [Cursors](#cursors)
+    - [Highlights](#highlights)
+    - [Pointing rays](#pointing-rays)
+  - [Renderable models](#renderable-models)
+    - [Choosing renderable models](#choosing-renderable-models)
+    - [Placing renderable models](#placing-renderable-models)
+  - [Generic Profiles](#generic-profiles)
+- [Appendix A: Proposed partial IDL](#appendix-a-proposed-partial-idl)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Concepts
 In addition to the diversity of tracking and display technology, XR hardware may support a wide variety of input mechanisms including screen taps, motion controllers (with multiple buttons, joysticks, triggers, touchpads, etc), voice commands, spatially-tracked articulated hands, single button clickers, and more. Despite this variation, all XR input mechanisms have a common purpose: enabling users to aim in 3D space and perform an action on the target of that aim. This concept is known as "target and select" and is the foundation for how input is exposed in WebXR.
 

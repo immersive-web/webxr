@@ -1,33 +1,47 @@
 # WebXR Device API Explained
-
-## What is WebXR?
 The [WebXR Device API](https://immersive-web.github.io/webxr/) provides access to input and output capabilities commonly associated with Virtual Reality (VR) and Augmented Reality (AR) devices. It allows you develop and host VR and AR experiences on the web.
 
-Examples of supported devices include (but are not limited to):
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Contents
 
- - [ARCore-compatible devices](https://developers.google.com/ar/discover/supported-devices)
- - [Google Daydream](https://vr.google.com/daydream/)
- - [HTC Vive](https://www.htcvive.com/)
- - [Magic Leap One](https://www.magicleap.com/magic-leap-one)
- - [Microsoft Hololens](https://www.microsoft.com/en-us/hololens/)
- - [Oculus Rift](https://www3.oculus.com/rift/)
- - [Samsung Gear VR](http://www.samsung.com/global/galaxy/gear-vr/)
- - [Windows Mixed Reality headsets](https://developer.microsoft.com/en-us/windows/mixed-reality)
+- [What is WebXR?](#what-is-webxr)
+  - [Goals](#goals)
+  - [Non-goals](#non-goals)
+  - [Target hardware](#target-hardware)
+  - [What's the X in XR mean?](#whats-the-x-in-xr-mean)
+  - [Is this API affiliated with OpenXR?](#is-this-api-affiliated-with-openxr)
+- [Use cases](#use-cases)
+  - [Video](#video)
+  - [Object/data visualization](#objectdata-visualization)
+  - [Artistic experiences](#artistic-experiences)
+- [Lifetime of a VR web app](#lifetime-of-a-vr-web-app)
+  - [XR hardware](#xr-hardware)
+  - [Detecting and advertising XR capabilities](#detecting-and-advertising-xr-capabilities)
+  - [Requesting a Session](#requesting-a-session)
+  - [Setting up an XRWebGLLayer](#setting-up-an-xrwebgllayer)
+  - [Main render loop](#main-render-loop)
+  - [Viewer tracking](#viewer-tracking)
+  - [Handling session visibility](#handling-session-visibility)
+  - [Ending the XR session](#ending-the-xr-session)
+- [Inline sessions](#inline-sessions)
+- [Advanced functionality](#advanced-functionality)
+  - [Feature dependencies](#feature-dependencies)
+  - [Controlling rendering quality](#controlling-rendering-quality)
+  - [Controlling depth precision](#controlling-depth-precision)
+  - [Preventing the compositor from using the depth buffer](#preventing-the-compositor-from-using-the-depth-buffer)
+  - [Changing the Field of View for inline sessions](#changing-the-field-of-view-for-inline-sessions)
+- [Appendix A: I don’t understand why this is a new API. Why can’t we use…](#appendix-a-i-dont-understand-why-this-is-a-new-api-why-cant-we-use)
+  - [`DeviceOrientation` Events](#deviceorientation-events)
+  - [WebSockets](#websockets)
+  - [The Gamepad API](#the-gamepad-api)
+  - [These alternatives don’t account for presentation](#these-alternatives-dont-account-for-presentation)
+  - [What's the deal with WebVR?](#whats-the-deal-with-webvr)
+- [Appendix B: Proposed IDL](#appendix-b-proposed-idl)
 
-### Ooh, so like _Johnny Mnemonic_ where the Internet is all ’90s CGI?
-Nope, not even slightly. And why do you even want that? That’s a terrible UX.
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-WebXR, at least initially, is aimed at letting you create VR/AR experiences that are embedded in the web that we know and love today. It’s explicitly not about creating a browser that you use completely in VR (although it could work well in an environment like that).
-
-### What's the X in XR mean?
-
-There's a lot of "_____ Reality" buzzwords flying around today. Virtual Reality, Augmented Reality, Mixed Reality... it can be hard to keep track, even though there's a lot of similarities between them. This API aims to provide foundational elements to do all of the above. And since we don't want to be limited to just one facet of VR or AR (or anything in between) we use "X", not as part of an acronym but as an algebraic variable of sorts to indicate "Your Reality Here". We've also heard it called "Extended Reality" and "Cross Reality", which seem fine too, but really the X is whatever you want it to be!
-
-### Is this API affiliated with OpenXR?
-
-Khronos' upcoming [OpenXR API](https://www.khronos.org/openxr) does cover the same basic capabilities as the WebXR Device API for native applications. As such it may seem like WebXR and OpenXR have a relationship like WebGL and OpenGL, where the web API is a near 1:1 mapping of the native API. This is **not** the case with WebXR and OpenXR, as they are distinct APIs being developed by different standards bodies.
-
-That said, given the shared subject matter many of the same concepts are represented by both APIs in different ways and we do expect that once OpenXR becomes publically available it will be reasonable to implement WebXR's feature set using OpenXR as one of multiple possible native backends.
+## What is WebXR?
 
 ### Goals
 Enable XR applications on the web by allowing pages to do the following:
@@ -42,6 +56,29 @@ Enable XR applications on the web by allowing pages to do the following:
 * Define how a Virtual Reality or Augmented Reality browser would work.
 * Expose every feature of every piece of VR/AR hardware.
 * Build “[The Metaverse](https://en.wikipedia.org/wiki/Metaverse).”
+
+### Target hardware
+
+Examples of supported devices include (but are not limited to):
+
+ - [ARCore-compatible devices](https://developers.google.com/ar/discover/supported-devices)
+ - [Google Daydream](https://vr.google.com/daydream/)
+ - [HTC Vive](https://www.htcvive.com/)
+ - [Magic Leap One](https://www.magicleap.com/magic-leap-one)
+ - [Microsoft Hololens](https://www.microsoft.com/en-us/hololens/)
+ - [Oculus Rift](https://www3.oculus.com/rift/)
+ - [Samsung Gear VR](http://www.samsung.com/global/galaxy/gear-vr/)
+ - [Windows Mixed Reality headsets](https://developer.microsoft.com/en-us/windows/mixed-reality)
+
+### What's the X in XR mean?
+
+There's a lot of "_____ Reality" buzzwords flying around today. Virtual Reality, Augmented Reality, Mixed Reality... it can be hard to keep track, even though there's a lot of similarities between them. This API aims to provide foundational elements to do all of the above. And since we don't want to be limited to just one facet of VR or AR (or anything in between) we use "X", not as part of an acronym but as an algebraic variable of sorts to indicate "Your Reality Here". We've also heard it called "Extended Reality" and "Cross Reality", which seem fine too, but really the X is whatever you want it to be!
+
+### Is this API affiliated with OpenXR?
+
+Khronos' upcoming [OpenXR API](https://www.khronos.org/openxr) does cover the same basic capabilities as the WebXR Device API for native applications. As such it may seem like WebXR and OpenXR have a relationship like WebGL and OpenGL, where the web API is a near 1:1 mapping of the native API. This is **not** the case with WebXR and OpenXR, as they are distinct APIs being developed by different standards bodies.
+
+That said, given the shared subject matter many of the same concepts are represented by both APIs in different ways and we do expect that once OpenXR becomes publically available it will be reasonable to implement WebXR's feature set using OpenXR as one of multiple possible native backends.
 
 ## Use cases
 Given the marketing of early XR hardware to gamers, one may naturally assume that this API will primarily be used for development of games. While that’s certainly something we expect to see given the history of the WebGL API, which is tightly related, we’ll probably see far more “long tail”-style content than large-scale games. Broadly, XR content on the web will likely cover areas that do not cleanly fit into the app-store models being used as the primary distribution methods by all the major VR/AR hardware providers, or where the content itself is not permitted by the store guidelines. Some high level examples are:
@@ -61,12 +98,15 @@ VR provides an interesting canvas for artists looking to explore the possibiliti
 
 The basic steps most WebXR applications will go through are:
 
- 1. Query to see if the desired XR mode is supported.
- 1. If support is available, application advertises XR functionality to the user.
- 1. Request an immersive XR session from the device in response to a [user-activation event](https://html.spec.whatwg.org/multipage/interaction.html#activation).
- 1. Use the session to run a render loop that produces graphical frames to be displayed on the XR device.
- 1. Continue producing frames until the user indicates that they wish to exit XR mode.
- 1. End the XR session.
+ 1. **Query** to see if the desired XR mode is supported.
+ 1. If support is available, **advertise XR functionality** to the user.
+ 1. A [user-activation event](https://html.spec.whatwg.org/multipage/interaction.html#activation) indicates that the user wishes to use XR.
+ 1. **Request an immersive session** from the device
+ 1. Use the session to **run a render loop** that produces graphical frames to be displayed on the XR device.
+ 1. Continue **producing frames** until the user indicates that they wish to exit XR mode.
+ 1. **End the XR session**.
+
+In the following sections, the code examples will demonstrate the core API concepts through this lifecycle sequence using immersive VR sessions first, and then cover the differences in introduced by [inline sessions](#inline-sessions) afterwards. The code examples should be read as all belonging to the same application.
 
 ### XR hardware
 

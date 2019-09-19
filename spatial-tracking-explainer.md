@@ -1,6 +1,42 @@
 # WebXR Device API - Spatial Tracking
 This document explains the technology and portion of the WebXR APIs used to track users' movement for a stable, comfortable, and predictable experience that works on the widest range of XR hardware. For context, it may be helpful to have first read about [WebXR Session Establishment](explainer.md), and [Input Mechanisms](input-explainer.md).
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Contents
+
+- [Introduction](#introduction)
+- [Reference spaces](#reference-spaces)
+  - [Bounded reference space](#bounded-reference-space)
+  - [Unbounded reference space](#unbounded-reference-space)
+  - [Local reference spaces](#local-reference-spaces)
+    - [Eye-level local reference space](#eye-level-local-reference-space)
+    - [Floor-level local reference space](#floor-level-local-reference-space)
+  - [Viewer reference space](#viewer-reference-space)
+- [Spatial relationships](#spatial-relationships)
+  - [Rigid Transforms](#rigid-transforms)
+  - [Poses](#poses)
+    - [Tracking loss](#tracking-loss)
+    - [Tracking recovery](#tracking-recovery)
+  - [Application-supplied transforms](#application-supplied-transforms)
+  - [Relating between reference spaces](#relating-between-reference-spaces)
+    - [Inline to Immersive](#inline-to-immersive)
+    - [Unbounded to Bounded](#unbounded-to-bounded)
+  - [Click-and-drag view controls](#click-and-drag-view-controls)
+- [Practical-usage guidelines](#practical-usage-guidelines)
+  - [Inline sessions](#inline-sessions)
+  - [Ensuring hardware compatibility](#ensuring-hardware-compatibility)
+  - [Floor Alignment](#floor-alignment)
+  - [Reference space reset event](#reference-space-reset-event)
+- [Appendix A : Miscellaneous](#appendix-a--miscellaneous)
+  - [Tracking systems overview](#tracking-systems-overview)
+  - [Decision flow chart](#decision-flow-chart)
+  - [Reference space examples](#reference-space-examples)
+  - [XRReferenceSpace availability](#xrreferencespace-availability)
+- [Appendix B: Proposed partial IDL](#appendix-b-proposed-partial-idl)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Introduction
 A big differentiating aspect of XR, as opposed to standard 3D rendering, is that users control the view of the experience via their body motion.  To make this possible, XR hardware needs to be capable of tracking the user's motion in 3D space.  Within the XR ecosystem there is a wide range of hardware form factors and capabilities which have historically only been available to developers through device-specific SDKs and app platforms. To ship software in a specific app store, developers optimize their experiences for specific VR hardware (HTC Vive, GearVR, Mirage Solo, etc) or AR hardware (HoloLens, ARKit, ARCore, etc).  WebXR  development is fundamentally different in that regard; the Web gives developers broader reach, with the consequence that they no longer have predictability about the capability of the hardware their experiences will be running on.
 
