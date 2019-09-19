@@ -2221,7 +2221,7 @@ Integrations {#integrations}
 Feature Policy {#feature-policy}
 --------------
 
-This specification defines a [=policy-controlled feature=] that controls whether the any {{XRSession}}s may be returned by {{XR/requestSession()}} that makes use of spatial tracking, and whether support for sessions modes that require spatial tracking may be indicated by either {{XR/isSessionSupported()}} or {{devicechange}} events on the {{Navigator/xr|navigator.xr}} object.
+This specification defines a [=policy-controlled feature=] that controls whether any {{XRSession}} that makes use of spatial tracking may be returned by {{XR/requestSession()}}, and whether support for session modes that require spatial tracking may be indicated by either {{XR/isSessionSupported()}} or {{devicechange}} events on the {{Navigator/xr|navigator.xr}} object.
 
 The feature identifier for this feature is <code>"xr-spatial-tracking"</code>.
 
