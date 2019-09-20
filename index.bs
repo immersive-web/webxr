@@ -422,7 +422,7 @@ Future iterations of this specification and additional modules may expand the li
 
 Note: Features are accepted as an array of <code>any</code> values to ensure forwards compatibility. It allows unrecognized optional values to be properly ignored as new [=feature descriptor=] types are added.
 
-Depending on the {{XRSessionMode}} requested, certain [=feature descriptors=] are added to the {{XRSessionInit/requiredFeatures}} or {{XRSessionInit/optionalFeatures}} lists by default. This is only done if the feature does not require a signal of [=user intent=] nor impact performance or the behavior of other features when enabled. The following table describes the <dfn>default features</dfn> associated with each session type and feature list:
+Depending on the {{XRSessionMode}} requested, certain [=feature descriptors=] are added to the {{XRSessionInit/requiredFeatures}} or {{XRSessionInit/optionalFeatures}} lists by default. The following table describes the <dfn>default features</dfn> associated with each session type and feature list:
 
 <table class="tg">
   <thead>
@@ -497,14 +497,14 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
   1. Add every [=feature descriptor=] in the [=default features=] table associated with |session|'s [=XRSession/mode=] to the indicated feature list if it is not already present.
   1. For each |feature| in |requiredFeatures| perform the following steps:
     1. If |feature| is not a valid [=feature descriptor=], return <code>false</code>.
-    1. If |session|'s [=XRSession/XR Device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, return <code>false</code>.
     1. If the requesting document's origin is not allowed to use any [[#feature-policy|feature policy]] required by |feature| as indicated by the [=feature requirements=] table, return <code>false</code>.
+    1. If |session|'s [=XRSession/XR Device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, return <code>false</code>.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentRequired|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. For each |feature| in |optionalFeatures| perform the following steps:
     1. If |feature| is not a valid [=feature descriptor=], continue to the next entry.
-    1. If |session|'s [=XRSession/XR Device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, continue to the next entry.
     1. If the requesting document's origin is not allowed to use any [[#feature-policy|feature policy]] required by |feature| as indicated by the [=feature requirements=] table, continue to the next entry.
+    1. If |session|'s [=XRSession/XR Device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, continue to the next entry.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentOptional|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. If |consentRequired| or |consentOptional| are not empty, request [=explicit consent=] to use the functionality described by those features.
@@ -2221,11 +2221,13 @@ Integrations {#integrations}
 Feature Policy {#feature-policy}
 --------------
 
-This specification defines a [=policy-controlled feature=] that controls whether any {{XRSession}} that makes use of spatial tracking may be returned by {{XR/requestSession()}}, and whether support for session modes that require spatial tracking may be indicated by either {{XR/isSessionSupported()}} or {{devicechange}} events on the {{Navigator/xr|navigator.xr}} object.
+This specification defines a [=policy-controlled feature=] that controls whether any {{XRSession}} that requires the use of spatial tracking may be returned by {{XR/requestSession()}}, and whether support for session modes that require spatial tracking may be indicated by either {{XR/isSessionSupported()}} or {{devicechange}} events on the {{Navigator/xr|navigator.xr}} object.
 
 The feature identifier for this feature is <code>"xr-spatial-tracking"</code>.
 
 The [=default allowlist=] for this feature is <code>["self"]</code>.
+
+Note: If the document's origin is not allowed to use the <code>"xr-spatial-tracking"</code> feature policy any [=immersive sessions=] will be blocked, because all [=immersive sessions=] require some use of spatial tracking. [=Inline sessions=] will still be allowed, but restricted to only using the {{XRReferenceSpaceType/"viewer"}} {{XRReferenceSpace}}.
 
 Acknowledgements {#ack}
 ================
