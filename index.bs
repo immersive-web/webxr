@@ -1310,9 +1310,9 @@ An {{XRRigidTransform}} is a transform described by a {{XRRigidTransform/positio
 An {{XRRigidTransform}} contains an <dfn for=XRRigidTransform>internal matrix</dfn> which is a [=/matrix=].
 
 <pre class="idl">
-[SecureContext, Exposed=Window,
- Constructor(optional DOMPointInit position = {}, optional DOMPointInit orientation = {})]
+[SecureContext, Exposed=Window]
 interface XRRigidTransform {
+  constructor(optional DOMPointInit position = {}, optional DOMPointInit orientation = {});
   [SameObject] readonly attribute DOMPointReadOnly position;
   [SameObject] readonly attribute DOMPointReadOnly orientation;
   readonly attribute Float32Array matrix;
@@ -1604,10 +1604,11 @@ dictionary XRWebGLLayerInit {
   double framebufferScaleFactor = 1.0;
 };
 
-[SecureContext, Exposed=Window, Constructor(XRSession session,
-             XRWebGLRenderingContext context,
-             optional XRWebGLLayerInit layerInit = {})]
+[SecureContext, Exposed=Window]
 interface XRWebGLLayer {
+  constructor(XRSession session,
+             XRWebGLRenderingContext context,
+             optional XRWebGLLayerInit layerInit = {});
   // Attributes
   readonly attribute boolean antialias;
   readonly attribute boolean ignoreDepthValues;
@@ -1874,8 +1875,9 @@ XRSessionEvent {#xrsessionevent-interface}
 {{XRSessionEvent}}s are fired to indicate changes to the state of an {{XRSession}}.
 
 <pre class="idl">
-[SecureContext, Exposed=Window, Constructor(DOMString type, XRSessionEventInit eventInitDict)]
+[SecureContext, Exposed=Window]
 interface XRSessionEvent : Event {
+  constructor(DOMString type, XRSessionEventInit eventInitDict);
   [SameObject] readonly attribute XRSession session;
 };
 
@@ -1892,8 +1894,9 @@ XRInputSourceEvent {#xrinputsourceevent-interface}
 {{XRInputSourceEvent}}s are fired to indicate changes to the state of an {{XRInputSource}}.
 
 <pre class="idl">
-[SecureContext, Exposed=Window, Constructor(DOMString type, XRInputSourceEventInit eventInitDict)]
+[SecureContext, Exposed=Window]
 interface XRInputSourceEvent : Event {
+  constructor(DOMString type, XRInputSourceEventInit eventInitDict);
   [SameObject] readonly attribute XRFrame frame;
   [SameObject] readonly attribute XRInputSource inputSource;
 };
@@ -1926,8 +1929,9 @@ XRInputSourcesChangeEvent {#xrinputsourceschangeevent-interface}
 {{XRInputSourcesChangeEvent}}s are fired to indicate changes to the {{XRInputSource}}s that are available to an {{XRSession}}.
 
 <pre class="idl">
-[SecureContext, Exposed=Window, Constructor(DOMString type, XRInputSourcesChangeEventInit eventInitDict)]
+[SecureContext, Exposed=Window]
 interface XRInputSourcesChangeEvent : Event {
+  constructor(DOMString type, XRInputSourcesChangeEventInit eventInitDict);
   [SameObject] readonly attribute XRSession session;
   [SameObject] readonly attribute FrozenArray&lt;XRInputSource&gt; added;
   [SameObject] readonly attribute FrozenArray&lt;XRInputSource&gt; removed;
@@ -1954,8 +1958,9 @@ XRReferenceSpaceEvent {#xrreferencespaceevent-interface}
 {{XRReferenceSpaceEvent}}s are fired to indicate changes to the state of an {{XRReferenceSpace}}.
 
 <pre class="idl">
-[SecureContext, Exposed=Window, Constructor(DOMString type, XRReferenceSpaceEventInit eventInitDict)]
+[SecureContext, Exposed=Window]
 interface XRReferenceSpaceEvent : Event {
+  constructor(DOMString type, XRReferenceSpaceEventInit eventInitDict);
   [SameObject] readonly attribute XRReferenceSpace referenceSpace;
   [SameObject] readonly attribute XRRigidTransform? transform;
 };
