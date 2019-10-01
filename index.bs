@@ -41,7 +41,7 @@ spec: WebGL; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: method; text: framebufferTexture2D;  url: 5.14.6
     type: method; text: framebufferRenderbuffer;  url: 5.14.6
     type: method; text: getFramebufferAttachmentParameter;  url: 5.14.6
-    type: method; text: getRenderbufferParameter;  url: 5.14.7
+    type: method; text: deleteFramebuffer;  url: 5.14.6
     type: method; text: checkFramebufferStatus;  url: 5.14.6
     type: dictionary; text: WebGLContextAttributes; url: #WebGLContextAttributes
     type: dfn; text: Create the WebGL context; url:#2.1
@@ -1692,7 +1692,7 @@ The <dfn attribute for="XRWebGLLayer">framebuffer</dfn> attribute of an {{XRWebG
 An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFramebuffer}} with the following changes that make it behave more like the default framebuffer:
 
  - An [=opaque framebuffer=] MAY support antialiasing, even in WebGL 1.0.
- - An [=opaque framebuffer=]'s attachments cannot be inspected or changed. Calling {{framebufferTexture2D}}, {{framebufferRenderbuffer}}, or {{getFramebufferAttachmentParameter}} with an [=opaque framebuffer=] MUST generate an {{INVALID_OPERATION}} error.
+ - An [=opaque framebuffer=]'s attachments cannot be inspected or changed. Calling {{framebufferTexture2D}}, {{framebufferRenderbuffer}}, {{deleteFramebuffer}}, or {{getFramebufferAttachmentParameter}} with an [=opaque framebuffer=] MUST generate an {{INVALID_OPERATION}} error.
  - An [=opaque framebuffer=] is considered incomplete outside of a {{XRSession/requestAnimationFrame()}} callback. When not in a {{XRSession/requestAnimationFrame()}} callback calls to {{checkFramebufferStatus}} outside of a {{XRSession/requestAnimationFrame()}} callback MUST generate a {{FRAMEBUFFER_UNSUPPORTED}} error and attempts to clear, draw to, or read from the [=opaque framebuffer=] MUST generate an {{INVALID_FRAMEBUFFER_OPERATION}} error.
  - An [=opaque framebuffer=] initialized with {{XRWebGLLayerInit/depth}} <code>false</code> will not have an attached depth buffer.
  - An [=opaque framebuffer=] initialized with {{XRWebGLLayerInit/stencil}} <code>false</code> will not have an attached stencil buffer.
