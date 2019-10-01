@@ -1692,7 +1692,7 @@ The <dfn attribute for="XRWebGLLayer">framebuffer</dfn> attribute of an {{XRWebG
 An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFramebuffer}} with the following changes that make it behave more like the default framebuffer:
 
  - An [=opaque framebuffer=] MAY support antialiasing, even in WebGL 1.0.
- - An [=opaque framebuffer=]'s attachments cannot be inspected or changed. Calling {{framebufferTexture2D}}, {{framebufferRenderbuffer}}, {{getFramebufferAttachmentParameter}}, or {{getRenderbufferParameter}} with an [=opaque framebuffer=] MUST generate an {{INVALID_OPERATION}} error.
+ - An [=opaque framebuffer=]'s attachments cannot be inspected or changed. Calling {{framebufferTexture2D}}, {{framebufferRenderbuffer}}, or {{getFramebufferAttachmentParameter}} with an [=opaque framebuffer=] MUST generate an {{INVALID_OPERATION}} error.
  - An [=opaque framebuffer=] is considered incomplete outside of a {{XRSession/requestAnimationFrame()}} callback. When not in a {{XRSession/requestAnimationFrame()}} callback calls to {{checkFramebufferStatus}} outside of a {{XRSession/requestAnimationFrame()}} callback MUST generate a {{FRAMEBUFFER_UNSUPPORTED}} error and attempts to clear, draw to, or read from the [=opaque framebuffer=] MUST generate an {{INVALID_FRAMEBUFFER_OPERATION}} error.
  - An [=opaque framebuffer=] initialized with {{XRWebGLLayerInit/depth}} <code>false</code> will not have an attached depth buffer.
  - An [=opaque framebuffer=] initialized with {{XRWebGLLayerInit/stencil}} <code>false</code> will not have an attached stencil buffer.
