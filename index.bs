@@ -45,6 +45,7 @@ spec: WebGL; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: method; text: checkFramebufferStatus;  url: 5.14.6
     type: dictionary; text: WebGLContextAttributes; url: #WebGLContextAttributes
     type: dfn; text: Create the WebGL context; url:#2.1
+    type: dfn; text: default framebuffer; url:#2.2
     type: dfn; text: WebGL viewport; url:#5.14.4
     type: dfn; text: WebGL context lost flag; url:#webgl-context-lost-flag
     type: dfn; text: handle the context loss; url:#CONTEXT_LOST
@@ -918,7 +919,7 @@ The XR Compositor {#compositor}
 
 The user agent MUST maintain an <dfn>XR Compositor</dfn> which handles presentation to the [=XRSession/XR device=] and frame timing. The compositor MUST use an independent rendering context whose state is isolated from that of any graphics contexts created by the document. The compositor MUST prevent the page from corrupting the compositor state or reading back content from other pages or applications. The compositor MUST also run in separate thread or processes to decouple performance of the page from the ability to present new imagery to the user at the appropriate framerate. The compositor MAY composite additional device or user agent UI over rendered content, like device menus.
 
-NOTE: Future extensions to this spec may utilize the compositor to composite multiple layers coming from the same page as well.
+Note: Future extensions to this spec may utilize the compositor to composite multiple layers coming from the same page as well.
 
 Frame Loop {#frame}
 ==========
@@ -1689,7 +1690,7 @@ Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">composition disabled</dfn> b
 
 The <dfn attribute for="XRWebGLLayer">framebuffer</dfn> attribute of an {{XRWebGLLayer}} is an instance of a {{WebGLFramebuffer}} which has been marked as [=opaque framebuffer|opaque=] if [=XRWebGLLayer/composition disabled=] is <code>false</code>, and <code>null</code> otherwise. The {{framebuffer}} size cannot be adjusted by the developer after the {{XRWebGLLayer}} has been created.
 
-An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFramebuffer}} with the following changes that make it behave more like the default framebuffer:
+An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFramebuffer}} with the following changes that make it behave more like the [=default framebuffer=]:
 
  - An [=opaque framebuffer=] MAY support antialiasing, even in WebGL 1.0.
  - An [=opaque framebuffer=]'s attachments cannot be inspected or changed. Calling {{framebufferTexture2D}}, {{framebufferRenderbuffer}}, {{deleteFramebuffer}}, or {{getFramebufferAttachmentParameter}} with an [=opaque framebuffer=] MUST generate an {{INVALID_OPERATION}} error.
@@ -1699,7 +1700,34 @@ An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFram
  - An [=opaque framebuffer=]'s color buffer will have an alpha channel if and only if {{XRWebGLLayerInit/alpha}} is <code>true</code>.
  - The [=XR Compositor=] will assume the [=opaque framebuffer=] contains colors with premultiplied alpha. This is true regardless of the {{WebGLContextAttributes|premultipliedAlpha}} value set in the {{XRWebGLLayer/context}}'s [=actual context parameters=].
 
-NOTE: User agents are not required to respect <code>true</code> values of {{XRWebGLLayerInit/depth}} and {{XRWebGLLayerInit/stencil}}, which is similar to WebGL's behavior when [=create a drawing buffer|creating a drawing buffer=]
+Note: User agents are not required to respect <code>true</code> values of {{XRWebGLLayerInit/depth}} and {{XRWebGLLayerInit/stencil}}, which is similar to WebGL's behavior when [=create a drawing buffer|creating a drawing buffer=]
+
+The buffers attached to an [=opaque framebuffer=] MUST be cleared to the values in the table below when first created, or prior to the processing of each [=XR animation frame=]. This is identical to the behavior of the WebGL context's [=default framebuffer=].
+
+<table class="tg">
+  <thead>
+    <tr>
+      <th>Buffer</th>
+      <th>Clear Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Color</td>
+      <td>(0, 0, 0, 0)</td>
+    </tr>
+    <tr>
+      <td>Depth</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <td>Stencil</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+
+Note: Implementations may optimize away the required implicit clear operation of the [=opaque framebuffer=] as long as a guarantee can be made that the developer cannot gain access to buffer contents from another process. For instance, if the developer performs an explicit clear then the implicit clear is not needed.
 
 Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">target framebuffer</dfn>, which is the {{XRWebGLLayer/framebuffer}} if [=XRWebGLLayer/composition disabled=] is <code>false</code>, and the [=XRWebGLLayer/context=]'s default framebuffer otherwise.
 
