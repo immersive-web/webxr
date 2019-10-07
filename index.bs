@@ -314,16 +314,16 @@ When this method is invoked, the user agent MUST run the following steps:
   1. Let |promise| be [=a new Promise=].
   1. Let |immersive| be <code>true</code> if |mode| is {{XRSessionMode/"immersive-vr"}}, and <code>false</code> otherwise.
   1. Check whether the session request is allowed as follows:
-      <dl class="switch">
-        <dt>If |immersive| is <code>true</code></dt>
-        <dd>
-          1. Check if an [=immersive session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.
-          1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
-          1. Set [=pending immersive session=] to <code>true</code>.
-              </dd>
-            <dt>Otherwise</dt>
-            <dd>Check if an [=inline session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.</dd>
-      </dl>
+    <dl class="switch">
+      <dt>If |immersive| is <code>true</code></dt>
+      <dd>
+        1. Check if an [=immersive session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.
+        1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
+        1. Set [=pending immersive session=] to <code>true</code>.
+      </dd>
+      <dt>Otherwise</dt>
+      <dd>Check if an [=inline session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.</dd>
+    </dl>
   1. Run the following steps [=in parallel=]:
     1. Choose |device| as follows:
         <dl class="switch">
@@ -1371,13 +1371,13 @@ To <dfn for=XRRigidTransform>obtain the matrix</dfn> for a given {{XRRigidTransf
   1. If the operation {{IsDetachedBuffer}} on [=XRRigidTransform/internal matrix=] is <code>false</code>, return |transform|'s [=XRRigidTransform/internal matrix=].
  1. Let |translation| be a new [=matrix=] which is a column-vector translation matrix corresponding to {{XRRigidTransform/position}}. Mathematically, if {{XRRigidTransform/position}} is <code>(x, y, z)</code>, this matrix is
 
-      <img src="images/translation_matrix.svg" />
+      <img src="images/translation_matrix.svg" alt="Mathematical expression for column-vector translation matrix" />
  1. Let |rotation| be a new [=matrix=] which is a column-vector rotation matrix corresponding to {{XRRigidTransform/orientation}}. Mathematically, if {{XRRigidTransform/orientation}} is the unit quaternion <code>(q<sub>x</sub>, q<sub>y</sub>, q<sub>z</sub>, q<sub>w</sub>)</code>, this matrix is
  
-      <img src="images/rotation_matrix.svg" />
+      <img src="images/rotation_matrix.svg" alt="Mathematical expression for column-vector rotation matrix" />
  1. Set |transform|'s [=XRRigidTransform/internal matrix=] to a new [=matrix=] set to the result of multiplying |translation| and |rotation| with |translation| on the left (<code>translation * rotation</code>). Mathematically, this matrix is
 
-      <img src="images/rigid_matrix.svg" />
+      <img src="images/rigid_matrix.svg" alt="Mathematical expression for matrix of multiplying translation and rotation with translation on the left" />
  1. Return |transform|'s [=XRRigidTransform/internal matrix=].
 
 </div>
