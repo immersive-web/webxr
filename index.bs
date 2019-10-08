@@ -312,7 +312,7 @@ The <dfn method for="XR">requestSession(|mode|, |options|)</dfn> method attempts
 When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |promise| be [=a new Promise=].
-  1. Let |immersive| be <code>true</code> if |mode| is {{XRSessionMode/"immersive-vr"}}, and <code>false</code> otherwise.
+  1. Let |immersive| be <code>true</code> if |mode| is an [=immersive session=] mode, and <code>false</code> otherwise.
   1. Check whether the session request is allowed as follows:
     <dl class="switch">
       <dt>If |immersive| is <code>true</code></dt>
@@ -379,14 +379,16 @@ The {{XRSessionMode}} enum defines the modes that an {{XRSession}} can operate i
 <pre class="idl">
 enum XRSessionMode {
   "inline",
-  "immersive-vr"
+  "immersive-vr",
+  "immersive-ar"
 };
 </pre>
 
   - A session mode of <dfn enum-value for="XRSessionMode">inline</dfn> indicates that the session's output will be shown as an element in the HTML document. {{inline}} session content MUST be displayed in mono (i.e., with a single [=view=]). It MAY allow for [=viewer=] tracking. User agents MUST allow {{inline}} sessions to be created.
   - A session mode of <dfn enum-value for="XRSessionMode">immersive-vr</dfn> indicates that the session's output will be given [=exclusive access=] to the [=XR/immersive XR device=] display and that content <b>is not</b> intended to be integrated with the user's environment.
+  - The behavior of the <dfn enum-value for="XRSessionMode">immersive-ar</dfn> session mode is defined in the <a href="https://immersive-web.github.io/webxr-ar-module/">WebXR AR Module</a> and is not valid unless the UA implements that module.
 
-In this document, the term <dfn>inline session</dfn> is synonymous with an {{inline}} session and the term <dfn>immersive session</dfn> is synonymous with an {{immersive-vr}} session.
+In this document, the term <dfn>inline session</dfn> is synonymous with an {{inline}} session and the term <dfn>immersive session</dfn> refers to either an {{immersive-vr}} or {{immersive-ar}} session.
 
 [=Immersive sessions=] MUST provide some level of [=viewer=] tracking, and content MUST be shown at the proper scale relative to the user and/or the surrounding environment. Additionally, [=Immersive sessions=] MUST be given <dfn>exclusive access</dfn> to the [=XR/immersive XR device=], meaning that while the [=immersive session=] is {{XRVisibilityState/"visible"}} the HTML document is not shown on the [=XR/immersive XR device=]'s display, nor does content from any other source have exclusive access. [=Exclusive access=] does not prevent the user agent from overlaying its own UI, however this UI SHOULD be minimal.
 
