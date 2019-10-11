@@ -2,11 +2,10 @@
 Shortname: webxr
 Title: WebXR Device API
 Group: immersivewebwg
-Status: WD
-Date: 2019-10-07
+Status: ED
 TR: https://www.w3.org/TR/webxr/
 ED: https://immersive-web.github.io/webxr/
-Previous Version: https://www.w3.org/TR/2019/WD-webxr-20190521/
+Previous Version: https://www.w3.org/TR/2019/WD-webxr-1-20191010/
 Repository: immersive-web/webxr
 Level: 1
 Mailing List Archives: https://lists.w3.org/Archives/Public/public-immersive-web/
