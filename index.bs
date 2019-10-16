@@ -1465,6 +1465,8 @@ interface XRInputSource {
 };
 </pre>
 
+Note: The {{XRInputSource}} interface is also extended by the <a href="https://immersive-web.github.io/webxr-gamepads-module/">WebXR Gamepads Module</a>
+
 The <dfn attribute for="XRInputSource">handedness</dfn> attribute describes which hand the [=XR input source=] is associated with, if any. Input sources with no natural handedness (such as headset-mounted controls) or for which the handedness is not currently known MUST set this attribute {{XRHandedness/"none"}}.
 
 The <dfn attribute for="XRInputSource">targetRayMode</dfn> attribute describes the method used to produce the target ray, and indicates how the application should present the target ray to the user if desired.
