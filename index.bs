@@ -158,7 +158,7 @@ This document uses the acronym <b>XR</b> throughout to refer to the spectrum of 
 
 The important commonality between them being that they offer some degree of spatial tracking with which to simulate a view of virtual content.
 
-Terms like "XR Device", "XR Application", etc. are generally understood to apply to any of the above. Portions of this document that only apply to a subset of these devices will indicate so as appropriate.
+Terms like "XR device", "XR Application", etc. are generally understood to apply to any of the above. Portions of this document that only apply to a subset of these devices will indicate so as appropriate.
 
 The terms [=3DoF=] and [=6DoF=] are used throughout this document to describe the tracking capabilities of [=/XR devices=].
 
@@ -191,9 +191,9 @@ An <dfn for="">XR device</dfn> is a physical unit of hardware that can present i
 
 An [=/XR device=] has a <dfn>list of supported modes</dfn> (a [=/list=] of [=/strings=]) that [=list/contains=] the enumeration values of {{XRSessionMode}} that the [=/XR device=] supports.
 
-The user-agent MUST have an <dfn>inline XR Device</dfn>, which is an [=/XR Device=] that MUST [=list/contains|contain=] {{XRSessionMode/"inline"}} in its [=list of supported modes=]. The [=Inline XR Device=] will report as much pose information of the physical device the user agent is rendering to as possible. This device MAY be the same as the [=XR/immersive XR device=] if one is present, but doesn't have to be.
+The user-agent MUST have an <dfn>inline XR device</dfn>, which is an [=/XR device=] that MUST [=list/contains|contain=] {{XRSessionMode/"inline"}} in its [=list of supported modes=]. The [=inline XR device=] SHOULD report as much pose information of the physical device the user agent is rendering to as possible. This device MAY be the same as the [=XR/immersive XR device=] if one is present, but doesn't have to be.
 
-Note: On phones, the [=inline XR Device=] will report gyroscopic pose information of the phone itself. On desktops and laptops without gyroscopes, the [=inline XR Device=] will not be able to report a pose. In case the user agent is already running on an [=/XR device=], the [=inline XR device=] will be the same device, and may support multiple [=view|views=].
+Note: On phones, the [=inline XR device=] may report pose information derived from the phone's internal sensors, such as the gyroscope and accelerometer. On desktops and laptops without similar sensors, the [=inline XR device=] will not be able to report a pose. In case the user agent is already running on an [=/XR device=], the [=inline XR device=] will be the same device, and may support multiple [=view|views=].
 
 Initialization {#initialization}
 ==============
@@ -411,9 +411,9 @@ dictionary XRSessionInit {
 };
 </pre>
 
-The <dfn dict-member for="XRSessionInit">requiredFeatures</dfn> array contains any [=Required features=] for the experience. If any value in the list is not a recognized [=feature descriptor=] the {{XRSession}} will not be created. If any feature listed in the {{XRSessionInit/requiredFeatures}} array is not supported by the [=XRSession/XR Device=] or, if necessary, has not received a clear signal of [=user intent=] the {{XRSession}} will not be created.
+The <dfn dict-member for="XRSessionInit">requiredFeatures</dfn> array contains any [=Required features=] for the experience. If any value in the list is not a recognized [=feature descriptor=] the {{XRSession}} will not be created. If any feature listed in the {{XRSessionInit/requiredFeatures}} array is not supported by the [=XRSession/XR device=] or, if necessary, has not received a clear signal of [=user intent=] the {{XRSession}} will not be created.
 
-The <dfn dict-member for="XRSessionInit">optionalFeatures</dfn> array contains any [=Optional features=] for the experience. If any value in the list is not a recognized [=feature descriptor=] it will be ignored. Features listed in the {{XRSessionInit/optionalFeatures}} array will be enabled if supported by the [=XRSession/XR Device=] and, if necessary, given a clear signal of [=user intent=], but will not block creation of the {{XRSession}} if absent.
+The <dfn dict-member for="XRSessionInit">optionalFeatures</dfn> array contains any [=Optional features=] for the experience. If any value in the list is not a recognized [=feature descriptor=] it will be ignored. Features listed in the {{XRSessionInit/optionalFeatures}} array will be enabled if supported by the [=XRSession/XR device=] and, if necessary, given a clear signal of [=user intent=], but will not block creation of the {{XRSession}} if absent.
 
 Values given in the feature lists are considered a valid <dfn>feature descriptor</dfn> if the value is one of the following:
 
@@ -485,9 +485,9 @@ Some [=feature descriptors=], when present in the [=requested features=] list, a
 
 Note: {{XRReferenceSpaceType/"local"}} is always included in the [=requested features=] of [=immersive sessions=] as a [=default feature=], and as such [=immersive sessions=] always need to obtain [=explicit consent=] or [=implicit consent=].
 
-[=Requested features=] can only be enabled for a session if the [=XRSession/XR Device=] is <dfn>capable of supporting</dfn> the feature, which means that the feature is known to be supported by the [=XRSession/XR Device=] in some configurations, even if the current configuration has not yet been verified as supporting the feature. The user agent MAY apply more rigorous constraints if desired in order to yield a more consistent user experience.
+[=Requested features=] can only be enabled for a session if the [=XRSession/XR device=] is <dfn>capable of supporting</dfn> the feature, which means that the feature is known to be supported by the [=XRSession/XR device=] in some configurations, even if the current configuration has not yet been verified as supporting the feature. The user agent MAY apply more rigorous constraints if desired in order to yield a more consistent user experience.
 
-Note: For example, several VR devices support either configuring a safe boundary for the user to move around within or skipping boundary configuration and operating in a mode where the user is expected to stand in place. Such a device can be considered to be [=capable of supporting=] {{"bounded-floor"}} {{XRReferenceSpace}}s even if they are currently not configured with safety boundaries, because it's expected that the user could configure the device appropriately if the experience required it. This is to allow user agents to avoid fully initializing the [=XRSession/XR Device=] or waiting for the user's environment to be recognized prior to [=resolve the requested features|resolving the requested features=] if desired. If, however, the user agent knows that the boundary state at the time the session is requested without additional initialization it may choose to reject the {{"bounded-floor"}} feature if the safety boundary not already configured.
+Note: For example, several VR devices support either configuring a safe boundary for the user to move around within or skipping boundary configuration and operating in a mode where the user is expected to stand in place. Such a device can be considered to be [=capable of supporting=] {{"bounded-floor"}} {{XRReferenceSpace}}s even if they are currently not configured with safety boundaries, because it's expected that the user could configure the device appropriately if the experience required it. This is to allow user agents to avoid fully initializing the [=XRSession/XR device=] or waiting for the user's environment to be recognized prior to [=resolve the requested features|resolving the requested features=] if desired. If, however, the user agent knows that the boundary state at the time the session is requested without additional initialization it may choose to reject the {{"bounded-floor"}} feature if the safety boundary not already configured.
 
 <div class="algorithm" data-algorithm="resolve-features">
 
@@ -499,13 +499,13 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
   1. For each |feature| in |requiredFeatures| perform the following steps:
     1. If |feature| is not a valid [=feature descriptor=], return <code>false</code>.
     1. If the requesting document's origin is not allowed to use any [[#feature-policy|feature policy]] required by |feature| as indicated by the [=feature requirements=] table, return <code>false</code>.
-    1. If |session|'s [=XRSession/XR Device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, return <code>false</code>.
+    1. If |session|'s [=XRSession/XR device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, return <code>false</code>.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentRequired|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. For each |feature| in |optionalFeatures| perform the following steps:
     1. If |feature| is not a valid [=feature descriptor=], continue to the next entry.
     1. If the requesting document's origin is not allowed to use any [[#feature-policy|feature policy]] required by |feature| as indicated by the [=feature requirements=] table, continue to the next entry.
-    1. If |session|'s [=XRSession/XR Device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, continue to the next entry.
+    1. If |session|'s [=XRSession/XR device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, continue to the next entry.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentOptional|.
     1. Else append |feature| to |session|'s [=list of enabled features=].
   1. If |consentRequired| or |consentOptional| are not empty, request [=explicit consent=] to use the functionality described by those features.
@@ -682,7 +682,7 @@ Each {{XRSession}} has an <dfn for="XRSession">XR device</dfn>, which is an [=/X
 
 The <dfn attribute for="XRSession">inputSources</dfn> attribute returns the {{XRSession}}'s [=list of active XR input sources=].
 
-The user agent MUST monitor any [=XR input source=]s associated with the [=XRSession/XR Device=], including detecting when [=XR input source=]s are added, removed, or changed.
+The user agent MUST monitor any [=XR input source=]s associated with the [=XRSession/XR device=], including detecting when [=XR input source=]s are added, removed, or changed.
 
 <div class="algorithm" data-algorithm="on-input-source-added">
 
@@ -1440,7 +1440,7 @@ Input {#input}
 XRInputSource {#xrinputsource-interface}
 -------------
 
-An {{XRInputSource}} represents an <dfn>XR input source</dfn>, which is any input mechanism which allows the user to perform targeted actions in the same virtual space as the [=viewer=]. Example [=XR input source=]s include, but are not limited to, handheld controllers, optically tracked hands, and gaze-based input methods that operate on the [=viewer=]'s pose. Input mechanisms which are not explicitly associated with the [=/XR Device=], such as traditional gamepads, mice, or keyboards SHOULD NOT be considered [=XR input source=]s.
+An {{XRInputSource}} represents an <dfn>XR input source</dfn>, which is any input mechanism which allows the user to perform targeted actions in the same virtual space as the [=viewer=]. Example [=XR input source=]s include, but are not limited to, handheld controllers, optically tracked hands, and gaze-based input methods that operate on the [=viewer=]'s pose. Input mechanisms which are not explicitly associated with the [=/XR device=], such as traditional gamepads, mice, or keyboards SHOULD NOT be considered [=XR input source=]s.
 
 <pre class="idl">
 enum XRHandedness {
@@ -1534,7 +1534,7 @@ When an [=XR input source=] |source| for {{XRSession}} |session| has its [=prima
 Transient input {#transient-input}
 ---------------
 
-Some [=/XR Device=]s may support <dfn>transient input sources</dfn>, where the [=XR input source=] is only meaningful while performing it's [=primary action=]. An example would be mouse, touch, or stylus input against an {{XRSessionMode/"inline"}} {{XRSession}}, which MUST produce a transient {{XRInputSource}} with a {{targetRayMode}} set to {{screen}}. [=Transient input sources=] are only present in the session's [=list of active XR input sources=] for the duration of the the {{selectstart}}, {{select}}, and {{selectend}} event sequence.
+Some [=/XR device=]s may support <dfn>transient input sources</dfn>, where the [=XR input source=] is only meaningful while performing it's [=primary action=]. An example would be mouse, touch, or stylus input against an {{XRSessionMode/"inline"}} {{XRSession}}, which MUST produce a transient {{XRInputSource}} with a {{targetRayMode}} set to {{screen}}. [=Transient input sources=] are only present in the session's [=list of active XR input sources=] for the duration of the the {{selectstart}}, {{select}}, and {{selectend}} event sequence.
 
 [=Transient input sources=] follow a slightly different sequence when firing [=primary action=] events:
 
