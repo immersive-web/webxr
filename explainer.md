@@ -244,6 +244,8 @@ let gl = glCanvas.getContext("webgl", { xrCompatible: true });
 
 Ensuring context compatibility with an XR device through either method may have side effects on other graphics resources in the page, such as causing the entire user agent to switch from rendering using an integrated GPU to a discrete GPU.
 
+> **Note:** The `XRWebGLLayer` uses a WebGL context created by a Canvas element or `OffscreenCanvas` rather than creating it's own to both allow for the same content to be rendered to the XR device and the page, as well as allowing the page to load it's WebGL resorces prior to the session being created.
+
 If the system's underlying XR device changes (signaled by the `devicechange` event on the `navigator.xr` object) any previously set context compatibility bits will be cleared, and `makeXRCompatible` will need to be called again prior to using the context with a `XRWebGLLayer`. Any active sessions will also be ended, and as a result new `XRSession`s with corresponding new `XRWebGLLayer`s will need to be created.
 
 ### Main render loop
