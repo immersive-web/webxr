@@ -220,11 +220,12 @@ When it comes to ensuring canvas compatibility there's two broad categories that
 
 **XR Enhanced:** The app can take advantage of XR hardware, but it's used as a progressive enhancement rather than a core part of the experience. Most users will probably not interact with the app's XR features, and as such asking them to make XR-centric decisions early in the app lifetime would be confusing and inappropriate. An example would be a news site with an embedded 360 photo gallery or video. (We expect the large majority of early WebXR content to fall into this category.)
 
-This style of application should call `WebGLRenderingContextBase`'s `makeXRCompatible()` method. This will set a compatibility bit on the context that allows it to be used. Contexts without the compatibility bit will fail when attempting to create an `XRWebGLLayer` with them. In the event that a context is not already compatible with the XR device the [context will be lost and attempt to recreate itself](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14.13) using the compatible graphics adapter. It is the page's responsibility to handle WebGL context loss properly, recreating any necessary WebGL resources in response. If the context loss is not handled by the page, the promise returned by `makeXRCompatible` will fail. The promise may also fail for a variety of other reasons, such as the context being actively used by a different, incompatible XR device.
+This style of application should call `WebGLRenderingContextBase`'s `makeXRCompatible()` method. This will set a compatibility bit on the context that allows it to be used. Contexts without the compatibility bit will fail when attempting to create an `XRWebGLLayer` with them.
 
 ```js
 let glCanvas = document.createElement("canvas");
 let gl = glCanvas.getContext("webgl");
+loadSceneGraphics(gl);
 
 function setupWebGLLayer() {
   // Make sure the canvas context we want to use is compatible with the current xr device.
@@ -236,10 +237,28 @@ function setupWebGLLayer() {
 }
 ```
 
+In the event that a context is not already compatible with the XR device the [context will be lost and attempt to recreate itself](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14.13) using the compatible graphics adapter. It is the page's responsibility to handle WebGL context loss properly, recreating any necessary WebGL resources in response. If the context loss is not handled by the page, the promise returned by `makeXRCompatible` will fail. The promise may also fail for a variety of other reasons, such as the context being actively used by a different, incompatible XR device.
+
+
+```js
+// Set up context loss handling to allow the context to be properly restored if needed.
+glCanvas.addEventListener("webglcontextlost", (event) => {
+  // Calling preventDefault signals to the page that you intent to handle context restoration.
+  event.preventDefault();
+});
+
+glCanvas.addEventListener("webglcontextrestored", () => {
+  // Once this function is called the gl context will be restored but any graphics resources
+  // that were previously loaded will be lost, so the scene should be reloaded.
+  loadSceneGraphics(gl);
+});
+```
+
 **XR Centric:** The app's primary use case is displaying XR content, and as such it doesn't mind initializing resources in an XR-centric fashion, which may include asking users to select a headset as soon as the app starts. An example would be a game which is dependent on XR presentation and input. These types of applications can avoid the need to call `makeXRCompatible` and the possible context loss that it may trigger by setting the `xrCompatible` flag in the WebGL context creation arguments.
 
 ```js
 let gl = glCanvas.getContext("webgl", { xrCompatible: true });
+loadSceneGraphics(gl);
 ```
 
 Ensuring context compatibility with an XR device through either method may have side effects on other graphics resources in the page, such as causing the entire user agent to switch from rendering using an integrated GPU to a discrete GPU.
