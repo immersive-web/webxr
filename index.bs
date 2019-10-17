@@ -801,9 +801,11 @@ When an {{XRRenderState}} object is created for an {{XRSession}} |session|, the 
 
 </div>
 
-The <dfn attribute for="XRRenderState">depthNear</dfn> attribute defines the distance, in meters, of the near clip plane from the viewer. The <dfn attribute for="XRRenderState">depthFar</dfn> attribute defines the distance, in meters, of the far clip plane from the viewer.
+The <dfn attribute for="XRRenderState">depthNear</dfn> attribute defines the distance, in meters, of the near clip plane from the viewer. The <dfn attribute for="XRRenderState">depthFar</dfn> attribute defines the distance, in meters, of the far clip plane from the [=viewer=].
 
-{{XRRenderState/depthNear}} and {{XRRenderState/depthFar}} is used in the computation of the {{XRView/projectionMatrix}} of {{XRView}}s and determines how the values of an {{XRWebGLLayer}} depth buffer are interpreted. {{XRRenderState/depthNear}} MAY be greater than {{XRRenderState/depthFar}}.
+{{XRRenderState/depthNear}} and {{XRRenderState/depthFar}} are used in the computation of the {{XRView/projectionMatrix}} of {{XRView}}s. When the {{XRView/projectionMatrix}} is used during rendering, only geometry with a distance to the [=viewer=] that falls between {{XRRenderState/depthNear}} and {{XRRenderState/depthFar}} will be drawn. They also determine how the values of an {{XRWebGLLayer}} depth buffer are interpreted. {{XRRenderState/depthNear}} MAY be greater than {{XRRenderState/depthFar}}.
+
+Note: Typically when constructing a perspective projection matrix for rendering the developer specifies the viewing frustum and the near and far clip planes. When displaying to an [=immersive XR device=] the correct viewing frustum is determined by some combination of the optics, displays, and cameras being used. The near and far clip planes, however, may be modified by the application since the appropriate values depend on the type of content being rendered.
 
 The <dfn attribute for="XRRenderState">inlineVerticalFieldOfView</dfn> attribute defines the default vertical field of view in radians used when computing projection matrices for {{XRSessionMode/"inline"}} {{XRSession}}s. The projection matrix calculation also takes into account the aspect ratio of the [=XRRenderState/output canvas=]. This value MUST be <code>null</code> for [=immersive sessions=].
 
