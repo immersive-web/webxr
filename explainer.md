@@ -268,7 +268,7 @@ Once drawn to, the XR device will continue displaying the contents of the `XRWeb
 
 Each `XRFrame` the scene will be drawn from the perspective of a "viewer", which is the user or device viewing the scene, described by an `XRViewerPose`. Developers retrieve the current `XRViewerPose` by calling `getViewerPose()` on the `XRFrame` and providing an `XRReferenceSpace` for the pose to be returned in. Due to the nature of XR tracking systems, this function is not guaranteed to return a value and developers will need to respond appropriately. For more information about what situations will cause `getViewerPose()` to fail and recommended practices for handling the situation, refer to the [Spatial Tracking Explainer](spatial-tracking-explainer.md).
 
-The `XRViewerPose` contains a `views` attribute, which is an array of `XRView`s. Each `XRView` has a `projectionMatrix` and `transform` that should be used when rendering with WebGL. (See the [definition of an `XRRigidTransform`](spatial-tracking-explainer.md#rigid-transforms) in the spatial tracking explainer.) The `XRView` is also passed to an `XRWebGLLayer`'s `getViewport()` method to determine what the WebGL viewport should be set to when rendering. This ensures that the appropriate perspectives of scene are rendered to the correct portion on the `XRWebGLLayer`'s `framebuffer` in order to display correctly on the XR hardware.
+The `XRViewerPose` contains a `views` attribute, which is an array of `XRView`s. Each `XRView` has a `projectionMatrix` and `transform` that should be used when rendering with WebGL. The `XRView` is also passed to an `XRWebGLLayer`'s `getViewport()` method to determine what the WebGL viewport should be set to when rendering. This ensures that the appropriate perspectives of scene are rendered to the correct portion on the `XRWebGLLayer`'s `framebuffer` in order to display correctly on the XR hardware.
 
 ```js
 function onDrawFrame(timestamp, xrFrame) {
@@ -293,29 +293,59 @@ function onDrawFrame(timestamp, xrFrame) {
   } else {
     // No session available, so render a default mono view.
     gl.viewport(0, 0, glCanvas.width, glCanvas.height);
-    drawScene();
+    drawSceneFromDefaultView();
 
     // Request the next window callback
     window.requestAnimationFrame(onDrawFrame);
   }
 }
+```
 
+Each `transform` attribute of each `XRView` is an `XRRigidTransform` consisting of a `position` and `orientation`. (See the [definition of an `XRRigidTransform`](spatial-tracking-explainer.md#rigid-transforms) in the spatial tracking explainer for more details.) These should be treated as the locations of virtuals "cameras" within the scene. If the application is using a library to assist with rendering, it may be most natural to apply these values to a camera object directly, like so:
+
+```js
+// Apply the view transform to the camera of a fictional rendering library.
 function drawScene(view) {
-  let viewMatrix = null;
-  let projectionMatrix = null;
-  if (view) {
-    viewMatrix = view.transform.inverse.matrix;
-    projectionMatrix = view.projectionMatrix;
-  } else {
-    viewMatrix = defaultViewMatrix;
-    projectionMatrix = defaultProjectionMatrix;
-  }
+  camera.setPositionVector(
+    view.transform.position.x,
+    view.transform.position.y,
+    view.transform.position.z,
+  );
+
+  camera.setOrientationQuaternion(
+    view.transform.orientation.x,
+    view.transform.orientation.y,
+    view.transform.orientation.z,
+    view.transform.orientation.w,
+  );
+
+  camera.setProjectionMatrix4x4(
+    view.projectionMatrix[0],
+    view.projectionMatrix[1],
+    //...
+    view.projectionMatrix[14],
+    view.projectionMatrix[15]
+  );
+  
+  scene.renderWithCamera(camera);
+}
+```
+
+Or it may be easier to pass the transform in as a view matrix, especially if the application makes WebGL calls directly. In that case the matrix needed will typically be the inverse of the view transform, which can easily be acquired from the `inverse` attribute of the `XRRigidTransform`.
+
+```js
+// Get a view matrix and projection matrix appropriate for passing directly to a WebGL shader.
+function drawScene(view) {
+  viewMatrix = view.transform.inverse.matrix;
+  projectionMatrix = view.projectionMatrix;
 
   // Set uniforms as appropriate for shaders being used
 
   // Draw Scene
 }
 ```
+
+In both cases the `XRView`'s `projectionMatrix` should be used as-is. Altering it may cause incorrect output to the XR device and significant user discomfort.
 
 Because the `XRViewerPose` inherits from `XRPose` it also contains a `transform` describing the position and orientation of the viewer as a whole relative to the `XRReferenceSpace` origin. This is primarily useful for rendering a visual representation of the viewer for spectator views or multi-user environments.
 
