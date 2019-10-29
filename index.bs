@@ -80,6 +80,11 @@ spec: dom; urlPrefix: https://dom.spec.whatwg.org/#
 <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
 
 <style>
+  .head h1:after {
+    content: url(images/spec-logo.png);
+    float: right;
+  }
+
   .unstable::before {
     content: "This section is not stable";
     display: block;
