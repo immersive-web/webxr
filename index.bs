@@ -881,6 +881,7 @@ When an {{XRSession}} |session| receives updated [=viewer=] state from the [=XRS
     1. If the entry's [=cancelled=] boolean is <code>true</code>, continue to the next entry.
     1. [=Invoke the Web IDL callback function=], passing |now| and |frame| as the  arguments
     1. If an exception is thrown, [=report the exception=].
+  1. Set |frame|'s [=animationFrame=] boolean to <code>false</code>.
   1. Set |frame|'s [=active=] boolean to <code>false</code>.
 
 </div>
