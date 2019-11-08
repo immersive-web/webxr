@@ -1247,10 +1247,10 @@ Note: The {{XRView/transform}} can be used to position camera objects in many re
 
 To <dfn for=XRView>obtain the projection matrix</dfn> for a given {{XRView}} |view|
 
- 1. If |view|'s [=XRView/internal projection matrix=] is not <code>null</code>, perform the following steps:
-  1. If the operation {{IsDetachedBuffer}} on [=XRView/internal projection matrix=]  is <code>false</code>, return |view|'s [=XRView/internal projection matrix=].
- 1. Set |view|'s [=XRView/internal projection matrix=] to a new [=matrix=] which is equal to |view|'s [=XRView/underlying view=]'s [=view/projection matrix=].
- 1. Return |view|'s [=XRView/internal projection matrix=].
+  1. If |view|'s [=XRView/internal projection matrix=] is not <code>null</code>, perform the following steps:
+    1. If the operation {{IsDetachedBuffer}} on [=XRView/internal projection matrix=]  is <code>false</code>, return |view|'s [=XRView/internal projection matrix=].
+  1. Set |view|'s [=XRView/internal projection matrix=] to a new [=matrix=] which is equal to |view|'s [=XRView/underlying view=]'s [=view/projection matrix=].
+  1. Return |view|'s [=XRView/internal projection matrix=].
 
 </div>
 
@@ -1385,18 +1385,18 @@ Note: This matrix when premultiplied onto a column vector will rotate the vector
 
 To <dfn for=XRRigidTransform>obtain the matrix</dfn> for a given {{XRRigidTransform}} |transform|
 
- 1. If |transform|'s [=XRRigidTransform/internal matrix=] is not <code>null</code>, perform the following steps:
-  1. If the operation {{IsDetachedBuffer}} on [=XRRigidTransform/internal matrix=] is <code>false</code>, return |transform|'s [=XRRigidTransform/internal matrix=].
- 1. Let |translation| be a new [=matrix=] which is a column-vector translation matrix corresponding to {{XRRigidTransform/position}}. Mathematically, if {{XRRigidTransform/position}} is <code>(x, y, z)</code>, this matrix is
+  1. If |transform|'s [=XRRigidTransform/internal matrix=] is not <code>null</code>, perform the following steps:
+    1. If the operation {{IsDetachedBuffer}} on [=XRRigidTransform/internal matrix=] is <code>false</code>, return |transform|'s [=XRRigidTransform/internal matrix=].
+  1. Let |translation| be a new [=matrix=] which is a column-vector translation matrix corresponding to {{XRRigidTransform/position}}. Mathematically, if {{XRRigidTransform/position}} is <code>(x, y, z)</code>, this matrix is
 
-      <img src="images/translation_matrix.svg" alt="Mathematical expression for column-vector translation matrix" />
- 1. Let |rotation| be a new [=matrix=] which is a column-vector rotation matrix corresponding to {{XRRigidTransform/orientation}}. Mathematically, if {{XRRigidTransform/orientation}} is the unit quaternion <code>(q<sub>x</sub>, q<sub>y</sub>, q<sub>z</sub>, q<sub>w</sub>)</code>, this matrix is
+        <img src="images/translation_matrix.svg" alt="Mathematical expression for column-vector translation matrix" />
+  1. Let |rotation| be a new [=matrix=] which is a column-vector rotation matrix corresponding to {{XRRigidTransform/orientation}}. Mathematically, if {{XRRigidTransform/orientation}} is the unit quaternion <code>(q<sub>x</sub>, q<sub>y</sub>, q<sub>z</sub>, q<sub>w</sub>)</code>, this matrix is
  
-      <img src="images/rotation_matrix.svg" alt="Mathematical expression for column-vector rotation matrix" />
- 1. Set |transform|'s [=XRRigidTransform/internal matrix=] to a new [=matrix=] set to the result of multiplying |translation| and |rotation| with |translation| on the left (<code>translation * rotation</code>). Mathematically, this matrix is
+        <img src="images/rotation_matrix.svg" alt="Mathematical expression for column-vector rotation matrix" />
+  1. Set |transform|'s [=XRRigidTransform/internal matrix=] to a new [=matrix=] set to the result of multiplying |translation| and |rotation| with |translation| on the left (<code>translation * rotation</code>). Mathematically, this matrix is
 
-      <img src="images/rigid_matrix.svg" alt="Mathematical expression for matrix of multiplying translation and rotation with translation on the left" />
- 1. Return |transform|'s [=XRRigidTransform/internal matrix=].
+       <img src="images/rigid_matrix.svg" alt="Mathematical expression for matrix of multiplying translation and rotation with translation on the left" />
+  1. Return |transform|'s [=XRRigidTransform/internal matrix=].
 
 </div>
 
