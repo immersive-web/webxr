@@ -86,7 +86,26 @@ When sensitive information can be exposed, the requesting document must be:
 In addition to the WebXR specific feature policy, feature policies for underlying sensors must also be respected if a site could isolate and extract sensor data that would otherwise be blocked by those feature policies. WebXR must not be a 'back door' for accessing data that is otherwise prevented.
 
 ## Trusted UI
-**TODO** Fill this in with what is agreed upon in [#718](https://github.com/immersive-web/webxr/issues/718) and [#719](https://github.com/immersive-web/webxr/issues/719).
+The concept of [“Trusted UI”](https://github.com/immersive-web/webxr/issues/719) is what allows User Agents to display a UI to end users on which sensitive information can be displayed and interacted with such that a website cannot snoop on it and cannot spoof it. Some features which use Trusted UI are user consent prompts, URL bars, navigation controls, favorite/bookmarks, and many more.
+
+In 2D browsers, Trusted UI is presented either exclusively around the outside of a web page’s visual container or overlapping with it partially. In the context of an immersive experience, the definition of a [“Trusted Immersive UI”](https://github.com/immersive-web/webxr/issues/718) is a bit more complex due to the fact there is no “outside” of immersive content; all pixels the user sees are rendered by the immersive content.
+
+User agents must support a Trusted UI with the following properties:
+- non-spoofable
+- indicates where the request/content displayed originates from
+- if it relies on a shared secret with the user, the shared secret must be unobservable by an MR capture
+- it is consistent between immersive experiences in the same UA
+- avoid spamming/overloading the user with prompts
+- easy to intentionally grant consent (e.g. the UI should be easily discovered)
+- hard to unintentionally grant user consent (e.g. the UI should prevent clickjacking)
+- provides clear methods for the user to revoke consent and verify the current state of consent
+
+A Trusted UI may be immersive or non-immersive, provided it conforms to the above properties. A Trusted Immersive UI does not exit immersive mode. UAs are not required to provide a Trusted Immersive UI and may instead temporarily pause/exit immersive mode and provide a non-immersive Trusted UI.
+
+Examples of Trusted UIs are:
+- the default 2D mode browser in non-immersive mode
+- a prompt shown within immersive mode which can only be interacted with via a reserved hardware button
+- pausing the immersive session to show a form of non-spoofable native system environment
 
 ## User intention
 It is often necessary to be sure of user intent before exposing sensitive information or allowing actions with a significant effect on the user's experience. This intent may be communicated or observed in a number of ways.
