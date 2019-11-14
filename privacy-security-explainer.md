@@ -103,9 +103,6 @@ It is often useful to get explicit consent from the user before exposing sensiti
 ### Duration of consent
 It is recommended that once explicit consent is granted for a specific [origin](https://html.spec.whatwg.org/multipage/origin.html) that this consent persist until the [browsing context](https://html.spec.whatwg.org/multipage/browsers.html#browsing-context) has ended. User agents may choose to lengthen or shorten this consent duration based upon implicit or explicit signals of user intent, but implementations are advised to exercise caution when deviating from this recommendation, particularly when relying on implicit signals.
 
-### Querying consent status
-**TODO** Fill this in with what is agreed upon in [#722](https://github.com/immersive-web/webxr/issues/722) and [#725](https://github.com/immersive-web/webxr/issues/725).
-
 ## Data adjustments
 In some cases, security and privacy threats can be mitigated through throttling, quantizing, rounding, limiting, or otherwise adjusting the data reported from the WebXR APIs. This may sometimes be necessary to avoid fingerprinting, even in situations when user intent has been established.  However, data adjustment mitigations can only be used in situations which would not result in user discomfort.
 
