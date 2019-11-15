@@ -1902,23 +1902,26 @@ The <dfn method for="WebGLRenderingContextBase">makeXRCompatible()</dfn> method 
 When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |promise| be [=a new Promise=].
-    1. Run the following steps [=in parallel=]:
-    1. Let |context| be the target {{WebGLRenderingContextBase}} object.
-    1. If |context|'s [=WebGL context lost flag=] is set, [=reject=] |promise| with an {{InvalidStateError}} and abort these steps.
-    1. If |context|'s [=XR compatible=] boolean is <code>true</code>, [=/resolve=] |promise| and abort these steps.
-    1. [=ensures an immersive XR device is selected|Ensure an immersive XR device is selected=].
-    1. If the [=XR/immersive XR device=] is <code>null</code>:
-        1. Set |context|'s [=XR compatible=] boolean to <code>false</code>.
-        1. [=Reject=] |promise| with an {{InvalidStateError}} and abort these steps.
-    1. If |context| was created on a [=compatible graphics adapter=] for the [=XR/immersive XR device=]:
-        1. Set |context|'s [=XR compatible=] boolean to <code>true</code>.
-        1. [=/Resolve=] |promise| and abort these steps.
-    1. [=Queue a task=] to perform the following steps:
-        1. Force |context| to be lost and [=handle the context loss=] as described by the WebGL specification.
-        1. If the [=canceled flag=] of the "webglcontextlost" event fired in the previous step was not set, [=reject=] |promise| with an {{AbortError}} and abort these steps.
-        1. [=Restore the context=] on a [=compatible graphics adapter=] for the [=XR/immersive XR device=].
-        1. Set |context|'s [=XR compatible=] boolean to <code>true</code>.
-        1. [=/Resolve=] |promise|.
+  1. Let |context| be the target {{WebGLRenderingContextBase}} object.
+  1. [=ensures an immersive XR device is selected|Ensure an immersive XR device is selected=].
+  1. Set |context|'s [=XR compatible=] boolean as follows:
+    <dl class="switch">
+      <dt> If |context|'s [=WebGL context lost flag=] is set
+      <dd> Set |context|'s [=XR compatible=] boolean to <code>false</code> and [=reject=] |promise| with an {{InvalidStateError}}.
+      <dt> If the [=XR/immersive XR device=] is <code>null</code>
+      <dd> Set |context|'s [=XR compatible=] boolean to <code>false</code> and [=reject=] |promise| with an {{InvalidStateError}}.
+      <dt> If |context|'s [=XR compatible=] boolean is <code>true</code>
+      <dd> [=/Resolve=] |promise|.
+      <dt> If |context| was created on a [=compatible graphics adapter=] for the [=XR/immersive XR device=]
+      <dd> Set |context|'s [=XR compatible=] boolean to <code>true</code> and [=/resolve=] |promise|.
+      <dt> Otherwise
+      <dd> [=Queue a task=] to perform the following steps:
+              1. Force |context| to be lost and [=handle the context loss=] as described by the WebGL specification.
+              1. If the [=canceled flag=] of the "webglcontextlost" event fired in the previous step was not set, [=reject=] |promise| with an {{AbortError}} and abort these steps.
+              1. [=Restore the context=] on a [=compatible graphics adapter=] for the [=XR/immersive XR device=].
+              1. Set |context|'s [=XR compatible=] boolean to <code>true</code>.
+              1. [=/Resolve=] |promise|.
+    </dl>
   1. Return |promise|.
 
 </div>
