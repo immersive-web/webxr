@@ -77,7 +77,13 @@ When sensitive information can be exposed, the requesting document must be:
 * **TODO** Address the outcome of [#732](https://github.com/immersive-web/webxr/issues/732)
 
 ### Focus and visibility
-**TODO** Fill this in with what is agreed upon in [#724](https://github.com/immersive-web/webxr/issues/724) and [#696](https://github.com/immersive-web/webxr/issues/696).
+XRSessions may have one of three visibility states: visible, visible-blurred, and hidden. When the user is interacting with a potentially sensitive UI from the UA (like URL entry), XRSessions must have their [visibility state set to hidden or visible-blurred](https://github.com/immersive-web/webxr/issues/724). If the visibility state is set to visible-blurred in this situation, the following restrictions must be placed on data delivered to sessions:
+-**TODO** fill in with what's agreed upon in [#743](https://github.com/immersive-web/webxr/issues/743)
+
+In this situation, WebXR must be structured to protect users from 'input sniffing,' for example, using pose data to infer what keyboard input a user has typed during password entry. For this reason, pose data should only be available to a session that is visible and same-origin to the currently focused area while a Trusted UI is displayed to the user.
+
+However, visible-blurred should not be viewed as a substitute for TrustedUI and applications should not infer that 'visible-blurred' state indicates that the user is performing a sensitive task.
+
 
 ### Feature policy
 **TODO** Fill this in with what is agreed upon in [#308](https://github.com/immersive-web/webxr/issues/308), [#729](https://github.com/immersive-web/webxr/issues/729), [#730](https://github.com/immersive-web/webxr/issues/730), and [#731](https://github.com/immersive-web/webxr/issues/731).
