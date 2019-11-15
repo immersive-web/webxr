@@ -52,6 +52,7 @@ spec: WebGL; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: dfn; text: Restore the context; url: #restore-the-drawing-buffer
     type: dfn; text: actual context parameters; url: #actual-context-parameters
     type: dfn; text: create a drawing buffer; url: #create-a-drawing-buffer
+    type: dfn; text: WebGL task source; url: #5.15
 spec: WebGL 2.0; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/2.0/
     type: interface; text: WebGL2RenderingContext; url: WebGL2RenderingContext
 spec: Orientation Sensor; urlPrefix: https://w3c.github.io/orientation-sensor/
@@ -1921,6 +1922,7 @@ When this method is invoked, the user agent MUST run the following steps:
               1. [=Restore the context=] on a [=compatible graphics adapter=] for the [=XR/immersive XR device=].
               1. Set |context|'s [=XR compatible=] boolean to <code>true</code>.
               1. [=/Resolve=] |promise|.
+           The [=/task source=] for this task is the [=/WebGL task source=].
     </dl>
   1. Return |promise|.
 
