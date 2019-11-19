@@ -102,7 +102,7 @@ The basic steps most WebXR applications will go through are:
  1. If support is available, **advertise XR functionality** to the user.
  1. A [user-activation event](https://html.spec.whatwg.org/multipage/interaction.html#activation) indicates that the user wishes to use XR.
  1. **Request an immersive session** from the device
- 1. Use the session to **run a render loop** that produces graphical frames to be displayed on the XR device.
+ 1. Use the session to **run a render loop** that updates sensor data, and produces graphical frames to be displayed on the XR device.
  1. Continue **producing frames** until the user indicates that they wish to exit XR mode.
  1. **End the XR session**.
 
@@ -110,7 +110,7 @@ In the following sections, the code examples will demonstrate the core API conce
 
 ### XR hardware
 
-The UA will identify an available physical unit of XR hardware that can present imagery to the user, referred to here as an "XR device". On desktop clients this will usually be a headset peripheral; on mobile clients it may represent the mobile device itself in conjunction with a viewer harness (e.g., Google Cardboard/Daydream or Samsung Gear VR). It may also represent devices without stereo-presentation capabilities but with more advanced tracking, such as ARCore/ARKit-compatible devices. Any queries for XR capabilities or functionality are implicitly made against this device.
+The UA will identify an available physical unit of XR hardware that can present immersive content to the user, referred to here as an "XR device". On desktop clients this will usually be a headset peripheral; on mobile clients it may represent the mobile device itself in conjunction with a viewer harness (e.g., Google Cardboard/Daydream or Samsung Gear VR). It may also represent devices without stereo-presentation capabilities but with more advanced tracking, such as ARCore/ARKit-compatible devices. Any queries for XR capabilities or functionality are implicitly made against this device.
 
 > **Non-normative Note:** If there are multiple XR devices available, the UA will need to pick which one to expose. The UA is allowed to use any criteria it wishes to select which device is used, including settings UI that allow users to manage device priority. Calling `navigator.xr.isSessionSupported` or `navigator.xr.requestSession` with `'inline'` should **not** trigger device-selection UI, however, as this would cause many sites to display XR-specific dialogs early in the document lifecycle without user activation.
 
@@ -138,7 +138,7 @@ It should be noted that an immersive VR session may still display the users envi
 
 This document will use the term "immersive session" to refer to immersive VR sessions throughout.
 
-In the following examples we will explain the core API concepts using immersive VR sessions first, and cover the differences introduced by [inline sessions](#inline-sessions) afterwards. With that in mind, this code checks for support of immersive VR sessions, since we want the ability to display imagery on a device like a headset.
+In the following examples we will explain the core API concepts using immersive VR sessions first, and cover the differences introduced by [inline sessions](#inline-sessions) afterwards. With that in mind, this code checks for support of immersive VR sessions, since we want the ability to display content on a device like a headset.
 
 ```js
 async function checkForXRSupport() {
@@ -525,7 +525,7 @@ Some features recognized by the UA but not explicitly listed in these arrays wil
 | `viewer` | Requested `XRSessionMode` is `inline` or`immersive-vr`|
 | `local` | Requested `XRSessionMode` is `immersive-vr`|
 
-### Controlling rendering quality
+### Controlling rendering quality Through WebGL
 
 While in immersive sessions, the UA is responsible for providing a framebuffer that is correctly optimized for presentation to the `XRSession` in each `XRFrame`. Developers can optionally request the framebuffer size be scaled, though the UA may not respect the request. Even when the UA honors the scaling requests, the result is not guaranteed to be the exact percentage requested.
 
