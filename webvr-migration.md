@@ -101,7 +101,7 @@ xrSession.requestReferenceSpace("local").then((referenceSpace) => {
 });
 ```
 
-If the developer wants to use reference spaces other than [`"local"`](https://immersive-web.github.io/webxr/#dom-xrreferencespacetype-local) during an [`"immersive-vr"`] session they must also request consent to use is at session creation time by passing the desired type to either the [`requiredFeatures`](https://immersive-web.github.io/webxr/#dom-xrsessioninit-requiredfeatures) or [`optionalFeatures`](https://immersive-web.github.io/webxr/#dom-xrsessioninit-optionalfeatures) members of the [`XRSessionInit`](https://immersive-web.github.io/webxr/#dictdef-xrsessioninit) dictionary passed to [`navigator.xr.requestSession()`](https://immersive-web.github.io/webxr/#dom-xr-requestsession). This will cause the UA to prompt the user for their conset to use the more detailed levels of tracking if necessary.
+If the developer wants to use reference spaces other than [`"local"`](https://immersive-web.github.io/webxr/#dom-xrreferencespacetype-local) during an [`"immersive-vr"`] session they must also request consent to use is at session creation time by passing the desired type to either the [`requiredFeatures`](https://immersive-web.github.io/webxr/#dom-xrsessioninit-requiredfeatures) or [`optionalFeatures`](https://immersive-web.github.io/webxr/#dom-xrsessioninit-optionalfeatures) members of the [`XRSessionInit`](https://immersive-web.github.io/webxr/#dictdef-xrsessioninit) dictionary passed to [`navigator.xr.requestSession()`](https://immersive-web.github.io/webxr/#dom-xr-requestsession). This will cause the UA to prompt the user for their consent to use the more detailed levels of tracking if necessary.
 
 **WebVR**
 ```js
@@ -280,7 +280,7 @@ xrSession.addEventListener("end", () => {
 
 Misc
 ----
-WebXR currently has no equivalent for the `vrdisplayactivate`, `vrdisplaydeactivate`, `vrdisplaypointerrestricted`, and `vrdisplaypointerunrestricted` events.
+WebXR currently has no equivalent for the `vrdisplayactivate`, `vrdisplaydeactivate`, `vrdisplaypointerrestricted`, and `vrdisplaypointerunrestricted` events. WebXR events also have no equivalent of the `reason` enum reported for `VRDisplayEvent` types.
 
 WebXR currently has no equivalent for the `VRDisplayCapabilities.hasExternalDisplay` attribute.
 
