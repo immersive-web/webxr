@@ -1916,13 +1916,12 @@ When this method is invoked, the user agent MUST run the following steps:
       <dt> If |context| was created on a [=compatible graphics adapter=] for the [=XR/immersive XR device=]
       <dd> Set |context|'s [=XR compatible=] boolean to <code>true</code> and [=/resolve=] |promise|.
       <dt> Otherwise
-      <dd> [=Queue a task=] to perform the following steps:
+      <dd> [=Queue a task=] on the [=/WebGL task source=] to perform the following steps:
               1. Force |context| to be lost and [=handle the context loss=] as described by the WebGL specification.
               1. If the [=canceled flag=] of the "webglcontextlost" event fired in the previous step was not set, [=reject=] |promise| with an {{AbortError}} and abort these steps.
               1. [=Restore the context=] on a [=compatible graphics adapter=] for the [=XR/immersive XR device=].
               1. Set |context|'s [=XR compatible=] boolean to <code>true</code>.
               1. [=/Resolve=] |promise|.
-           The [=/task source=] for this task is the [=/WebGL task source=].
     </dl>
   1. Return |promise|.
 
