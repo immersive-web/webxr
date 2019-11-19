@@ -192,7 +192,7 @@ Model {#model}
 XR device {#xr-device-concept}
 ---------
 
-An <dfn for="">XR device</dfn> is a physical unit of hardware that can present imagery to the user. On desktop clients, this is usually a headset peripheral. On mobile clients, it may represent the mobile device itself in conjunction with a viewer harness. It may also represent devices without stereo-presentation capabilities but with more advanced tracking.
+An <dfn for="">XR device</dfn> is a physical unit of hardware that can present immersive content to the user. Content is considered to be "immersive" if it produces visual, audio, haptic, or other sensory output that simulates or augments various aspects of the users environment. Most frequently this involves tracking the user's motion in space and producing outputs that are synchronized to the user's movement. On desktop clients, this is usually a headset peripheral. On mobile clients, it may represent the mobile device itself in conjunction with a viewer harness. It may also represent devices without stereo-presentation capabilities but with more advanced tracking.
 
 An [=/XR device=] has a <dfn>list of supported modes</dfn> (a [=/list=] of [=/strings=]) that [=list/contains=] the enumeration values of {{XRSessionMode}} that the [=/XR device=] supports.
 
