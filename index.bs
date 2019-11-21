@@ -64,8 +64,10 @@ spec:html; urlPrefix: https://html.spec.whatwg.org/multipage/
     type:method; for:Window; text:requestAnimationFrame(callback); url: imagebitmap-and-animations.html#dom-animationframeprovider-requestanimationframe
     type: dfn; text: currently focused area; url: interaction.html#currently-focused-area-of-a-top-level-browsing-context
     type: dfn; text: responsible; url: webappapis.html#responsible-document
+    type: dfn; text: rendering opportunity; url: webappapis.html#rendering-opportunity
     type: dfn; text: same origin-domain; url: origin.html#same-origin-domain
     type: dfn; text: active document; url: browsers.html#active-document
+    type: dfn; text: browsing context; url: browsers.html#browsing-context
 spec: SecureContexts; urlPrefix: https://w3c.github.io/webappsec-secure-contexts/#
     type: dfn; text: secure context; url: secure-contexts
 
@@ -885,8 +887,10 @@ When an {{XRSession}} |session| receives updated [=viewer=] state from the [=XRS
 
 </div>
 
+The behavior of the {{Window}} interface's {{Window/requestAnimationFrame()}} method is not changed by the presence of any active {{XRSession}}, nor does calling {{requestAnimationFrame()}} on any {{XRSession}} interact with {{Window}}'s {{Window/requestAnimationFrame()}} in any way. An [=active immersive session=] MAY affect the [=rendering opportunity=] of a [=browsing context=] if it causes the page to be obscured.
+
 <div class="example">
-Depending on the device being used, callbacks supplied to {{Window}} {{Window/requestAnimationFrame()}} may not be processed while an [=immersive session=] is active. For instance, on a mobile or standalone device where the immersive content completely obscures the HTML document. As such, developers must not rely on {{Window}} {{Window/requestAnimationFrame()}} callbacks to schedule {{XRSession}} {{XRSession/requestAnimationFrame()}} callbacks and visa-versa, even if they share the same rendering logic. Applications that do not follow this guidance may not execute properly on all platforms. A more effective pattern for applications that wish to transition between these two types of animation loops is demonstrated below:
+If an [=immersive session=] prevents [=rendering opportunity|rendering opportunities=] then callbacks supplied to {{Window}} {{Window/requestAnimationFrame()}} may not be processed while the session is active. This depends on the type of device being used and is most likely to happen depend on mobile or standalone devices where the immersive content completely obscures the HTML document. As such, developers must not rely on {{Window}} {{Window/requestAnimationFrame()}} callbacks to schedule {{XRSession}} {{XRSession/requestAnimationFrame()}} callbacks and visa-versa, even if they share the same rendering logic. Applications that do not follow this guidance may not execute properly on all platforms. A more effective pattern for applications that wish to transition between these two types of animation loops is demonstrated below:
 
 <pre highlight="js">
 let xrSession = null;
