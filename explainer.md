@@ -370,7 +370,11 @@ Because the `XRViewerPose` inherits from `XRPose` it also contains a `transform`
 
 ### Audio Listener Tracking
 
-Each `XRFrame` the `viewerPos. transform.matrix` needs to be modified to fit with the orientation values for the [AudioContext.listener](<https://developer.mozilla.org/en-US/docs/Web/API/AudioListener>) front and up values. Note that the `viewer` `xrReferenceSpace` has a `native origin` at the user, so the position of the listener will not change in this ` xrReferenceSpace`.
+Each `XRFrame` the `viewerPos. transform.matrix` needs to be modified to fit with the orientation values for the [AudioContext.listener](<https://developer.mozilla.org/en-US/docs/Web/API/AudioListener>) front and up values.
+Note that in the `viewer` `xrReferenceSpace`, the position and orientation move along with the headset (and presumably the user's head). This means it has a `native origin` always at the `viewerPos. transform.matrix`, so only the orientation of the audio listener will change in this ` xrReferenceSpace`.
+It's also important to clarify that there's no such thing as the listener position. The scene can have multiple coexisting coordinate systems. In this example, you're getting the viewer pose in a specific xrReferenceSpace, and using the pose transform matrix to update the AudioListener with position and orientation in that reference space's coordinate system. The unstated assumption is that the audio sources will also use coordinates in that same reference space's coordinate system, and if that's the case you'll get a consistent experience.
+It would be perfectly valid (if a bit odd) to do everything in viewer space, keeping the AudioListener at the viewer space origin with fixed forward along -z and up along +y in that space, and then ensure that the coordinates for audio sources are in this same viewer space, relative to the current head position and orientation.
+
 Here is an example of how to connect the `viewerPos. transform.matrix` to the `AudioContext.listener`:
 
 ```js
