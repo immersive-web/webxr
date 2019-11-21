@@ -389,7 +389,6 @@ function onDrawFrame(timestamp, xrFrame) {
       scene.updateScene(timestamp, xrFrame);
 
       // Set the audio listener to face where the XR view is facing
-      // First, convert from a quaternion to a forward vector.
       /// The pose.matrix top left 3x3 elements provide unit column vectors in base space for the posed coordinate system's x/y/z axis directions,
       /// so we use the negative of the third column directly as a forward vector corresponding to the -z direction.
       // The given pose.transform.orientation is a quaternion and not a forward vector, so is not used with web audio
