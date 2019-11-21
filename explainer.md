@@ -283,7 +283,7 @@ The `XRWebGLLayer`s framebuffer is created by the UA and behaves similarly to a 
 
 Once drawn to, the XR device will continue displaying the contents of the `XRWebGLLayer` framebuffer, potentially reprojected to match head motion, regardless of whether or not the page continues processing new frames. Potentially future spec iterations could enable additional types of layers, such as video layers, that could automatically be synchronized to the device's refresh rate.
 
-### Viewer tracking
+### Viewer tracking With WebGL
 
 Each `XRFrame` the scene will be drawn from the perspective of a "viewer", which is the user or device viewing the scene, described by an `XRViewerPose`. Developers retrieve the current `XRViewerPose` by calling `getViewerPose()` on the `XRFrame` and providing an `XRReferenceSpace` for the pose to be returned in. Due to the nature of XR tracking systems, this function is not guaranteed to return a value and developers will need to respond appropriately. For more information about what situations will cause `getViewerPose()` to fail and recommended practices for handling the situation, refer to the [Spatial Tracking Explainer](spatial-tracking-explainer.md).
 
@@ -367,6 +367,47 @@ function drawScene(view) {
 In both cases the `XRView`'s `projectionMatrix` should be used as-is. Altering it may cause incorrect output to the XR device and significant user discomfort.
 
 Because the `XRViewerPose` inherits from `XRPose` it also contains a `transform` describing the position and orientation of the viewer as a whole relative to the `XRReferenceSpace` origin. This is primarily useful for rendering a visual representation of the viewer for spectator views or multi-user environments.
+
+### Audio Listener Tracking
+
+Each `XRFrame` the `viewerPos. transform.matrix` needs to be modified to fit with the orientation values for the [AudioContext.listener](<https://developer.mozilla.org/en-US/docs/Web/API/AudioListener>) front and up values. Note that the `viewer` `xrReferenceSpace` has a `native origin` at the user, so the position of the listener will not change in this ` xrReferenceSpace`.
+Here is an example of how to connect the `viewerPos. transform.matrix` to the `AudioContext.listener`:
+
+```js
+// initialize the audio context
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContext();
+
+function onDrawFrame(timestamp, xrFrame) {
+  // Do we have an active session?
+  if (xrSession) {
+    let listener = audioCtx.listener;
+
+    let pose = xrFrame.getViewerPose(xrReferenceSpace);
+    if (pose) {
+      // Run imaginary 3D engine's simulation to step forward physics, PannerNodes, etc.
+      scene.updateScene(timestamp, xrFrame);
+
+      // Set the audio listener to face where the XR view is facing
+      // First, convert from a quaternion to a forward vector.
+      /// The pose.matrix top left 3x3 elements provide unit column vectors in base space for the posed coordinate system's x/y/z axis directions,
+      /// so we use the negative of the third column directly as a forward vector corresponding to the -z direction.
+      // The given pose.transform.orientation is a quaternion and not a forward vector, so is not used with web audio
+      const m = pose.transform.matrix;
+      // Set forward facing position
+      [ listener.forwardX.value, listener.forwardY.value, listener.forwardZ.value ] = [-m[8], -m[9], -m[10]];
+      // set the horizontal position of the top of the listener's head
+      [ listener.upX, listener.upY, listener.upZ ] = [ m[4], m[5], m[6] ];
+      // Set the audio listener to travel with the WebXR user position
+      // Note that pose.transform.position does equal [m[12], m[13], m[14]]
+      [ listener.positionX.value, listener.positionY.value, listener.positionZ.value ] = [m[12], m[13], m[14]];
+
+    }
+    // Request the next animation callback
+    xrSession.requestAnimationFrame(onDrawFrame);
+  }
+}
+```
 
 ### Handling session visibility
 
