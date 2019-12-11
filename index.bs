@@ -370,11 +370,7 @@ When this method is invoked, the user agent MUST run the following steps:
 The following code attempts to retrieve an {{immersive-vr}} {{XRSession}}.
 
 <pre highlight="js">
-let xrSession;
-
-navigator.xr.requestSession("immersive-vr").then((session) => {
-  xrSession = session;
-});
+const xrSession = await navigator.xr.requestSession("immersive-vr");
 </pre>
 </div>
 
