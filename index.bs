@@ -1546,7 +1546,7 @@ Note: {{XRInputSource}}s in an {{XRSession}}'s {{XRSession/inputSources}} array 
 
 An [=XR input source=] is a <dfn>primary input source</dfn> if it supports a <dfn>primary action</dfn>. The [=primary action=] is a platform-specific action that, when engaged, produces {{XRSession/selectstart}}, {{XRSession/selectend}}, and {{XRSession/select}} events. Examples of possible [=primary action=]s are pressing a trigger, touchpad, or button, speaking a command, or making a hand gesture. If the platform guidelines define a recommended primary input then it should be used as the [=primary action=], otherwise the user agent is free to select one. The device MUST support at least one [=primary input source=].
 
-An [=XR input source=] is a <dfn>auxiliary input source</dfn> if it does not support a [=primary action=]. Examples include motion trackers without buttons, or secondary screen touches on a multitouch device.
+An [=XR input source=] is a <dfn>auxiliary input source</dfn> if it does not support a [=primary action=], for example [=transient input sources=] associated with secondary screen touches on a multitouch device.
 
 <div class="algorithm" data-algorithm="on-input-start">
 
