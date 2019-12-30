@@ -255,6 +255,7 @@ Each time the [=list of immersive XR devices=] changes the user agent should <df
       <dt> Otherwise
       <dd> Set the [=XR/immersive XR device=] to a device of the user agent's choosing
     </dl>
+  1. The user agent MAY update the [=XR/inline XR device=] to the [=XR/immersive XR device=] or an emulated inline device if it wishes.
   1. If this is the first time devices have been enumerated or |oldDevice| equals the [=XR/immersive XR device=], abort these steps.
   1. [=Shut down the session|Shut down=] any active {{XRSession}}s.
   1. Set the [=XR compatible=] boolean of all {{WebGLRenderingContextBase}} instances to <code>false</code>.
