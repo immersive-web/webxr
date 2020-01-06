@@ -180,10 +180,10 @@ Application flow {#applicationflow}
 
 Most applications using the WebXR Device API will follow a similar usage pattern:
 
-  * Query {{XR/isSessionSupported()|navigator.xr.isSessionSupported()}} to determine if the desired type of XR content is supported by the hardware and UA.
+  * Query {{XRSystem/isSessionSupported()|navigator.xr.isSessionSupported()}} to determine if the desired type of XR content is supported by the hardware and UA.
   * If so, advertise the XR content to the user.
   * Wait for the user to [=triggered by user activation|trigger a user activation event=] indicating they want to begin viewing XR content.
-  * Request an {{XRSession}} within the user activation event with {{XR/requestSession()|navigator.xr.requestSession()}}.
+  * Request an {{XRSession}} within the user activation event with {{XRSystem/requestSession()|navigator.xr.requestSession()}}.
   * If the {{XRSession}} request succeeds, use it to run a [[#frame|frame loop]] to respond to XR input and produce images to display on the [=XRSession/XR device=] in response.
   * Continue running the [[#frame|frame loop]] until the [=shut down the session|session is shut down=] by the UA or the user indicates they want to exit the XR content.
 
@@ -211,17 +211,17 @@ navigator.xr {#navigator-xr-attribute}
 
 <pre class="idl">
 partial interface Navigator {
-  [SecureContext, SameObject] readonly attribute XR xr;
+  [SecureContext, SameObject] readonly attribute XRSystem xr;
 };
 </pre>
 
-The <dfn attribute for="Navigator">xr</dfn> attribute's getter MUST return the {{XR}} object that is associated with the [=context object=].
+The <dfn attribute for="Navigator">xr</dfn> attribute's getter MUST return the {{XRSystem}} object that is associated with the [=context object=].
 
-XR {#xr-interface}
+XRSystem {#xrsystem-interface}
 ----
 
 <pre class="idl">
-[SecureContext, Exposed=Window] interface XR : EventTarget {
+[SecureContext, Exposed=Window] interface XRSystem : EventTarget {
   // Methods
   Promise&lt;boolean&gt; isSessionSupported(XRSessionMode mode);
   [NewObject] Promise&lt;XRSession&gt; requestSession(XRSessionMode mode, optional XRSessionInit options = {});
@@ -231,13 +231,13 @@ XR {#xr-interface}
 };
 </pre>
 
-The user agent MUST create an {{XR}} object when a {{Navigator}} object is created and associate it with that object.
+The user agent MUST create an {{XRSystem}} object when a {{Navigator}} object is created and associate it with that object.
 
-An {{XR}} object is the entry point to the API, used to query for XR features available to the user agent and initiate communication with XR hardware via the creation of {{XRSession}}s.
+An {{XRSystem}} object is the entry point to the API, used to query for XR features available to the user agent and initiate communication with XR hardware via the creation of {{XRSession}}s.
 
-An {{XR}} object has a <dfn>list of immersive XR devices</dfn> (a [=/list=] of [=/XR device=]), which MUST be initially an empty [=/list=].
+An {{XRSystem}} object has a <dfn>list of immersive XR devices</dfn> (a [=/list=] of [=/XR device=]), which MUST be initially an empty [=/list=].
 
-An {{XR}} object has an <dfn for=XR>immersive XR device</dfn> (null or [=/XR device=]) which is initially null and represents the active [=/XR device=] from the [=list of immersive XR devices=].
+An {{XRSystem}} object has an <dfn for=XR>immersive XR device</dfn> (null or [=/XR device=]) which is initially null and represents the active [=/XR device=] from the [=list of immersive XR devices=].
 
 The user agent MUST be able to <dfn>enumerate immersive XR devices</dfn> attached to the system, at which time each available device is placed in the [=list of immersive XR devices=]. Subsequent algorithms requesting enumeration MUST reuse the cached [=list of immersive XR devices=]. Enumerating the devices [=should not initialize device tracking=]. After the first enumeration the user agent MUST begin monitoring device connection and disconnection, adding connected devices to the [=list of immersive XR devices=] and removing disconnected devices.
 
@@ -293,7 +293,7 @@ When this method is invoked, it MUST run the following steps:
 
 </div>
 
-Calling {{XR/isSessionSupported()}} MUST NOT trigger device-selection UI as this would cause many sites to display XR-specific dialogs early in the document lifecycle without user activation. Additionally, calling {{XR/isSessionSupported()}} MUST NOT interfere with any running XR applications on the system, and MUST NOT cause XR-related applications to launch such as system trays or storefronts.
+Calling {{XRSystem/isSessionSupported()}} MUST NOT trigger device-selection UI as this would cause many sites to display XR-specific dialogs early in the document lifecycle without user activation. Additionally, calling {{XRSystem/isSessionSupported()}} MUST NOT interfere with any running XR applications on the system, and MUST NOT cause XR-related applications to launch such as system trays or storefronts.
 
 <div class="example">
 The following code checks to see if {{immersive-vr}} sessions are supported.
@@ -310,7 +310,7 @@ navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
 </pre>
 </div>
 
-The {{XR}} object has a <dfn>pending immersive session</dfn> boolean, which MUST be initially <code>false</code>, an <dfn>active immersive session</dfn>, which MUST be initially <code>null</code>, and a <dfn>list of inline sessions</dfn>, which MUST be initially empty.
+The {{XRSystem}} object has a <dfn>pending immersive session</dfn> boolean, which MUST be initially <code>false</code>, an <dfn>active immersive session</dfn>, which MUST be initially <code>null</code>, and a <dfn>list of inline sessions</dfn>, which MUST be initially empty.
 
 <div class="algorithm" data-algorithm="request-session">
 
@@ -410,7 +410,7 @@ Feature Dependencies {#feature-dependencies}
 
 Some features of an {{XRSession}} may not be universally available for a number of reasons, among which is the fact not all XR devices can support the full set of features. Another consideration is that some features expose [=sensitive information=] which may require a clear signal of [=user intent=] before functioning.
 
-Since it is a poor user experience to initialize the underlying XR platform and create an {{XRSession}} only to immediately notify the user that the applications cannot function correctly, developers can indicate <dfn>required features</dfn> by passing an {{XRSessionInit}} dictionary to {{XR/requestSession()}}. This will block the creation of the {{XRSession}} if any of the [=required features=] are unavailable due to device limitations or in the absence of a clear signal of [=user intent=] to expose [=sensitive information=] related to the feature.
+Since it is a poor user experience to initialize the underlying XR platform and create an {{XRSession}} only to immediately notify the user that the applications cannot function correctly, developers can indicate <dfn>required features</dfn> by passing an {{XRSessionInit}} dictionary to {{XRSystem/requestSession()}}. This will block the creation of the {{XRSession}} if any of the [=required features=] are unavailable due to device limitations or in the absence of a clear signal of [=user intent=] to expose [=sensitive information=] related to the feature.
 
 Additionally, developers are encouraged to design experiences which progressively enhance their functionality when run one more capable devices. <dfn>Optional features</dfn> which the experience does not require but will take advantage of when available must also be indicated in an {{XRSessionInit}} dictionary to ensure that [=user intent=] can be determined before enabling the feature if necessary.
 
@@ -535,7 +535,7 @@ Session {#session}
 XRSession {#xrsession-interface}
 ---------
 
-Any interaction with XR hardware is done via an {{XRSession}} object, which can only be retrieved by calling {{requestSession()}} on the {{XR}} object. Once a session has been successfully acquired, it can be used to {{XRFrame/getViewerPose()|poll the viewer pose}}, query information about the user's environment, and present imagery to the user.
+Any interaction with XR hardware is done via an {{XRSession}} object, which can only be retrieved by calling {{XRSystem/requestSession()}} on the {{XRSystem}} object. Once a session has been successfully acquired, it can be used to {{XRFrame/getViewerPose()|poll the viewer pose}}, query information about the user's environment, and present imagery to the user.
 
 The user agent, when possible, <dfn>SHOULD NOT initialize device tracking</dfn> or rendering capabilities until an {{XRSession}} has been acquired. This is to prevent unwanted side effects of engaging the XR systems when they're not actively being used, such as increased battery usage or related utility applications from appearing when first navigating to a page that only wants to test for the presence of XR hardware in order to advertise XR features. Not all XR platforms offer ways to detect the hardware's presence without initializing tracking, however, so this is only a strong recommendation.
 
@@ -2106,7 +2106,7 @@ Event Types {#event-types}
 
 The user agent MUST provide the following new events. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
 
-The user agent MUST fire a <dfn event for="XR">devicechange</dfn> event on the {{XR}} object to indicate that the availability of [=XR/immersive XR device=]s has been changed unless the document's origin is not allowed to use the "xr-spatial-tracking" [[#feature-policy|feature policy]]. The event MUST be of type {{Event}}.
+The user agent MUST fire a <dfn event for="XR">devicechange</dfn> event on the {{XRSystem}} object to indicate that the availability of [=XR/immersive XR device=]s has been changed unless the document's origin is not allowed to use the "xr-spatial-tracking" [[#feature-policy|feature policy]]. The event MUST be of type {{Event}}.
 
 A user agent MUST dispatch a <dfn event for="XRSession">visibilitychange</dfn> event on an {{XRSession}} each time the [=XRSession/visibility state=] of the {{XRSession}} has changed. The event MUST be of type {{XRSessionEvent}}.
 
@@ -2359,7 +2359,7 @@ Integrations {#integrations}
 Feature Policy {#feature-policy}
 --------------
 
-This specification defines a [=policy-controlled feature=] that controls whether any {{XRSession}} that requires the use of spatial tracking may be returned by {{XR/requestSession()}}, and whether support for session modes that require spatial tracking may be indicated by either {{XR/isSessionSupported()}} or {{devicechange}} events on the {{Navigator/xr|navigator.xr}} object.
+This specification defines a [=policy-controlled feature=] that controls whether any {{XRSession}} that requires the use of spatial tracking may be returned by {{XRSystem/requestSession()}}, and whether support for session modes that require spatial tracking may be indicated by either {{XRSystem/isSessionSupported()}} or {{devicechange}} events on the {{Navigator/xr|navigator.xr}} object.
 
 The feature identifier for this feature is <code>"xr-spatial-tracking"</code>.
 
