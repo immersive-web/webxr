@@ -275,10 +275,10 @@ The user agent <dfn>ensures an immersive XR device is selected</dfn> by running 
 
 </div>
 
-The <dfn attribute for="XR">ondevicechange</dfn> attribute is an [=Event handler IDL attribute=] for the {{devicechange}} event type.
+The <dfn attribute for="XRSystem">ondevicechange</dfn> attribute is an [=Event handler IDL attribute=] for the {{devicechange}} event type.
 
 <div class="algorithm" data-algorithm="session-supported">
-The <dfn method for="XR">isSessionSupported(|mode|)</dfn> method queries if a given |mode| is supported by the user agent and device capabilities.
+The <dfn method for="XRSystem">isSessionSupported(|mode|)</dfn> method queries if a given |mode| is supported by the user agent and device capabilities.
 
 When this method is invoked, it MUST run the following steps:
 
@@ -314,7 +314,7 @@ The {{XRSystem}} object has a <dfn>pending immersive session</dfn> boolean, whic
 
 <div class="algorithm" data-algorithm="request-session">
 
-The <dfn method for="XR">requestSession(|mode|, |options|)</dfn> method attempts to initialize an {{XRSession}} for the given |mode| if possible, entering immersive mode if necessary.
+The <dfn method for="XRSystem">requestSession(|mode|, |options|)</dfn> method attempts to initialize an {{XRSession}} for the given |mode| if possible, entering immersive mode if necessary.
 
 When this method is invoked, the user agent MUST run the following steps:
 
@@ -2102,7 +2102,7 @@ Event Types {#event-types}
 
 The user agent MUST provide the following new events. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
 
-The user agent MUST fire a <dfn event for="XR">devicechange</dfn> event on the {{XRSystem}} object to indicate that the availability of [=XR/immersive XR device=]s has been changed unless the document's origin is not allowed to use the "xr-spatial-tracking" [[#feature-policy|feature policy]]. The event MUST be of type {{Event}}.
+The user agent MUST fire a <dfn event for="XRSystem">devicechange</dfn> event on the {{XRSystem}} object to indicate that the availability of [=XR/immersive XR device=]s has been changed unless the document's origin is not allowed to use the "xr-spatial-tracking" [[#feature-policy|feature policy]]. The event MUST be of type {{Event}}.
 
 A user agent MUST dispatch a <dfn event for="XRSession">visibilitychange</dfn> event on an {{XRSession}} each time the [=XRSession/visibility state=] of the {{XRSession}} has changed. The event MUST be of type {{XRSessionEvent}}.
 
