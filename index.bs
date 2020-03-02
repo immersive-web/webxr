@@ -2379,7 +2379,7 @@ dictionary XRPermissionDescriptor: PermissionDescriptor {
 <dd>
 <pre class=idl>
 interface XRPermissionStatus: PermissionStatus {
-  attribute FrozenArray<any> granted;
+  attribute FrozenArray&lt;any&gt; granted;
 };
 </pre>
 
