@@ -40,6 +40,9 @@ spec: WebGL; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: typedef; text: INVALID_OPERATION; url: WebGLRenderingContextBase
     type: typedef; text: INVALID_FRAMEBUFFER_OPERATION; url: WebGLRenderingContextBase
     type: typedef; text: FRAMEBUFFER_UNSUPPORTED; url: WebGLRenderingContextBase
+    type: method; text: clear; url: 5.14.11
+    type: method; text: drawArrays; url: 5.14.11
+    type: method; text: drawElements; url: 5.14.11
     type: method; text: uniformMatrix4fv; url: 5.14.10
     type: method; text: framebufferTexture2D;  url: 5.14.6
     type: method; text: framebufferRenderbuffer;  url: 5.14.6
@@ -1791,6 +1794,13 @@ The buffers attached to an [=opaque framebuffer=] MUST be cleared to the values 
 </table>
 
 Note: Implementations may optimize away the required implicit clear operation of the [=opaque framebuffer=] as long as a guarantee can be made that the developer cannot gain access to buffer contents from another process. For instance, if the developer performs an explicit clear then the implicit clear is not needed.
+
+When an {{XRWebGLLayer}} is set as an [=immersive session=]'s {{XRRenderState/baseLayer}} the content of the [=opaque framebuffer=] is presented to the [=XR/immersive XR device=] immediately after an [=XR animation frame=] completes, but only if at least one of the following has occurred since the previous [=XR animation frame=]:
+
+  - The [=immersive session=]'s {{XRRenderState/baseLayer}} was changed.
+  - {{clear}}, {{drawArrays}}, {{drawElements}}, or any other rendering operation which similarly affects the framebuffer's color values has been called while the [=opaque framebuffer=] is the currently bound framebuffer of the {{WebGLRenderingContext}} associated with the {{XRWebGLLayer}}.
+
+Before the [=opaque framebuffer=] is presented to the [=XR/immersive XR device=] the user agent shall ensure that all rendering operations have been flushed to the [=opaque framebuffer=].
 
 Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">target framebuffer</dfn>, which is the {{XRWebGLLayer/framebuffer}} if [=XRWebGLLayer/composition disabled=] is <code>false</code>, and the [=XRWebGLLayer/context=]'s default framebuffer otherwise.
 
