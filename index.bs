@@ -187,7 +187,7 @@ Most applications using the WebXR Device API will follow a similar usage pattern
 
   * Query {{XRSystem/isSessionSupported()|navigator.xr.isSessionSupported()}} to determine if the desired type of XR content is supported by the hardware and UA.
   * If so, advertise the XR content to the user.
-  * Wait for the user to [=triggered by user activation|trigger a user activation event=] indicating they want to begin viewing XR content.
+  * Wait for the window to have [=transient activation=]. This is most commonly indicated by the user clicking a button on the page indicating they want to begin viewing XR content.
   * Request an {{XRSession}} within the user activation event with {{XRSystem/requestSession()|navigator.xr.requestSession()}}.
   * If the {{XRSession}} request succeeds, use it to run a [[#frame|frame loop]] to respond to XR input and produce images to display on the [=XRSession/XR device=] in response.
   * Continue running the [[#frame|frame loop]] until the [=shut down the session|session is shut down=] by the UA or the user indicates they want to exit the XR content.
@@ -328,16 +328,17 @@ When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |promise| be [=a new Promise=].
   1. Let |immersive| be <code>true</code> if |mode| is an [=immersive session=] mode, and <code>false</code> otherwise.
+  1. Let |global object| be the [=relevant Global object=] for the {{XRSystem}} on which this method was invoked. 
   1. Check whether the session request is allowed as follows:
     <dl class="switch">
       <dt>If |immersive| is <code>true</code></dt>
       <dd>
-        1. Check if an [=immersive session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.
+        1. Check if an [=immersive session request is allowed=] for the |global object|, and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.
         1. If [=pending immersive session=] is <code>true</code> or [=active immersive session=] is not <code>null</code>, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
         1. Set [=pending immersive session=] to <code>true</code>.
       </dd>
       <dt>Otherwise</dt>
-      <dd>Check if an [=inline session request is allowed=], and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.</dd>
+      <dd>Check if an [=inline session request is allowed=] for the |global object|, and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.</dd>
     </dl>
   1. Run the following steps [=in parallel=]:
     1. Set |device| to the result of [=obtain the current device|obtaining the current device=] for |mode|.
@@ -2157,7 +2158,7 @@ User intention {#user-intention}
 It is often necessary to be sure of <dfn>user intent</dfn> before exposing sensitive information or allowing actions with a significant effect on the user's experience. This intent may be communicated or observed in a number of ways.
 
 ### User activation ### {#user-activation}
-Events which are [=triggered by user activation=] MAY serve as an indication of [=user intent=] in some scenarios.
+[=Transient activation=] MAY serve as an indication of [=user intent=] in some scenarios.
 
 ### Launching a web application ### {#application-launch}
 In some environments a page may be presented as an application, installed with the express intent of running immersive content. In that case <dfn>launching a web application</dfn> MAY also serve as an indication of [=user intent=].
@@ -2203,9 +2204,9 @@ Users must be in control of when immersive sessions are created because the crea
 
 <div class="algorithm" data-algorithm="immersive-session-allowed">
 
-To determine if an <dfn>immersive session request is allowed</dfn> the user agent MUST run the following steps:
+To determine if an <dfn>immersive session request is allowed</dfn> for a given |global object| the user agent MUST run the following steps:
 
-  1. If the request was not [=triggered by user activation=] or [=launching a web application=], return <code>false</code>
+  1. If the request was not made while the |global object| has [=transient activation=] or when [=launching a web application=], return <code>false</code>
   1. If the requesting document is not considered [=trustworthy=], return <code>false</code>
   1. If [=user intent=] to begin an [=immersive session=] is not well understood, either via [=explicit consent=] or [=implicit consent=], return <code>false</code>
   1. Return <code>true</code>
@@ -2216,9 +2217,9 @@ Starting an {{XRSessionMode/"inline"}} session does not implicitly carry the sam
 
 <div class="algorithm" data-algorithm="inline-session-allowed">
 
-To determine if an <dfn>inline session request is allowed</dfn> the user agent MUST run the following steps:
+To determine if an <dfn>inline session request is allowed</dfn> for a given |global object| the user agent MUST run the following steps:
 
-  1. If the session request contained any [=required features=] or [=optional features=] and the request was not [=triggered by user activation=] or [=launching a web application=], return <code>false</code>
+  1. If the session request contained any [=required features=] or [=optional features=] and the request was not made while the |global object| has [=transient activation=] or when [=launching a web application=], return <code>false</code>
   1. If the requesting document is not [=responsible=], return <code>false</code>
   1. Return <code>true</code>
 
