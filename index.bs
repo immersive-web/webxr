@@ -1765,7 +1765,7 @@ An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFram
 
 Note: User agents are required to respect <code>true</code> values of {{XRWebGLLayerInit/depth}} and {{XRWebGLLayerInit/stencil}}, which is similar to WebGL's behavior when [=create a drawing buffer|creating a drawing buffer=]
 
-The buffers attached to an [=opaque framebuffer=] MUST be cleared to the values in the table below when first created, or prior to the processing of each [=XR animation frame=]. This is identical to the behavior of the WebGL context's [=default framebuffer=].
+The buffers attached to an [=opaque framebuffer=] MUST be cleared to the values in the table below when first created, or prior to the processing of each [=XR animation frame=]. This is identical to the behavior of the WebGL context's [=default framebuffer=]. [=Opaque framebuffers=] will always be cleared regardless of the associated WebGL context's {{WebGLContextAttributes|preserveDrawingBuffer}} value.
 
 <table class="tg">
   <thead>
