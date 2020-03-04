@@ -64,8 +64,8 @@ spec: Orientation Sensor; urlPrefix: https://w3c.github.io/orientation-sensor/
 spec: WebIDL; urlPrefix: https://www.w3.org/TR/WebIDL-1/#
     type: dfn; text: invoke the Web IDL callback function; url:es-invoking-callback-functions
 spec:html; urlPrefix: https://html.spec.whatwg.org/multipage/
-    type:method; for:HTMLCanvasElement; text:getContext(contextId); url: canvas.html#dom-canvas-getcontext
-    type:method; for:Window; text:requestAnimationFrame(callback); url: imagebitmap-and-animations.html#dom-animationframeprovider-requestanimationframe
+    type: method; for:HTMLCanvasElement; text:getContext(contextId); url: canvas.html#dom-canvas-getcontext
+    type: method; for:Window; text:requestAnimationFrame(callback); url: imagebitmap-and-animations.html#dom-animationframeprovider-requestanimationframe
     type: dfn; text: currently focused area; url: interaction.html#currently-focused-area-of-a-top-level-browsing-context
     type: dfn; text: responsible; url: webappapis.html#responsible-document
     type: dfn; text: rendering opportunity; url: webappapis.html#rendering-opportunity
@@ -76,6 +76,8 @@ spec: SecureContexts; urlPrefix: https://w3c.github.io/webappsec-secure-contexts
     type: dfn; text: secure context; url: secure-contexts
 spec: PointerEvents; urlPrefix: https://www.w3.org/TR/pointerevents/#
     type: dfn; text: primary pointer; url: dfn-primary-pointer
+spec: PageVisibility; urlPrefix: https://www.w3.org/TR/page-visibility-2/#
+    type: dfn; text: visibilityState; url: visibilitystate-attribute
 
 spec: ECMAScript; urlPrefix: https://tc39.github.io/ecma262/#
     type: method; text: IsDetachedBuffer; url: sec-isdetachedbuffer
@@ -726,7 +728,7 @@ When the <dfn for="XRSession" export lt="change input source">{{XRInputSource/ha
 
 </div>
 
-Each {{XRSession}} has a <dfn for="XRSession">visibility state</dfn> value, which is an enum which MUST be set to whichever of the following values best matches the state of session.
+Each {{XRSession}} has a <dfn for="XRSession">visibility state</dfn> value, which is an enum. For [=inline sessions=] the [=XRSession/visibility state=] MUST mirror the {{Document}}'s [=visibilityState=]. For [=immersive sessions=] the [=XRSession/visibility state=] MUST be set to whichever of the following values best matches the state of session.
 
   - A state of <dfn enum-value for="XRVisibilityState">visible</dfn> indicates that imagery rendered by the {{XRSession}} can be seen by the user and {{XRSession/requestAnimationFrame()}} callbacks are processed at the [=XRSession/XR device=]'s native refresh rate. Input is processed by the {{XRSession}} normally.
 
