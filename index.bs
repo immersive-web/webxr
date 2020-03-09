@@ -1542,7 +1542,8 @@ An [=XR input source=] is an <dfn>auxiliary input source</dfn> if it does not su
 When an [=XR input source=] |source| for {{XRSession}} |session| begins its [=primary action=] the UA MUST run the following steps:
 
   1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
-  1. [=Queue a task=] to [=fire an input source event=] with name {{selectstart!!event}}, frame |frame|, and source |source|.
+  1. Let |x| and |y| be the coordinates of the event if |source| has {{XRInputSource/targetRayMode}} {{XRTargetRayMode/"screen"}}.
+  1. [=Queue a task=] to [=fire an input source event=] with name {{selectstart!!event}}, frame |frame|, source |source|, and coordinates |x| and |y|.
 
 </div>
 
@@ -1551,9 +1552,10 @@ When an [=XR input source=] |source| for {{XRSession}} |session| begins its [=pr
 When an [=XR input source=] |source| for {{XRSession}} |session| ends its [=primary action=] the UA MUST run the following steps:
 
   1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
+  1. Let |x| and |y| be the screen coordinates of the touch event if |source| has {{XRInputSource/targetRayMode}} {{XRTargetRayMode/"screen"}}.
   1. [=Queue a task=] to perform the following steps:
-    1. [=Fire an input source event=] with name {{select!!event}}, frame |frame|, and source |source|.
-    1. [=Fire an input source event=] with name {{selectend!!event}}, frame |frame|, and source |source|.
+    1. [=Fire an input source event=] with name {{select!!event}}, frame |frame|, source |source|, and coordinates |x| and |y|.
+    1. [=Fire an input source event=] with name {{selectend!!event}}, frame |frame|, source |source|, and coordinates |x| and |y|.
 
 </div>
 
@@ -1586,7 +1588,8 @@ Sometimes platform-specific behavior can result in a [=primary action=] or [=pri
 When an [=XR input source=] |source| for {{XRSession}} |session| has its [=primary action=] cancelled the UA MUST run the following steps:
 
   1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
-  1. [=Queue a task=] to [=fire an input source event=] an {{XRInputSourceEvent}} with name {{selectend!!event}}, frame |frame|, and source |source|.
+  1. Let |x| and |y| be the screen coordinates of the touch event if |source| has {{XRInputSource/targetRayMode}} {{XRTargetRayMode/"screen"}}.
+  1. [=Queue a task=] to [=fire an input source event=] an {{XRInputSourceEvent}} with name {{selectend!!event}}, frame |frame|, source |source|, and coordinates |x| and |y|.
 
 </div>
 
@@ -1611,10 +1614,11 @@ Some [=/XR device=]s may support <dfn>transient input sources</dfn>, where the [
 When a [=transient input source=] |source| for {{XRSession}} |session| begins its [=transient action=] the UA MUST run the following steps:
 
   1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| for the time the action occurred.
+  1. Let |x| and |y| be the screen coordinates of the touch event if |source| has {{XRInputSource/targetRayMode}} {{XRTargetRayMode/"screen"}}.
   1. [=Queue a task=] to perform the following steps:
     1. Fire any <code>"pointerdown"</code> events produced by the [=XR input source=]'s action, if necessary.
     1. [=add input source|Add the XR input source=] to the [=list of active XR input sources=].
-    1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{selectstart!!event}}, frame |frame|, and source |source|.
+    1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{selectstart!!event}}, frame |frame|, source |source|, and coordinates |x| and |y|.
 
 </div>
 
@@ -1623,10 +1627,11 @@ When a [=transient input source=] |source| for {{XRSession}} |session| begins it
 When a [=transient input source=] |source| for {{XRSession}} |session| ends its [=transient action=] the UA MUST run the following steps:
 
   1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| for the time the action occurred.
+  1. Let |x| and |y| be the screen coordinates of the touch event if |source| has {{XRInputSource/targetRayMode}} {{XRTargetRayMode/"screen"}}.
   1. [=Queue a task=] to perform the following steps:
-    1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{select!!event}}, frame |frame|, and source |source|.
+    1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{select!!event}}, frame |frame|, source |source|, and coordinates |x| and |y|.
     1. Fire any <code>"click"</code> events produced by the [=XR input source=]'s action, if necessary.
-    1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{selectend!!event}}, frame |frame|, and source |source|.
+    1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{selectend!!event}}, frame |frame|, source |source|, and coordinates |x| and |y|.
     1. [=remove input source|Remove the XR input source=] from the [=list of active XR input sources=].
     1. Fire any <code>"pointerup"</code> events produced by the [=XR input source=]'s action, if necessary.
 
@@ -1637,8 +1642,9 @@ When a [=transient input source=] |source| for {{XRSession}} |session| ends its 
 When a [=transient input source=] |source| for {{XRSession}} |session| has its [=transient action=] cancelled the UA MUST run the following steps:
 
   1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| for the time the action occurred.
+  1. Let |x| and |y| be the screen coordinates of the touch event if |source| has {{XRInputSource/targetRayMode}} {{XRTargetRayMode/"screen"}}.
   1. [=Queue a task=] to perform the following steps:
-    1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{selectend!!event}}, frame |frame|, and source |source|.
+    1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{selectend!!event}}, frame |frame|, source |source|, and coordinates |x| and |y|.
     1. [=remove input source|Remove the XR input source=] from the [=list of active XR input sources=].
     1. Fire any <code>"pointerup"</code> events produced by the [=XR input source=]'s action, if necessary.
 
@@ -2019,11 +2025,15 @@ interface XRInputSourceEvent : Event {
   constructor(DOMString type, XRInputSourceEventInit eventInitDict);
   [SameObject] readonly attribute XRFrame frame;
   [SameObject] readonly attribute XRInputSource inputSource;
+  readonly attribute double? x;
+  readonly attribute double? y;
 };
 
 dictionary XRInputSourceEventInit : EventInit {
   required XRFrame frame;
   required XRInputSource inputSource;
+  double x;
+  double y;
 };
 </pre>
 
@@ -2031,11 +2041,13 @@ The <dfn attribute for="XRInputSourceEvent">inputSource</dfn> attribute indicate
 
 The <dfn attribute for="XRInputSourceEvent">frame</dfn> attribute is an {{XRFrame}} that corresponds with the time that the event took place. It may represent historical data. Any {{XRViewerPose}} queried from the {{XRInputSourceEvent/frame}} MUST have an empty {{XRViewerPose/views}} array.
 
+The <dfn attribute for="XRInputSourceEvent">x</dfn> and <dfn attribute for="XRInputSourceEvent">y</dfn> attributes define screen coordinates for events with {{XRInputSourceEvent/inputSource}}s that have a {{XRInputSource/targetRayMode}} of {{XRTargetRayMode/"screen"}}. They are <code>null</code> for other kinds of events.
+
 <div class="algorithm" data-algorithm="fire-input-source-event">
 
-When the user agent has to <dfn>fire an input source event</dfn> with name |name|, {{XRFrame}} |frame|, and {{XRInputSource}} |source| it MUST run the following steps:
+When the user agent has to <dfn>fire an input source event</dfn> with name |name|, {{XRFrame}} |frame|, {{XRInputSource}} |source|, and optionally coordinates |x| and |y|, it MUST run the following steps:
 
-  1. Create an {{XRInputSourceEvent}} |event| with {{Event/type}} |name|, {{XRInputSourceEvent/frame}} |frame|, and {{XRInputSourceEvent/inputSource}} |source|.
+  1. Create an {{XRInputSourceEvent}} |event| with {{Event/type}} |name|, {{XRInputSourceEvent/frame}} |frame|, and {{XRInputSourceEvent/inputSource}} |source|, and optionally coordinates {{XRInputSourceEvent/x}} |x| and {{XRInputSourceEvent/y}}|y|.
   1. Set |frame|'s [=active=] boolean to <code>true</code>.
   1. [=XRFrame/Apply frame updates=] for |frame|.
   1. [=Dispatch=] |event| on |frame|'s {{XRFrame/session}}
