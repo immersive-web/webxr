@@ -211,9 +211,13 @@ An [=/XR device=] has a <dfn>list of supported modes</dfn> (a [=/list=] of [=/st
 
 Each [=/XR device=] has a <dfn for="XR device">list of enabled features</dfn> for each {{XRSessionMode}} in its [=list of supported modes=], which is a [=/list=] of [=feature descriptors=] which MUST be initially an empty [=/list=].
 
-The user-agent MUST have an <dfn for="">inline XR device</dfn>, which is an [=/XR device=] that MUST [=list/contains|contain=] {{XRSessionMode/"inline"}} in its [=list of supported modes=]. The [=/inline XR device=] SHOULD report as much pose information of the physical device the user agent is rendering to as possible. This device MAY be the same as the [=XRSystem/immersive XR device=] if one is present, but doesn't have to be.
+The user-agent MUST have a <dfn for="">default inline XR device</dfn>, which is an [=/XR device=] that MUST [=list/contains|contain=] {{XRSessionMode/"inline"}} in its [=list of supported modes=]. The [=/default inline XR device=] MUST NOT report any pose information, and MUST NOT report [=XR input source=]s or events other than those created by pointer events.
 
-Note: On phones, the [=/inline XR device=] may report pose information derived from the phone's internal sensors, such as the gyroscope and accelerometer. On desktops and laptops without similar sensors, the [=/inline XR device=] will not be able to report a pose. In case the user agent is already running on an [=/XR device=], the [=/inline XR device=] will be the same device, and may support multiple [=view|views=].
+Note: The [=/default inline XR device=] exists purely as a convenience for developers, allowing them to use the same rendering and input logic for both inline and immersive content. The [=/default inline XR device=] does not expose any information not already available to the developer through other mechanisms on the page (such as pointer events for input), it only surfaces those values in an XR-centric format.
+
+The user-agent MUST have a <dfn for="">inline XR device</dfn>, which is an [=/XR device=] that MUST [=list/contains|contain=] {{XRSessionMode/"inline"}} in its [=list of supported modes=]. The [=/inline XR device=] MAY be the [=XRSystem/immersive XR device=] if the tracking it provides makes sense to expose to inline content or the [=/default inline XR device=] otherwise.
+
+Note: On phones, the [=/inline XR device=] may report pose information derived from the phone's internal sensors, such as the gyroscope and accelerometer. On desktops and laptops without similar sensors, the [=/inline XR device=] will not be able to report a pose, and as such should fall back to the [=/default inline XR device=]. In case the user agent is already running on an [=/XR device=], the [=/inline XR device=] will be the same device, and may support multiple [=view|views=]. User consent must be given before any tracking or input features beyond what the [=/default inline XR device=] exposes are provided.
 
 Initialization {#initialization}
 ==============
@@ -267,7 +271,7 @@ Each time the [=list of immersive XR devices=] changes the user agent should <df
       <dt> Otherwise
       <dd> Set the [=XRSystem/immersive XR device=] to a device of the user agent's choosing
     </dl>
-  1. The user agent MAY update the [=/inline XR device=] to the [=XRSystem/immersive XR device=] or an emulated inline device if it wishes.
+  1. The user agent MAY update the [=/inline XR device=] to the [=XRSystem/immersive XR device=] if appropriate, or the [=/default inline XR device=] otherwise.
   1. If this is the first time devices have been enumerated or |oldDevice| equals the [=XRSystem/immersive XR device=], abort these steps.
   1. [=Shut down the session|Shut down=] any active {{XRSession}}s.
   1. Set the [=XR compatible=] boolean of all {{WebGLRenderingContextBase}} instances to <code>false</code>.
@@ -346,7 +350,9 @@ When this method is invoked, the user agent MUST run the following steps:
       <dd>Check if an [=inline session request is allowed=] for the |global object|, and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.</dd>
     </dl>
   1. Run the following steps [=in parallel=]:
-    1. Set |device| to the result of [=obtain the current device|obtaining the current device=] for |mode|.
+    1. Let |requiredFeatures| be |options|' {{XRSessionInit/requiredFeatures}}.
+    1. Let |optionalFeatures| be |options|' {{XRSessionInit/optionalFeatures}}.
+    1. Set |device| to the result of [=obtain the current device|obtaining the current device=] for |mode|, |requiredFeatures|, and |optionalFeatures|.
     1. [=Queue a task=] to perform the following steps:
         1. If |device| is <code>null</code> or |device|'s [=list of supported modes=] does not [=list/contain=] |mode|, run the following steps:
             1. [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
@@ -354,7 +360,7 @@ When this method is invoked, the user agent MUST run the following steps:
             1. Abort these steps.
         1. Let |session| be a new {{XRSession}} object.
         1. [=Initialize the session=] with |session|, |mode|, and |device|.
-        1. Let |descriptor| be an {{XRPermissionDescriptor}} initialized with |session|, |options|' {{XRSessionInit/requiredFeatures}}, and |options|' {{XRSessionInit/optionalFeatures}}.
+        1. Let |descriptor| be an {{XRPermissionDescriptor}} initialized with |session|, |requiredFeatures|, and |optionalFeatures|
         1. Let |status| be an {{XRPermissionStatus}}, initially <code>null</code>
         1. [=Request the xr permission=] with |descriptor| and |status|.
         1. If |status|' {{PermissionStatus/state}} is {{PermissionState/"denied"}} run the following steps:
@@ -375,7 +381,7 @@ When this method is invoked, the user agent MUST run the following steps:
 
 <div class=algorithm data-algorithm="device-for-mode">
 
-To <dfn>obtain the current device</dfn> for an {{XRSessionMode}} |mode|, the user agent MUST run the following steps:
+To <dfn>obtain the current device</dfn> for an {{XRSessionMode}} |mode|, |requiredFeatures|, and |optionalFeatures| the user agent MUST run the following steps:
 
   1. Choose |device| as follows:
       <dl class="switch">
@@ -384,8 +390,10 @@ To <dfn>obtain the current device</dfn> for an {{XRSessionMode}} |mode|, the use
             1. [=ensures an immersive XR device is selected|Ensure an immersive XR device is selected=].
             1. Set |device| to the [=XRSystem/immersive XR device=].
         </dd>
-        <dt>Otherwise</dt>
+        <dt>Else if |requiredFeatures| or |optionalFeatures| are not empty:</dt>
         <dd>Set |device| to the [=/inline XR device=].</dd>
+        <dt>Otherwise</dt>
+        <dd>Set |device| to the [=/default inline XR device=].</dd>
       </dl>
   1. Return |device|.
 
@@ -1798,12 +1806,12 @@ The buffers attached to an [=opaque framebuffer=] MUST be cleared to the values 
 
 Note: Implementations may optimize away the required implicit clear operation of the [=opaque framebuffer=] as long as a guarantee can be made that the developer cannot gain access to buffer contents from another process. For instance, if the developer performs an explicit clear then the implicit clear is not needed.
 
-When an {{XRWebGLLayer}} is set as an [=immersive session=]'s {{XRRenderState/baseLayer}} the content of the [=opaque framebuffer=] is presented to the [=XR/immersive XR device=] immediately after an [=XR animation frame=] completes, but only if at least one of the following has occurred since the previous [=XR animation frame=]:
+When an {{XRWebGLLayer}} is set as an [=immersive session=]'s {{XRRenderState/baseLayer}} the content of the [=opaque framebuffer=] is presented to the [=XRSystem/immersive XR device=] immediately after an [=XR animation frame=] completes, but only if at least one of the following has occurred since the previous [=XR animation frame=]:
 
   - The [=immersive session=]'s {{XRRenderState/baseLayer}} was changed.
   - {{clear}}, {{drawArrays}}, {{drawElements}}, or any other rendering operation which similarly affects the framebuffer's color values has been called while the [=opaque framebuffer=] is the currently bound framebuffer of the {{WebGLRenderingContext}} associated with the {{XRWebGLLayer}}.
 
-Before the [=opaque framebuffer=] is presented to the [=XR/immersive XR device=] the user agent shall ensure that all rendering operations have been flushed to the [=opaque framebuffer=].
+Before the [=opaque framebuffer=] is presented to the [=XRSystem/immersive XR device=] the user agent shall ensure that all rendering operations have been flushed to the [=opaque framebuffer=].
 
 Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">target framebuffer</dfn>, which is the {{XRWebGLLayer/framebuffer}} if [=XRWebGLLayer/composition disabled=] is <code>false</code>, and the [=XRWebGLLayer/context=]'s default framebuffer otherwise.
 
@@ -2406,8 +2414,10 @@ interface XRPermissionStatus: PermissionStatus {
 To <dfn lt="request the xr permission">request the "xr" permission</dfn> with an {{XRPermissionDescriptor}} |descriptor| and a {{XRPermissionStatus}} |status|, the UA MUST run the following steps:
 
   1. Set |status|'s {{XRPermissionStatus/granted}} to an empty {{FrozenArray}}.
-  1. Let |device| be the result of [=obtain the current device|obtaining the current device=] for |mode|.
-  1. Let |result| be the result of [=resolve the requested features|resolving the requested features=] given |descriptor|'s {{XRPermissionDescriptor/requiredFeatures}}, {{XRPermissionDescriptor/optionalFeatures}}, and {{XRPermissionDescriptor/mode}}.
+  1. Let |requiredFeatures| be |descriptor|'s {{XRPermissionDescriptor/requiredFeatures}}.
+  1. Let |optionalFeatures| be |descriptor|'s {{XRPermissionDescriptor/optionalFeatures}}.
+  1. Let |device| be the result of [=obtain the current device|obtaining the current device=] for |mode|, |requiredFeatures|, and |optionalFeatures|.
+  1. Let |result| be the result of [=resolve the requested features|resolving the requested features=] given |requiredFeatures|,|optionalFeatures|, and {{XRPermissionDescriptor/mode}}.
   1. If |result| is <code>null</code>, run the following steps:
     1. Set |status|'s {{PermissionStatus/state}} to {{PermissionState/"denied"}}.
     1. Abort these steps.
@@ -2459,7 +2469,7 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
 
   1. Let |consentRequired| be an empty [=/list=] of {{DOMString}}.
   1. Let |consentOptional| be an empty [=/list=] of {{DOMString}}.
-  1. Let |device| be the result of [=obtain the current device|obtaining the current device=] for |mode|.
+  1. Let |device| be the result of [=obtain the current device|obtaining the current device=] for |mode|, |requiredFeatures|, and |optionalFeatures|.
   1. Let |granted| be a [=/list=] of {{DOMString}} initialized to |device|'s [=XR device/list of enabled features=] for |mode|.
   1. If |device| is <code>null</code> or |device|'s [=list of supported modes=] does not [=list/contain=] |mode|, run the following steps:
     1. Return the [=tuple=] <code>(|consentRequired|, |consentOptional|, |granted|)</code>
