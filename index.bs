@@ -291,14 +291,14 @@ The user agent <dfn>ensures an immersive XR device is selected</dfn> by running 
 The <dfn attribute for="XRSystem">ondevicechange</dfn> attribute is an [=Event handler IDL attribute=] for the {{devicechange}} event type.
 
 <div class="algorithm" data-algorithm="session-supported">
-The <dfn method for="XRSystem">isSessionSupported(|mode|)</dfn> method queries if a given |mode| is supported by the user agent and device capabilities.
+The <dfn method for="XRSystem">isSessionSupported(|mode|)</dfn> method queries if a given |mode| may be supported by the user agent and device capabilities.
 
 When this method is invoked, it MUST run the following steps:
 
   1. Let |promise| be [=a new Promise=].
   1. If |mode| is {{XRSessionMode/"inline"}}, [=/resolve=] |promise| with <code>true</code> and return it.
+  1. If the requesting document's origin is not allowed to use the "xr-spatial-tracking" [[#feature-policy|feature policy]], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return it.
   1. Run the following steps [=in parallel=]:
-    1. If the requesting document's origin is not allowed to use the "xr-spatial-tracking" [[#feature-policy|feature policy]], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and abort these steps.
     1. [=ensures an immersive XR device is selected|Ensure an immersive XR device is selected=].
     1. If the [=XRSystem/immersive XR device=] is null, [=/resolve=] |promise| with <code>false</code> and abort these steps.
     1. If the [=XRSystem/immersive XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|, [=/resolve=] |promise| with <code>false</code> and abort these steps.
@@ -322,6 +322,12 @@ if (supported) {
 }
 </pre>
 </div>
+
+<p class="note">
+Note: The purpose of {{XRSystem/isSessionSupported()}} is not to report with perfect accuracy the user agent's ability to create an {{XRSession}}, but to inform the page whether or not advertising the ability to create sessions of the given mode is advised. A certain level of false-positives are expected, even when user agent checks for the presence of the necessary hardware/software prior to resolving the method. (For example, even if the appropriate hardware is present it may have given exclusive access to another application at the time a session is requested.)
+<br/><br/>
+Because {{XRSystem/isSessionSupported()}} can be called without user activation and without triggering any consent dialogs, it may be used as a fingerprinting vector despite the limited amount of information it reports. User agents that wish to minimize all fingerprinting while still enabling XR content may wish to have {{XRSystem/isSessionSupported()}} always report <code>true</code> for platforms which have any possibility of running the specified mode of XR content, regardless of whether or not the appropriate hardware or software is present. This comes at the cost of user ergonomics, as it will cause pages to advertise XR content to users that cannot view it.
+</p>
 
 The {{XRSystem}} object has a <dfn>pending immersive session</dfn> boolean, which MUST be initially <code>false</code>, an <dfn>active immersive session</dfn>, which MUST be initially <code>null</code>, and a <dfn>list of inline sessions</dfn>, which MUST be initially empty.
 
