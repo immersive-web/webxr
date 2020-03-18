@@ -1329,6 +1329,7 @@ An {{XRViewport}} object describes a viewport, or rectangular region, of a graph
   readonly attribute long y;
   readonly attribute long width;
   readonly attribute long height;
+  readonly attribute unsigned long textureSlice;
 };
 </pre>
 
@@ -1342,16 +1343,126 @@ The exact interpretation of the viewport values depends on the conventions of th
 The following code loops through all of the {{XRView}}s of an {{XRViewerPose}}, queries an {{XRViewport}} from an {{XRWebGLLayer}} for each, and uses them to set the appropriate [=WebGL viewport=]s for rendering.
 
 <pre highlight="js">
+const xrWebGLLayer = new XRWebGLLayer(xrSession, gl);
+// ...
 xrSession.requestAnimationFrame((time, xrFrame) => {
   const viewer = xrFrame.getViewerPose(xrReferenceSpace);
 
-  gl.bindFramebuffer(xrWebGLLayer.framebuffer);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, xrWebGLLayer.framebuffer);
   for (xrView of viewer.views) {
     let xrViewport = xrWebGLLayer.getViewport(xrView);
     gl.viewport(xrViewport.x, xrViewport.y, xrViewport.width, xrViewport.height);
 
     // WebGL draw calls will now be rendered into the appropriate viewport.
   }
+});
+</pre>
+</div>
+
+<div class="example">
+{{XRWebGLLayerViewType/"texture-slice"}} enables use of WebGL 2's manual multisampled antialiasing.
+<pre highlight="js">
+const xrWebGLLayer = new XRWebGLLayer(xrSession, gl, {viewType: 'texture-slice'});
+// ...
+xrSession.requestAnimationFrame((time, xrFrame) => {
+  gl.viewport(0, 0, xrWebGLLayer.totalWidth, xrWebGLLayer.totalHeight);
+
+  const tex = xrWebGLLayer.texture;
+
+  if (!tex.multisampledFramebuffer) { // expando-property
+    tex.multisampledFramebuffer = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, tex.multisampledFramebuffer);
+
+    let rb = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
+    gl.renderbufferStorageMultisample(gl.RENDERBUFFER, 8, gl.RGBA8, xrWebGLLayer.totalWidth,
+                                      xrWebGLLayer.totalHeight);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, rb);
+
+    rb = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
+    gl.renderbufferStorageMultisample(gl.RENDERBUFFER, 8, gl.DEPTH24_STENCIL8,
+                                      xrWebGLLayer.totalWidth, xrWebGLLayer.totalHeight);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, rb);
+  }
+
+  const viewer = xrFrame.getViewerPose(xrReferenceSpace);
+  for (xrView of viewer.views) {
+    const xrViewport = xrWebGLLayer.getViewport(xrView);
+
+    if (!tex.fbBySlice) { // expando-property
+      tex.fbBySlice = [];
+    }
+    if (!tex.fbBySlice[xrViewport.textureSlice])
+      tex.fbBySlice[xrViewport.textureSlice] = gl.createFramebuffer();
+      gl.bindFramebuffer(tex.fbBySlice[xrViewport.textureSlice]);
+      gl.framebufferTextureLayer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, tex, 0,
+                                 xrViewport.textureSlice);
+    }
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, tex.multisampledFramebuffer);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+
+    // Issue per-view WebGL draw calls into the multisampled framebuffer. (e.g. the main 3d scene)
+
+    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, tex.fbBySlice[xrViewport.textureSlice]);
+    gl.blitFramebuffer(gl.COLOR_BUFFER_BIT, gl.NEAREST,
+                       0, 0, xrWebGLLayer.totalWidth, xrWebGLLayer.totalHeight,
+                       0, 0, xrWebGLLayer.totalWidth, xrWebGLLayer.totalHeight);
+    gl.invalidateFramebuffer(gl.READ_FRAMEBUFFER, [
+      gl.COLOR_ATTACHMENT0, gl.DEPTH_STENCIL_ATTACHMENT
+    ]);
+
+    // Issue per-view WebGL draw calls into the single-sampled framebuffer. (e.g. UI/HUD overlays)
+  }
+});
+</pre>
+</div>
+
+<div class="example">
+{{XRWebGLLayerViewType/"texture-slice"}} enables use of WebGL 2's OVR_multiview2 extension, which
+lets us render into multiple views at once.
+<pre highlight="js">
+const xrWebGLLayer = new XRWebGLLayer(xrSession, gl, {viewType: 'texture-slice'});
+// ...
+xrSession.requestAnimationFrame((time, xrFrame) => {
+  gl.viewport(0, 0, xrWebGLLayer.totalWidth, xrWebGLLayer.totalHeight);
+
+  const tex = xrWebGLLayer.textures[0];
+  if (!tex.fb) {
+    tex.fb = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, tex.fb);
+
+    const depthStencil = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D_ARRAY, depthStencil);
+    gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.DEPTH24_STENCIL8, xrWebGLLayer.totalWidth,
+                    xrWebGLLayer.totalHeight, xrWebGLLayer.totalSlices);
+
+    const multiview = gl.getExtension('OVR_multiview2');
+    multiview.framebufferTextureMultiviewOVR(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, tex, 0, 0,
+                                             xrWebGLLayer.totalSlices);
+    multiview.framebufferTextureMultiviewOVR(gl.FRAMEBUFFER, gl.DEPTH_STENCIL, depthStencil, 0, 0,
+                                             xrWebGLLayer.totalSlices);
+  }
+  gl.bindFramebuffer(gl.FRAMEBUFFER, tex.fb);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+
+  const viewer = xrFrame.getViewerPose(xrReferenceSpace);
+
+  const numViews = viewer.views.length;
+  const projectionMatrices = new Float32Array(16 * numViews);
+  const transformMatrices = new Float32Array(16 * numViews);
+
+  for (const xrView of viewer.views) {
+    const xrViewport = xrWebGLLayer.getViewport(xrView);
+    const slice = xrViewport.textureSlice;
+    projectionMatrices.set(xrView.projectionMatrix, 16 * slice);
+    transformMatrices.set(xrView.transform.matrix, 16 * slice);
+  }
+  gl.uniformMatrix4fv(shaderProgram.projectionsLoc, false, projectionMatrices);
+  gl.uniformMatrix4fv(shaderProgram.transformsLoc, false, transformMatrices);
+
+  // WebGL draw calls will now be rendered into all views simultaneously.
 });
 </pre>
 </div>
@@ -1737,13 +1848,21 @@ An {{XRWebGLLayer}} is a layer which provides a WebGL framebuffer to render into
 typedef (WebGLRenderingContext or
          WebGL2RenderingContext) XRWebGLRenderingContext;
 
+enum XRWebGLLayerViewType {
+    "framebuffer-subrect",
+    "texture-slice"
+};
+
 dictionary XRWebGLLayerInit {
+  XRWebGLLayerViewType viewType = "framebuffer-subrect";
+  double framebufferScaleFactor = 1.0;
+
+  // Ignored if `viewType` != "framebuffer-subrect":
   boolean antialias = true;
   boolean depth = true;
   boolean stencil = false;
   boolean alpha = true;
   boolean ignoreDepthValues = false;
-  double framebufferScaleFactor = 1.0;
 };
 
 [SecureContext, Exposed=Window]
@@ -1752,12 +1871,17 @@ interface XRWebGLLayer: XRLayer {
              XRWebGLRenderingContext context,
              optional XRWebGLLayerInit layerInit = {});
   // Attributes
+  readonly attribute XRWebGLLayerViewType viewType;
   readonly attribute boolean antialias;
   readonly attribute boolean ignoreDepthValues;
 
   [SameObject] readonly attribute WebGLFramebuffer? framebuffer;
+  [SameObject] readonly attribute WebGLTexture? texture;
   readonly attribute unsigned long framebufferWidth;
   readonly attribute unsigned long framebufferHeight;
+  readonly attribute unsigned long totalWidth; // = framebufferWidth
+  readonly attribute unsigned long totalHeight; // = framebufferHeight
+  readonly attribute unsigned long totalSlices;
 
   // Methods
   XRViewport? getViewport(XRView view);
@@ -1781,33 +1905,35 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
   1. If |session| is an [=immersive session=] and |context|'s [=XR compatible=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
   1. Initialize |layer|'s [=XRWebGLLayer/context=] to |context|.
   1. Initialize |layer|'s [=XRWebGLLayer/session=] to |session|.
-  1. Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} as follows:
-    <dl class="switch">
-      <dt> If |layerInit|'s {{XRWebGLLayerInit/ignoreDepthValues}} value is <code>false</code> and the [=XR Compositor=] will make use of depth values
-      <dd> Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>false</code>
-      <dt> Otherwise
-      <dd> Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>true</code>
-    </dl>
-  1. Initialize |layer|'s [=XRWebGLLayer/composition disabled=] boolean as follows:
-    <dl class="switch">
-      <dt> If |session| is an [=inline session=]
-      <dd> Initialize |layer|'s [=XRWebGLLayer/composition disabled=] to <code>true</code>
-      <dt> Otherwise
-      <dd> Initialize |layer|'s [=XRWebGLLayer/composition disabled=] boolean to <code>false</code>
-    </dl>
+  1. Initialize |layer|'s [=XRWebGLLayer/composition disabled=] boolean to <code>false</code>.
+  1. Initialize |layer|'s {{XRWebGLLayer/viewType}} to |layerInit|'s {{XRWebGLLayerInit/viewType}}.
+  1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to <code>false</code>.
+  1. Initialize |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>true</code>.
+  1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to <code>null</code>.
+  1. Initialize |layer|'s {{XRWebGLLayer/texture}} to <code>null</code>.
+  1. Initialize |layer|'s {{XRWebGLLayer/totalSlices}} to <code>1</code>.
+  1. If |layerInit|'s {{XRWebGLLayerInit/ignoreDepthValues}} value is <code>false</code> and the [=XR Compositor=] will make use of depth values:
+    1. Set |layer|'s {{XRWebGLLayer/ignoreDepthValues}} to <code>false</code>.
+  1. If |session| is an [=inline session=]:
+    1. Set |layer|'s {{XRWebGLLayer/antialias}} to |layer|'s {{XRWebGLLayer/context}}'s [=actual context parameters=] {{WebGLContextAttributes|antialias}} value.
+    1. Set |layer|'s [=XRWebGLLayer/composition disabled=] boolean to <code>true</code>.
+    1. Return |layer|.
+  1. If |layer|'s [=XRWebGLLayer/composition disabled=] boolean is <code>true</code>:
+    1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layer|'s {{XRWebGLLayer/context}}'s [=actual context parameters=] {{WebGLContextAttributes|antialias}} value.
+    1. Return |layer|.
+  1. Let |framebufferSize| be the [=recommended WebGL framebuffer resolution=] multiplied by |layerInit|'s {{XRWebGLLayerInit/framebufferScaleFactor}}.
   1. <dl class="switch">
-      <dt> If |layer|'s [=XRWebGLLayer/composition disabled=] boolean is <code>false</code>:
+      <dt>If {{XRWebGLLayer/viewType}} is {{XRWebGLLayerViewType/"framebuffer-subrect"}}:
       <dd>
-        1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layerInit|'s {{XRWebGLLayerInit/antialias}} value.
-        1. Let |framebufferSize| be the [=recommended WebGL framebuffer resolution=] multiplied by |layerInit|'s {{XRWebGLLayerInit/framebufferScaleFactor}}.
-        1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] with the dimensions |framebufferSize| created with |context|, [=opaque framebuffer/session=] initialized to |session|, and |layerInit|'s {{XRWebGLLayerInit/depth}}, {{XRWebGLLayerInit/stencil}}, and {{XRWebGLLayerInit/alpha}} values.
-        1. Allocate and initialize resources compatible with |session|'s [=XRSession/XR device=], including GPU accessible memory buffers, as required to support the compositing of |layer|.
-        1. If |layer|’s resources were unable to be created for any reason, throw an {{OperationError}} and abort these steps.
-      <dt> Otherwise
+        1. Set |layer|'s {{XRWebGLLayer/antialias}} to |layerInit|'s {{XRWebGLLayerInit/antialias}} value.
+        1. Set |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] created with |context| and |layerInit|'s {{XRWebGLLayerInit/antialias}}, {{XRWebGLLayerInit/depth}}, {{XRWebGLLayerInit/stencil}}, and {{XRWebGLLayerInit/alpha}} values.
+      <dt>If {{XRWebGLLayer/viewType}} is {{XRWebGLLayerViewType/"texture-slice"}}:
       <dd>
-        1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layer|'s {{XRWebGLLayer/context}}'s [=actual context parameters=] {{WebGLContextAttributes|antialias}} value.
-        1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to <code>null</code>.
+        1. Set |layer|'s {{XRWebGLLayer/totalSlices}} to the number of views.
+        1. Initialize {{XRWebGLLayer/texture}} to a new 2d-array [=xr texture array=] created for |context|.
     </dl>
+  1. Allocate and initialize any required resources, including GPU accessible memory buffers, as required to support |layer|.
+  1. If |layer|'s resources were unable to be created for any reason, throw an {{OperationError}} and abort these steps.
   1. Return |layer|.
 
 </div>
@@ -1833,7 +1959,10 @@ An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFram
 
 Note: User agents are required to respect <code>true</code> values of {{XRWebGLLayerInit/depth}} and {{XRWebGLLayerInit/stencil}}, which is similar to WebGL's behavior when [=create a drawing buffer|creating a drawing buffer=]
 
-The buffers attached to an [=opaque framebuffer=] MUST be cleared to the values in the table below when first created, or prior to the processing of each [=XR animation frame=]. This is identical to the behavior of the WebGL context's [=default framebuffer=]. [=Opaque framebuffers=] will always be cleared regardless of the associated WebGL context's {{WebGLContextAttributes|preserveDrawingBuffer}} value.
+An <dfn>xr texture array</dfn> functions as an immutable {{WebGLTexture}}, (such as one created by
+texStorage2d) and can be deleted but not respecified.
+
+The buffers attached to an [=opaque framebuffer=], or [=xr texture array=] MUST be cleared to the values in the table below when first created, or immediately following presentation of an [=XR animation frame=]. This is identical to the behavior of the WebGL context's [=default framebuffer=]. Contents will always be cleared regardless of the associated WebGL context's {{WebGLContextAttributes|preserveDrawingBuffer}} value.
 
 <table class="tg">
   <thead>
