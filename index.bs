@@ -1753,7 +1753,8 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
       <dt> If |layer|'s [=XRWebGLLayer/composition disabled=] boolean is <code>false</code>:
       <dd>
         1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layerInit|'s {{XRWebGLLayerInit/antialias}} value.
-        1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] created with |context| and |layerInit|'s {{XRWebGLLayerInit/depth}}, {{XRWebGLLayerInit/stencil}}, and {{XRWebGLLayerInit/alpha}} values.
+        1. Let |framebufferSize| be the [=recommended WebGL framebuffer resolution=] multiplied by |layerInit|'s {{XRWebGLLayerInit/framebufferScaleFactor}}.
+        1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] with the dimensions |framebufferSize| created with |context| and |layerInit|'s {{XRWebGLLayerInit/depth}}, {{XRWebGLLayerInit/stencil}}, and {{XRWebGLLayerInit/alpha}} values.
         1. Allocate and initialize resources compatible with |session|'s [=XRSession/XR device=], including GPU accessible memory buffers, as required to support the compositing of |layer|.
         1. If |layer|’s resources were unable to be created for any reason, throw an {{OperationError}} and abort these steps.
       <dt> Otherwise
@@ -1864,7 +1865,7 @@ The [=native WebGL framebuffer resolution=] is determined by running the followi
 
 </div>
 
-Additionally, the {{XRSession}} MUST identify a <dfn>recommended WebGL framebuffer resolution</dfn>, which represents a best estimate of the WebGL framebuffer resolution large enough to contain all of the session's {{XRView}}s that provides an average application a good balance between performance and quality. It MAY be smaller than, larger than, or equal to the [=native WebGL framebuffer resolution=].
+Additionally, the {{XRSession}} MUST identify a <dfn>recommended WebGL framebuffer resolution</dfn>, which represents a best estimate of the WebGL framebuffer resolution large enough to contain all of the session's {{XRView}}s that provides an average application a good balance between performance and quality. It MAY be smaller than, larger than, or equal to the [=native WebGL framebuffer resolution=]. New [=opaque framebuffer=] will be created with this resolution, scaled by any {{XRWebGLLayerInit}}'s {{XRWebGLLayerInit/framebufferScaleFactor}} provided.
 
 Note: The user agent is free to use and method of its choosing to estimate the [=recommended WebGL framebuffer resolution=]. If there are platform-specific methods for querying a recommended size it is recommended that they be used, but not required.
 
