@@ -16,6 +16,7 @@ Mailing List Archives: https://lists.w3.org/Archives/Public/public-immersive-web
 
 Editor: Brandon Jones 87824, Google http://google.com/, bajones@google.com
 Editor: Nell Waliczek 93109, Amazon [Microsoft until 2018] https://amazon.com/, nhw@amazon.com
+Editor: Manish Goregaokar 109489, Mozilla http://mozilla.org/, manish@mozilla.com
 
 Abstract: This specification describes support for accessing virtual reality (VR) and augmented reality (AR) devices, including sensors and head-mounted displays, on the Web.
 </pre>
