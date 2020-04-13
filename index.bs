@@ -642,6 +642,7 @@ When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |session| be the target {{XRSession}}.
   1. If |session|'s [=ended=] value is <code>true</code>, throw an {{InvalidStateError}} and abort these steps.
+  1. If |newState|'s {{XRRenderStateInit/layers}}'s value is not <code>null</code>, throw an {{InvalidStateError}} and abort these steps.
   1. If |newState|'s {{XRRenderStateInit/baseLayer}}'s was created with an {{XRSession}} other than |session|, throw an {{InvalidStateError}} and abort these steps.
   1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set and |session| is an [=immersive session=], throw an {{InvalidStateError}} and abort these steps.
   1. Let |activeState| be |session|'s [=active render state=].
@@ -786,11 +787,16 @@ XRRenderState {#xrrenderstate-interface}
 An {{XRRenderState}} represents a set of configurable values which affect how an {{XRSession}}'s output is composited. The [=active render state=] for a given {{XRSession}} can only change between frame boundaries, and updates can be queued up via {{XRSession/updateRenderState()}}.
 
 <pre class="idl">
+interface XRLayer {};
+
+typedef (XRWebGLLayer or XRLayer) XRGenericLayer;
+
 dictionary XRRenderStateInit {
   double depthNear;
   double depthFar;
   double inlineVerticalFieldOfView;
   XRWebGLLayer? baseLayer;
+  sequence&lt;XRGenericLayer&gt;? layers;
 };
 
 [SecureContext, Exposed=Window] interface XRRenderState {
