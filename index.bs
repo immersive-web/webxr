@@ -634,6 +634,15 @@ Each {{XRSession}} has a <dfn>minimum inline field of view</dfn> and a <dfn>maxi
 
 Each {{XRSession}} has a <dfn>minimum near clip plane</dfn> and a <dfn>maximum far clip plane</dfn>, defined in meters. The values MUST be determined by the user agent and MUST be non-negative. The [=minimum near clip plane=] SHOULD be less than <code>0.1</code>. The [=maximum far clip plane=] SHOULD be greater than <code>1000.0</code> (and MAY be infinite).
 
+<div class="algorithm" data-algorithm="update-layers-state">
+
+When the user agent will <dfn>update the layers state</dfn> with {{XRRenderState}} |state|, it must run the following steps:
+  1. If |state|'s {{XRRenderStateInit/layers}}'s value is not <code>null</code>, throw an {{InvalidStateError}}
+
+NOTE: The <a href="https://immersive-web.github.io/layers">WebXR layers module</a> will introduce new semantics for this algorithm.
+
+</div>
+
 <div class="algorithm" data-algorithm="update-render-state">
 
 The <dfn method for="XRSession">updateRenderState(|newState|)</dfn> method queues an update to the [=active render state=] to be applied on the next frame. Unset fields of the {{XRRenderStateInit}} |newState| passed to this method will not be changed.
@@ -642,11 +651,11 @@ When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |session| be the target {{XRSession}}.
   1. If |session|'s [=ended=] value is <code>true</code>, throw an {{InvalidStateError}} and abort these steps.
-  1. If |newState|'s {{XRRenderStateInit/layers}}'s value is not <code>null</code>, throw an {{InvalidStateError}} and abort these steps.
   1. If |newState|'s {{XRRenderStateInit/baseLayer}}'s was created with an {{XRSession}} other than |session|, throw an {{InvalidStateError}} and abort these steps.
   1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set and |session| is an [=immersive session=], throw an {{InvalidStateError}} and abort these steps.
   1. Let |activeState| be |session|'s [=active render state=].
   1. If |session|'s [=pending render state=] is <code>null</code>, set it to a copy of |activeState|.
+  1. If |newState|'s {{XRRenderStateInit/layers}}'s value is not <code>null</code>, run [=update the layers state=] with [=pending render state=].
   1. If |newState|'s {{XRRenderStateInit/depthNear}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/depthNear}} to |newState|'s {{XRRenderStateInit/depthNear}}.
   1. If |newState|'s {{XRRenderStateInit/depthFar}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/depthFar}} to |newState|'s {{XRRenderStateInit/depthFar}}.
   1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set, set |session|'s [=pending render state=]'s {{XRRenderState/inlineVerticalFieldOfView}} to |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}}.
