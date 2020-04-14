@@ -2025,15 +2025,15 @@ interface XRInputSourceEvent : Event {
   constructor(DOMString type, XRInputSourceEventInit eventInitDict);
   [SameObject] readonly attribute XRFrame frame;
   [SameObject] readonly attribute XRInputSource inputSource;
-  readonly attribute double? x;
-  readonly attribute double? y;
+  readonly attribute double? screenX;
+  readonly attribute double? screenY;
 };
 
 dictionary XRInputSourceEventInit : EventInit {
   required XRFrame frame;
   required XRInputSource inputSource;
-  double x;
-  double y;
+  double? screenX;
+  double? screenY;
 };
 </pre>
 
@@ -2041,7 +2041,7 @@ The <dfn attribute for="XRInputSourceEvent">inputSource</dfn> attribute indicate
 
 The <dfn attribute for="XRInputSourceEvent">frame</dfn> attribute is an {{XRFrame}} that corresponds with the time that the event took place. It may represent historical data. Any {{XRViewerPose}} queried from the {{XRInputSourceEvent/frame}} MUST have an empty {{XRViewerPose/views}} array.
 
-The <dfn attribute for="XRInputSourceEvent">x</dfn> and <dfn attribute for="XRInputSourceEvent">y</dfn> attributes define screen coordinates for events with {{XRInputSourceEvent/inputSource}}s that have a {{XRInputSource/targetRayMode}} of {{XRTargetRayMode/"screen"}}. They are <code>null</code> for other kinds of events.
+The <dfn attribute for="XRInputSourceEvent">screenX</dfn> and <dfn attribute for="XRInputSourceEvent">screenY</dfn> attributes define screen coordinates for events with {{XRInputSourceEvent/inputSource}}s that have a {{XRInputSource/targetRayMode}} of {{XRTargetRayMode/"screen"}}. They are <code>null</code> for other kinds of events.
 
 <div class="algorithm" data-algorithm="fire-input-source-event">
 
