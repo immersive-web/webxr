@@ -636,7 +636,7 @@ Each {{XRSession}} has a <dfn>minimum near clip plane</dfn> and a <dfn>maximum f
 
 <div class="algorithm" data-algorithm="update-layers-state">
 
-When the user agent will <dfn>update the pending layers state</dfn> with {{XRSession}} |session| and {{XRRenderStateInit}} |newState|, it must run the following steps:
+When the user agent will <dfn>update the pending layers state</dfn> with {{XRSession}} <var ignore>session</var> and {{XRRenderStateInit}} |newState|, it must run the following steps:
   1. If |newState|'s {{XRRenderStateInit/layers}}'s value is not <code>null</code>, throw an {{InvalidStateError}}.
 
 NOTE: The <a href="https://immersive-web.github.io/layers">WebXR layers module</a> will introduce new semantics for this algorithm.
@@ -796,16 +796,12 @@ XRRenderState {#xrrenderstate-interface}
 An {{XRRenderState}} represents a set of configurable values which affect how an {{XRSession}}'s output is composited. The [=active render state=] for a given {{XRSession}} can only change between frame boundaries, and updates can be queued up via {{XRSession/updateRenderState()}}.
 
 <pre class="idl">
-interface XRLayer {};
-
-typedef (XRWebGLLayer or XRLayer) XRGenericLayer;
-
 dictionary XRRenderStateInit {
   double depthNear;
   double depthFar;
   double inlineVerticalFieldOfView;
   XRWebGLLayer? baseLayer;
-  sequence&lt;XRGenericLayer&gt;? layers;
+  sequence&lt;XRLayer&gt;? layers;
 };
 
 [SecureContext, Exposed=Window] interface XRRenderState {
@@ -1697,6 +1693,17 @@ Layers {#layers}
 ======
 
 Note: While this specification only defines the {{XRWebGLLayer}} layer, future extensions to the spec are expected to add additional layer types and the image sources that they draw from.
+
+XRLayer {#xrlayer}
+=======
+
+<pre class="idl">
+[SecureContext, Exposed=Window]
+interface XRLayer {};
+
+</pre>
+
+{{XRLayer}} is the base class for {{XRWebGLLayer}} and other layer types introduced by future extensions.
 
 XRWebGLLayer {#xrwebgllayer-interface}
 ------------
