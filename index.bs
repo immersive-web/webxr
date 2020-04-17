@@ -637,7 +637,7 @@ Each {{XRSession}} has a <dfn>minimum near clip plane</dfn> and a <dfn>maximum f
 <div class="algorithm" data-algorithm="update-layers-state">
 
 When the user agent will <dfn>update the pending layers state</dfn> with {{XRSession}} <var ignore>session</var> and {{XRRenderStateInit}} |newState|, it must run the following steps:
-  1. If |newState|'s {{XRRenderStateInit/layers}}'s value is not <code>null</code>, throw an {{NotSupportedError}}.
+  1. If |newState|'s {{XRRenderStateInit/layers}}'s value is not <code>null</code>, throw a {{NotSupportedError}}.
 
 NOTE: The <a href="https://immersive-web.github.io/layers">WebXR layers module</a> will introduce new semantics for this algorithm.
 
