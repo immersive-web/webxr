@@ -1695,7 +1695,7 @@ Layers {#layers}
 Note: While this specification only defines the {{XRWebGLLayer}} layer, future extensions to the spec are expected to add additional layer types and the image sources that they draw from.
 
 XRLayer {#xrlayer-interface}
-=======
+-------
 
 <pre class="idl">
 [SecureContext, Exposed=Window]
