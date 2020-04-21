@@ -232,7 +232,7 @@ partial interface Navigator {
 };
 </pre>
 
-The <dfn attribute for="Navigator">xr</dfn> attribute's getter MUST return the {{XRSystem}} object that is associated with the [=context object=].
+The <dfn attribute for="Navigator">xr</dfn> attribute's getter MUST return the {{XRSystem}} object that is associated with it.
 
 XRSystem {#xrsystem-interface}
 ----
@@ -276,7 +276,7 @@ Each time the [=list of immersive XR devices=] changes the user agent should <df
   1. If this is the first time devices have been enumerated or |oldDevice| equals the [=XRSystem/immersive XR device=], abort these steps.
   1. [=Shut down the session|Shut down=] any active {{XRSession}}s.
   1. Set the [=XR compatible=] boolean of all {{WebGLRenderingContextBase}} instances to <code>false</code>.
-  1. [=Queue a task=] to [=fire an event=] named {{devicechange!!event}} on the [=context object=].
+  1. [=Queue a task=] to [=fire an event=] named {{devicechange!!event}} on the [=context object=]'s {{Window/navigator}}'s {{Navigator/xr}}.
   1. [=Queue a task=] to fire appropriate <code>change</code> events on any {{XRPermissionStatus}} objects who are affected by the change in the [=XRSystem/immersive XR device=] or [=/inline XR device=].
 
 </div>
@@ -287,7 +287,7 @@ Note: The user agent is allowed to use any criteria it wishes to [=select an imm
 
 The user agent <dfn>ensures an immersive XR device is selected</dfn> by running the following steps:
 
-  1. If the [=context object=]'s [=XRSystem/immersive XR device=] is not null, abort these steps.
+  1. If the [=context object=]'s {{Window/navigator}}'s {{Navigator/xr}}'s [=XRSystem/immersive XR device=] is not null, abort these steps.
   1. [=Enumerate immersive XR devices=].
   1. [=Select an immersive XR device=].
 
