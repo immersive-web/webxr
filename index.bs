@@ -25,6 +25,7 @@ Abstract: This specification describes support for accessing virtual reality (VR
 spec:infra;
     type:dfn; text:string
     type:dfn; text:tuple
+    type:dfn; text:continue
 spec:permissions-1;
     type:dfn; text:powerful feature
 </pre>
@@ -85,6 +86,8 @@ spec: PageVisibility; urlPrefix: https://www.w3.org/TR/page-visibility-2/#
 
 spec: ECMAScript; urlPrefix: https://tc39.github.io/ecma262/#
     type: method; text: IsDetachedBuffer; url: sec-isdetachedbuffer
+    type: dfn; text: ?; url: sec-returnifabrupt-shorthands
+    type: abstract-op; text: ToString; url: sec-tostring
 spec: dom; urlPrefix: https://dom.spec.whatwg.org/#
     type:algorithm; text:fire an event; url: concept-event-fire
 
@@ -232,7 +235,7 @@ partial interface Navigator {
 };
 </pre>
 
-The <dfn attribute for="Navigator">xr</dfn> attribute's getter MUST return the {{XRSystem}} object that is associated with the [=context object=].
+The <dfn attribute for="Navigator">xr</dfn> attribute's getter MUST return the {{XRSystem}} object that is associated with it.
 
 XRSystem {#xrsystem-interface}
 ----
@@ -276,7 +279,7 @@ Each time the [=list of immersive XR devices=] changes the user agent should <df
   1. If this is the first time devices have been enumerated or |oldDevice| equals the [=XRSystem/immersive XR device=], abort these steps.
   1. [=Shut down the session|Shut down=] any active {{XRSession}}s.
   1. Set the [=XR compatible=] boolean of all {{WebGLRenderingContextBase}} instances to <code>false</code>.
-  1. [=Queue a task=] to [=fire an event=] named {{devicechange!!event}} on the [=context object=].
+  1. [=Queue a task=] to [=fire an event=] named {{devicechange!!event}} on the [=context object=]'s {{Window/navigator}}'s {{Navigator/xr}}.
   1. [=Queue a task=] to fire appropriate <code>change</code> events on any {{XRPermissionStatus}} objects who are affected by the change in the [=XRSystem/immersive XR device=] or [=/inline XR device=].
 
 </div>
@@ -287,7 +290,7 @@ Note: The user agent is allowed to use any criteria it wishes to [=select an imm
 
 The user agent <dfn>ensures an immersive XR device is selected</dfn> by running the following steps:
 
-  1. If the [=context object=]'s [=XRSystem/immersive XR device=] is not null, abort these steps.
+  1. If the [=context object=]'s {{Window/navigator}}'s {{Navigator/xr}}'s [=XRSystem/immersive XR device=] is not null, abort these steps.
   1. [=Enumerate immersive XR devices=].
   1. [=Select an immersive XR device=].
 
@@ -382,6 +385,13 @@ When this method is invoked, the user agent MUST run the following steps:
               <dd> Append |session| to the [=list of inline sessions=].
             </dl>
         1. [=/Resolve=] |promise| with |session|.
+        1. [=Queue a task=] to perform the following steps:
+            NOTE: These steps ensure that initial <code>inputsourceschange</code> events occur after the initial session is resolved.
+            1. Set |session|'s [=XRSession/promise resolved=] flag to <code>true</code>.
+            1. Let |sources| be any existing input sources attached to |session|.
+            1. If |sources| is non-empty, perform the following steps:
+                1. Set |session|'s [=list of active XR input sources=] to |sources|.
+                1. Fire an {{XRInputSourcesChangeEvent}} named {{inputsourceschange!!event}} on |session| with {{XRInputSourcesChangeEvent/added}} set to |sources|.
   1. Return |promise|.
 
 </div>
@@ -468,6 +478,8 @@ Values given in the feature lists are considered a valid <dfn>feature descriptor
 Future iterations of this specification and additional modules may expand the list of accepted [=feature descriptors=].
 
 Note: Features are accepted as an array of <code>any</code> values to ensure forwards compatibility. It allows unrecognized optional values to be properly ignored as new [=feature descriptor=] types are added.
+
+Note: Features that can be stringified via <a abstract-op>ToString</a>() will be converted.
 
 Depending on the {{XRSessionMode}} requested, certain [=feature descriptors=] are added to the {{XRSessionInit/requiredFeatures}} or {{XRSessionInit/optionalFeatures}} lists by default. The following table describes the <dfn>default features</dfn> associated with each session type and feature list:
 
@@ -711,10 +723,15 @@ The <dfn attribute for="XRSession">inputSources</dfn> attribute returns the {{XR
 
 The user agent MUST monitor any [=XR input source=]s associated with the [=XRSession/XR device=], including detecting when [=XR input source=]s are added, removed, or changed.
 
+Each {{XRSession}} has a <dfn for=XRSession>promise resolved</dfn> flag, initially <code>false</code>.
+
+NOTE: The purpose of this flag is to ensure that the [=XRSession/add input source=], [=XRSession/remove input source=], and [=XRSession/change input source=] algorithms do not run until the user code actually has had a chance to attach event listeners. Implementations may not need this flag if they simply choose to start listening for input source changes after the session resolves.
+
 <div class="algorithm" data-algorithm="on-input-source-added">
 
 When <dfn for="XRSession" lt="add input source">new [=XR input source=]s become available</dfn> for {{XRSession}} |session|, the user agent MUST run the following steps:
 
+  1. If |session|'s [=XRSession/promise resolved=] flag is not set, abort these steps.
   1. Let |added| be a new [=/list=].
   1. For each new [=XR input source=]:
     1. Let |inputSource| be a new {{XRInputSource}}.
@@ -729,6 +746,7 @@ When <dfn for="XRSession" lt="add input source">new [=XR input source=]s become 
 
 When any previously added <dfn for="XRSession" lt="remove input source">[=XR input source=]s are no longer available</dfn> for {{XRSession}} |session|, the user agent MUST run the following steps:
 
+  1. If |session|'s [=XRSession/promise resolved=] flag is not set, abort these steps.
   1. Let |removed| be a new [=/list=].
   1. For each [=XR input source=] that is no longer available:
     1. Let |inputSource| be the {{XRInputSource}} in |session|'s [=list of active XR input sources=] associated with the [=XR input source=].
@@ -743,6 +761,7 @@ When any previously added <dfn for="XRSession" lt="remove input source">[=XR inp
 
 When the <dfn for="XRSession" export lt="change input source">{{XRInputSource/handedness}}, {{XRInputSource/targetRayMode}}, {{XRInputSource/profiles}}, or presence of a {{XRInputSource/gripSpace}} for any [=XR input source=]s change</dfn> for {{XRSession}} |session|, the user agent MUST run the following steps:
 
+  1. If |session|'s [=XRSession/promise resolved=] flag is not set, abort these steps.
   1. Let |added| be a new [=/list=].
   1. Let |removed| be a new [=/list=].
   1. For each changed [=XR input source=]:
@@ -857,7 +876,7 @@ callback XRFrameRequestCallback = void (DOMHighResTimeStamp time, XRFrame frame)
 
 Each {{XRFrameRequestCallback}} object has a <dfn for="XRFrameRequestCallback">cancelled</dfn> boolean initially set to <code>false</code>.
 
-Each {{XRSession}} has a <dfn>list of animation frame callbacks</dfn>, which is initially empty, and an <dfn>animation frame callback identifier</dfn>, which is a number which is initially zero.
+Each {{XRSession}} has a <dfn>list of animation frame callbacks</dfn>, which is initially empty, a  <dfn>list of currently running animation frame callbacks</dfn>, which is also initially empty, and an <dfn>animation frame callback identifier</dfn>, which is a number which is initially zero.
 
 <div class="algorithm" data-algorithm="request-animation-frame">
 
@@ -879,7 +898,7 @@ The <dfn method for="XRSession">cancelAnimationFrame(|handle|)</dfn> method canc
 When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |session| be the target {{XRSession}} object.
-  1. Find the entry in |session|'s [=list of animation frame callbacks=] that is associated with the value |handle|.
+  1. Find the entry in |session|'s [=list of animation frame callbacks=] or |session|'s [=list of currently running animation frame callbacks=] that is associated with the value |handle|.
   1. If there is such an entry, set its [=cancelled=] boolean to <code>true</code> and remove it from |session|'s [=list of animation frame callbacks=].
 
 </div>
@@ -892,15 +911,16 @@ When an {{XRSession}} |session| receives updated [=viewer=] state for timestamp 
   1. If |session|'s [=pending render state=] is not <code>null</code>, [=apply the pending render state=].
   1. If |session|'s {{XRSession/renderState}}'s {{XRRenderState/baseLayer}} is <code>null</code>, abort these steps.
   1. If |session|'s  [=XRSession/mode=] is {{XRSessionMode/"inline"}} and |session|'s {{XRSession/renderState}}'s [=XRRenderState/output canvas=] is <code>null</code>, abort these steps.
-  1. Let |callbacks| be a list of the entries in |session|'s [=list of animation frame callback=], in the order in which they were added to the list.
+  1. Set  |session|'s [=list of currently running animation frame callbacks=] to be |session|'s [=list of animation frame callbacks=].
   1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
   1. Set |frame|'s [=active=] boolean to <code>true</code>.
   1. Set |frame|'s [=animationFrame=] boolean to <code>true</code>.
   1. [=XRFrame/Apply frame updates=] for |frame|.
-  1. For each entry in |callbacks|, in order:
-    1. If the entry's [=cancelled=] boolean is <code>true</code>, continue to the next entry.
-    1. [=Invoke the Web IDL callback function=], passing |now| and |frame| as the  arguments
+  1. For each |entry| in |session|'s [=list of currently running animation frame callbacks=], in order:
+    1. If the |entry|'s [=cancelled=] boolean is <code>true</code>, continue to the next entry.
+    1. [=Invoke the Web IDL callback function=] for |entry|, passing |now| and |frame| as the  arguments
     1. If an exception is thrown, [=report the exception=].
+  1. Set |session|'s [=list of currently running animation frame callbacks=] to the empty [=/list=].
   1. Set |frame|'s [=active=] boolean to <code>false</code>.
 
 </div>
@@ -1777,7 +1797,7 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
       <dd>
         1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layerInit|'s {{XRWebGLLayerInit/antialias}} value.
         1. Let |framebufferSize| be the [=recommended WebGL framebuffer resolution=] multiplied by |layerInit|'s {{XRWebGLLayerInit/framebufferScaleFactor}}.
-        1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] with the dimensions |framebufferSize| created with |context| and |layerInit|'s {{XRWebGLLayerInit/depth}}, {{XRWebGLLayerInit/stencil}}, and {{XRWebGLLayerInit/alpha}} values.
+        1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] with the dimensions |framebufferSize| created with |context|, [=opaque framebuffer/session=] initialized to |session|, and |layerInit|'s {{XRWebGLLayerInit/depth}}, {{XRWebGLLayerInit/stencil}}, and {{XRWebGLLayerInit/alpha}} values.
         1. Allocate and initialize resources compatible with |session|'s [=XRSession/XR device=], including GPU accessible memory buffers, as required to support the compositing of |layer|.
         1. If |layer|’s resources were unable to be created for any reason, throw an {{OperationError}} and abort these steps.
       <dt> Otherwise
@@ -1801,7 +1821,8 @@ An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFram
 
  - An [=opaque framebuffer=] MAY support antialiasing, even in WebGL 1.0.
  - An [=opaque framebuffer=]'s attachments cannot be inspected or changed. Calling {{framebufferTexture2D}}, {{framebufferRenderbuffer}}, {{deleteFramebuffer}}, or {{getFramebufferAttachmentParameter}} with an [=opaque framebuffer=] MUST generate an {{INVALID_OPERATION}} error.
- - An [=opaque framebuffer=] is considered incomplete outside of a {{XRSession/requestAnimationFrame()}} callback. When not in a {{XRSession/requestAnimationFrame()}} callback calls to {{checkFramebufferStatus}} MUST generate a {{FRAMEBUFFER_UNSUPPORTED}} error and attempts to clear, draw to, or read from the [=opaque framebuffer=] MUST generate an {{INVALID_FRAMEBUFFER_OPERATION}} error.
+ - An [=opaque framebuffer=] has a related <dfn for="opaque framebuffer">session</dfn>, which is the {{XRSession}} it was created for.
+ - An [=opaque framebuffer=] is considered incomplete outside of a {{XRSession/requestAnimationFrame()}} callback. When not in the {{XRSession/requestAnimationFrame()}} callback of its [=opaque framebuffer/session=], calls to {{checkFramebufferStatus}} MUST generate a {{FRAMEBUFFER_UNSUPPORTED}} error and attempts to clear, draw to, or read from the [=opaque framebuffer=] MUST generate an {{INVALID_FRAMEBUFFER_OPERATION}} error.
  - An [=opaque framebuffer=] initialized with {{XRWebGLLayerInit/depth}} <code>true</code> will have an attached depth buffer.
  - An [=opaque framebuffer=] initialized with {{XRWebGLLayerInit/stencil}} <code>true</code> will have an attached stencil buffer.
  - An [=opaque framebuffer=]'s color buffer will have an alpha channel if and only if {{XRWebGLLayerInit/alpha}} is <code>true</code>.
@@ -2506,14 +2527,22 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
     1. Return the [=tuple=] <code>(|consentRequired|, |consentOptional|, |granted|)</code>
   1. Add every [=feature descriptor=] in the [=default features=] table associated with |mode| to the indicated feature list if it is not already present.
   1. For each |feature| in |requiredFeatures| perform the following steps:
-    1. If |feature| is not a valid [=feature descriptor=], return <code>null</code>.
+    1. If the |feature| is <code>null</code>, [=continue=] to the next entry.
+    1. If |feature| is not a valid [=feature descriptor=], perform the following steps:
+        1. Let |s| be the result of calling [=?=] <a abstract-op>ToString</a>(|feature|).
+        1. If |s| is not a valid [=feature descriptor=] or is <code>undefined</code>, return <code>null</code>.
+        1. Set |feature| to |s|.
     1. If |feature| is already in |granted|, continue to the next entry.
     1. If the requesting document's origin is not allowed to use any [[#feature-policy|feature policy]] required by |feature| as indicated by the [=feature requirements=] table, return <code>null</code>.
     1. If |session|'s [=XRSession/XR device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, return <code>null</code>.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentRequired|.
     1. Else append |feature| to |granted|.
   1. For each |feature| in |optionalFeatures| perform the following steps:
-    1. If |feature| is not a valid [=feature descriptor=], continue to the next entry.
+    1. If the |feature| is <code>null</code>, [=continue=] to the next entry.
+    1. If |feature| is not a valid [=feature descriptor=], perform the following steps:
+        1. Let |s| be the result of calling [=?=] <a abstract-op>ToString</a>(|feature|).
+        1. If |s| is not a valid [=feature descriptor=] or is <code>undefined</code>, [=continue=] to the next entry.
+        1. Set |feature| to |s|.
     1. If |feature| is already in |granted|, continue to the next entry.
     1. If the requesting document's origin is not allowed to use any [[#feature-policy|feature policy]] required by |feature| as indicated by the [=feature requirements=] table, continue to the next entry.
     1. If |session|'s [=XRSession/XR device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, continue to the next entry.
