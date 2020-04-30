@@ -370,7 +370,7 @@ When this method is invoked, the user agent MUST run the following steps:
             1. Abort these steps.
         1. Let |session| be a new {{XRSession}} object.
         1. [=Initialize the session=] with |session|, |mode|, and |device|.
-        1. Let |descriptor| be an {{XRPermissionDescriptor}} initialized with |session|, |requiredFeatures|, and |optionalFeatures|
+        1. Let |descriptor| be an {{XRPermissionDescriptor}} initialized with |mode|, |requiredFeatures|, and |optionalFeatures|
         1. Let |status| be an {{XRPermissionStatus}}, initially <code>null</code>
         1. [=Request the xr permission=] with |descriptor| and |status|.
         1. If |status|' {{PermissionStatus/state}} is {{PermissionState/"denied"}} run the following steps:
