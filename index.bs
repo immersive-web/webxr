@@ -1268,6 +1268,8 @@ Each [=view=] corresponds to a display or portion of a display used by an XR dev
 
 A [=view=] has an associated internal <dfn>view offset</dfn>, which is an {{XRRigidTransform}} describing the position and orientation of the [=view=] in the [=XRSession/viewer reference space=]'s [=coordinate system=].
 
+NOTE: There are no constraints on what the view offset might be, and views are allowed to have differing orientations. This can crop up in head-mounted devices with eye displays centered at an angle, and it can also surface itself in more extreme cases like CAVE rendering. Techniques like z-sorting and culling may need to be done per-eye because of this.
+
 A [=view=] has an associated <dfn for="view">projection matrix</dfn> which is a [=matrix=] describing the projection to be used when rendering the [=view=], provided by the underlying XR device. The [=view/projection matrix=] MAY include transformations such as shearing that prevent the projection from being accurately described by a simple frustum.
 
 A [=view=] has an associated <dfn for="view">eye</dfn> which is an {{XREye}} describing which eye this view is expected to be shown to. If the view does not have an intrinsically associated eye (the display is monoscopic, for example) this value MUST be set to {{XREye/"none"}}.
