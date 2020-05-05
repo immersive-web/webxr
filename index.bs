@@ -1888,6 +1888,7 @@ interface XRWebGLLayer: XRLayer {
 
   // Static Methods
   static double getNativeFramebufferScaleFactor(XRSession session);
+  static boolean supportsViewType(XRWebGLLayerViewType viewType);
 };
 </pre>
 
