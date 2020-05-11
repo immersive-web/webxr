@@ -1947,6 +1947,8 @@ partial interface mixin WebGLRenderingContextBase {
 
 When a user agent implements this specification it MUST set a <dfn>XR compatible</dfn> boolean, initially set to <code>false</code>, on every {{WebGLRenderingContextBase}}. Once the [=XR compatible=] boolean is set to <code>true</code>, the context can be used with layers for any {{XRSession}} requested from the current [=XRSystem/immersive XR device=].
 
+Note: This flag should only be set if you plan to start an XR session. On some systems this flag may turn on a high powered discrete GPU, for example, or proxy all commands to an on-device GPU. If you are in a situation where you may switch to XR later, consider calling {{WebGLRenderingContextBase/makeXRCompatible()}} when that decision is made.
+
 The [=XR compatible=] boolean can be set either at context creation time or after context creation, potentially incurring a context loss. To set the [=XR compatible=] boolean at context creation time, the {{xrCompatible}} context creation attribute must be set to <code>true</code> when requesting a WebGL context.
 
 <div class="algorithm" data-algorithm="create-with-compatible-xr-device">
