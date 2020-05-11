@@ -614,9 +614,8 @@ A number of different circumstances may <dfn>shut down the session</dfn>, which 
 
 <div class="algorithm" data-algorithm="shut-down-session">
 
-When an {{XRSession}} is shut down the following steps are run:
+When an {{XRSession}} |session| is shut down the following steps are run:
 
-  1. Let |session| be the target {{XRSession}} object.
   1. Set |session|'s [=ended=] value to <code>true</code>.
   1. If the [=active immersive session=] is equal to |session|, set the [=active immersive session=] to <code>null</code>.
   1. Remove |session| from the [=list of inline sessions=].
@@ -634,7 +633,7 @@ When an {{XRSession}} is shut down the following steps are run:
 The <dfn method for="XRSession">end()</dfn> method provides a way to manually shut down a session. When invoked, it MUST run the following steps:
 
   1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of this {{XRSession}}.
-  1. [=Shut down the session|Shut down=] the target {{XRSession}} object.
+  1. [=Shut down the session|Shut down=] [=this=].
   1. [=Queue a task=] to perform the following steps:
     1. Wait until any platform-specific steps related to shutting down the session have completed.
     1. [=/Resolve=] |promise|.
@@ -665,7 +664,7 @@ The <dfn method for="XRSession">updateRenderState(|newState|)</dfn> method queue
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |session| be the target {{XRSession}}.
+  1. Let |session| be [=this=].
   1. If |session|'s [=ended=] value is <code>true</code>, throw an {{InvalidStateError}} and abort these steps.
   1. If |newState|'s {{XRRenderStateInit/baseLayer}}'s was created with an {{XRSession}} other than |session|, throw an {{InvalidStateError}} and abort these steps.
   1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set and |session| is an [=immersive session=], throw an {{InvalidStateError}} and abort these steps.
@@ -681,9 +680,8 @@ When this method is invoked, the user agent MUST run the following steps:
 
 <div class="algorithm" data-algorithm="apply-pending-render-state">
 
-When requested, the {{XRSession}} MUST <dfn>apply the pending render state</dfn> by running the following steps:
+When requested, the {{XRSession}} |session| MUST <dfn>apply the pending render state</dfn> by running the following steps:
 
-  1. Let |session| be the target {{XRSession}}.
   1. Let |activeState| be |session|'s [=active render state=].
   1. Let |newState| be |session|'s [=pending render state=].
   1. Set |session|'s [=pending render state=] to <code>null</code>.
@@ -888,7 +886,7 @@ The <dfn method for="XRSession">requestAnimationFrame(|callback|)</dfn> method q
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |session| be the target {{XRSession}} object.
+  1. Let |session| be the [=this=].
   1. Increment |session|'s [=animation frame callback identifier=] by one.
   1. Append |callback| to |session|'s [=list of animation frame callbacks=], associated with |session|'s [=animation frame callback identifier=]’s current value.
   1. Return |session|'s [=animation frame callback identifier=]’s current value.
@@ -901,7 +899,7 @@ The <dfn method for="XRSession">cancelAnimationFrame(|handle|)</dfn> method canc
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |session| be the target {{XRSession}} object.
+  1. Let |session| be the [=this=].
   1. Find the entry in |session|'s [=list of animation frame callbacks=] or |session|'s [=list of currently running animation frame callbacks=] that is associated with the value |handle|.
   1. If there is such an entry, set its [=cancelled=] boolean to <code>true</code> and remove it from |session|'s [=list of animation frame callbacks=].
 
@@ -1014,7 +1012,7 @@ The <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method provi
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |frame| be the target {{XRFrame}}
+  1. Let |frame| be [=this=].
   1. Let |session| be |frame|'s {{XRFrame/session}} object.
   1. If |frame|'s [=animationFrame=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
   1. Let |pose| be a [=new=] {{XRViewerPose}} object in the [=relevant realm=] of |session|.
@@ -1040,7 +1038,7 @@ The <dfn method for="XRFrame">getPose(|space|, |baseSpace|)</dfn> method provide
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |frame| be the target {{XRFrame}}
+  1. Let |frame| be [=this=].
   1. Let |pose| be a [=new=] {{XRPose}} object in the [=relevant realm=] of |frame|.
   1. [=Populate the pose=] of |space| in |baseSpace| at the time represented by |frame| into |pose|.
   1. Return |pose|.
@@ -1903,9 +1901,8 @@ Each {{XRSession}} MUST identify a <dfn>native WebGL framebuffer resolution</dfn
 
 <div class="algorithm" data-algorithm="native-webgl-framebuffer-resolution">
 
-The [=native WebGL framebuffer resolution=] is determined by running the following steps:
+The [=native WebGL framebuffer resolution=] for an {{XRSession}} |session| is determined by running the following steps:
 
-  1. Let |session| be the target {{XRSession}}.
   1. If |session|'s [=XRSession/mode=] value is not <code>"inline"</code>, set the [=native WebGL framebuffer resolution=] to the resolution required to have a 1:1 ratio between the pixels of a framebuffer large enough to contain all of the session's {{XRView}}s and the physical screen pixels in the area of the display under the highest magnification and abort these steps. If no method exists to determine the native resolution as described, the [=recommended WebGL framebuffer resolution=] MAY be used.
   1. If |session|'s [=XRSession/mode=] value is <code>"inline"</code>, set the [=native WebGL framebuffer resolution=] to the size of the |session|'s {{XRSession/renderState}}'s [=XRRenderState/output canvas=] in physical display pixels and reevaluate these steps every time the size of the canvas changes or the [=XRRenderState/output canvas=] is changed.
 
@@ -1919,7 +1916,7 @@ Note: The user agent is free to use and method of its choosing to estimate the [
 
 The <dfn method for="XRWebGLLayer">getNativeFramebufferScaleFactor(|session|)</dfn> method, when invoked, MUST run the following steps:
 
-  1. Let |session| be the target {{XRSession}}.
+  1. Let |session| be [=this=].
   1. If |session|'s [=ended=] value is <code>true</code>, return <code>0.0</code> and abort these steps.
   1. Return the value that the |session|'s [=recommended WebGL framebuffer resolution=] must be multiplied by to yield the |session|'s [=native WebGL framebuffer resolution=].
 
@@ -1988,7 +1985,7 @@ The <dfn method for="WebGLRenderingContextBase">makeXRCompatible()</dfn> method 
 When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |promise| be [=a new Promise=] created in the [=Realm=] of this {{WebGLRenderingContextBase}}.
-  1. Let |context| be the target {{WebGLRenderingContextBase}} object.
+  1. Let |context| be [=this=].
   1. [=ensures an immersive XR device is selected|Ensure an immersive XR device is selected=].
   1. Set |context|'s [=XR compatible=] boolean as follows:
     <dl class="switch">
