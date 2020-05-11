@@ -28,6 +28,8 @@ spec:infra;
     type:dfn; text:continue
 spec:permissions-1;
     type:dfn; text:powerful feature
+spec:webidl;
+    type:dfn; text:new
 </pre>
 
 <pre class="anchors">
@@ -74,6 +76,7 @@ spec:html; urlPrefix: https://html.spec.whatwg.org/multipage/
     type: dfn; text: currently focused area; url: interaction.html#currently-focused-area-of-a-top-level-browsing-context
     type: dfn; text: responsible; url: webappapis.html#responsible-document
     type: dfn; text: rendering opportunity; url: webappapis.html#rendering-opportunity
+    type: dfn; text: current realm; url: webappapis.html#current
     type: dfn; text: same origin-domain; url: origin.html#same-origin-domain
     type: dfn; text: active document; url: browsers.html#active-document
     type: dfn; text: browsing context; url: browsers.html#browsing-context
@@ -87,6 +90,7 @@ spec: PageVisibility; urlPrefix: https://www.w3.org/TR/page-visibility-2/#
 spec: ECMAScript; urlPrefix: https://tc39.github.io/ecma262/#
     type: method; text: IsDetachedBuffer; url: sec-isdetachedbuffer
     type: dfn; text: ?; url: sec-returnifabrupt-shorthands
+    type: dfn; text: Realm; url: realm
     type: abstract-op; text: ToString; url: sec-tostring
 spec: dom; urlPrefix: https://dom.spec.whatwg.org/#
     type:algorithm; text:fire an event; url: concept-event-fire
@@ -303,7 +307,7 @@ The <dfn method for="XRSystem">isSessionSupported(|mode|)</dfn> method queries i
 
 When this method is invoked, it MUST run the following steps:
 
-  1. Let |promise| be [=a new Promise=].
+  1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of this {{XRSystem}}.
   1. If |mode| is {{XRSessionMode/"inline"}}, [=/resolve=] |promise| with <code>true</code> and return it.
   1. If the requesting document's origin is not allowed to use the "xr-spatial-tracking" [[#feature-policy|feature policy]], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return it.
   1. Run the following steps [=in parallel=]:
@@ -345,7 +349,7 @@ The <dfn method for="XRSystem">requestSession(|mode|, |options|)</dfn> method at
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |promise| be [=a new Promise=].
+  1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of this {{XRSystem}}.
   1. Let |immersive| be <code>true</code> if |mode| is an [=immersive session=] mode, and <code>false</code> otherwise.
   1. Let |global object| be the [=relevant Global object=] for the {{XRSystem}} on which this method was invoked.
   1. Check whether the session request is allowed as follows:
@@ -375,7 +379,7 @@ When this method is invoked, the user agent MUST run the following steps:
             1. [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
             1. If |immersive| is <code>true</code>, set [=pending immersive session=] to <code>false</code>.
             1. Abort these steps.
-        1. Let |session| be a new {{XRSession}} object.
+        1. Let |session| be a [=new=] {{XRSession}} object in the [=relevant realm=] of this {{XRSystem}}.
         1. [=Initialize the session=] with |session|, |mode|, and |device|.
         1. Potentially set the [=active immersive session=] as follows:
             <dl class="switch">
@@ -629,7 +633,7 @@ When an {{XRSession}} is shut down the following steps are run:
 
 The <dfn method for="XRSession">end()</dfn> method provides a way to manually shut down a session. When invoked, it MUST run the following steps:
 
-  1. Let |promise| be [=a new Promise=].
+  1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of this {{XRSystem}}.
   1. [=Shut down the session|Shut down=] the target {{XRSession}} object.
   1. [=Queue a task=] to perform the following steps:
     1. Wait until any platform-specific steps related to shutting down the session have completed.
@@ -706,7 +710,7 @@ The <dfn method for="XRSession">requestReferenceSpace(|type|)</dfn> method const
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |promise| be [=a new Promise=].
+  1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of this {{XRSession}}.
   1. Run the following steps [=in parallel=]:
     1. [=Create a reference space=], |referenceSpace|, with the {{XRReferenceSpaceType}} |type|.
     1. If |referenceSpace| is <code>null</code>, [=reject=] |promise| with a {{NotSupportedError}} and abort these steps.
@@ -734,7 +738,7 @@ When <dfn for="XRSession" lt="add input source">new [=XR input source=]s become 
   1. If |session|'s [=XRSession/promise resolved=] flag is not set, abort these steps.
   1. Let |added| be a new [=/list=].
   1. For each new [=XR input source=]:
-    1. Let |inputSource| be a new {{XRInputSource}}.
+    1. Let |inputSource| be a [=new=] {{XRInputSource}} in the [=relevant realm=] of this {{XRSession}}.
     1. Add |inputSource| to |added|.
   1. [=Queue a task=] to perform the following steps:
     1. [=list/Extend=] |session|'s [=list of active XR input sources=] with |added|.
@@ -766,7 +770,7 @@ When the <dfn for="XRSession" export lt="change input source">{{XRInputSource/ha
   1. Let |removed| be a new [=/list=].
   1. For each changed [=XR input source=]:
     1. Let |oldInputSource| be the {{XRInputSource}} in |session|'s [=list of active XR input sources=] previously associated with the [=XR input source=].
-    1. Let |newInputSource| be a new {{XRInputSource}}.
+    1. Let |newInputSource| be a [=new=] {{XRInputSource}} in the [=relevant realm=] of |session|.
     1. Add |oldInputSource| to |removed|.
     1. Add |newInputSource| to |added|.
   1. [=Queue a task=] to perform the following steps:
@@ -841,7 +845,7 @@ Note: At this point the {{XRRenderState}} will only have an [=XRRenderState/outp
 
 When an {{XRRenderState}} object is created for an {{XRSession}} |session|, the user agent MUST <dfn>initialize the render state</dfn> by running the following steps:
 
-  1. Let |state| be the newly created {{XRRenderState}} object.
+  1. Let |state| be a [=new=] {{XRRenderState}} object in the [=relevant realm=] of |session|         .
   1. Initialize |state|'s {{XRRenderState/depthNear}} to <code>0.1</code>.
   1. Initialize |state|'s {{XRRenderState/depthFar}} to <code>1000.0</code>.
   1. Initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} as follows:
@@ -908,7 +912,7 @@ When this method is invoked, the user agent MUST run the following steps:
 When an {{XRSession}} |session| receives updated [=viewer=] state for timestamp |frameTime| from the [=XRSession/XR device=], it runs an <dfn>XR animation frame</dfn>, which MUST run the following steps regardless of if the [=list of animation frame callbacks=] is empty or not:
 
   1. Let |now| be the [=current high resolution time=].
-  1. Let |frame| be a new {{XRFrame}} with [=XRFrame/time=] |frameTime| and {{XRFrame/session}} |session|.
+  1. Let |frame| be a [=new=] {{XRFrame}} with [=XRFrame/time=] |frameTime| and {{XRFrame/session}} |session| in the [=relevant realm=] of |session|.
   1. If |session|'s [=pending render state=] is not <code>null</code>, [=apply the pending render state=].
   1. If |session|'s {{XRSession/renderState}}'s {{XRRenderState/baseLayer}} is <code>null</code>, abort these steps.
   1. If |session|'s  [=XRSession/mode=] is {{XRSessionMode/"inline"}} and |session|'s {{XRSession/renderState}}'s [=XRRenderState/output canvas=] is <code>null</code>, abort these steps.
@@ -1013,17 +1017,17 @@ When this method is invoked, the user agent MUST run the following steps:
   1. Let |frame| be the target {{XRFrame}}
   1. Let |session| be |frame|'s {{XRFrame/session}} object.
   1. If |frame|'s [=animationFrame=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
-  1. Let |pose| be a new {{XRViewerPose}} object.
+  1. Let |pose| be a [=new=] {{XRViewerPose}} object in the [=relevant realm=] of |session|.
   1. [=Populate the pose=] of |session|'s [=XRSession/viewer reference space=] in |referenceSpace| at the time represented by |frame| into |pose|.
   1. If |pose| is <code>null</code> return <code>null</code>.
   1. Let |xrviews| be an empty [=/list=].
   1. For each [=view=] |view| in the [=XRSession/viewer reference space/list of views=] on the[=XRSession/viewer reference space=] of {{XRFrame/session}}, perform the following steps:
-      1. Let |xrview| be a new {{XRView}} object.
+      1. Let |xrview| be a new {{XRView}} object in the [=relevant realm=] of |session|.
       1. Initialize |xrview|'s [=XRView/underlying view=] to |view|.
       1. Initialize |xrview|'s {{XRView/eye}} to |view|'s [=view/eye=].
       1. Initialize |xrview|'s [=XRView/frame=] to |frame|.
-      1. Let |offset| be an {{XRRigidTransform}} equal to the [=view offset=] of |view|
-      1. Set |xrview|'s {{XRView/transform}} property to the result of [=multiply transforms|multiplying=] the {{XRViewerPose}}'s {{XRPose/transform}} by the |offset| transform
+      1. Let |offset| be an [=new=] {{XRRigidTransform}} object equal to the [=view offset=] of |view| in the [=relevant realm=] of |session|.
+      1. Set |xrview|'s {{XRView/transform}} property to the result of [=multiply transforms|multiplying=] the {{XRViewerPose}}'s {{XRPose/transform}} by the |offset| transform in the relevant realm of |session|
       1. [=list/Append=] |xrview| to |xrviews|
   1. Set |pose|'s {{XRViewerPose/views}} to |xrviews|
   1. Return |pose|.
@@ -1037,7 +1041,7 @@ The <dfn method for="XRFrame">getPose(|space|, |baseSpace|)</dfn> method provide
 When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |frame| be the target {{XRFrame}}
-  1. Let |pose| be a new {{XRPose}} object.
+  1. Let |pose| be a [=new=] {{XRPose}} object in the [=relevant realm=] of |frame|.
   1. [=Populate the pose=] of |space| in |baseSpace| at the time represented by |frame| into |pose|.
   1. Return |pose|.
 
@@ -1170,9 +1174,9 @@ When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a ref
     1. Initialize |referenceSpace| as follows:
         <dl class="switch">
           <dt> If |type| is {{bounded-floor}}
-          <dd> Let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
+          <dd> Let |referenceSpace| be a [=new=] {{XRBoundedReferenceSpace}} in the [=relevant realm=] of |session|.
           <dt> Otherwise
-          <dd> Let |referenceSpace| be a new {{XRReferenceSpace}}.
+          <dd> Let |referenceSpace| be a [=new=] {{XRReferenceSpace}} in the [=relevant realm=] of |session|.
         </dl>
     1. Initialize |referenceSpace|'s [=XRReferenceSpace/type=] to |type|.
     1. Initialize |referenceSpace|'s [=XRSpace/session=] to |session|.
@@ -1201,12 +1205,12 @@ The <dfn method for="XRReferenceSpace">getOffsetReferenceSpace(|originOffset|)</
   1. Initialize |offsetSpace| as follows:
     <dl class="switch">
       <dt> If |base| is an instance of {{XRBoundedReferenceSpace}}
-      <dd> Let |offsetSpace| be a new {{XRBoundedReferenceSpace}} and set |offsetSpace|'s {{boundsGeometry}} to |base|'s {{boundsGeometry}}, with each point multiplied by the {{XRRigidTransform/inverse}} of |originOffset|.
+      <dd> Let |offsetSpace| be a [=new=] {{XRBoundedReferenceSpace}} in the [=relevant realm=] of |base|, and set |offsetSpace|'s {{boundsGeometry}} to |base|'s {{boundsGeometry}}, with each point multiplied by the {{XRRigidTransform/inverse}} of |originOffset|.
       <dt> Else
-      <dd> Let |offsetSpace| be a new {{XRReferenceSpace}}.
+      <dd> Let |offsetSpace| be a [=new=] {{XRReferenceSpace}} in the [=relevant realm=] of |base|.
     </dl>
   1. Set |offsetSpace|'s [=native origin=] to |base|'s [=native origin=].
-  1. Set |offsetSpace|'s [=origin offset=] to the result of [=multiply transforms|multiplying=] |base|'s [=origin offset=] by |originOffset|.
+  1. Set |offsetSpace|'s [=origin offset=] to the result of [=multiply transforms|multiplying=] |base|'s [=origin offset=] by |originOffset| in the [=relevant realm=] of |base|.
   1. Return |offsetSpace|.
 
 </div>
@@ -1312,7 +1316,7 @@ To <dfn for="XRView">obtain the projection matrix</dfn> for a given {{XRView}} |
 
   1. If |view|'s [=XRView/internal projection matrix=] is not <code>null</code>, perform the following steps:
     1. If the operation {{IsDetachedBuffer}} on [=XRView/internal projection matrix=]  is <code>false</code>, return |view|'s [=XRView/internal projection matrix=].
-  1. Set |view|'s [=XRView/internal projection matrix=] to a new [=matrix=] which is equal to |view|'s [=XRView/underlying view=]'s [=view/projection matrix=].
+  1. Set |view|'s [=XRView/internal projection matrix=] to a [=new=] [=matrix=] in the [=relevant realm=] of |view| which is equal to |view|'s [=XRView/underlying view=]'s [=view/projection matrix=].
   1. Return |view|'s [=XRView/internal projection matrix=].
 
 </div>
@@ -1419,18 +1423,13 @@ interface XRRigidTransform {
 
 The <dfn constructor for="XRRigidTransform">XRRigidTransform(|position|, |orientation|)</dfn> constructor MUST perform the following steps when invoked:
 
-  1. Let |transform| be a new {{XRRigidTransform}}.
-  1. If |position| is not a {{DOMPointInit}} initialize |transform|'s {{XRRigidTransform/position}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
+  1. Let |transform| be a [=new=] {{XRRigidTransform}} in the [=current realm=].
+  1. Let |transform|'s {{XRRigidTransform/position}} be a [=new=] {{DOMPointReadOnly}} in the [=current realm=].
   1. If |position|'s {{DOMPointReadOnly/w}} value is not 1.0, throw a {{TypeError}}.
-  1. Initialize |transform|'s {{XRRigidTransform/position}}’s {{DOMPointReadOnly/x}} value to |position|'s x dictionary member, {{DOMPointReadOnly/y}} value to |position|'s y dictionary member, {{DOMPointReadOnly/z}} value to |position|'s z dictionary member and {{DOMPointReadOnly/w}} to <code>1.0</code>.
-  1. Initialize |transform|'s {{XRRigidTransform/orientation}} as follows:
-    <dl class="switch">
-      <dt> If |orientation| is not a {{DOMPointInit}}
-      <dd> Initialize |transform|'s {{XRRigidTransform/orientation}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
-      <dt> Else
-      <dd> Initialize |transform|'s {{XRRigidTransform/orientation}}’s {{DOMPointReadOnly/x}} value to |orientation|'s x dictionary member, {{DOMPointReadOnly/y}} value to |orientation|'s y dictionary member, {{DOMPointReadOnly/z}} value to |orientation|'s z dictionary member and {{DOMPointReadOnly/w}} value to |orientation|'s w dictionary member.
-    </dl>
-  1. Initialize |transform|'s [=XRRigidTransform/internal matrix=] to <code>null</code>.
+  1. Set |transform|'s {{XRRigidTransform/position}}’s {{DOMPointReadOnly/x}} value to |position|'s x dictionary member, {{DOMPointReadOnly/y}} value to |position|'s y dictionary member, {{DOMPointReadOnly/z}} value to |position|'s z dictionary member and {{DOMPointReadOnly/w}} value to |position|'s w dictionary member.
+  1. Let |transform|'s {{XRRigidTransform/orientation}} be a [=new=] {{DOMPointReadOnly}} in the [=current realm=].
+  1. Set |transform|'s {{XRRigidTransform/orientation}}’s {{DOMPointReadOnly/x}} value to |orientation|'s x dictionary member, {{DOMPointReadOnly/y}} value to |orientation|'s y dictionary member, {{DOMPointReadOnly/z}} value to |orientation|'s z dictionary member and {{DOMPointReadOnly/w}} value to |orientation|'s w dictionary member.
+  1. Let |transform|'s [=XRRigidTransform/internal matrix=] be <code>null</code>.
   1. [=Normalize=] {{DOMPointReadOnly/x}}, {{DOMPointReadOnly/y}}, {{DOMPointReadOnly/z}}, and {{DOMPointReadOnly/w}} components of |transform|'s {{XRRigidTransform/orientation}}.
   1. Return |transform|.
 
@@ -1456,25 +1455,25 @@ To <dfn for="XRRigidTransform">obtain the matrix</dfn> for a given {{XRRigidTran
   1. Let |rotation| be a new [=matrix=] which is a column-vector rotation matrix corresponding to {{XRRigidTransform/orientation}}. Mathematically, if {{XRRigidTransform/orientation}} is the unit quaternion <code>(q<sub>x</sub>, q<sub>y</sub>, q<sub>z</sub>, q<sub>w</sub>)</code>, this matrix is
 
         <img src="images/rotation_matrix.svg" alt="Mathematical expression for column-vector rotation matrix" />
-  1. Set |transform|'s [=XRRigidTransform/internal matrix=] to a new [=matrix=] set to the result of multiplying |translation| and |rotation| with |translation| on the left (<code>translation * rotation</code>). Mathematically, this matrix is
+  1. Set |transform|'s [=XRRigidTransform/internal matrix=] to a [=new=] {{Float32Array}} in the [=relevant realm=] of |transform| set to the result of multiplying |translation| and |rotation| with |translation| on the left (<code>translation * rotation</code>) in the [=relevant realm=] of |transform|. Mathematically, this matrix is
 
        <img src="images/rigid_matrix.svg" alt="Mathematical expression for matrix of multiplying translation and rotation with translation on the left" />
   1. Return |transform|'s [=XRRigidTransform/internal matrix=].
 
 </div>
 
-The <dfn attribute for="XRRigidTransform">inverse</dfn> attribute returns an {{XRRigidTransform}} which, if applied to an object that had previously been transformed by the original {{XRRigidTransform}}, would undo the transform and return the object to its initial pose. This attribute SHOULD be lazily evaluated. The {{XRRigidTransform}} returned by {{inverse}} MUST return the originating {{XRRigidTransform}} as its {{inverse}}.
+The <dfn attribute for="XRRigidTransform">inverse</dfn> attribute of a {{XRRigidTransform}} |transform| returns an {{XRRigidTransform}} in the relevant realm of |transform| which, if applied to an object that had previously been transformed by |transform|, would undo the transform and return the object to its initial pose. This attribute SHOULD be lazily evaluated. The {{XRRigidTransform}} returned by {{inverse}} MUST return |transform| as its {{inverse}}.
 
 An {{XRRigidTransform}} with a {{XRRigidTransform/position}} of <code>{ x: 0, y: 0, z: 0 w: 1 }</code> and an {{XRRigidTransform/orientation}} of <code>{ x: 0, y: 0, z: 0, w: 1 }</code> is known as an <dfn>identity transform</dfn>.
 
 <div class="algorithm" data-algorithm="multiply transforms">
 
-To <dfn lt="multiply transforms">multiply two {{XRRigidTransform}}s</dfn>, |B| and |A|, the UA MUST perform the following steps:
+To <dfn lt="multiply transforms">multiply two {{XRRigidTransform}}s</dfn>, |B| and |A| in a [=Realm=] |realm|, the UA MUST perform the following steps:
 
-  1. Let |result| be a new {{XRRigidTransform}} object.
-  1. Set |result|'s {{XRRigidTransform/matrix}} to the result of premultiplying |B|'s {{XRRigidTransform/matrix}} from the left onto |A|'s {{XRRigidTransform/matrix}}.
-  1. Set |result|'s {{XRRigidTransform/orientation}} to the quaternion that describes the rotation indicated by the top left 3x3 sub-matrix of |result|'s {{XRRigidTransform/matrix}}.
-  1. Set |result|'s {{XRRigidTransform/position}} to the vector given by the fourth column of |result|'s {{XRRigidTransform/matrix}}.
+  1. Let |result| be a [=new=] {{XRRigidTransform}} object in |realm|.
+  1. Set |result|'s {{XRRigidTransform/matrix}} to a [=new=] {{Float32Array}} in |realm|, the result of premultiplying |B|'s {{XRRigidTransform/matrix}} from the left onto |A|'s {{XRRigidTransform/matrix}}.
+  1. Set |result|'s {{XRRigidTransform/orientation}} to a [=new=] {{DOMPointReadOnly}} in |realm|, the quaternion that describes the rotation indicated by the top left 3x3 sub-matrix of |result|'s {{XRRigidTransform/matrix}}.
+  1. Set |result|'s {{XRRigidTransform/position}} to  a [=new=] {{DOMPointReadOnly}} in |realm|, the vector given by the fourth column of |result|'s {{XRRigidTransform/matrix}}.
   1. Return |result|.
 
 |result| is a transform from |A|'s source space to |B|'s destination space.
@@ -1591,7 +1590,7 @@ An [=XR input source=] is an <dfn>auxiliary input source</dfn> if it does not su
 
 When an [=XR input source=] |source| for {{XRSession}} |session| begins its [=primary action=] the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
   1. [=Queue a task=] to [=fire an input source event=] with name {{selectstart!!event}}, frame |frame|, and source |source|.
 
 </div>
@@ -1600,7 +1599,7 @@ When an [=XR input source=] |source| for {{XRSession}} |session| begins its [=pr
 
 When an [=XR input source=] |source| for {{XRSession}} |session| ends its [=primary action=] the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
   1. [=Queue a task=] to perform the following steps:
     1. [=Fire an input source event=] with name {{select!!event}}, frame |frame|, and source |source|.
     1. [=Fire an input source event=] with name {{selectend!!event}}, frame |frame|, and source |source|.
@@ -1613,7 +1612,7 @@ Each [=XR input source=] MAY define a <dfn>primary squeeze action</dfn>. The [=p
 
 When an [=XR input source=] |source| for {{XRSession}} |session| begins its [=primary squeeze action=] the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
   1. [=Queue a task=] to [=fire an input source event=] with name {{squeezestart!!event}}, frame |frame|, and source |source|.
 
 </div>
@@ -1622,7 +1621,7 @@ When an [=XR input source=] |source| for {{XRSession}} |session| begins its [=pr
 
 When an [=XR input source=] |source| for {{XRSession}} |session| ends its [=primary squeeze action=] the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
   1. [=Queue a task=] to perform the following steps:
     1. [=Fire an input source event=] with name {{squeeze!!event}}, frame |frame|, and source |source|.
     1. [=Fire an input source event=] with name {{squeezeend!!event}}, frame |frame|, and source |source|.
@@ -1635,7 +1634,7 @@ Sometimes platform-specific behavior can result in a [=primary action=] or [=pri
 
 When an [=XR input source=] |source| for {{XRSession}} |session| has its [=primary action=] cancelled the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
   1. [=Queue a task=] to [=fire an input source event=] an {{XRInputSourceEvent}} with name {{selectend!!event}}, frame |frame|, and source |source|.
 
 </div>
@@ -1644,7 +1643,7 @@ When an [=XR input source=] |source| for {{XRSession}} |session| has its [=prima
 
 When an [=XR input source=] |source| for {{XRSession}} |session| has its [=primary squeeze action=] cancelled the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
   1. [=Queue a task=] to [=fire an input source event=] an {{XRInputSourceEvent}} with name {{squeezeend!!event}}, frame |frame|, and source |source|.
 
 </div>
@@ -1660,7 +1659,7 @@ Some [=/XR device=]s may support <dfn>transient input sources</dfn>, where the [
 
 When a [=transient input source=] |source| for {{XRSession}} |session| begins its [=transient action=] the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| for the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| for the time the action occurred.
   1. [=Queue a task=] to perform the following steps:
     1. Fire any <code>"pointerdown"</code> events produced by the [=XR input source=]'s action, if necessary.
     1. [=add input source|Add the XR input source=] to the [=list of active XR input sources=].
@@ -1672,7 +1671,7 @@ When a [=transient input source=] |source| for {{XRSession}} |session| begins it
 
 When a [=transient input source=] |source| for {{XRSession}} |session| ends its [=transient action=] the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| for the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| for the time the action occurred.
   1. [=Queue a task=] to perform the following steps:
     1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{select!!event}}, frame |frame|, and source |source|.
     1. Fire any <code>"click"</code> events produced by the [=XR input source=]'s action, if necessary.
@@ -1686,7 +1685,7 @@ When a [=transient input source=] |source| for {{XRSession}} |session| ends its 
 
 When a [=transient input source=] |source| for {{XRSession}} |session| has its [=transient action=] cancelled the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| for the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| for the time the action occurred.
   1. [=Queue a task=] to perform the following steps:
     1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{selectend!!event}}, frame |frame|, and source |source|.
     1. [=remove input source|Remove the XR input source=] from the [=list of active XR input sources=].
@@ -1775,7 +1774,7 @@ Each {{XRWebGLLayer}} has an associated <dfn for="XRWebGLLayer">session</dfn>, w
 
 The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |layerInit|)</dfn> constructor MUST perform the following steps when invoked:
 
-  1. Let |layer| be a new {{XRWebGLLayer}}
+  1. Let |layer| be a [=new=] {{XRWebGLLayer}} in the [=relevant realm=] of |session|.
   1. If |session|'s [=ended=] value is <code>true</code>, throw an {{InvalidStateError}} and abort these steps.
   1. If |context| is lost, throw an {{InvalidStateError}} and abort these steps.
   1. If |session| is an [=immersive session=] and |context|'s [=XR compatible=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
@@ -1800,7 +1799,7 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
       <dd>
         1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layerInit|'s {{XRWebGLLayerInit/antialias}} value.
         1. Let |framebufferSize| be the [=recommended WebGL framebuffer resolution=] multiplied by |layerInit|'s {{XRWebGLLayerInit/framebufferScaleFactor}}.
-        1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] with the dimensions |framebufferSize| created with |context|, [=opaque framebuffer/session=] initialized to |session|, and |layerInit|'s {{XRWebGLLayerInit/depth}}, {{XRWebGLLayerInit/stencil}}, and {{XRWebGLLayerInit/alpha}} values.
+        1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a [=new=] {{WebGLFramebuffer}} in the [=relevant realm=] of |context|, which is an [=opaque framebuffer=] with the dimensions |framebufferSize| created with |context|, [=opaque framebuffer/session=] initialized to |session|, and |layerInit|'s {{XRWebGLLayerInit/depth}}, {{XRWebGLLayerInit/stencil}}, and {{XRWebGLLayerInit/alpha}} values.
         1. Allocate and initialize resources compatible with |session|'s [=XRSession/XR device=], including GPU accessible memory buffers, as required to support the compositing of |layer|.
         1. If |layer|’s resources were unable to be created for any reason, throw an {{OperationError}} and abort these steps.
       <dt> Otherwise
@@ -1891,7 +1890,7 @@ The <dfn method for="XRWebGLLayer">getViewport(|view|)</dfn> method, when invoke
   1. If |frame|'s {{XRFrame/session}} is not equal to |layer|'s [=XRWebGLLayer/session=], throw an {{InvalidStateError}} and abort these steps.
   1. If |frame|'s [=XRFrame/active=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
   1. Let |glViewport| be the [=WebGL viewport=] from the [=list of viewports=] associated with |view|.
-  1. Let |viewport| be a new {{XRViewport}} instance.
+  1. Let |viewport| be a [=new=] {{XRViewport}} in the [=relevant realm=] of |layer|'s [=XRWebGLLayer/session=].
   1. Initialize |viewport|'s {{XRViewport/x}} to |glViewport|'s <code>x</code> component.
   1. Initialize |viewport|'s {{XRViewport/y}} to |glViewport|'s <code>y</code> component.
   1. Initialize |viewport|'s {{XRViewport/width}} to |glViewport|'s <code>width</code>.
@@ -1988,7 +1987,7 @@ The <dfn method for="WebGLRenderingContextBase">makeXRCompatible()</dfn> method 
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |promise| be [=a new Promise=].
+  1. Let |promise| be [=a new Promise=] created in the [=Realm=] of this {{WebGLRenderingContextBase}}.
   1. Let |context| be the target {{WebGLRenderingContextBase}} object.
   1. [=ensures an immersive XR device is selected|Ensure an immersive XR device is selected=].
   1. Set |context|'s [=XR compatible=] boolean as follows:
