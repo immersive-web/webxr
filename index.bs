@@ -44,6 +44,7 @@ spec: WebGL; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: typedef; text: INVALID_OPERATION; url: WebGLRenderingContextBase
     type: typedef; text: INVALID_FRAMEBUFFER_OPERATION; url: WebGLRenderingContextBase
     type: typedef; text: FRAMEBUFFER_UNSUPPORTED; url: WebGLRenderingContextBase
+    type: typedef; text: FRAMEBUFFER_COMPLETE; url: WebGLRenderingContextBase
     type: method; text: clear; url: 5.14.11
     type: method; text: drawArrays; url: 5.14.11
     type: method; text: drawElements; url: 5.14.11
@@ -52,7 +53,7 @@ spec: WebGL; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: method; text: framebufferRenderbuffer;  url: 5.14.6
     type: method; text: getFramebufferAttachmentParameter;  url: 5.14.6
     type: method; text: deleteFramebuffer;  url: 5.14.6
-    type: method; text: checkFramebufferStatus;  url: 5.14.6
+    type: method; text: checkFramebufferStatus(); for: WebGLRenderingContextBase;  url: 5.14.6
     type: dictionary; text: WebGLContextAttributes; url: #WebGLContextAttributes
     type: dfn; text: Create the WebGL context; url:#2.1
     type: dfn; text: default framebuffer; url:#2.2
@@ -1822,7 +1823,8 @@ An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFram
  - An [=opaque framebuffer=] MAY support antialiasing, even in WebGL 1.0.
  - An [=opaque framebuffer=]'s attachments cannot be inspected or changed. Calling {{framebufferTexture2D}}, {{framebufferRenderbuffer}}, {{deleteFramebuffer}}, or {{getFramebufferAttachmentParameter}} with an [=opaque framebuffer=] MUST generate an {{INVALID_OPERATION}} error.
  - An [=opaque framebuffer=] has a related <dfn for="opaque framebuffer">session</dfn>, which is the {{XRSession}} it was created for.
- - An [=opaque framebuffer=] is considered incomplete outside of a {{XRSession/requestAnimationFrame()}} callback. When not in the {{XRSession/requestAnimationFrame()}} callback of its [=opaque framebuffer/session=], calls to {{checkFramebufferStatus}} MUST generate a {{FRAMEBUFFER_UNSUPPORTED}} error and attempts to clear, draw to, or read from the [=opaque framebuffer=] MUST generate an {{INVALID_FRAMEBUFFER_OPERATION}} error.
+ - An [=opaque framebuffer=] is considered incomplete outside of a {{XRSession/requestAnimationFrame()}} callback. When not in the {{XRSession/requestAnimationFrame()}} callback of its [=opaque framebuffer/session=], calls to {{checkFramebufferStatus()}} MUST generate a {{FRAMEBUFFER_UNSUPPORTED}} error and attempts to clear, draw to, or read from the [=opaque framebuffer=] MUST generate an {{INVALID_FRAMEBUFFER_OPERATION}} error.
+ - When in the {{XRSession/requestAnimationFrame()}} callback of its [=opaque framebuffer/session=], {{checkFramebufferStatus()}} MUST return whatever value it would have returned if it were a standard {{WebGLFramebuffer}}, usually a {{FRAMEBUFFER_COMPLETE}} value.
  - An [=opaque framebuffer=] initialized with {{XRWebGLLayerInit/depth}} <code>true</code> will have an attached depth buffer.
  - An [=opaque framebuffer=] initialized with {{XRWebGLLayerInit/stencil}} <code>true</code> will have an attached stencil buffer.
  - An [=opaque framebuffer=]'s color buffer will have an alpha channel if and only if {{XRWebGLLayerInit/alpha}} is <code>true</code>.
