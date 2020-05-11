@@ -633,7 +633,7 @@ When an {{XRSession}} is shut down the following steps are run:
 
 The <dfn method for="XRSession">end()</dfn> method provides a way to manually shut down a session. When invoked, it MUST run the following steps:
 
-  1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of this {{XRSystem}}.
+  1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of this {{XRSession}}.
   1. [=Shut down the session|Shut down=] the target {{XRSession}} object.
   1. [=Queue a task=] to perform the following steps:
     1. Wait until any platform-specific steps related to shutting down the session have completed.
