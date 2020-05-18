@@ -1268,9 +1268,9 @@ Views {#views}
 XRView {#xrview-interface}
 ------
 
-An {{XRView}} describes a single <dfn>view</dfn> into an XR scene for a given frame.
+An {{XRView}} describes a single [=view=] into an XR scene for a given frame.
 
-Each [=view=] corresponds to a display or portion of a display used by an XR device to present imagery to the user. They are used to retrieve all the information necessary to render content that is well aligned to the [=view=]'s physical output properties, including the field of view, eye offset, and other optical properties. [=Views=] may cover overlapping regions of the user's vision. No guarantee is made about the number of [=views=] any XR device uses or their order, nor is the number of [=views=] required to be constant for the duration of an {{XRSession}}.
+A <dfn>view</dfn> corresponds to a display or portion of a display used by an XR device to present imagery to the user. They are used to retrieve all the information necessary to render content that is well aligned to the [=view=]'s physical output properties, including the field of view, eye offset, and other optical properties. [=Views=] may cover overlapping regions of the user's vision. No guarantee is made about the number of [=views=] any XR device uses or their order, nor is the number of [=views=] required to be constant for the duration of an {{XRSession}}.
 
 A [=view=] has an associated internal <dfn>view offset</dfn>, which is an {{XRRigidTransform}} describing the position and orientation of the [=view=] in the [=XRSession/viewer reference space=]'s [=coordinate system=].
 
