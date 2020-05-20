@@ -456,6 +456,8 @@ Note: Examples of ways [=exclusive access=] may be presented include stereo cont
 
 Note: As an example of overlaid UI, the user-agent or operating system in an [=immersive session=] may show notifications over the rendered content.
 
+Note: While the HTML document is not shown on the [=XRSystem/immersive XR device=]'s display during an [=immersive session=], it may still be shown on a separate display, e.g. when the user is entering the [=immersive session=] from a 2d browser on their computer tethered to their  [=XRSystem/immersive XR device=].
+
 Feature Dependencies {#feature-dependencies}
 --------------------
 
