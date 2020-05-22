@@ -391,7 +391,7 @@ When this method is invoked, the user agent MUST run the following steps:
             </dl>
         1. [=/Resolve=] |promise| with |session|.
         1. [=Queue a task=] to perform the following steps:
-            NOTE: These steps ensure that initial <code>inputsourceschange</code> events occur after the initial session is resolved.
+            <div class=note>Note: These steps ensure that initial <code>inputsourceschange</code> events occur after the initial session is resolved.</div>
             1. Set |session|'s [=XRSession/promise resolved=] flag to <code>true</code>.
             1. Let |sources| be any existing input sources attached to |session|.
             1. If |sources| is non-empty, perform the following steps:
