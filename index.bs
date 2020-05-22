@@ -715,6 +715,8 @@ When this method is invoked, the user agent MUST run the following steps:
   1. Run the following steps [=in parallel=]:
     1. If the result of running [=reference space is supported=] for |type| and |session| is <code>false</code>, [=queue a task=] to [=reject=] |promise| with a {{NotSupportedError}} and abort these steps.
     1. Set up any platform resources required to track reference spaces of type |type|.
+    1. Wait until a time when the [=native origin=] of an {{XRReferenceSpace}} of type |type| will be tracked or has been tracked at any previous point in the lifecycle of |session|.
+        <div class=note>Note: This means that {{requestReferenceSpace()}} will not return reference spaces that have never established tracking.</div>
     1. [=Queue a task=] to run the following steps:
       1. [=Create a reference space=], |referenceSpace|, with |type| and |session|.
       1. [=/Resolve=] |promise| with |referenceSpace|.
@@ -1015,7 +1017,7 @@ An {{XRFrame}} represents a snapshot of the state of all of the tracked objects 
 [SecureContext, Exposed=Window] interface XRFrame {
   [SameObject] readonly attribute XRSession session;
 
-  XRViewerPose? getViewerPose(XRReferenceSpace referenceSpace);
+  XRViewerPose getViewerPose(XRReferenceSpace referenceSpace);
   XRPose? getPose(XRSpace space, XRSpace baseSpace);
 };
 </pre>
@@ -1037,7 +1039,6 @@ When this method is invoked, the user agent MUST run the following steps:
   1. If |frame|'s [=animationFrame=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
   1. Let |pose| be a [=new=] {{XRViewerPose}} object in the [=relevant realm=] of |session|.
   1. [=Populate the pose=] of |session|'s [=XRSession/viewer reference space=] in |referenceSpace| at the time represented by |frame| into |pose|, with <code>force emulation</code> set to <code>true</code>.
-  1. If |pose| is <code>null</code> return <code>null</code>.
   1. Let |xrviews| be an empty [=/list=].
   1. For each [=view=] |view| in the [=XRSession/viewer reference space/list of views=] on the[=XRSession/viewer reference space=] of {{XRFrame/session}}, perform the following steps:
       1. Let |xrview| be a new {{XRView}} object in the [=relevant realm=] of |session|.
@@ -1125,7 +1126,7 @@ To <dfn>populate the pose</dfn> of an {{XRSpace}} |space| in an {{XRSpace}} |bas
         <dd> Set |transform|'s {{XRRigidTransform/position}} to the tracking system's best estimate of the position of |space|'s [=effective origin=] in |baseSpace|'s [=coordinate system=]. This MAY include a computed offset such as a neck or arm model. If a position estimate is not available, the last known position MUST be used.
         <dd> Set |pose|'s {{XRPose/emulatedPosition}} to <code>true</code>.
 
-      <dt> Else if |space|'s pose relative to |baseSpace| has been determined in the past and |force emulation| is <code>true</code>:
+      <dt> Else if |force emulation| is <code>true</code>:
         <dd> Set |transform|'s {{XRRigidTransform/position}} to the last known position of |space|'s [=effective origin=] in |baseSpace|'s [=coordinate system=].
         <dd> Set |transform|'s {{XRRigidTransform/orientation}} to the last known orientation of |space|'s [=effective origin=] in |baseSpace|'s [=coordinate system=].
         <dd> Set |pose|'s {{XRPose/emulatedPosition}} boolean to <code>true</code>.
