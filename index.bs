@@ -2569,6 +2569,7 @@ Thank you to the following individuals for their contributions the WebXR Device 
   * <a href="mailto:gminthe@gmail.com">Kyungsuk</a> (<a href="https://www.xandr.com/">AT&T Xandr</a>)
   * <a href="mailto:ddorwin@google.com">David Dorwin</a> (<a href="https://google.com">Google</a>)
   * <a href="mailto:trevor@transmutable.com">Trevor F. Smith</a> (<a href="https://transmutable.com/">Transmutable</a>)
+  * <a href="mailto:ada.cannon@samsung.com">Ada Rose Cannon</a> (<a href="https://samsung.com">Samsung</a>)
 
 And a special thanks to <a href="mailto:vladv@unity3d.com">Vladimir Vukicevic</a> (<a href="https://unity3d.com/">Unity</a>) for kick-starting this whole adventure!
 
