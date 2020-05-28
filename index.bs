@@ -692,7 +692,7 @@ When requested, the {{XRSession}} |session| MUST <dfn>apply the pending render s
   1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is less than |session|'s [=minimum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=minimum inline field of view=].
   1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is greater than |session|'s [=maximum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=maximum inline field of view=].
   1. If |activeState|'s {{XRRenderState/depthNear}} is less than |session|'s [=minimum near clip plane=] set |activeState|'s {{XRRenderState/depthNear}} to |session|'s [=minimum near clip plane=].
-  1. If |activeState|'s {{XRRenderState/depthFar}} is less than |session|'s [=maximum far clip plane=] set |activeState|'s {{XRRenderState/depthFar}} to |session|'s [=maximum far clip plane=].
+  1. If |activeState|'s {{XRRenderState/depthFar}} is greater than |session|'s [=maximum far clip plane=] set |activeState|'s {{XRRenderState/depthFar}} to |session|'s [=maximum far clip plane=].
   1. Let |baseLayer| be |activeState|'s {{XRRenderState/baseLayer}}.
   1. Set |activeState|'s [=XRRenderState/composition disabled=] and [=XRRenderState/output canvas=] as follows:
     <dl class="switch">
