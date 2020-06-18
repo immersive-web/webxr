@@ -938,7 +938,13 @@ NOTE: The <a href="https://immersive-web.github.io/layers">WebXR layers module</
 When an {{XRSession}} |session| receives updated [=viewer=] state for timestamp |frameTime| from the [=XRSession/XR device=], it runs an <dfn>XR animation frame</dfn>, which MUST run the following steps regardless of if the [=list of animation frame callbacks=] is empty or not:
 
   1. Let |now| be the [=current high resolution time=].
-  1. Let |frame| be a [=new=] {{XRFrame}} with [=XRFrame/time=] |frameTime| and {{XRFrame/session}} |session| in the [=relevant realm=] of |session|.
+  1. Initialize |frame| as follows:
+    <dl class="switch">
+      <dt>If |session| has previously run an [=XR animation frame=], the user agent MAY:</dt>
+      <dd>Let |frame| be the same {{XRFrame}} object created by the earlier [=XR animation frame=]</dd>
+      <dt>Otherwise:</dt>
+      <dd>Let |frame| be a [=new=] {{XRFrame}} with [=XRFrame/time=] |frameTime| and {{XRFrame/session}} |session| in the [=relevant realm=] of |session|.</dd>
+    </dl>
   1. If |session|'s [=pending render state=] is not <code>null</code>, [=apply the pending render state=].
   1. If [=check the layers state=] with |session|'s {{XRSession/renderState}} is <code>false</code>, abort these steps.
   1. If |session|'s  [=XRSession/mode=] is {{XRSessionMode/"inline"}} and |session|'s {{XRSession/renderState}}'s [=XRRenderState/output canvas=] is <code>null</code>, abort these steps.
