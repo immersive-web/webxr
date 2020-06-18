@@ -1921,7 +1921,13 @@ The <dfn method for="XRWebGLLayer">getViewport(|view|)</dfn> method, when invoke
   1. If |frame|'s {{XRFrame/session}} is not equal to |layer|'s [=XRWebGLLayer/session=], throw an {{InvalidStateError}} and abort these steps.
   1. If |frame|'s [=XRFrame/active=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
   1. Let |glViewport| be the [=WebGL viewport=] from the [=list of viewports=] associated with |view|.
-  1. Let |viewport| be a [=new=] {{XRViewport}} in the [=relevant realm=] of |layer|'s [=XRWebGLLayer/session=].
+  1. Initialize |viewport| as follows:
+    <dl class="switch">
+      <dt>If {{XRWebGLLayer/getViewport()}} was called previously with a |view| corresponding to the same underlying [=view=], the user agent MAY:</dt>
+      <dd>Let |viewport| be the same {{XRViewport}} object returned by the earlier call to {{XRWebGLLayer/getViewport()}}</dd>
+      <dt>Otherwise:</dt>
+      <dd>Let |viewport| be a [=new=] {{XRViewport}} in the [=relevant realm=] of |layer|'s [=XRWebGLLayer/session=].</dd>
+    </dl>
   1. Initialize |viewport|'s {{XRViewport/x}} to |glViewport|'s <code>x</code> component.
   1. Initialize |viewport|'s {{XRViewport/y}} to |glViewport|'s <code>y</code> component.
   1. Initialize |viewport|'s {{XRViewport/width}} to |glViewport|'s <code>width</code>.
