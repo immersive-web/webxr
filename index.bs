@@ -1049,8 +1049,14 @@ When this method is invoked, the user agent MUST run the following steps:
   1. [=Populate the pose=] of |session|'s [=XRSession/viewer reference space=] in |referenceSpace| at the time represented by |frame| into |pose|, with <code>force emulation</code> set to <code>true</code>.
   1. If |pose| is <code>null</code> return <code>null</code>.
   1. Let |xrviews| be an empty [=/list=].
-  1. For each [=view=] |view| in the [=XRSession/viewer reference space/list of views=] on the[=XRSession/viewer reference space=] of {{XRFrame/session}}, perform the following steps:
-      1. Let |xrview| be a new {{XRView}} object in the [=relevant realm=] of |session|.
+  1. For each [=view=] |view| in the [=XRSession/viewer reference space/list of views=] on the [=XRSession/viewer reference space=] of {{XRFrame/session}}, perform the following steps:
+      1. Initialize |xrview| as follows:
+        <dl class="switch">
+          <dt>If an {{XRView}} object has been constructed for the same |view| on {{XRFrame/session}}, the user agent MAY:</dt>
+          <dd>Let |xrview| be the same {{XRView}} object.</dd>
+          <dt>Otherwise:</dt>
+          <dd>Let |xrview| be a [=new=] {{XRView}} object in the [=relevant realm=] of |session|.</dd>
+        </dl>
       1. Initialize |xrview|'s [=XRView/underlying view=] to |view|.
       1. Initialize |xrview|'s {{XRView/eye}} to |view|'s [=view/eye=].
       1. Initialize |xrview|'s [=XRView/frame=] to |frame|.
