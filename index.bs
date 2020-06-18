@@ -1087,7 +1087,13 @@ The <dfn method for="XRFrame">getPose(|space|, |baseSpace|)</dfn> method provide
 When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |frame| be [=this=].
-  1. Let |pose| be a [=new=] {{XRPose}} object in the [=relevant realm=] of |frame|.
+  1. Initialize |pose| as follows:
+    <dl class="switch">
+      <dt>If [=XRFrame/animationFrame=] is <code>true</code> {{XRFrame/getPose()}} was called on a previous {{XRFrame}} with [=XRFrame/animationFrame=] <code>true</code> on the same {{XRFrame/session}} with the same |space| and |baseSpace|, the user agent MAY:</dt>
+      <dd>Let |pose| be the same {{XRPose}} object returned by the earlier call to {{XRFrame/getPose()}}</dd>
+      <dt>Otherwise:</dt>
+      <dd>Let |pose| be a [=new=] {{XRPose}} object in the [=relevant realm=] of |frame|.</dd>
+    </dl>
   1. [=Populate the pose=] of |space| in |baseSpace| at the time represented by |frame| into |pose|.
   1. Return |pose|.
 
