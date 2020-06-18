@@ -1372,15 +1372,15 @@ While content should be written to assume that there may be any number of views,
 Because user-agents may have the ability to use mechanisms like reprojection to render to these [=secondary views=] in lieu of the content, it is desirable to be able to distinguish between content that plans on handling these [=secondary views=] itself and content that is either oblivious to the existence of such [=secondary views=] or does not wish to deal with them.
 </div>
 
-To provide for this, user-agents that expose [=secondary views=] MUST support an "<dfn for="secondary views">secondary-views</dfn>" [=feature descriptor=] as a hint. Content enabling this feature is expected to:
+To provide for this, user-agents that expose [=secondary views=] MUST support an "<dfn for="secondary view">secondary-views</dfn>" [=feature descriptor=] as a hint. Content enabling this feature is expected to:
 
  - Handle any nonzero number of [=views=] in the {{XRViewerPose/views}} array.
  - Handle the existence of multiple [=views=] that have the same [=view/eye=].
  - Handle the size of the {{XRViewerPose/views}} array changing from frame to frame. <span class=note>This can happen when video capture is enabled, for example</span>
 
-When "[=secondary views/secondary-views=]" is enabled, the user-agent MAY surface any [=secondary views=] the device supports to the {{XRSession}}, when necessary. The user-agent MUST NOT use reprojection to reconstruct [=secondary views=] in such a case, and instead rely on whatever the content decides to render.
+When "[=secondary view/secondary-views=]" is enabled, the user-agent MAY surface any [=secondary views=] the device supports to the {{XRSession}}, when necessary. The user-agent MUST NOT use reprojection to reconstruct [=secondary views=] in such a case, and instead rely on whatever the content decides to render.
 
-Note: We recommend content use {{XRSessionInit/optionalFeatures}} to enable "[=secondary views/secondary-views=]" to ensure maximum compatibility.
+Note: We recommend content use {{XRSessionInit/optionalFeatures}} to enable "[=secondary view/secondary-views=]" to ensure maximum compatibility.
 
 If [=secondary views=] have lower underlying frame rates, the {{XRSession}} MAY choose to do one or more of the following:
 
