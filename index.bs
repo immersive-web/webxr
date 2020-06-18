@@ -1051,7 +1051,13 @@ When this method is invoked, the user agent MUST run the following steps:
   1. Let |frame| be [=this=].
   1. Let |session| be |frame|'s {{XRFrame/session}} object.
   1. If |frame|'s [=animationFrame=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
-  1. Let |pose| be a [=new=] {{XRViewerPose}} object in the [=relevant realm=] of |session|.
+  1. Initialize |pose| as follows:
+    <dl class="switch">
+      <dt>If {{XRFrame/getViewerPose()}} was called on a previous {{XRFrame}} on the same {{XRFrame/session}} with the same |referenceSpace|, the user agent MAY:</dt>
+      <dd>Let |pose| be the same {{XRViewerPose}} object returned by the earlier call to {{XRFrame/getViewerPose()}}</dd>
+      <dt>Otherwise:</dt>
+      <dd>Let |pose| be a [=new=] {{XRViewerPose}} object in the [=relevant realm=] of |session|.</dd>
+    </dl>
   1. [=Populate the pose=] of |session|'s [=XRSession/viewer reference space=] in |referenceSpace| at the time represented by |frame| into |pose|, with <code>force emulation</code> set to <code>true</code>.
   1. If |pose| is <code>null</code> return <code>null</code>.
   1. Let |xrviews| be an empty [=/list=].
