@@ -230,7 +230,7 @@ An [=/XR device=] has a <dfn>list of supported modes</dfn> (a [=/list=] of [=/st
 
 Each [=/XR device=] has a <dfn for="XR device">list of enabled features</dfn> for each {{XRSessionMode}} in its [=list of supported modes=], which is a [=/list=] of [=feature descriptors=] which MUST be initially an empty [=/list=].
 
-The user-agent has a <dfn for="">list of immersive XR devices</dfn> (a [=/list=] of [=/XR device=]), which MUST be initially an empty [=/list=]. 
+The user-agent has a <dfn for="">list of immersive XR devices</dfn> (a [=/list=] of [=/XR device=]), which MUST be initially an empty [=/list=].
 
 The user-agent has an <dfn for="">immersive XR device</dfn> (null or [=/XR device=]) which is initially null and represents the active [=/XR device=] from the [=list of immersive XR devices=]. This object MAY live on a separate thread and be updated asynchronously.
 
@@ -708,22 +708,23 @@ When requested, the {{XRSession}} |session| MUST <dfn>apply the pending render s
   1. Let |newState| be |session|'s [=pending render state=].
   1. Set |session|'s [=pending render state=] to <code>null</code>.
   1. Let |oldLayer| be |activeState|'s {{XRRenderState/baseLayer}}.
-  1. Set |activeState| to |newState|.
-  1. If |oldLayer| is not equal to |activeState|'s {{XRRenderState/baseLayer}}, or the dimensions of |oldLayer| are different from |baseLayer|, [=update the viewports=] for |session|.
-  1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is less than |session|'s [=minimum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=minimum inline field of view=].
-  1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is greater than |session|'s [=maximum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=maximum inline field of view=].
-  1. If |activeState|'s {{XRRenderState/depthNear}} is less than |session|'s [=minimum near clip plane=] set |activeState|'s {{XRRenderState/depthNear}} to |session|'s [=minimum near clip plane=].
-  1. If |activeState|'s {{XRRenderState/depthFar}} is greater than |session|'s [=maximum far clip plane=] set |activeState|'s {{XRRenderState/depthFar}} to |session|'s [=maximum far clip plane=].
-  1. Let |baseLayer| be |activeState|'s {{XRRenderState/baseLayer}}.
-  1. Set |activeState|'s [=XRRenderState/composition disabled=] and [=XRRenderState/output canvas=] as follows:
-    <dl class="switch">
-      <dt> If |session|'s [=XRSession/mode=] is {{XRSessionMode/"inline"}} and |baseLayer| is an instance of an {{XRWebGLLayer}} with [=XRWebGLLayer/composition disabled=] set to <code>true</code>
-      <dd> Set |activeState|'s [=XRRenderState/composition disabled=] boolean to <code>true</code>.
-      <dd> Set |activeState|'s [=XRRenderState/output canvas=] to |baseLayer|'s [=XRWebGLLayer/context=]'s {{WebGLRenderingContext|canvas}}.
-      <dt> Otherwise
-      <dd> Set |activeState|'s [=XRRenderState/composition disabled=] boolean to <code>false</code>.
-      <dd> Set |activeState|'s [=XRRenderState/output canvas=] to <code>null</code>.
-    </dl>
+  1. [=Queue a task=] to perform the following steps:
+    1. Set |activeState| to |newState|.
+    1. If |oldLayer| is not equal to |activeState|'s {{XRRenderState/baseLayer}}, or the dimensions of |oldLayer| are different from |baseLayer|, [=update the viewports=] for |session|.
+    1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is less than |session|'s [=minimum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=minimum inline field of view=].
+    1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is greater than |session|'s [=maximum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=maximum inline field of view=].
+    1. If |activeState|'s {{XRRenderState/depthNear}} is less than |session|'s [=minimum near clip plane=] set |activeState|'s {{XRRenderState/depthNear}} to |session|'s [=minimum near clip plane=].
+    1. If |activeState|'s {{XRRenderState/depthFar}} is greater than |session|'s [=maximum far clip plane=] set |activeState|'s {{XRRenderState/depthFar}} to |session|'s [=maximum far clip plane=].
+    1. Let |baseLayer| be |activeState|'s {{XRRenderState/baseLayer}}.
+    1. Set |activeState|'s [=XRRenderState/composition disabled=] and [=XRRenderState/output canvas=] as follows:
+        <dl class="switch">
+          <dt> If |session|'s [=XRSession/mode=] is {{XRSessionMode/"inline"}} and |baseLayer| is an instance of an {{XRWebGLLayer}} with [=XRWebGLLayer/composition disabled=] set to <code>true</code>
+          <dd> Set |activeState|'s [=XRRenderState/composition disabled=] boolean to <code>true</code>.
+          <dd> Set |activeState|'s [=XRRenderState/output canvas=] to |baseLayer|'s [=XRWebGLLayer/context=]'s {{WebGLRenderingContext|canvas}}.
+          <dt> Otherwise
+          <dd> Set |activeState|'s [=XRRenderState/composition disabled=] boolean to <code>false</code>.
+          <dd> Set |activeState|'s [=XRRenderState/output canvas=] to <code>null</code>.
+        </dl>
 
 </div>
 
@@ -951,23 +952,24 @@ NOTE: The <a href="https://immersive-web.github.io/layers">WebXR layers module</
 
 When an {{XRSession}} |session| receives updated [=viewer=] state for timestamp |frameTime| from the [=XRSession/XR device=], it runs an <dfn>XR animation frame</dfn>, which MUST run the following steps regardless of if the [=list of animation frame callbacks=] is empty or not:
 
-  1. Let |now| be the [=current high resolution time=].
-  1. Let |frame| be |session|'s [=XRSession/animation frame=].
-  1. Set |frame|'s [=XRFrame/time=] to |frameTime|.
-  1. If |session|'s [=pending render state=] is not <code>null</code>, [=apply the pending render state=].
-  1. If the [=view/active] flag of any [=view=] in the [=XRSession/list of views=] has changed since the last [=XR animation frame=], [=update the viewports=].
-  1. If [=check the layers state=] with |session|'s {{XRSession/renderState}} is <code>false</code>, abort these steps.
-  1. If |session|'s  [=XRSession/mode=] is {{XRSessionMode/"inline"}} and |session|'s {{XRSession/renderState}}'s [=XRRenderState/output canvas=] is <code>null</code>, abort these steps.
-  1. Set  |session|'s [=list of currently running animation frame callbacks=] to be |session|'s [=list of animation frame callbacks=].
-  1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
-  1. Set |frame|'s [=XRFrame/active=] boolean to <code>true</code>.
-  1. [=XRFrame/Apply frame updates=] for |frame|.
-  1. For each |entry| in |session|'s [=list of currently running animation frame callbacks=], in order:
-    1. If the |entry|'s [=cancelled=] boolean is <code>true</code>, continue to the next entry.
-    1. [=Invoke the Web IDL callback function=] for |entry|, passing |now| and |frame| as the  arguments
-    1. If an exception is thrown, [=report the exception=].
-  1. Set |session|'s [=list of currently running animation frame callbacks=] to the empty [=/list=].
-  1. Set |frame|'s [=XRFrame/active=] boolean to <code>false</code>.
+  1. [=Queue a task=] to perform the following steps:
+    1. Let |now| be the [=current high resolution time=].
+    1. Let |frame| be |session|'s [=XRSession/animation frame=].
+    1. Set |frame|'s [=XRFrame/time=] to |frameTime|.
+    1. If the [=view/active] flag of any [=view=] in the [=XRSession/list of views=] has changed since the last [=XR animation frame=], [=update the viewports=].
+    1. If [=check the layers state=] with |session|'s {{XRSession/renderState}} is <code>false</code>, abort these steps.
+    1. If |session|'s  [=XRSession/mode=] is {{XRSessionMode/"inline"}} and |session|'s {{XRSession/renderState}}'s [=XRRenderState/output canvas=] is <code>null</code>, abort these steps.
+    1. Set  |session|'s [=list of currently running animation frame callbacks=] to be |session|'s [=list of animation frame callbacks=].
+    1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
+    1. Set |frame|'s [=XRFrame/active=] boolean to <code>true</code>.
+    1. [=XRFrame/Apply frame updates=] for |frame|.
+    1. For each |entry| in |session|'s [=list of currently running animation frame callbacks=], in order:
+      1. If the |entry|'s [=cancelled=] boolean is <code>true</code>, continue to the next entry.
+      1. [=Invoke the Web IDL callback function=] for |entry|, passing |now| and |frame| as the  arguments
+      1. If an exception is thrown, [=report the exception=].
+    1. Set |session|'s [=list of currently running animation frame callbacks=] to the empty [=/list=].
+    1. Set |frame|'s [=XRFrame/active=] boolean to <code>false</code>.
+    1. If |session|'s [=pending render state=] is not <code>null</code>, [=apply the pending render state=].
 
 </div>
 
@@ -2099,7 +2101,7 @@ When this method is invoked, the user agent MUST run the following steps:
                   1. Force |context| to be lost.
                   1. [=Handle the context loss=] as described by the WebGL specification:
                       1. Let |canvas| be the |context|'s [=WebGLRenderingContext/canvas=].
-                      1. If |context|'s [=WebGLRenderingContext/webgl context lost flag=] is set, abort these steps.  
+                      1. If |context|'s [=WebGLRenderingContext/webgl context lost flag=] is set, abort these steps.
                       1. Set |context|'s [=WebGLRenderingContext/webgl context lost flag=].
                       1. Set the [=WebGLObject/invalidated=] flag of each {{WebGLObject}} instance created by |context|.
                       1. Disable all extensions except "WEBGL_lose_context".
