@@ -707,10 +707,11 @@ When requested, the {{XRSession}} |session| MUST <dfn>apply the pending render s
   1. Let |activeState| be |session|'s [=active render state=].
   1. Let |newState| be |session|'s [=pending render state=].
   1. Set |session|'s [=pending render state=] to <code>null</code>.
-  1. Let |oldLayer| be |activeState|'s {{XRRenderState/baseLayer}}.
+  1. Let |oldBaseLayer| be |activeState|'s {{XRRenderState/baseLayer}}.
+  1. Let |oldLayers| be |activeState|'s {{XRRenderState/layers}}.
   1. [=Queue a task=] to perform the following steps:
     1. Set |activeState| to |newState|.
-    1. If |oldLayer| is not equal to |activeState|'s {{XRRenderState/baseLayer}}, or the dimensions of |oldLayer| are different from |baseLayer|, [=update the viewports=] for |session|.
+    1. If |oldBaseLayer| is not equal to |activeState|'s {{XRRenderState/baseLayer}}, |oldLayers| is not equal to |activeState|'s {{XRRenderState/layers}}, or the dimensions of any of the layers have changed, [=update the viewports=] for |session|.
     1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is less than |session|'s [=minimum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=minimum inline field of view=].
     1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is greater than |session|'s [=maximum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=maximum inline field of view=].
     1. If |activeState|'s {{XRRenderState/depthNear}} is less than |session|'s [=minimum near clip plane=] set |activeState|'s {{XRRenderState/depthNear}} to |session|'s [=minimum near clip plane=].
