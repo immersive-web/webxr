@@ -5,7 +5,7 @@ Group: immersivewebwg
 Status: ED
 TR: https://www.w3.org/TR/webxr/
 ED: https://immersive-web.github.io/webxr/
-Previous Version: https://www.w3.org/TR/2019/WD-webxr-20191010/
+Previous Version: https://www.w3.org/TR/2020/WD-webxr-20200724/
 Repository: immersive-web/webxr
 Level: 1
 Mailing List Archives: https://lists.w3.org/Archives/Public/public-immersive-web/
