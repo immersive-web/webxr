@@ -5,7 +5,7 @@ Group: immersivewebwg
 Status: ED
 TR: https://www.w3.org/TR/webxr/
 ED: https://immersive-web.github.io/webxr/
-Previous Version: https://www.w3.org/TR/2019/WD-webxr-20191010/
+Previous Version: https://www.w3.org/TR/2020/WD-webxr-20200724/
 Repository: immersive-web/webxr
 Level: 1
 Mailing List Archives: https://lists.w3.org/Archives/Public/public-immersive-web/
@@ -15,7 +15,8 @@ Mailing List Archives: https://lists.w3.org/Archives/Public/public-immersive-web
 !Participate: <a href="irc://irc.w3.org:6665/">W3C's #immersive-web IRC</a>
 
 Editor: Brandon Jones 87824, Google http://google.com/, bajones@google.com
-Editor: Nell Waliczek 93109, Amazon [Microsoft until 2018] https://amazon.com/, nhw@amazon.com
+Former Editor: Nell Waliczek 93109, Amazon [Microsoft until 2018] https://amazon.com/, nhw@amazon.com
+Editor: Manish Goregaokar 109489, Mozilla http://mozilla.org/, manish@mozilla.com
 
 Abstract: This specification describes support for accessing virtual reality (VR) and augmented reality (AR) devices, including sensors and head-mounted displays, on the Web.
 </pre>
@@ -24,8 +25,13 @@ Abstract: This specification describes support for accessing virtual reality (VR
 spec:infra;
     type:dfn; text:string
     type:dfn; text:tuple
+    type:dfn; text:continue
 spec:permissions-1;
     type:dfn; text:powerful feature
+spec:webidl;
+    type:dfn; text:new
+spec:webxr-ar-module-1;
+    type:dfn; text:first-person observer view
 </pre>
 
 <pre class="anchors">
@@ -37,6 +43,7 @@ spec: WebGL; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: interface; text: WebGLFramebuffer; url: WebGLFramebuffer
     type: interface; text: WebGLRenderingContext; url: WebGLRenderingContext
     type: interface; text: WebGLRenderingContextBase; url: WebGLRenderingContextBase
+    type: interface; text: WebGLObject; url: WebGLObject
     type: typedef; text: INVALID_OPERATION; url: WebGLRenderingContextBase
     type: typedef; text: INVALID_FRAMEBUFFER_OPERATION; url: WebGLRenderingContextBase
     type: typedef; text: FRAMEBUFFER_UNSUPPORTED; url: WebGLRenderingContextBase
@@ -49,6 +56,7 @@ spec: WebGL; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: method; text: getFramebufferAttachmentParameter;  url: 5.14.6
     type: method; text: deleteFramebuffer;  url: 5.14.6
     type: method; text: checkFramebufferStatus;  url: 5.14.6
+    type: attribute; text: statusMessage; for: WebGLContextEvent; url: 5.15.1
     type: dictionary; text: WebGLContextAttributes; url: #WebGLContextAttributes
     type: dfn; text: Create the WebGL context; url:#2.1
     type: dfn; text: default framebuffer; url:#2.2
@@ -59,34 +67,45 @@ spec: WebGL; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: dfn; text: actual context parameters; url: #actual-context-parameters
     type: dfn; text: create a drawing buffer; url: #create-a-drawing-buffer
     type: dfn; text: WebGL task source; url: #5.15
+    type: dfn; text: canvas; for: WebGLRenderingContext; url: context-canvas
+    type: dfn; text: webgl context lost flag; for: WebGLRenderingContext; url: webgl-context-lost-flag
+    type: dfn; text: Fire a WebGL context event; url: fire-a-webgl-context-event
+    type: dfn; text: invalidated; for: WebGLObject; url: #webgl-object-invalidated-flag
 spec: WebGL 2.0; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/2.0/
     type: interface; text: WebGL2RenderingContext; url: WebGL2RenderingContext
 spec: Orientation Sensor; urlPrefix: https://w3c.github.io/orientation-sensor/
     type: interface; text: AbsoluteOrientationSensor
     type: interface; text: RelativeOrientationSensor
-spec: WebIDL; urlPrefix: https://www.w3.org/TR/WebIDL-1/#
-    type: dfn; text: invoke the Web IDL callback function; url:es-invoking-callback-functions
+spec: WebIDL; urlPrefix: https://heycam.github.io/webidl/#
+    type: dfn; text: invoke the Web IDL callback function; url:invoke-a-callback-function
 spec:html; urlPrefix: https://html.spec.whatwg.org/multipage/
     type: method; for:HTMLCanvasElement; text:getContext(contextId); url: canvas.html#dom-canvas-getcontext
     type: method; for:Window; text:requestAnimationFrame(callback); url: imagebitmap-and-animations.html#dom-animationframeprovider-requestanimationframe
     type: dfn; text: currently focused area; url: interaction.html#currently-focused-area-of-a-top-level-browsing-context
     type: dfn; text: responsible; url: webappapis.html#responsible-document
     type: dfn; text: rendering opportunity; url: webappapis.html#rendering-opportunity
+    type: dfn; text: current realm; url: webappapis.html#current
     type: dfn; text: same origin-domain; url: origin.html#same-origin-domain
-    type: dfn; text: active document; url: browsers.html#active-document
     type: dfn; text: browsing context; url: browsers.html#browsing-context
+    type: dfn; text: associated document; url: window-object.html#concept-document-window
 spec: SecureContexts; urlPrefix: https://w3c.github.io/webappsec-secure-contexts/#
     type: dfn; text: secure context; url: secure-contexts
 spec: PointerEvents; urlPrefix: https://www.w3.org/TR/pointerevents/#
     type: dfn; text: primary pointer; url: dfn-primary-pointer
 spec: PageVisibility; urlPrefix: https://www.w3.org/TR/page-visibility-2/#
     type: dfn; text: visibilityState; url: visibilitystate-attribute
+    type: dfn; text: hidden; url: dom-visibilitystate-hidden
 
 spec: ECMAScript; urlPrefix: https://tc39.github.io/ecma262/#
     type: method; text: IsDetachedBuffer; url: sec-isdetachedbuffer
+    type: dfn; text: ?; url: sec-returnifabrupt-shorthands
+    type: dfn; text: Realm; url: realm
+    type: abstract-op; text: ToString; url: sec-tostring
 spec: dom; urlPrefix: https://dom.spec.whatwg.org/#
     type:algorithm; text:fire an event; url: concept-event-fire
 
+spec: requestidlecallback; urlPrefix: https://w3c.github.io/requestidlecallback/#
+    type:method; text: requestIdleCallback(); for: Window; url:the-requestidlecallback-method
 </pre>
 
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -211,13 +230,20 @@ An [=/XR device=] has a <dfn>list of supported modes</dfn> (a [=/list=] of [=/st
 
 Each [=/XR device=] has a <dfn for="XR device">list of enabled features</dfn> for each {{XRSessionMode}} in its [=list of supported modes=], which is a [=/list=] of [=feature descriptors=] which MUST be initially an empty [=/list=].
 
+The user-agent has a <dfn for="">list of immersive XR devices</dfn> (a [=/list=] of [=/XR device=]), which MUST be initially an empty [=/list=].
+
+The user-agent has an <dfn for="">immersive XR device</dfn> (null or [=/XR device=]) which is initially null and represents the active [=/XR device=] from the [=list of immersive XR devices=]. This object MAY live on a separate thread and be updated asynchronously.
+
 The user-agent MUST have a <dfn for="">default inline XR device</dfn>, which is an [=/XR device=] that MUST [=list/contains|contain=] {{XRSessionMode/"inline"}} in its [=list of supported modes=]. The [=/default inline XR device=] MUST NOT report any pose information, and MUST NOT report [=XR input source=]s or events other than those created by pointer events.
 
 Note: The [=/default inline XR device=] exists purely as a convenience for developers, allowing them to use the same rendering and input logic for both inline and immersive content. The [=/default inline XR device=] does not expose any information not already available to the developer through other mechanisms on the page (such as pointer events for input), it only surfaces those values in an XR-centric format.
 
-The user-agent MUST have a <dfn for="">inline XR device</dfn>, which is an [=/XR device=] that MUST [=list/contains|contain=] {{XRSessionMode/"inline"}} in its [=list of supported modes=]. The [=/inline XR device=] MAY be the [=XRSystem/immersive XR device=] if the tracking it provides makes sense to expose to inline content or the [=/default inline XR device=] otherwise.
+The user-agent MUST have a <dfn for="">inline XR device</dfn>, which is an [=/XR device=] that MUST [=list/contains|contain=] {{XRSessionMode/"inline"}} in its [=list of supported modes=]. The [=/inline XR device=] MAY be the [=immersive XR device=] if the tracking it provides makes sense to expose to inline content or the [=/default inline XR device=] otherwise.
 
 Note: On phones, the [=/inline XR device=] may report pose information derived from the phone's internal sensors, such as the gyroscope and accelerometer. On desktops and laptops without similar sensors, the [=/inline XR device=] will not be able to report a pose, and as such should fall back to the [=/default inline XR device=]. In case the user agent is already running on an [=/XR device=], the [=/inline XR device=] will be the same device, and may support multiple [=view|views=]. User consent must be given before any tracking or input features beyond what the [=/default inline XR device=] exposes are provided.
+
+
+The current values of [=list of immersive XR devices=], [=/inline XR device=], and [=immersive XR device=] MAY live on a separate thread and be updated asynchronously. These objects SHOULD NOT be directly accessed in steps that are not running [=in parallel=].
 
 Initialization {#initialization}
 ==============
@@ -231,7 +257,7 @@ partial interface Navigator {
 };
 </pre>
 
-The <dfn attribute for="Navigator">xr</dfn> attribute's getter MUST return the {{XRSystem}} object that is associated with the [=context object=].
+The <dfn attribute for="Navigator">xr</dfn> attribute's getter MUST return the {{XRSystem}} object that is associated with it.
 
 XRSystem {#xrsystem-interface}
 ----
@@ -251,32 +277,30 @@ The user agent MUST create an {{XRSystem}} object when a {{Navigator}} object is
 
 An {{XRSystem}} object is the entry point to the API, used to query for XR features available to the user agent and initiate communication with XR hardware via the creation of {{XRSession}}s.
 
-An {{XRSystem}} object has a <dfn>list of immersive XR devices</dfn> (a [=/list=] of [=/XR device=]), which MUST be initially an empty [=/list=].
-
-An {{XRSystem}} object has an <dfn for="XRSystem">immersive XR device</dfn> (null or [=/XR device=]) which is initially null and represents the active [=/XR device=] from the [=list of immersive XR devices=].
-
 The user agent MUST be able to <dfn>enumerate immersive XR devices</dfn> attached to the system, at which time each available device is placed in the [=list of immersive XR devices=]. Subsequent algorithms requesting enumeration MUST reuse the cached [=list of immersive XR devices=]. Enumerating the devices [=should not initialize device tracking=]. After the first enumeration the user agent MUST begin monitoring device connection and disconnection, adding connected devices to the [=list of immersive XR devices=] and removing disconnected devices.
 
 <div class="algorithm" data-algorithm="xr-device-selection">
 
 Each time the [=list of immersive XR devices=] changes the user agent should <dfn>select an immersive XR device</dfn> by running the following steps:
 
-  1. Let |oldDevice| be the [=XRSystem/immersive XR device=].
-  1. If the [=list of immersive XR devices=] is an empty [=/list=], set the [=XRSystem/immersive XR device=] to <code>null</code>.
-  1. If the [=list of immersive XR devices=]'s [=list/size=] is one, set the [=XRSystem/immersive XR device=] to the [=list of immersive XR devices=][0].
-  1. Set the [=XRSystem/immersive XR device=] as follows:
+  1. Let |oldDevice| be the [=immersive XR device=].
+  1. If the [=list of immersive XR devices=] is an empty [=/list=], set the [=immersive XR device=] to <code>null</code>.
+  1. If the [=list of immersive XR devices=]'s [=list/size=] is one, set the [=immersive XR device=] to the [=list of immersive XR devices=][0].
+  1. Set the [=immersive XR device=] as follows:
     <dl class="switch">
       <dt> If there are any active {{XRSession}}s and the [=list of immersive XR devices=] [=list/contains=] |oldDevice|
-      <dd> Set the [=XRSystem/immersive XR device=] to |oldDevice|
+      <dd> Set the [=immersive XR device=] to |oldDevice|
       <dt> Otherwise
-      <dd> Set the [=XRSystem/immersive XR device=] to a device of the user agent's choosing
+      <dd> Set the [=immersive XR device=] to a device of the user agent's choosing
     </dl>
-  1. The user agent MAY update the [=/inline XR device=] to the [=XRSystem/immersive XR device=] if appropriate, or the [=/default inline XR device=] otherwise.
-  1. If this is the first time devices have been enumerated or |oldDevice| equals the [=XRSystem/immersive XR device=], abort these steps.
+  1. The user agent MAY update the [=/inline XR device=] to the [=immersive XR device=] if appropriate, or the [=/default inline XR device=] otherwise.
+  1. If this is the first time devices have been enumerated or |oldDevice| equals the [=immersive XR device=], abort these steps.
   1. [=Shut down the session|Shut down=] any active {{XRSession}}s.
-  1. Set the [=XR compatible=] boolean of all {{WebGLRenderingContextBase}} instances to <code>false</code>.
-  1. [=Queue a task=] to [=fire an event=] named {{devicechange!!event}} on the [=context object=].
-  1. [=Queue a task=] to fire appropriate <code>change</code> events on any {{XRPermissionStatus}} objects who are affected by the change in the [=XRSystem/immersive XR device=] or [=/inline XR device=].
+  1. [=Queue a task=] to set the [=XR compatible=] boolean of all {{WebGLRenderingContextBase}} instances to <code>false</code>.
+  1. [=Queue a task=] to [=fire an event=] named {{devicechange!!event}} on the [=context object=]'s {{Window/navigator}}'s {{Navigator/xr}}.
+  1. [=Queue a task=] to fire appropriate <code>change</code> events on any {{XRPermissionStatus}} objects who are affected by the change in the [=immersive XR device=] or [=/inline XR device=].
+
+Note: These steps should always be run [=in parallel=].
 
 </div>
 
@@ -284,11 +308,14 @@ Note: The user agent is allowed to use any criteria it wishes to [=select an imm
 
 <div class="algorithm" data-algorithm="ensure-device-selected">
 
-The user agent <dfn>ensures an immersive XR device is selected</dfn> by running the following steps:
+The user agent can <dfn>ensure an immersive XR device is selected</dfn> by running the following steps:
 
-  1. If the [=context object=]'s [=XRSystem/immersive XR device=] is not null, abort these steps.
+  1. If [=immersive XR device=] is not null, return [=immersive XR device=] and abort these steps.
   1. [=Enumerate immersive XR devices=].
   1. [=Select an immersive XR device=].
+  1. Return the [=immersive XR device=].
+
+Note: These steps should always be run [=in parallel=].
 
 </div>
 
@@ -299,14 +326,14 @@ The <dfn method for="XRSystem">isSessionSupported(|mode|)</dfn> method queries i
 
 When this method is invoked, it MUST run the following steps:
 
-  1. Let |promise| be [=a new Promise=].
+  1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of this {{XRSystem}}.
   1. If |mode| is {{XRSessionMode/"inline"}}, [=/resolve=] |promise| with <code>true</code> and return it.
-  1. If the requesting document's origin is not allowed to use the "xr-spatial-tracking" [[#feature-policy|feature policy]], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return it.
+  1. If the requesting document's origin is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return it.
   1. Run the following steps [=in parallel=]:
-    1. [=ensures an immersive XR device is selected|Ensure an immersive XR device is selected=].
-    1. If the [=XRSystem/immersive XR device=] is null, [=/resolve=] |promise| with <code>false</code> and abort these steps.
-    1. If the [=XRSystem/immersive XR device=]'s [=list of supported modes=] does not [=list/contain=] |mode|, [=/resolve=] |promise| with <code>false</code> and abort these steps.
-    1. [=/Resolve=] |promise| with <code>true</code>.
+    1. Let |device| be the result of [=ensure an immersive XR device is selected|ensuring an immersive XR device is selected=].
+    1. If |device| is null, [=/resolve=] |promise| with <code>false</code> and abort these steps.
+    1. If |device|'s [=list of supported modes=] does not [=list/contain=] |mode|, [=queue a task=] to [=/resolve=] |promise| with <code>false</code> and abort these steps.
+    1. [=queue a task=] to [=/resolve=] |promise| with <code>true</code>.
   1. Return |promise|.
 
 </div>
@@ -341,7 +368,7 @@ The <dfn method for="XRSystem">requestSession(|mode|, |options|)</dfn> method at
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |promise| be [=a new Promise=].
+  1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of this {{XRSystem}}.
   1. Let |immersive| be <code>true</code> if |mode| is an [=immersive session=] mode, and <code>false</code> otherwise.
   1. Let |global object| be the [=relevant Global object=] for the {{XRSystem}} on which this method was invoked.
   1. Check whether the session request is allowed as follows:
@@ -364,15 +391,15 @@ When this method is invoked, the user agent MUST run the following steps:
             1. [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
             1. If |immersive| is <code>true</code>, set [=pending immersive session=] to <code>false</code>.
             1. Abort these steps.
-        1. Let |session| be a new {{XRSession}} object.
-        1. [=Initialize the session=] with |session|, |mode|, and |device|.
-        1. Let |descriptor| be an {{XRPermissionDescriptor}} initialized with |session|, |requiredFeatures|, and |optionalFeatures|
+        1. Let |descriptor| be an {{XRPermissionDescriptor}} initialized with |mode|, |requiredFeatures|, and |optionalFeatures|
         1. Let |status| be an {{XRPermissionStatus}}, initially <code>null</code>
         1. [=Request the xr permission=] with |descriptor| and |status|.
         1. If |status|' {{PermissionStatus/state}} is {{PermissionState/"denied"}} run the following steps:
             1. [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
             1. If |immersive| is <code>true</code>, set [=pending immersive session=] to <code>false</code>.
             1. Abort these steps.
+        1. Let |session| be a [=new=] {{XRSession}} object in the [=relevant realm=] of this {{XRSystem}}.
+        1. [=Initialize the session=] with |session|, |mode|, and |device|.
         1. Potentially set the [=active immersive session=] as follows:
             <dl class="switch">
               <dt> If |immersive| is <code>true</code>
@@ -381,6 +408,13 @@ When this method is invoked, the user agent MUST run the following steps:
               <dd> Append |session| to the [=list of inline sessions=].
             </dl>
         1. [=/Resolve=] |promise| with |session|.
+        1. [=Queue a task=] to perform the following steps:
+            <div class=note>Note: These steps ensure that initial <code>inputsourceschange</code> events occur after the initial session is resolved.</div>
+            1. Set |session|'s [=XRSession/promise resolved=] flag to <code>true</code>.
+            1. Let |sources| be any existing input sources attached to |session|.
+            1. If |sources| is non-empty, perform the following steps:
+                1. Set |session|'s [=list of active XR input sources=] to |sources|.
+                1. Fire an {{XRInputSourcesChangeEvent}} named {{inputsourceschange!!event}} on |session| with {{XRInputSourcesChangeEvent/added}} set to |sources|.
   1. Return |promise|.
 
 </div>
@@ -392,16 +426,15 @@ To <dfn>obtain the current device</dfn> for an {{XRSessionMode}} |mode|, |requir
   1. Choose |device| as follows:
       <dl class="switch">
         <dt>If |mode| is an [=immersive session=] mode:</dt>
-        <dd>
-            1. [=ensures an immersive XR device is selected|Ensure an immersive XR device is selected=].
-            1. Set |device| to the [=XRSystem/immersive XR device=].
-        </dd>
+        <dd> Set |device| to the result of [=ensure an immersive XR device is selected|ensuring an immersive XR device is selected=].</dd>
         <dt>Else if |requiredFeatures| or |optionalFeatures| are not empty:</dt>
         <dd>Set |device| to the [=/inline XR device=].</dd>
         <dt>Otherwise</dt>
         <dd>Set |device| to the [=/default inline XR device=].</dd>
       </dl>
   1. Return |device|.
+
+Note: These steps should always be run [=in parallel=].
 
 </div>
 
@@ -427,18 +460,20 @@ enum XRSessionMode {
 </pre>
 
   - A session mode of <dfn enum-value for="XRSessionMode">inline</dfn> indicates that the session's output will be shown as an element in the HTML document. {{inline}} session content MUST be displayed in mono (i.e., with a single [=view=]). It MAY allow for [=viewer=] tracking. User agents MUST allow {{inline}} sessions to be created.
-  - A session mode of <dfn enum-value for="XRSessionMode">immersive-vr</dfn> indicates that the session's output will be given [=exclusive access=] to the [=XRSystem/immersive XR device=] display and that content <b>is not</b> intended to be integrated with the user's environment.
-  - The behavior of the <dfn enum-value for="XRSessionMode">immersive-ar</dfn> session mode is defined in the <a href="https://immersive-web.github.io/webxr-ar-module/">WebXR AR Module</a> and MUST NOT be added to the [=XRSystem/immersive XR device=]'s [=list of supported modes=] unless the UA implements that module.
+  - A session mode of <dfn enum-value for="XRSessionMode">immersive-vr</dfn> indicates that the session's output will be given [=exclusive access=] to the [=immersive XR device=] display and that content <b>is not</b> intended to be integrated with the user's environment.
+  - The behavior of the <dfn enum-value for="XRSessionMode">immersive-ar</dfn> session mode is defined in the <a href="https://immersive-web.github.io/webxr-ar-module/">WebXR AR Module</a> and MUST NOT be added to the [=immersive XR device=]'s [=list of supported modes=] unless the UA implements that module.
 
 In this document, the term <dfn>inline session</dfn> is synonymous with an {{inline}} session and the term <dfn>immersive session</dfn> refers to either an {{immersive-vr}} or {{immersive-ar}} session.
 
-[=Immersive sessions=] MUST provide some level of [=viewer=] tracking, and content MUST be shown at the proper scale relative to the user and/or the surrounding environment. Additionally, [=Immersive sessions=] MUST be given <dfn>exclusive access</dfn> to the [=XRSystem/immersive XR device=], meaning that while the [=immersive session=] is {{XRVisibilityState/"visible"}} the HTML document is not shown on the [=XRSystem/immersive XR device=]'s display, nor does content from any other source have exclusive access. [=Exclusive access=] does not prevent the user agent from overlaying its own UI, however this UI SHOULD be minimal.
+[=Immersive sessions=] MUST provide some level of [=viewer=] tracking, and content MUST be shown at the proper scale relative to the user and/or the surrounding environment. Additionally, [=Immersive sessions=] MUST be given <dfn>exclusive access</dfn> to the [=immersive XR device=], meaning that while the [=immersive session=] is {{XRVisibilityState/"visible"}} the HTML document is not shown on the [=immersive XR device=]'s display, nor does content from any other source have exclusive access. [=Exclusive access=] does not prevent the user agent from overlaying its own UI, however this UI SHOULD be minimal.
 
 Note: Future specifications or modules may expand the definition of [=immersive session=] include additional session modes.
 
 Note: Examples of ways [=exclusive access=] may be presented include stereo content displayed on a virtual reality headset.
 
 Note: As an example of overlaid UI, the user-agent or operating system in an [=immersive session=] may show notifications over the rendered content.
+
+Note: While the HTML document is not shown on the [=immersive XR device=]'s display during an [=immersive session=], it may still be shown on a separate display, e.g. when the user is entering the [=immersive session=] from a 2d browser on their computer tethered to their  [=immersive XR device=].
 
 Feature Dependencies {#feature-dependencies}
 --------------------
@@ -468,6 +503,8 @@ Future iterations of this specification and additional modules may expand the li
 
 Note: Features are accepted as an array of <code>any</code> values to ensure forwards compatibility. It allows unrecognized optional values to be properly ignored as new [=feature descriptor=] types are added.
 
+Note: Features that can be stringified via <a abstract-op>ToString</a>() will be converted.
+
 Depending on the {{XRSessionMode}} requested, certain [=feature descriptors=] are added to the {{XRSessionInit/requiredFeatures}} or {{XRSessionInit/optionalFeatures}} lists by default. The following table describes the <dfn>default features</dfn> associated with each session type and feature list:
 
 <table class="tg">
@@ -494,13 +531,13 @@ Depending on the {{XRSessionMode}} requested, certain [=feature descriptors=] ar
 
 The combined list of [=feature descriptors=] given by the {{XRSessionInit/requiredFeatures}} and {{XRSessionInit/optionalFeatures}} are collectively considered the <dfn>requested features</dfn> for an {{XRSession}}.
 
-Some [=feature descriptors=], when present in the [=requested features=] list, are subject to [[#feature-policy|feature policy]] and/or requirements that [=user intent=] to use the feature is well understood, via either [=explicit consent=] or [=implicit consent=]. The following table describes the <dfn>feature requirements</dfn> that must be satisfied prior to being enabled:
+Some [=feature descriptors=], when present in the [=requested features=] list, are subject to [[#permissions-policy|permissions policy]] and/or requirements that [=user intent=] to use the feature is well understood, via either [=explicit consent=] or [=implicit consent=]. The following table describes the <dfn>feature requirements</dfn> that must be satisfied prior to being enabled:
 
 <table class="tg">
   <thead>
     <tr>
       <th>Feature</th>
-      <th>Feature Policy Required</th>
+      <th>[=Permissions Policy=] Required</th>
       <th>Consent Required</th>
     </tr>
   </thead>
@@ -558,13 +595,13 @@ enum XRVisibilityState {
   [SameObject] readonly attribute XRInputSourceArray inputSources;
 
   // Methods
-  void updateRenderState(optional XRRenderStateInit state = {});
+  undefined updateRenderState(optional XRRenderStateInit state = {});
   [NewObject] Promise&lt;XRReferenceSpace&gt; requestReferenceSpace(XRReferenceSpaceType type);
 
-  long requestAnimationFrame(XRFrameRequestCallback callback);
-  void cancelAnimationFrame(long handle);
+  unsigned long requestAnimationFrame(XRFrameRequestCallback callback);
+  undefined cancelAnimationFrame(unsigned long handle);
 
-  Promise&lt;void&gt; end();
+  Promise&lt;undefined&gt; end();
 
   // Events
   attribute EventHandler onend;
@@ -580,6 +617,8 @@ enum XRVisibilityState {
 </pre>
 
 Each {{XRSession}} has a <dfn for="XRSession">mode</dfn>, which is one of the values of {{XRSessionMode}}.
+
+Each {{XRSession}} has an <dfn for=XRSession>animation frame</dfn>, which is an {{XRFrame}} initialized with [=XRFrame/active=] set to <code>false</code>, [=XRFrame/animationFrame=] set to <code>true</code>, and {{XRFrame/session}} set to the {{XRSession}}.
 
 <div class="algorithm" data-algorithm="initialize-session">
 
@@ -597,9 +636,8 @@ A number of different circumstances may <dfn>shut down the session</dfn>, which 
 
 <div class="algorithm" data-algorithm="shut-down-session">
 
-When an {{XRSession}} is shut down the following steps are run:
+When an {{XRSession}} |session| is shut down the following steps are run:
 
-  1. Let |session| be the target {{XRSession}} object.
   1. Set |session|'s [=ended=] value to <code>true</code>.
   1. If the [=active immersive session=] is equal to |session|, set the [=active immersive session=] to <code>null</code>.
   1. Remove |session| from the [=list of inline sessions=].
@@ -616,8 +654,8 @@ When an {{XRSession}} is shut down the following steps are run:
 
 The <dfn method for="XRSession">end()</dfn> method provides a way to manually shut down a session. When invoked, it MUST run the following steps:
 
-  1. Let |promise| be [=a new Promise=].
-  1. [=Shut down the session|Shut down=] the target {{XRSession}} object.
+  1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of this {{XRSession}}.
+  1. [=Shut down the session|Shut down=] [=this=].
   1. [=Queue a task=] to perform the following steps:
     1. Wait until any platform-specific steps related to shutting down the session have completed.
     1. [=/Resolve=] |promise|.
@@ -633,16 +671,26 @@ Each {{XRSession}} has a <dfn>minimum inline field of view</dfn> and a <dfn>maxi
 
 Each {{XRSession}} has a <dfn>minimum near clip plane</dfn> and a <dfn>maximum far clip plane</dfn>, defined in meters. The values MUST be determined by the user agent and MUST be non-negative. The [=minimum near clip plane=] SHOULD be less than <code>0.1</code>. The [=maximum far clip plane=] SHOULD be greater than <code>1000.0</code> (and MAY be infinite).
 
+<div class="algorithm" data-algorithm="update-layers-state">
+
+When the user agent will <dfn>update the pending layers state</dfn> with {{XRSession}} <var ignore>session</var> and {{XRRenderStateInit}} |newState|, it must run the following steps:
+  1. If |newState|'s {{XRRenderStateInit/layers}}'s value is not <code>null</code>, throw a {{NotSupportedError}}.
+
+NOTE: The <a href="https://immersive-web.github.io/layers">WebXR layers module</a> will introduce new semantics for this algorithm.
+
+</div>
+
 <div class="algorithm" data-algorithm="update-render-state">
 
 The <dfn method for="XRSession">updateRenderState(|newState|)</dfn> method queues an update to the [=active render state=] to be applied on the next frame. Unset fields of the {{XRRenderStateInit}} |newState| passed to this method will not be changed.
 
 When this method is invoked, the user agent MUST run the following steps:
-
-  1. Let |session| be the target {{XRSession}}.
+  1. Let |session| be [=this=].
   1. If |session|'s [=ended=] value is <code>true</code>, throw an {{InvalidStateError}} and abort these steps.
-  1. If |newState|'s {{XRRenderStateInit/baseLayer}}'s was created with an {{XRSession}} other than |session|, throw an {{InvalidStateError}} and abort these steps.
+  1. If |newState|'s {{XRRenderStateInit/baseLayer}} was created with an {{XRSession}} other than |session|, throw an {{InvalidStateError}} and abort these steps.
   1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set and |session| is an [=immersive session=], throw an {{InvalidStateError}} and abort these steps.
+  1. If none of |newState|'s {{XRRenderStateInit/depthNear}}, {{XRRenderStateInit/depthFar}}, {{XRRenderStateInit/inlineVerticalFieldOfView}}, {{XRRenderStateInit/baseLayer}}, {{XRRenderStateInit/layers}} are set, abort these steps.
+  1. Run [=update the pending layers state=] with |session| and |newState|.
   1. Let |activeState| be |session|'s [=active render state=].
   1. If |session|'s [=pending render state=] is <code>null</code>, set it to a copy of |activeState|.
   1. If |newState|'s {{XRRenderStateInit/depthNear}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/depthNear}} to |newState|'s {{XRRenderStateInit/depthNear}}.
@@ -654,27 +702,30 @@ When this method is invoked, the user agent MUST run the following steps:
 
 <div class="algorithm" data-algorithm="apply-pending-render-state">
 
-When requested, the {{XRSession}} MUST <dfn>apply the pending render state</dfn> by running the following steps:
+When requested, the {{XRSession}} |session| MUST <dfn>apply the pending render state</dfn> by running the following steps:
 
-  1. Let |session| be the target {{XRSession}}.
   1. Let |activeState| be |session|'s [=active render state=].
   1. Let |newState| be |session|'s [=pending render state=].
   1. Set |session|'s [=pending render state=] to <code>null</code>.
-  1. Set |activeState| to |newState|.
-  1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is less than |session|'s [=minimum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=minimum inline field of view=].
-  1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is greater than |session|'s [=maximum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=maximum inline field of view=].
-  1. If |activeState|'s {{XRRenderState/depthNear}} is less than |session|'s [=minimum near clip plane=] set |activeState|'s {{XRRenderState/depthNear}} to |session|'s [=minimum near clip plane=].
-  1. If |activeState|'s {{XRRenderState/depthFar}} is less than |session|'s [=maximum far clip plane=] set |activeState|'s {{XRRenderState/depthFar}} to |session|'s [=maximum far clip plane=].
-  1. Let |baseLayer| be |activeState|'s {{XRRenderState/baseLayer}}.
-  1. Set |activeState|'s [=XRRenderState/composition disabled=] and [=XRRenderState/output canvas=] as follows:
-    <dl class="switch">
-      <dt> If |session|'s [=XRSession/mode=] is {{XRSessionMode/"inline"}} and |baseLayer| is an instance of an {{XRWebGLLayer}} with [=XRWebGLLayer/composition disabled=] set to <code>true</code>
-      <dd> Set |activeState|'s [=XRRenderState/composition disabled=] boolean to <code>true</code>.
-      <dd> Set |activeState|'s [=XRRenderState/output canvas=] to |baseLayer|'s [=XRWebGLLayer/context=]'s {{WebGLRenderingContext|canvas}}.
-      <dt> Otherwise
-      <dd> Set |activeState|'s [=XRRenderState/composition disabled=] boolean to <code>false</code>.
-      <dd> Set |activeState|'s [=XRRenderState/output canvas=] to <code>null</code>.
-    </dl>
+  1. Let |oldBaseLayer| be |activeState|'s {{XRRenderState/baseLayer}}.
+  1. Let |oldLayers| be |activeState|'s {{XRRenderState/layers}}.
+  1. [=Queue a task=] to perform the following steps:
+    1. Set |activeState| to |newState|.
+    1. If |oldBaseLayer| is not equal to |activeState|'s {{XRRenderState/baseLayer}}, |oldLayers| is not equal to |activeState|'s {{XRRenderState/layers}}, or the dimensions of any of the layers have changed, [=update the viewports=] for |session|.
+    1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is less than |session|'s [=minimum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=minimum inline field of view=].
+    1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is greater than |session|'s [=maximum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=maximum inline field of view=].
+    1. If |activeState|'s {{XRRenderState/depthNear}} is less than |session|'s [=minimum near clip plane=] set |activeState|'s {{XRRenderState/depthNear}} to |session|'s [=minimum near clip plane=].
+    1. If |activeState|'s {{XRRenderState/depthFar}} is greater than |session|'s [=maximum far clip plane=] set |activeState|'s {{XRRenderState/depthFar}} to |session|'s [=maximum far clip plane=].
+    1. Let |baseLayer| be |activeState|'s {{XRRenderState/baseLayer}}.
+    1. Set |activeState|'s [=XRRenderState/composition disabled=] and [=XRRenderState/output canvas=] as follows:
+        <dl class="switch">
+          <dt> If |session|'s [=XRSession/mode=] is {{XRSessionMode/"inline"}} and |baseLayer| is an instance of an {{XRWebGLLayer}} with [=XRWebGLLayer/composition disabled=] set to <code>true</code>
+          <dd> Set |activeState|'s [=XRRenderState/composition disabled=] boolean to <code>true</code>.
+          <dd> Set |activeState|'s [=XRRenderState/output canvas=] to |baseLayer|'s [=XRWebGLLayer/context=]'s {{WebGLRenderingContext|canvas}}.
+          <dt> Otherwise
+          <dd> Set |activeState|'s [=XRRenderState/composition disabled=] boolean to <code>false</code>.
+          <dd> Set |activeState|'s [=XRRenderState/output canvas=] to <code>null</code>.
+        </dl>
 
 </div>
 
@@ -683,11 +734,14 @@ The <dfn method for="XRSession">requestReferenceSpace(|type|)</dfn> method const
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |promise| be [=a new Promise=].
+  1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of this {{XRSession}}.
   1. Run the following steps [=in parallel=]:
-    1. [=Create a reference space=], |referenceSpace|, with the {{XRReferenceSpaceType}} |type|.
-    1. If |referenceSpace| is <code>null</code>, [=reject=] |promise| with a {{NotSupportedError}} and abort these steps.
-    1. [=/Resolve=] |promise| with |referenceSpace|.
+    1. If the result of running [=reference space is supported=] for |type| and |session| is <code>false</code>, [=queue a task=] to [=reject=] |promise| with a {{NotSupportedError}} and abort these steps.
+    1. Set up any platform resources required to track reference spaces of type |type|.
+        <div class=note>User agents need not wait for tracking to be established for such reference spaces to resolve {{XRSession/requestReferenceSpace()}}. It is okay for {{XRFrame/getViewerPose()}} to return <code>null</code> when the session is initially attempting to establish tracking, and content can use this time to show a splash screen or something else. Note that if |type| is {{XRReferenceSpaceType/"bounded-floor"}}, and the bounds have not yet been established, user agents MAY set the bounds to a small initial area and use a {{reset}} event when bounds are established.</div>
+    1. [=Queue a task=] to run the following steps:
+      1. [=Create a reference space=], |referenceSpace|, with |type| and |session|.
+      1. [=/Resolve=] |promise| with |referenceSpace|.
   1. Return |promise|.
 
 </div>
@@ -700,13 +754,18 @@ The <dfn attribute for="XRSession">inputSources</dfn> attribute returns the {{XR
 
 The user agent MUST monitor any [=XR input source=]s associated with the [=XRSession/XR device=], including detecting when [=XR input source=]s are added, removed, or changed.
 
+Each {{XRSession}} has a <dfn for=XRSession>promise resolved</dfn> flag, initially <code>false</code>.
+
+NOTE: The purpose of this flag is to ensure that the [=XRSession/add input source=], [=XRSession/remove input source=], and [=XRSession/change input source=] algorithms do not run until the user code actually has had a chance to attach event listeners. Implementations may not need this flag if they simply choose to start listening for input source changes after the session resolves.
+
 <div class="algorithm" data-algorithm="on-input-source-added">
 
 When <dfn for="XRSession" lt="add input source">new [=XR input source=]s become available</dfn> for {{XRSession}} |session|, the user agent MUST run the following steps:
 
+  1. If |session|'s [=XRSession/promise resolved=] flag is not set, abort these steps.
   1. Let |added| be a new [=/list=].
   1. For each new [=XR input source=]:
-    1. Let |inputSource| be a new {{XRInputSource}}.
+    1. Let |inputSource| be a [=new=] {{XRInputSource}} in the [=relevant realm=] of this {{XRSession}}.
     1. Add |inputSource| to |added|.
   1. [=Queue a task=] to perform the following steps:
     1. [=list/Extend=] |session|'s [=list of active XR input sources=] with |added|.
@@ -718,6 +777,7 @@ When <dfn for="XRSession" lt="add input source">new [=XR input source=]s become 
 
 When any previously added <dfn for="XRSession" lt="remove input source">[=XR input source=]s are no longer available</dfn> for {{XRSession}} |session|, the user agent MUST run the following steps:
 
+  1. If |session|'s [=XRSession/promise resolved=] flag is not set, abort these steps.
   1. Let |removed| be a new [=/list=].
   1. For each [=XR input source=] that is no longer available:
     1. Let |inputSource| be the {{XRInputSource}} in |session|'s [=list of active XR input sources=] associated with the [=XR input source=].
@@ -726,17 +786,20 @@ When any previously added <dfn for="XRSession" lt="remove input source">[=XR inp
     1. [=list/Remove=] each {{XRInputSource}} in |removed| from |session|'s [=list of active XR input sources=].
     1. Fire an {{XRInputSourcesChangeEvent}} named {{inputsourceschange!!event}} on |session| with {{XRInputSourcesChangeEvent/removed}} set to |removed|.
 
+Note: The user agent MAY fire this event when an input source temporarily loses both position and orientation tracking. It is recommended that this only be done for physical handheld controller input sources. It is not recommended that this event be fired when this happens for tracked hand input sources, because this will happen often, nor is it recommended when this happens for tracker object input sources, since this makes it harder for the application to maintain a notion of identity.
+
 </div>
 
 <div class="algorithm" data-algorithm="on-input-source-change">
 
 When the <dfn for="XRSession" export lt="change input source">{{XRInputSource/handedness}}, {{XRInputSource/targetRayMode}}, {{XRInputSource/profiles}}, or presence of a {{XRInputSource/gripSpace}} for any [=XR input source=]s change</dfn> for {{XRSession}} |session|, the user agent MUST run the following steps:
 
+  1. If |session|'s [=XRSession/promise resolved=] flag is not set, abort these steps.
   1. Let |added| be a new [=/list=].
   1. Let |removed| be a new [=/list=].
   1. For each changed [=XR input source=]:
     1. Let |oldInputSource| be the {{XRInputSource}} in |session|'s [=list of active XR input sources=] previously associated with the [=XR input source=].
-    1. Let |newInputSource| be a new {{XRInputSource}}.
+    1. Let |newInputSource| be a [=new=] {{XRInputSource}} in the [=relevant realm=] of |session|.
     1. Add |oldInputSource| to |removed|.
     1. Add |newInputSource| to |added|.
   1. [=Queue a task=] to perform the following steps:
@@ -760,7 +823,11 @@ The [=visibility state=] MAY be changed by the user agent at any time other than
 
 Note: The {{XRSession}}'s [=visibility state=] does not necessarily imply the visibility of the HTML document. Depending on the system configuration the page may continue to be visible while an [=immersive session=] is active. (For example, a headset connected to a PC may continue to display the page on the monitor while the headset is viewing content from an [=immersive session=].) Developers should continue to rely on the [Page Visibility API](https://w3c.github.io/page-visibility/) to determine page visibility.
 
-Each {{XRSession}} has a <dfn for="XRSession">viewer reference space</dfn>, which is an {{XRReferenceSpace}} of type {{XRReferenceSpaceType/"viewer"}} with an [=identity transform=] [=XRSpace/origin offset=]. The [=XRSession/viewer reference space=] has a <dfn for="XRSession/viewer reference space">list of views</dfn>, which is a [=/list=] of [=view=]s corresponding to the views provided by the [=XRSession/XR device=]. If the {{XRSession}}'s {{XRSession/renderState}}'s [=XRRenderState/composition disabled=] boolean is set to <code>true</code> the [=list of views=] MUST contain a single [=view=].
+Note: The {{XRSession}}'s [=visibility state=] does not affect or restrict mouse behavior on tethered sessions where 2D content is still visible while an [=immersive session=] is active. Content should consider using the [[!pointerlock]] API if it wishes to have stronger control over mouse behavior.
+
+Each {{XRSession}} has a <dfn for="XRSession">viewer reference space</dfn>, which is an {{XRReferenceSpace}} of type {{XRReferenceSpaceType/"viewer"}} with an [=identity transform=] [=XRSpace/origin offset=].
+
+Each {{XRSession}} has a <dfn for="XRSession">list of views</dfn>, which is a [=/list=] of [=view=]s corresponding to the views provided by the [=XRSession/XR device=]. If the {{XRSession}}'s {{XRSession/renderState}}'s [=XRRenderState/composition disabled=] boolean is set to <code>true</code> the [=list of views=] MUST contain a single [=view=]. The [=XRSession/list of views=] is immutable during the {{XRSession}} and MUST contain any [=views=] that may be surfaced during the session, including [=secondary views=] that may not initially be [=view/active=].
 
 The <dfn attribute for="XRSession">onend</dfn> attribute is an [=Event handler IDL attribute=] for the {{end}} event type.
 
@@ -790,6 +857,7 @@ dictionary XRRenderStateInit {
   double depthFar;
   double inlineVerticalFieldOfView;
   XRWebGLLayer? baseLayer;
+  sequence&lt;XRLayer&gt;? layers;
 };
 
 [SecureContext, Exposed=Window] interface XRRenderState {
@@ -810,7 +878,7 @@ Note: At this point the {{XRRenderState}} will only have an [=XRRenderState/outp
 
 When an {{XRRenderState}} object is created for an {{XRSession}} |session|, the user agent MUST <dfn>initialize the render state</dfn> by running the following steps:
 
-  1. Let |state| be the newly created {{XRRenderState}} object.
+  1. Let |state| be a [=new=] {{XRRenderState}} object in the [=relevant realm=] of |session|         .
   1. Initialize |state|'s {{XRRenderState/depthNear}} to <code>0.1</code>.
   1. Initialize |state|'s {{XRRenderState/depthFar}} to <code>1000.0</code>.
   1. Initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} as follows:
@@ -840,12 +908,12 @@ Animation Frames {#animation-frames}
 The primary way an {{XRSession}} provides information about the tracking state of the [=XRSession/XR device=] is via callbacks scheduled by calling {{requestAnimationFrame()}} on the {{XRSession}} instance.
 
 <pre class="idl">
-callback XRFrameRequestCallback = void (DOMHighResTimeStamp time, XRFrame frame);
+callback XRFrameRequestCallback = undefined (DOMHighResTimeStamp time, XRFrame frame);
 </pre>
 
 Each {{XRFrameRequestCallback}} object has a <dfn for="XRFrameRequestCallback">cancelled</dfn> boolean initially set to <code>false</code>.
 
-Each {{XRSession}} has a <dfn>list of animation frame callbacks</dfn>, which is initially empty, and an <dfn>animation frame callback identifier</dfn>, which is a number which is initially zero.
+Each {{XRSession}} has a <dfn>list of animation frame callbacks</dfn>, which is initially empty, a  <dfn>list of currently running animation frame callbacks</dfn>, which is also initially empty, and an <dfn>animation frame callback identifier</dfn>, which is a number which is initially zero.
 
 <div class="algorithm" data-algorithm="request-animation-frame">
 
@@ -853,7 +921,7 @@ The <dfn method for="XRSession">requestAnimationFrame(|callback|)</dfn> method q
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |session| be the target {{XRSession}} object.
+  1. Let |session| be the [=this=].
   1. Increment |session|'s [=animation frame callback identifier=] by one.
   1. Append |callback| to |session|'s [=list of animation frame callbacks=], associated with |session|'s [=animation frame callback identifier=]’s current value.
   1. Return |session|'s [=animation frame callback identifier=]’s current value.
@@ -866,34 +934,49 @@ The <dfn method for="XRSession">cancelAnimationFrame(|handle|)</dfn> method canc
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |session| be the target {{XRSession}} object.
-  1. Find the entry in |session|'s [=list of animation frame callbacks=] that is associated with the value |handle|.
+  1. Let |session| be the [=this=].
+  1. Find the entry in |session|'s [=list of animation frame callbacks=] or |session|'s [=list of currently running animation frame callbacks=] that is associated with the value |handle|.
   1. If there is such an entry, set its [=cancelled=] boolean to <code>true</code> and remove it from |session|'s [=list of animation frame callbacks=].
+
+</div>
+
+<div class="algorithm" data-algorithm="check-layers-state">
+To <dfn>check the layers state</dfn> with {{XRSession/renderState}} |state|, the user agent MUST run the following steps:
+  1. If |state|'s {{XRRenderState/baseLayer}} is <code>null</code>, return <code>false</code>.
+  1. return <code>true</code>.
+
+NOTE: The <a href="https://immersive-web.github.io/layers">WebXR layers module</a> will introduce new semantics for this algorithm.
 
 </div>
 
 <div class="algorithm" data-algorithm="run-animation-frames">
 
-When an {{XRSession}} |session| receives updated [=viewer=] state for timestamp |now| from the [=XRSession/XR device=], it runs an <dfn>XR animation frame</dfn>, which MUST run the following steps regardless of if the [=list of animation frame callbacks=] is empty or not:
+When an {{XRSession}} |session| receives updated [=viewer=] state for timestamp |frameTime| from the [=XRSession/XR device=], it runs an <dfn>XR animation frame</dfn>, which MUST run the following steps regardless of if the [=list of animation frame callbacks=] is empty or not:
 
-  1. Let |frame| be a new {{XRFrame}} with [=XRFrame/time=] |now| and {{XRFrame/session}} |session|.
-  1. If |session|'s [=pending render state=] is not <code>null</code>, [=apply the pending render state=].
-  1. If |session|'s {{XRSession/renderState}}'s {{XRRenderState/baseLayer}} is <code>null</code>, abort these steps.
-  1. If |session|'s  [=XRSession/mode=] is {{XRSessionMode/"inline"}} and |session|'s {{XRSession/renderState}}'s [=XRRenderState/output canvas=] is <code>null</code>, abort these steps.
-  1. Let |callbacks| be a list of the entries in |session|'s [=list of animation frame callback=], in the order in which they were added to the list.
-  1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
-  1. Set |frame|'s [=active=] boolean to <code>true</code>.
-  1. Set |frame|'s [=animationFrame=] boolean to <code>true</code>.
-  1. [=XRFrame/Apply frame updates=] for |frame|.
-  1. For each entry in |callbacks|, in order:
-    1. If the entry's [=cancelled=] boolean is <code>true</code>, continue to the next entry.
-    1. [=Invoke the Web IDL callback function=], passing |now| and |frame| as the  arguments
-    1. If an exception is thrown, [=report the exception=].
-  1. Set |frame|'s [=active=] boolean to <code>false</code>.
+  1. [=Queue a task=] to perform the following steps:
+    1. Let |now| be the [=current high resolution time=].
+    1. Let |frame| be |session|'s [=XRSession/animation frame=].
+    1. Set |frame|'s [=XRFrame/time=] to |frameTime|.
+    1. If the [=view/active] flag of any [=view=] in the [=XRSession/list of views=] has changed since the last [=XR animation frame=], [=update the viewports=].
+    1. If [=check the layers state=] with |session|'s {{XRSession/renderState}} is <code>false</code>, abort these steps.
+    1. If |session|'s  [=XRSession/mode=] is {{XRSessionMode/"inline"}} and |session|'s {{XRSession/renderState}}'s [=XRRenderState/output canvas=] is <code>null</code>, abort these steps.
+    1. Set  |session|'s [=list of currently running animation frame callbacks=] to be |session|'s [=list of animation frame callbacks=].
+    1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
+    1. Set |frame|'s [=XRFrame/active=] boolean to <code>true</code>.
+    1. [=XRFrame/Apply frame updates=] for |frame|.
+    1. For each |entry| in |session|'s [=list of currently running animation frame callbacks=], in order:
+      1. If the |entry|'s [=cancelled=] boolean is <code>true</code>, continue to the next entry.
+      1. [=Invoke the Web IDL callback function=] for |entry|, passing |now| and |frame| as the  arguments
+      1. If an exception is thrown, [=report the exception=].
+    1. Set |session|'s [=list of currently running animation frame callbacks=] to the empty [=/list=].
+    1. Set |frame|'s [=XRFrame/active=] boolean to <code>false</code>.
+    1. If |session|'s [=pending render state=] is not <code>null</code>, [=apply the pending render state=].
 
 </div>
 
-The behavior of the {{Window}} interface's {{Window/requestAnimationFrame()}} method is not changed by the presence of any active {{XRSession}}, nor does calling {{requestAnimationFrame()}} on any {{XRSession}} interact with {{Window}}'s {{Window/requestAnimationFrame()}} in any way. An [=active immersive session=] MAY affect the [=rendering opportunity=] of a [=browsing context=] if it causes the page to be obscured.
+The behavior of the {{Window}} interface's {{Window/requestAnimationFrame()}} method is not changed by the presence of any active {{XRSession}}, nor does calling {{requestAnimationFrame()}} on any {{XRSession}} interact with {{Window}}'s {{Window/requestAnimationFrame()}} in any way. An [=active immersive session=] MAY affect the [=rendering opportunity=] of a [=browsing context=] if it causes the page to be obscured. If the 2D browser view is visible during an [=active immersive session=] (i.e., when the sesson is running on a tethered headset), the timing of callbacks run with {{Window}}'s {{Window/requestAnimationFrame()}} and {{Window/requestIdleCallback()}} MAY NOT coincide with that of the session's {{XRSession/requestAnimationFrame()}} and should not be relied upon by the user for rendering XR content.
+
+Note: User agents may wish to display a warning to the developer console if {{XRSession}}'s {{XRSession/requestAnimationFrame()}} is called during callbacks scheduled via {{Window}}'s {{Window/requestAnimationFrame()}}, as these callbacks are not guaranteed to occur if the [=active immersive session=] affects the [=rendering opportunity=] of the [=browsing context=], and may not have the correct timing even if they run.
 
 <div class="example">
 If an [=immersive session=] prevents [=rendering opportunity|rendering opportunities=] then callbacks supplied to {{Window}} {{Window/requestAnimationFrame()}} may not be processed while the session is active. This depends on the type of device being used and is most likely to happen depend on mobile or standalone devices where the immersive content completely obscures the HTML document. As such, developers must not rely on {{Window}} {{Window/requestAnimationFrame()}} callbacks to schedule {{XRSession}} {{XRSession/requestAnimationFrame()}} callbacks and visa-versa, even if they share the same rendering logic. Applications that do not follow this guidance may not execute properly on all platforms. A more effective pattern for applications that wish to transition between these two types of animation loops is demonstrated below:
@@ -977,20 +1060,21 @@ The <dfn method for="XRFrame">getViewerPose(|referenceSpace|)</dfn> method provi
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |frame| be the target {{XRFrame}}
+  1. Let |frame| be [=this=].
   1. Let |session| be |frame|'s {{XRFrame/session}} object.
   1. If |frame|'s [=animationFrame=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
-  1. Let |pose| be a new {{XRViewerPose}} object.
-  1. [=Populate the pose=] of |session|'s [=XRSession/viewer reference space=] in |referenceSpace| at the time represented by |frame| into |pose|.
+  1. Let |pose| be a [=new=] {{XRViewerPose}} object in the [=relevant realm=] of |session|.
+  1. [=Populate the pose=] of |session|'s [=XRSession/viewer reference space=] in |referenceSpace| at the time represented by |frame| into |pose|, with <code>force emulation</code> set to <code>true</code>.
   1. If |pose| is <code>null</code> return <code>null</code>.
   1. Let |xrviews| be an empty [=/list=].
-  1. For each [=view=] |view| in the [=XRSession/viewer reference space/list of views=] on the[=XRSession/viewer reference space=] of {{XRFrame/session}}, perform the following steps:
-      1. Let |xrview| be a new {{XRView}} object.
+  1. For each [=view/active=] [=view=] |view| in the [=XRSession/list of views=] on {{XRFrame/session}}, perform the following steps:
+      1. Let |xrview| be a new {{XRView}} object in the [=relevant realm=] of |session|.
       1. Initialize |xrview|'s [=XRView/underlying view=] to |view|.
       1. Initialize |xrview|'s {{XRView/eye}} to |view|'s [=view/eye=].
-      1. Initialize |xrview|'s [=XRView/frame=] to |frame|.
-      1. Let |offset| be an {{XRRigidTransform}} equal to the [=view offset=] of |view|
-      1. Set |xrview|'s {{XRView/transform}} property to the result of [=multiply transforms|multiplying=] the {{XRViewerPose}}'s {{XRPose/transform}} by the |offset| transform
+      1. Initialize |xrview|'s [=XRView/frame time=] to |frame|'s [=XRFrame/time=].
+      1. Initialize |xrview|'s [=XRView/session=] to |session|.
+      1. Let |offset| be an [=new=] {{XRRigidTransform}} object equal to the [=view offset=] of |view| in the [=relevant realm=] of |session|.
+      1. Set |xrview|'s {{XRView/transform}} property to the result of [=multiply transforms|multiplying=] the {{XRViewerPose}}'s {{XRPose/transform}} by the |offset| transform in the relevant realm of |session|
       1. [=list/Append=] |xrview| to |xrviews|
   1. Set |pose|'s {{XRViewerPose/views}} to |xrviews|
   1. Return |pose|.
@@ -1003,8 +1087,8 @@ The <dfn method for="XRFrame">getPose(|space|, |baseSpace|)</dfn> method provide
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |frame| be the target {{XRFrame}}
-  1. Let |pose| be a new {{XRPose}} object.
+  1. Let |frame| be [=this=].
+  1. Let |pose| be a [=new=] {{XRPose}} object in the [=relevant realm=] of |frame|.
   1. [=Populate the pose=] of |space| in |baseSpace| at the time represented by |frame| into |pose|.
   1. Return |pose|.
 
@@ -1043,15 +1127,19 @@ An {{XRSpace}} represents a virtual coordinate system with an origin that corres
 
 Each {{XRSpace}} has a <dfn for="XRSpace">session</dfn> which is set to the {{XRSession}} that created the {{XRSpace}}.
 
-Each {{XRSpace}} has a <dfn for="XRSpace">native origin</dfn> that is tracked by the [=XRSession/XR device=]'s underlying tracking system, and an <dfn for="XRSpace">effective origin</dfn>, which is the basis of the {{XRSpace}}'s <dfn for="XRSpace">coordinate system</dfn>. The transform from the effective space to the [=native origin=]'s space is defined by an <dfn for="XRSpace">origin offset</dfn>, which is an {{XRRigidTransform}} initially set to an [=identity transform=].
+Each {{XRSpace}} has a <dfn for="XRSpace">native origin</dfn> which is a position and orientation in space. The {{XRSpace}}'s [=XRSpace/native origin=] may be updated by the [=XRSession/XR device=]'s underlying tracking system, and different {{XRSpace}}s may define different semantics as to how their [=native origins=] are tracked and updated.
+
+Each {{XRSpace}} has an <dfn for="XRSpace">effective origin</dfn>, which is the basis of the {{XRSpace}}'s <dfn for="XRSpace">coordinate system</dfn>.
+
+The transform from the effective space to the [=native origin=]'s space is defined by an <dfn for="XRSpace">origin offset</dfn>, which is an {{XRRigidTransform}} initially set to an [=identity transform=]. In other words, the [=effective origin=] can be obtained by [=multiply transforms|multiplying=] [=origin offset=] and the [=native origin=].
 
 The [=effective origin=] of an {{XRSpace}} can only be observed in the coordinate system of another {{XRSpace}} as an {{XRPose}}, returned by an {{XRFrame}}'s {{XRFrame/getPose()}} method. The spatial relationship between {{XRSpace}}s MAY change between {{XRFrame}}s.
 
 <div class="algorithm" data-algorithm="populate-the-pose">
 
-To <dfn>populate the pose</dfn> of an {{XRSpace}} |space| in an {{XRSpace}} |baseSpace| at the time represented by an {{XRFrame}} |frame| into an {{XRPose}} |pose|, the user agent MUST run the following steps:
+To <dfn>populate the pose</dfn> of an {{XRSpace}} |space| in an {{XRSpace}} |baseSpace| at the time represented by an {{XRFrame}} |frame| into an {{XRPose}} |pose|, with an optional |force emulation| flag, the user agent MUST run the following steps:
 
-  1. If |frame|'s [=active=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
+  1. If |frame|'s [=XRFrame/active=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
   1. Let |session| be |frame|'s {{XRFrame/session}} object.
   1. If |space|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
   1. If |baseSpace|'s [=XRSpace/session=] does not equal |session|, throw an {{InvalidStateError}} and abort these steps.
@@ -1070,12 +1158,12 @@ To <dfn>populate the pose</dfn> of an {{XRSpace}} |space| in an {{XRSpace}} |bas
         <dd> Set |transform|'s {{XRRigidTransform/position}} to the tracking system's best estimate of the position of |space|'s [=effective origin=] in |baseSpace|'s [=coordinate system=]. This MAY include a computed offset such as a neck or arm model. If a position estimate is not available, the last known position MUST be used.
         <dd> Set |pose|'s {{XRPose/emulatedPosition}} to <code>true</code>.
 
-      <dt> Else if |space|'s pose relative to |baseSpace| has been determined in the past:
+      <dt> Else if |space|'s pose relative to |baseSpace| has been determined in the past and |force emulation| is <code>true</code>:
         <dd> Set |transform|'s {{XRRigidTransform/position}} to the last known position of |space|'s [=effective origin=] in |baseSpace|'s [=coordinate system=].
         <dd> Set |transform|'s {{XRRigidTransform/orientation}} to the last known orientation of |space|'s [=effective origin=] in |baseSpace|'s [=coordinate system=].
         <dd> Set |pose|'s {{XRPose/emulatedPosition}} boolean to <code>true</code>.
 
-      <dt> Else if |space|'s pose relative to |baseSpace| has never been determined:
+      <dt> Otherwise:
         <dd> Set |pose| to <code>null</code>.
     </dl>
 
@@ -1129,22 +1217,18 @@ The <dfn attribute for="XRReferenceSpace">onreset</dfn> attribute is an [=Event 
 
 <div class="algorithm" data-algorithm="create-reference-space">
 
-When an {{XRReferenceSpace}} is requested, the user agent MUST <dfn>create a reference space</dfn> by running the following steps:
+When an {{XRReferenceSpace}} is requested with {{XRReferenceSpaceType}} |type| for {{XRSession}} |session|, the user agent MUST <dfn>create a reference space</dfn> by running the following steps:
 
-  1. Let |session| be the {{XRSession}} object that requested creation of a reference space.
-  1. Let |type| be set to the {{XRReferenceSpaceType}} passed to {{requestReferenceSpace()}}.
-  1. If the [=reference space is supported=] for |type| and |session|, run the following steps:
-    1. Initialize |referenceSpace| as follows:
-        <dl class="switch">
-          <dt> If |type| is {{bounded-floor}}
-          <dd> Let |referenceSpace| be a new {{XRBoundedReferenceSpace}}.
-          <dt> Otherwise
-          <dd> Let |referenceSpace| be a new {{XRReferenceSpace}}.
-        </dl>
-    1. Initialize |referenceSpace|'s [=XRReferenceSpace/type=] to |type|.
-    1. Initialize |referenceSpace|'s [=XRSpace/session=] to |session|.
-    1. Return |referenceSpace|
-  1. Return <code>null</code>.
+  1. Initialize |referenceSpace| as follows:
+      <dl class="switch">
+        <dt> If |type| is {{bounded-floor}}
+        <dd> Let |referenceSpace| be a [=new=] {{XRBoundedReferenceSpace}} in the [=relevant realm=] of |session|.
+        <dt> Otherwise
+        <dd> Let |referenceSpace| be a [=new=] {{XRReferenceSpace}} in the [=relevant realm=] of |session|.
+      </dl>
+  1. Initialize |referenceSpace|'s [=XRReferenceSpace/type=] to |type|.
+  1. Initialize |referenceSpace|'s [=XRSpace/session=] to |session|.
+  1. Return |referenceSpace|.
 
 </div>
 
@@ -1168,12 +1252,12 @@ The <dfn method for="XRReferenceSpace">getOffsetReferenceSpace(|originOffset|)</
   1. Initialize |offsetSpace| as follows:
     <dl class="switch">
       <dt> If |base| is an instance of {{XRBoundedReferenceSpace}}
-      <dd> Let |offsetSpace| be a new {{XRBoundedReferenceSpace}} and set |offsetSpace|'s {{boundsGeometry}} to |base|'s {{boundsGeometry}}, with each point multiplied by the {{XRRigidTransform/inverse}} of |originOffset|.
+      <dd> Let |offsetSpace| be a [=new=] {{XRBoundedReferenceSpace}} in the [=relevant realm=] of |base|, and set |offsetSpace|'s {{boundsGeometry}} to |base|'s {{boundsGeometry}}, with each point multiplied by the {{XRRigidTransform/inverse}} of |originOffset|.
       <dt> Else
-      <dd> Let |offsetSpace| be a new {{XRReferenceSpace}}.
+      <dd> Let |offsetSpace| be a [=new=] {{XRReferenceSpace}} in the [=relevant realm=] of |base|.
     </dl>
-  1. Set |offsetSpace|'s [=native origin=] to |base|'s [=native origin=].
-  1. Set |offsetSpace|'s [=origin offset=] to the result of [=multiply transforms|multiplying=] |base|'s [=origin offset=] by |originOffset|.
+  1. Set |offsetSpace|'s [=XRReferenceSpace/type=] to |base|'s [=XRReferenceSpace/type=].
+  1. Set |offsetSpace|'s [=origin offset=] to the result of [=multiply transforms|multiplying=] |base|'s [=origin offset=] by |originOffset| in the [=relevant realm=] of |base|.
   1. Return |offsetSpace|.
 
 </div>
@@ -1230,15 +1314,19 @@ Views {#views}
 XRView {#xrview-interface}
 ------
 
-An {{XRView}} describes a single <dfn>view</dfn> into an XR scene for a given frame.
+An {{XRView}} describes a single [=view=] into an XR scene for a given frame.
 
-Each [=view=] corresponds to a display or portion of a display used by an XR device to present imagery to the user. They are used to retrieve all the information necessary to render content that is well aligned to the [=view=]'s physical output properties, including the field of view, eye offset, and other optical properties. [=Views=] may cover overlapping regions of the user's vision. No guarantee is made about the number of [=views=] any XR device uses or their order, nor is the number of [=views=] required to be constant for the duration of an {{XRSession}}.
+A <dfn>view</dfn> corresponds to a display or portion of a display used by an XR device to present imagery to the user. They are used to retrieve all the information necessary to render content that is well aligned to the [=view=]'s physical output properties, including the field of view, eye offset, and other optical properties. [=Views=] may cover overlapping regions of the user's vision. No guarantee is made about the number of [=views=] any XR device uses or their order, nor is the number of [=views=] required to be constant for the duration of an {{XRSession}}.
 
 A [=view=] has an associated internal <dfn>view offset</dfn>, which is an {{XRRigidTransform}} describing the position and orientation of the [=view=] in the [=XRSession/viewer reference space=]'s [=coordinate system=].
+
+NOTE: There are no constraints on what the view offset might be, and views are allowed to have differing orientations. This can crop up in head-mounted devices with eye displays centered at an angle, and it can also surface itself in more extreme cases like CAVE rendering. Techniques like z-sorting and culling may need to be done per-eye because of this.
 
 A [=view=] has an associated <dfn for="view">projection matrix</dfn> which is a [=matrix=] describing the projection to be used when rendering the [=view=], provided by the underlying XR device. The [=view/projection matrix=] MAY include transformations such as shearing that prevent the projection from being accurately described by a simple frustum.
 
 A [=view=] has an associated <dfn for="view">eye</dfn> which is an {{XREye}} describing which eye this view is expected to be shown to. If the view does not have an intrinsically associated eye (the display is monoscopic, for example) this value MUST be set to {{XREye/"none"}}.
+
+A [=view=] has an <dfn for="view">active</dfn> flag that may change through the lifecycle of an {{XRSession}}. [=Primary views=] MUST always have the [=view/active=] flag set to <code>true</code>.
 
 Note: Many HMDs will request that content render two [=views=], one for the left eye and one for the right, while most magic window devices will only request one [=view=], but applications should never assume a specific view configuration. For example: A magic window device may request two views if it is capable of stereo output, but may revert to requesting a single view for performance reasons if the stereo output mode is turned off. Similarly, HMDs may request more than two views to facilitate a wide field of view or displays of different pixel density.
 
@@ -1262,7 +1350,9 @@ The <dfn attribute for="XRView">projectionMatrix</dfn> attribute is the [=view/p
 
 The <dfn attribute for="XRView">transform</dfn> attribute is the {{XRRigidTransform}} of the viewpoint. It represents the position and orientation of the viewpoint in the {{XRReferenceSpace}} provided in {{XRFrame/getViewerPose()}}.
 
-Each {{XRView}} has an associated <dfn for="XRView">frame</dfn> which is the {{XRFrame}} that produced it.
+Each {{XRView}} has an associated <dfn for="XRView">session</dfn> which is the {{XRSession}} that produced it.
+
+Each {{XRView}} has an associated <dfn for="XRView">frame time</dfn> which is the [=XRFrame/time=] of the {{XRFrame}} that produced it.
 
 Each {{XRView}} has an associated <dfn for="XRView">underlying view</dfn> which is the underlying [=view=] that it represents.
 
@@ -1277,11 +1367,64 @@ To <dfn for="XRView">obtain the projection matrix</dfn> for a given {{XRView}} |
 
   1. If |view|'s [=XRView/internal projection matrix=] is not <code>null</code>, perform the following steps:
     1. If the operation {{IsDetachedBuffer}} on [=XRView/internal projection matrix=]  is <code>false</code>, return |view|'s [=XRView/internal projection matrix=].
-  1. Set |view|'s [=XRView/internal projection matrix=] to a new [=matrix=] which is equal to |view|'s [=XRView/underlying view=]'s [=view/projection matrix=].
+  1. Set |view|'s [=XRView/internal projection matrix=] to a [=new=] [=matrix=] in the [=relevant realm=] of |view| which is equal to |view|'s [=XRView/underlying view=]'s [=view/projection matrix=].
   1. Return |view|'s [=XRView/internal projection matrix=].
 
 </div>
 
+<div class=algorithm data-algorithm="update-the-viewports">
+
+When the [=view/active=] flag of any [=view=] in the [=XRSession/list of views=] changes, one can <dfn>update the viewports</dfn> for an {{XRSession}} |session| by performing the following steps:
+
+  1. Let |layer| be the {{XRSession/renderState}}'s {{XRRenderState/baseLayer}}.
+  1. If |layer| is <code>null</code> abort these steps.
+  1. Set |layer|'s [=list of viewport objects=] to the empty [=/list=].
+  1. For each [=view/active=] [=view=] |view| in [=XRSession/list of views=]:
+    1. Let |glViewport| be the [=WebGL viewport=] from the [=list of viewports=] associated with |view|.
+    1. Let |viewport| be a [=new=] {{XRViewport}} in the [=relevant realm=] of |session|.
+    1. Initialize |viewport|'s {{XRViewport/x}} to |glViewport|'s <code>x</code> component.
+    1. Initialize |viewport|'s {{XRViewport/y}} to |glViewport|'s <code>y</code> component.
+    1. Initialize |viewport|'s {{XRViewport/width}} to |glViewport|'s <code>width</code>.
+    1. Initialize |viewport|'s {{XRViewport/height}} to |glViewport|'s <code>height</code>.
+    1. [=list/Append=] |viewport| to |layer|'s [=list of viewport objects=].
+
+</div>
+
+Primary and Secondary Views {#primary-and-secondary-views}
+----------
+
+A [=view=] is a <dfn>primary view</dfn> when rendering to it is necessary for an immersive experience. [=Primary views=] MUST be [=view/active=] for the entire duration of the {{XRSession}}.
+
+A [=view=] is a <dfn>secondary view</dfn> when it is possible for content to choose to not render to it and still produce a working immersive experience. When content chooses to not render to these views, the user-agent MAY be able to reconstruct them via reprojection. Secondary views MUST NOT be [=view/active=] unless the "[=secondary view/secondary-views=]" feature is enabled.
+
+<div class="example">
+Examples of [=primary views=] include the main mono view for a handheld AR session, the main two stereo views for headworn AR/VR sessions, or all of the wall views for a CAVE session.
+
+Examples of [=secondary views=] include the [=first-person observer view=] used for video capture, or "quad views" where there are two views per eye with differing resolution and fields of view.
+
+</div>
+
+<div class=note>
+While content should be written to assume that there may be any number of views, we expect a significant amount of content to make incorrect assumptions about the {{XRViewerPose/views}} array and thus break when presented with more than two views.
+
+Because user-agents may have the ability to use mechanisms like reprojection to render to these [=secondary views=] in lieu of the content, it is desirable to be able to distinguish between content that plans on handling these [=secondary views=] itself and content that is either oblivious to the existence of such [=secondary views=] or does not wish to deal with them.
+</div>
+
+To provide for this, user-agents that expose [=secondary views=] MUST support an "<dfn for="secondary view">secondary-views</dfn>" [=feature descriptor=] as a hint. Content enabling this feature is expected to:
+
+ - Handle any nonzero number of [=views=] in the {{XRViewerPose/views}} array.
+ - Handle the existence of multiple [=views=] that have the same [=view/eye=].
+ - Handle the size of the {{XRViewerPose/views}} array changing from frame to frame. <span class=note>This can happen when video capture is enabled, for example</span>
+
+When "[=secondary view/secondary-views=]" is enabled, the user-agent MAY surface any [=secondary views=] the device supports to the {{XRSession}}, when necessary. The user-agent MUST NOT use reprojection to reconstruct [=secondary views=] in such a case, and instead rely on whatever the content decides to render.
+
+Note: We recommend content use {{XRSessionInit/optionalFeatures}} to enable "[=secondary view/secondary-views=]" to ensure maximum compatibility.
+
+If [=secondary views=] have lower underlying frame rates, the {{XRSession}} MAY choose to do one or more of the following:
+
+ - Lower the overall frame rate of the application while the [=secondary views=] are active.
+ - Surface [=secondary views=] in the {{XRViewerPose/views}} array only for some of the frames. Implementations doing this SHOULD NOT have frames where the [=primary views=] are not present.
+ - Silently discard rendered content for [=secondary views=] during some of the frames.
 
 XRViewport {#xrviewport-interface}
 ----------
@@ -1384,18 +1527,14 @@ interface XRRigidTransform {
 
 The <dfn constructor for="XRRigidTransform">XRRigidTransform(|position|, |orientation|)</dfn> constructor MUST perform the following steps when invoked:
 
-  1. Let |transform| be a new {{XRRigidTransform}}.
-  1. If |position| is not a {{DOMPointInit}} initialize |transform|'s {{XRRigidTransform/position}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
-  1. If |position|'s {{DOMPointReadOnly/w}} value is not 1.0, throw a {{TypeError}}.
-  1. Initialize |transform|'s {{XRRigidTransform/position}}’s {{DOMPointReadOnly/x}} value to |position|'s x dictionary member, {{DOMPointReadOnly/y}} value to |position|'s y dictionary member, {{DOMPointReadOnly/z}} value to |position|'s z dictionary member and {{DOMPointReadOnly/w}} to <code>1.0</code>.
-  1. Initialize |transform|'s {{XRRigidTransform/orientation}} as follows:
-    <dl class="switch">
-      <dt> If |orientation| is not a {{DOMPointInit}}
-      <dd> Initialize |transform|'s {{XRRigidTransform/orientation}} to <code>{ x: 0.0, y: 0.0, z: 0.0, w: 1.0 }</code>.
-      <dt> Else
-      <dd> Initialize |transform|'s {{XRRigidTransform/orientation}}’s {{DOMPointReadOnly/x}} value to |orientation|'s x dictionary member, {{DOMPointReadOnly/y}} value to |orientation|'s y dictionary member, {{DOMPointReadOnly/z}} value to |orientation|'s z dictionary member and {{DOMPointReadOnly/w}} value to |orientation|'s w dictionary member.
-    </dl>
-  1. Initialize |transform|'s [=XRRigidTransform/internal matrix=] to <code>null</code>.
+  1. Let |transform| be a [=new=] {{XRRigidTransform}} in the [=current realm=].
+  1. Let |transform|'s {{XRRigidTransform/position}} be a [=new=] {{DOMPointReadOnly}} in the [=current realm=].
+  1. If |position|'s {{DOMPointReadOnly/w}} value is not <code>1.0</code>, throw a {{TypeError}} and abort these steps.
+  1. If one or more of |position|'s or |orientation|'s values is <code>NaN</code> or another non-finite number such as <code>infinity</code>, throw a {{TypeError}} and abort these steps.
+  1. Set |transform|'s {{XRRigidTransform/position}}’s {{DOMPointReadOnly/x}} value to |position|'s x dictionary member, {{DOMPointReadOnly/y}} value to |position|'s y dictionary member, {{DOMPointReadOnly/z}} value to |position|'s z dictionary member and {{DOMPointReadOnly/w}} value to |position|'s w dictionary member.
+  1. Let |transform|'s {{XRRigidTransform/orientation}} be a [=new=] {{DOMPointReadOnly}} in the [=current realm=].
+  1. Set |transform|'s {{XRRigidTransform/orientation}}’s {{DOMPointReadOnly/x}} value to |orientation|'s x dictionary member, {{DOMPointReadOnly/y}} value to |orientation|'s y dictionary member, {{DOMPointReadOnly/z}} value to |orientation|'s z dictionary member and {{DOMPointReadOnly/w}} value to |orientation|'s w dictionary member.
+  1. Let |transform|'s [=XRRigidTransform/internal matrix=] be <code>null</code>.
   1. [=Normalize=] {{DOMPointReadOnly/x}}, {{DOMPointReadOnly/y}}, {{DOMPointReadOnly/z}}, and {{DOMPointReadOnly/w}} components of |transform|'s {{XRRigidTransform/orientation}}.
   1. Return |transform|.
 
@@ -1421,25 +1560,25 @@ To <dfn for="XRRigidTransform">obtain the matrix</dfn> for a given {{XRRigidTran
   1. Let |rotation| be a new [=matrix=] which is a column-vector rotation matrix corresponding to {{XRRigidTransform/orientation}}. Mathematically, if {{XRRigidTransform/orientation}} is the unit quaternion <code>(q<sub>x</sub>, q<sub>y</sub>, q<sub>z</sub>, q<sub>w</sub>)</code>, this matrix is
 
         <img src="images/rotation_matrix.svg" alt="Mathematical expression for column-vector rotation matrix" />
-  1. Set |transform|'s [=XRRigidTransform/internal matrix=] to a new [=matrix=] set to the result of multiplying |translation| and |rotation| with |translation| on the left (<code>translation * rotation</code>). Mathematically, this matrix is
+  1. Set |transform|'s [=XRRigidTransform/internal matrix=] to a [=new=] {{Float32Array}} in the [=relevant realm=] of |transform| set to the result of multiplying |translation| and |rotation| with |translation| on the left (<code>translation * rotation</code>) in the [=relevant realm=] of |transform|. Mathematically, this matrix is
 
        <img src="images/rigid_matrix.svg" alt="Mathematical expression for matrix of multiplying translation and rotation with translation on the left" />
   1. Return |transform|'s [=XRRigidTransform/internal matrix=].
 
 </div>
 
-The <dfn attribute for="XRRigidTransform">inverse</dfn> attribute returns an {{XRRigidTransform}} which, if applied to an object that had previously been transformed by the original {{XRRigidTransform}}, would undo the transform and return the object to its initial pose. This attribute SHOULD be lazily evaluated. The {{XRRigidTransform}} returned by {{inverse}} MUST return the originating {{XRRigidTransform}} as its {{inverse}}.
+The <dfn attribute for="XRRigidTransform">inverse</dfn> attribute of a {{XRRigidTransform}} |transform| returns an {{XRRigidTransform}} in the relevant realm of |transform| which, if applied to an object that had previously been transformed by |transform|, would undo the transform and return the object to its initial pose. This attribute SHOULD be lazily evaluated. The {{XRRigidTransform}} returned by {{inverse}} MUST return |transform| as its {{inverse}}.
 
 An {{XRRigidTransform}} with a {{XRRigidTransform/position}} of <code>{ x: 0, y: 0, z: 0 w: 1 }</code> and an {{XRRigidTransform/orientation}} of <code>{ x: 0, y: 0, z: 0, w: 1 }</code> is known as an <dfn>identity transform</dfn>.
 
 <div class="algorithm" data-algorithm="multiply transforms">
 
-To <dfn lt="multiply transforms">multiply two {{XRRigidTransform}}s</dfn>, |B| and |A|, the UA MUST perform the following steps:
+To <dfn lt="multiply transforms">multiply two {{XRRigidTransform}}s</dfn>, |B| and |A| in a [=Realm=] |realm|, the UA MUST perform the following steps:
 
-  1. Let |result| be a new {{XRRigidTransform}} object.
-  1. Set |result|'s {{XRRigidTransform/matrix}} to the result of premultiplying |B|'s {{XRRigidTransform/matrix}} from the left onto |A|'s {{XRRigidTransform/matrix}}.
-  1. Set |result|'s {{XRRigidTransform/orientation}} to the quaternion that describes the rotation indicated by the top left 3x3 sub-matrix of |result|'s {{XRRigidTransform/matrix}}.
-  1. Set |result|'s {{XRRigidTransform/position}} to the vector given by the fourth column of |result|'s {{XRRigidTransform/matrix}}.
+  1. Let |result| be a [=new=] {{XRRigidTransform}} object in |realm|.
+  1. Set |result|'s {{XRRigidTransform/matrix}} to a [=new=] {{Float32Array}} in |realm|, the result of premultiplying |B|'s {{XRRigidTransform/matrix}} from the left onto |A|'s {{XRRigidTransform/matrix}}.
+  1. Set |result|'s {{XRRigidTransform/orientation}} to a [=new=] {{DOMPointReadOnly}} in |realm|, the quaternion that describes the rotation indicated by the top left 3x3 sub-matrix of |result|'s {{XRRigidTransform/matrix}}.
+  1. Set |result|'s {{XRRigidTransform/position}} to  a [=new=] {{DOMPointReadOnly}} in |realm|, the vector given by the fourth column of |result|'s {{XRRigidTransform/matrix}}.
   1. Return |result|.
 
 |result| is a transform from |A|'s source space to |B|'s destination space.
@@ -1522,7 +1661,7 @@ The <dfn attribute for="XRInputSource">targetRayMode</dfn> attribute describes t
   - <dfn enum-value for="XRTargetRayMode">tracked-pointer</dfn> indicates that the target ray originates from either a handheld device or other hand-tracking mechanism and represents that the user is using their hands or the held device for pointing. The orientation of the target ray relative to the tracked object MUST follow platform-specific ergonomics guidelines when available. In the absence of platform-specific guidance, the target ray SHOULD point in the same direction as the user's index finger if it was outstretched.
   - <dfn enum-value for="XRTargetRayMode">screen</dfn> indicates that the input source was an interaction with the canvas element associated with an inline session's output context, such as a mouse click or touch event.
 
-The <dfn attribute for="XRInputSource">targetRaySpace</dfn> attribute is an {{XRSpace}} that has a [=native origin=] tracking the position and orientation of the preferred pointing ray of the {{XRInputSource}}, as defined by the {{targetRayMode}}.
+The <dfn attribute for="XRInputSource">targetRaySpace</dfn> attribute is an {{XRSpace}} that has a [=native origin=] tracking the position and orientation of the preferred pointing ray of the {{XRInputSource}} (along its -Z axis), as defined by the {{targetRayMode}}.
 
 The <dfn attribute for="XRInputSource">gripSpace</dfn> attribute is an {{XRSpace}} that has a [=native origin=] tracking to the pose that should be used to render virtual objects such that they appear to be held in the user's hand. If the user were to hold a straight rod, this {{XRSpace}} places the [=native origin=] at the centroid of their curled fingers and where the <code>-Z</code> axis points along the length of the rod towards their thumb. The <code>X</code> axis is perpendicular to the back of the hand being described, with back of the users right hand pointing towards <code>+X</code> and the back of the user's left hand pointing towards <code>-X</code>. The <code>Y</code> axis is implied by the relationship between the <code>X</code> and <code>Z</code> axis, with <code>+Y</code> roughly pointing in the direction of the user's arm.
 
@@ -1536,7 +1675,7 @@ Profiles are given in descending order of specificity. Any [=input profile name=
 
 If the {{XRSession}}'s [=mode=] is {{XRSessionMode/"inline"}}, {{XRInputSource/profiles}} MUST be an empty list.
 
-If the input device cannot be reliably identified, or the user agent wishes to mask the input device being used, it MAY choose to only report generic [=input profile name=]s or an empty list.
+The user agent MAY choose to only report an appropriate generic [=input profile name=]s or an empty list at its discretion. Some scenarios where this would be appropriate are if the input device cannot be reliably identified, no known input profiles match the input device, or the user agent wishes to mask the input device being used.
 
 <p class="note">
 For example, the Samsung HMD Odyssey's controller is a design variant of the standard Windows Mixed Reality controller. Both controllers share the same input layout. As a result, the {{XRInputSource/profiles}} for a Samsung HMD Odyssey controller could be: <code>["samsung-odyssey", "microsoft-mixed-reality", "generic-trigger-squeeze-touchpad-thumbstick"]</code>. The appearance of the controller is most precisely communicated by the first profile in the list, with the second profile describing an acceptable substitute, and the last profile a generic fallback that describes the device in the roughest sense. (It's a controller with a trigger, squeeze button, touchpad and thumbstick.)
@@ -1556,7 +1695,7 @@ An [=XR input source=] is an <dfn>auxiliary input source</dfn> if it does not su
 
 When an [=XR input source=] |source| for {{XRSession}} |session| begins its [=primary action=] the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
   1. [=Queue a task=] to [=fire an input source event=] with name {{selectstart!!event}}, frame |frame|, and source |source|.
 
 </div>
@@ -1565,7 +1704,7 @@ When an [=XR input source=] |source| for {{XRSession}} |session| begins its [=pr
 
 When an [=XR input source=] |source| for {{XRSession}} |session| ends its [=primary action=] the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
   1. [=Queue a task=] to perform the following steps:
     1. [=Fire an input source event=] with name {{select!!event}}, frame |frame|, and source |source|.
     1. [=Fire an input source event=] with name {{selectend!!event}}, frame |frame|, and source |source|.
@@ -1578,7 +1717,7 @@ Each [=XR input source=] MAY define a <dfn>primary squeeze action</dfn>. The [=p
 
 When an [=XR input source=] |source| for {{XRSession}} |session| begins its [=primary squeeze action=] the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
   1. [=Queue a task=] to [=fire an input source event=] with name {{squeezestart!!event}}, frame |frame|, and source |source|.
 
 </div>
@@ -1587,7 +1726,7 @@ When an [=XR input source=] |source| for {{XRSession}} |session| begins its [=pr
 
 When an [=XR input source=] |source| for {{XRSession}} |session| ends its [=primary squeeze action=] the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
   1. [=Queue a task=] to perform the following steps:
     1. [=Fire an input source event=] with name {{squeeze!!event}}, frame |frame|, and source |source|.
     1. [=Fire an input source event=] with name {{squeezeend!!event}}, frame |frame|, and source |source|.
@@ -1600,7 +1739,7 @@ Sometimes platform-specific behavior can result in a [=primary action=] or [=pri
 
 When an [=XR input source=] |source| for {{XRSession}} |session| has its [=primary action=] cancelled the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
   1. [=Queue a task=] to [=fire an input source event=] an {{XRInputSourceEvent}} with name {{selectend!!event}}, frame |frame|, and source |source|.
 
 </div>
@@ -1609,7 +1748,7 @@ When an [=XR input source=] |source| for {{XRSession}} |session| has its [=prima
 
 When an [=XR input source=] |source| for {{XRSession}} |session| has its [=primary squeeze action=] cancelled the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
   1. [=Queue a task=] to [=fire an input source event=] an {{XRInputSourceEvent}} with name {{squeezeend!!event}}, frame |frame|, and source |source|.
 
 </div>
@@ -1625,7 +1764,7 @@ Some [=/XR device=]s may support <dfn>transient input sources</dfn>, where the [
 
 When a [=transient input source=] |source| for {{XRSession}} |session| begins its [=transient action=] the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| for the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| for the time the action occurred.
   1. [=Queue a task=] to perform the following steps:
     1. Fire any <code>"pointerdown"</code> events produced by the [=XR input source=]'s action, if necessary.
     1. [=add input source|Add the XR input source=] to the [=list of active XR input sources=].
@@ -1637,7 +1776,7 @@ When a [=transient input source=] |source| for {{XRSession}} |session| begins it
 
 When a [=transient input source=] |source| for {{XRSession}} |session| ends its [=transient action=] the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| for the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| for the time the action occurred.
   1. [=Queue a task=] to perform the following steps:
     1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{select!!event}}, frame |frame|, and source |source|.
     1. Fire any <code>"click"</code> events produced by the [=XR input source=]'s action, if necessary.
@@ -1651,7 +1790,7 @@ When a [=transient input source=] |source| for {{XRSession}} |session| ends its 
 
 When a [=transient input source=] |source| for {{XRSession}} |session| has its [=transient action=] cancelled the UA MUST run the following steps:
 
-  1. Let |frame| be a new {{XRFrame}} with {{XRFrame/session}} |session| for the time the action occurred.
+  1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| for the time the action occurred.
   1. [=Queue a task=] to perform the following steps:
     1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{selectend!!event}}, frame |frame|, and source |source|.
     1. [=remove input source|Remove the XR input source=] from the [=list of active XR input sources=].
@@ -1682,6 +1821,17 @@ Layers {#layers}
 
 Note: While this specification only defines the {{XRWebGLLayer}} layer, future extensions to the spec are expected to add additional layer types and the image sources that they draw from.
 
+XRLayer {#xrlayer-interface}
+-------
+
+<pre class="idl">
+[SecureContext, Exposed=Window]
+interface XRLayer : EventTarget {};
+
+</pre>
+
+{{XRLayer}} is the base class for {{XRWebGLLayer}} and other layer types introduced by future extensions.
+
 XRWebGLLayer {#xrwebgllayer-interface}
 ------------
 
@@ -1701,7 +1851,7 @@ dictionary XRWebGLLayerInit {
 };
 
 [SecureContext, Exposed=Window]
-interface XRWebGLLayer {
+interface XRWebGLLayer: XRLayer {
   constructor(XRSession session,
              XRWebGLRenderingContext context,
              optional XRWebGLLayerInit layerInit = {});
@@ -1729,7 +1879,7 @@ Each {{XRWebGLLayer}} has an associated <dfn for="XRWebGLLayer">session</dfn>, w
 
 The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |layerInit|)</dfn> constructor MUST perform the following steps when invoked:
 
-  1. Let |layer| be a new {{XRWebGLLayer}}
+  1. Let |layer| be a [=new=] {{XRWebGLLayer}} in the [=relevant realm=] of |session|.
   1. If |session|'s [=ended=] value is <code>true</code>, throw an {{InvalidStateError}} and abort these steps.
   1. If |context| is lost, throw an {{InvalidStateError}} and abort these steps.
   1. If |session| is an [=immersive session=] and |context|'s [=XR compatible=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
@@ -1753,7 +1903,10 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
       <dt> If |layer|'s [=XRWebGLLayer/composition disabled=] boolean is <code>false</code>:
       <dd>
         1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layerInit|'s {{XRWebGLLayerInit/antialias}} value.
-        1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a new [=opaque framebuffer=] created with |context| and |layerInit|'s {{XRWebGLLayerInit/depth}}, {{XRWebGLLayerInit/stencil}}, and {{XRWebGLLayerInit/alpha}} values.
+        1. Let |scaleFactor| be |layerInit|'s {{XRWebGLLayerInit/framebufferScaleFactor}}.
+        1. The user-agent MAY choose to clamp or round |scaleFactor| as it sees fit here, for example if it wishes to fit the buffer dimensions into a power of two for performance reasons.
+        1. Let |framebufferSize| be the [=recommended WebGL framebuffer resolution=] multiplied by |scaleFactor|.
+        1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a [=new=] {{WebGLFramebuffer}} in the [=relevant realm=] of |context|, which is an [=opaque framebuffer=] with the dimensions |framebufferSize| created with |context|, [=opaque framebuffer/session=] initialized to |session|, and |layerInit|'s {{XRWebGLLayerInit/depth}}, {{XRWebGLLayerInit/stencil}}, and {{XRWebGLLayerInit/alpha}} values.
         1. Allocate and initialize resources compatible with |session|'s [=XRSession/XR device=], including GPU accessible memory buffers, as required to support the compositing of |layer|.
         1. If |layer|’s resources were unable to be created for any reason, throw an {{OperationError}} and abort these steps.
       <dt> Otherwise
@@ -1777,9 +1930,10 @@ An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFram
 
  - An [=opaque framebuffer=] MAY support antialiasing, even in WebGL 1.0.
  - An [=opaque framebuffer=]'s attachments cannot be inspected or changed. Calling {{framebufferTexture2D}}, {{framebufferRenderbuffer}}, {{deleteFramebuffer}}, or {{getFramebufferAttachmentParameter}} with an [=opaque framebuffer=] MUST generate an {{INVALID_OPERATION}} error.
- - An [=opaque framebuffer=] is considered incomplete outside of a {{XRSession/requestAnimationFrame()}} callback. When not in a {{XRSession/requestAnimationFrame()}} callback calls to {{checkFramebufferStatus}} MUST generate a {{FRAMEBUFFER_UNSUPPORTED}} error and attempts to clear, draw to, or read from the [=opaque framebuffer=] MUST generate an {{INVALID_FRAMEBUFFER_OPERATION}} error.
- - An [=opaque framebuffer=] initialized with {{XRWebGLLayerInit/depth}} <code>false</code> will not have an attached depth buffer.
- - An [=opaque framebuffer=] initialized with {{XRWebGLLayerInit/stencil}} <code>false</code> will not have an attached stencil buffer.
+ - An [=opaque framebuffer=] has a related <dfn for="opaque framebuffer">session</dfn>, which is the {{XRSession}} it was created for.
+ - An [=opaque framebuffer=] is considered incomplete outside of a {{XRSession/requestAnimationFrame()}} callback. When not in the {{XRSession/requestAnimationFrame()}} callback of its [=opaque framebuffer/session=], calls to {{checkFramebufferStatus}} MUST generate a {{FRAMEBUFFER_UNSUPPORTED}} error and attempts to clear, draw to, or read from the [=opaque framebuffer=] MUST generate an {{INVALID_FRAMEBUFFER_OPERATION}} error.
+ - An [=opaque framebuffer=] initialized with {{XRWebGLLayerInit/depth}} <code>true</code> will have an attached depth buffer.
+ - An [=opaque framebuffer=] initialized with {{XRWebGLLayerInit/stencil}} <code>true</code> will have an attached stencil buffer.
  - An [=opaque framebuffer=]'s color buffer will have an alpha channel if and only if {{XRWebGLLayerInit/alpha}} is <code>true</code>.
  - The [=XR Compositor=] will assume the [=opaque framebuffer=] contains colors with premultiplied alpha. This is true regardless of the {{WebGLContextAttributes|premultipliedAlpha}} value set in the {{XRWebGLLayer/context}}'s [=actual context parameters=].
 
@@ -1812,12 +1966,12 @@ The buffers attached to an [=opaque framebuffer=] MUST be cleared to the values 
 
 Note: Implementations may optimize away the required implicit clear operation of the [=opaque framebuffer=] as long as a guarantee can be made that the developer cannot gain access to buffer contents from another process. For instance, if the developer performs an explicit clear then the implicit clear is not needed.
 
-When an {{XRWebGLLayer}} is set as an [=immersive session=]'s {{XRRenderState/baseLayer}} the content of the [=opaque framebuffer=] is presented to the [=XRSystem/immersive XR device=] immediately after an [=XR animation frame=] completes, but only if at least one of the following has occurred since the previous [=XR animation frame=]:
+When an {{XRWebGLLayer}} is set as an [=immersive session=]'s {{XRRenderState/baseLayer}} the content of the [=opaque framebuffer=] is presented to the [=immersive XR device=] immediately after an [=XR animation frame=] completes, but only if at least one of the following has occurred since the previous [=XR animation frame=]:
 
   - The [=immersive session=]'s {{XRRenderState/baseLayer}} was changed.
   - {{clear}}, {{drawArrays}}, {{drawElements}}, or any other rendering operation which similarly affects the framebuffer's color values has been called while the [=opaque framebuffer=] is the currently bound framebuffer of the {{WebGLRenderingContext}} associated with the {{XRWebGLLayer}}.
 
-Before the [=opaque framebuffer=] is presented to the [=XRSystem/immersive XR device=] the user agent shall ensure that all rendering operations have been flushed to the [=opaque framebuffer=].
+Before the [=opaque framebuffer=] is presented to the [=immersive XR device=] the user agent shall ensure that all rendering operations have been flushed to the [=opaque framebuffer=].
 
 Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">target framebuffer</dfn>, which is the {{XRWebGLLayer/framebuffer}} if [=XRWebGLLayer/composition disabled=] is <code>false</code>, and the [=XRWebGLLayer/context=]'s default framebuffer otherwise.
 
@@ -1831,7 +1985,9 @@ Depth values stored in the buffer are expected to be between <code>0.0</code> an
 
 Note: Making the scene's depth buffer available to the compositor allows some platforms to provide quality and comfort improvements such as improved reprojection.
 
-Each {{XRWebGLLayer}} MUST have a <dfn>list of viewports</dfn> which is a [=/list=] containing one [=WebGL viewport=] for each {{XRView}} the {{XRSession}} currently exposes. The viewports MUST have a {{XRViewport/width}} and {{XRViewport/height}} greater than <code>0</code> and MUST describe a rectangle that does not exceed the bounds of the [=target framebuffer=]. The viewports MUST NOT be overlapping. If [=XRWebGLLayer/composition disabled=] is <code>true</code>, the [=list of viewports=] MUST contain a single [=WebGL viewport=] that covers the [=XRWebGLLayer/context=]'s entire default framebuffer.
+Each {{XRWebGLLayer}} MUST have a <dfn>list of viewports</dfn> which is a [=/list=] containing one [=WebGL viewport=] for each [=view=] the {{XRSession}} may expose, including [=secondary views=] that are not currently [=view/active=] but may become [=view/active=] for the current session. The viewports MUST have a {{XRViewport/width}} and {{XRViewport/height}} greater than <code>0</code> and MUST describe a rectangle that does not exceed the bounds of the [=target framebuffer=]. The viewports MUST NOT be overlapping. If [=XRWebGLLayer/composition disabled=] is <code>true</code>, the [=list of viewports=] MUST contain a single [=WebGL viewport=] that covers the [=XRWebGLLayer/context=]'s entire default framebuffer.
+
+Each {{XRWebGLLayer}} MUST have a <dfn>list of viewport objects</dfn> which is a [=/list=] containing one {{XRViewport}} for each [=view/active=] [=view=] the {{XRSession}} currently exposes.
 
 {{getViewport()}} queries the {{XRViewport}} the given {{XRView}} should use when rendering to the layer.
 
@@ -1839,15 +1995,12 @@ Each {{XRWebGLLayer}} MUST have a <dfn>list of viewports</dfn> which is a [=/lis
 
 The <dfn method for="XRWebGLLayer">getViewport(|view|)</dfn> method, when invoked on an {{XRWebGLLayer}} |layer|, MUST run the following steps:
 
-  1. Let |frame| be |view|'s [=XRView/frame=].
-  1. If |frame|'s {{XRFrame/session}} is not equal to |layer|'s [=XRWebGLLayer/session=], throw an {{InvalidStateError}} and abort these steps.
+  1. Let |session| be |view|'s [=XRView/session=].
+  1. Let |frame| be |session|'s [=XRSession/animation frame=].
+  1. If |session| is not equal to |layer|'s [=XRWebGLLayer/session=], throw an {{InvalidStateError}} and abort these steps.
   1. If |frame|'s [=XRFrame/active=] boolean is <code>false</code>, throw an {{InvalidStateError}} and abort these steps.
-  1. Let |glViewport| be the [=WebGL viewport=] from the [=list of viewports=] associated with |view|.
-  1. Let |viewport| be a new {{XRViewport}} instance.
-  1. Initialize |viewport|'s {{XRViewport/x}} to |glViewport|'s <code>x</code> component.
-  1. Initialize |viewport|'s {{XRViewport/y}} to |glViewport|'s <code>y</code> component.
-  1. Initialize |viewport|'s {{XRViewport/width}} to |glViewport|'s <code>width</code>.
-  1. Initialize |viewport|'s {{XRViewport/height}} to |glViewport|'s <code>height</code>.
+  1. If |view|'s [=XRView/frame time=] is not equal to |frame|'s [=XRFrame/time=], throw an {{InvalidStateError}} and abort these steps.
+  1. Let |viewport| be the {{XRViewport}} from the [=list of viewport objects=] associated with |view|.
   1. Return |viewport|.
 
 </div>
@@ -1856,15 +2009,14 @@ Each {{XRSession}} MUST identify a <dfn>native WebGL framebuffer resolution</dfn
 
 <div class="algorithm" data-algorithm="native-webgl-framebuffer-resolution">
 
-The [=native WebGL framebuffer resolution=] is determined by running the following steps:
+The [=native WebGL framebuffer resolution=] for an {{XRSession}} |session| is determined by running the following steps:
 
-  1. Let |session| be the target {{XRSession}}.
   1. If |session|'s [=XRSession/mode=] value is not <code>"inline"</code>, set the [=native WebGL framebuffer resolution=] to the resolution required to have a 1:1 ratio between the pixels of a framebuffer large enough to contain all of the session's {{XRView}}s and the physical screen pixels in the area of the display under the highest magnification and abort these steps. If no method exists to determine the native resolution as described, the [=recommended WebGL framebuffer resolution=] MAY be used.
   1. If |session|'s [=XRSession/mode=] value is <code>"inline"</code>, set the [=native WebGL framebuffer resolution=] to the size of the |session|'s {{XRSession/renderState}}'s [=XRRenderState/output canvas=] in physical display pixels and reevaluate these steps every time the size of the canvas changes or the [=XRRenderState/output canvas=] is changed.
 
 </div>
 
-Additionally, the {{XRSession}} MUST identify a <dfn>recommended WebGL framebuffer resolution</dfn>, which represents a best estimate of the WebGL framebuffer resolution large enough to contain all of the session's {{XRView}}s that provides an average application a good balance between performance and quality. It MAY be smaller than, larger than, or equal to the [=native WebGL framebuffer resolution=].
+Additionally, the {{XRSession}} MUST identify a <dfn>recommended WebGL framebuffer resolution</dfn>, which represents a best estimate of the WebGL framebuffer resolution large enough to contain all of the session's {{XRView}}s that provides an average application a good balance between performance and quality. It MAY be smaller than, larger than, or equal to the [=native WebGL framebuffer resolution=]. New [=opaque framebuffer=] will be created with this resolution, scaled by any {{XRWebGLLayerInit}}'s {{XRWebGLLayerInit/framebufferScaleFactor}} provided.
 
 Note: The user agent is free to use and method of its choosing to estimate the [=recommended WebGL framebuffer resolution=]. If there are platform-specific methods for querying a recommended size it is recommended that they be used, but not required.
 
@@ -1872,7 +2024,7 @@ Note: The user agent is free to use and method of its choosing to estimate the [
 
 The <dfn method for="XRWebGLLayer">getNativeFramebufferScaleFactor(|session|)</dfn> method, when invoked, MUST run the following steps:
 
-  1. Let |session| be the target {{XRSession}}.
+  1. Let |session| be [=this=].
   1. If |session|'s [=ended=] value is <code>true</code>, return <code>0.0</code> and abort these steps.
   1. Return the value that the |session|'s [=recommended WebGL framebuffer resolution=] must be multiplied by to yield the |session|'s [=native WebGL framebuffer resolution=].
 
@@ -1881,9 +2033,9 @@ The <dfn method for="XRWebGLLayer">getNativeFramebufferScaleFactor(|session|)</d
 WebGL Context Compatibility {#contextcompatibility}
 ---------------------------
 
-In order for a WebGL context to be used as a source for immersive XR imagery it must be created on a <dfn>compatible graphics adapter</dfn> for the [=XRSystem/immersive XR device=]. What is considered a [=compatible graphics adapter=] is platform dependent, but is understood to mean that the graphics adapter can supply imagery to the [=XRSystem/immersive XR device=] without undue latency. If a WebGL context was not already created on the [=compatible graphics adapter=], it typically must be re-created on the adapter in question before it can be used with an {{XRWebGLLayer}}.
+In order for a WebGL context to be used as a source for immersive XR imagery it must be created on a <dfn>compatible graphics adapter</dfn> for the [=immersive XR device=]. What is considered a [=compatible graphics adapter=] is platform dependent, but is understood to mean that the graphics adapter can supply imagery to the [=immersive XR device=] without undue latency. If a WebGL context was not already created on the [=compatible graphics adapter=], it typically must be re-created on the adapter in question before it can be used with an {{XRWebGLLayer}}.
 
-Note: On an XR platform with a single GPU, it can safely be assumed that the GPU is compatible with the [=XRSystem/immersive XR device=]s advertised by the platform, and thus any hardware accelerated WebGL contexts are compatible as well. On PCs with both an integrated and discrete GPU the discrete GPU is often considered the [=compatible graphics adapter=] since it generally a higher performance chip. On desktop PCs with multiple graphics adapters installed, the one with the [=XRSystem/immersive XR device=] physically connected to it is likely to be considered the [=compatible graphics adapter=].
+Note: On an XR platform with a single GPU, it can safely be assumed that the GPU is compatible with the [=immersive XR device=]s advertised by the platform, and thus any hardware accelerated WebGL contexts are compatible as well. On PCs with both an integrated and discrete GPU the discrete GPU is often considered the [=compatible graphics adapter=] since it generally a higher performance chip. On desktop PCs with multiple graphics adapters installed, the one with the [=immersive XR device=] physically connected to it is likely to be considered the [=compatible graphics adapter=].
 
 Note: {{XRSessionMode/"inline"}} sessions render using the same graphics adapter as canvases, and thus do not need {{WebGLContextAttributes/xrCompatible}} contexts.
 
@@ -1893,33 +2045,22 @@ partial dictionary WebGLContextAttributes {
 };
 
 partial interface mixin WebGLRenderingContextBase {
-    [NewObject] Promise&lt;void&gt; makeXRCompatible();
+    [NewObject] Promise&lt;undefined&gt; makeXRCompatible();
 };
 </pre>
 
-When a user agent implements this specification it MUST set a <dfn>XR compatible</dfn> boolean, initially set to <code>false</code>, on every {{WebGLRenderingContextBase}}. Once the [=XR compatible=] boolean is set to <code>true</code>, the context can be used with layers for any {{XRSession}} requested from the current [=XRSystem/immersive XR device=].
+When a user agent implements this specification it MUST set a <dfn>XR compatible</dfn> boolean, initially set to <code>false</code>, on every {{WebGLRenderingContextBase}}. Once the [=XR compatible=] boolean is set to <code>true</code>, the context can be used with layers for any {{XRSession}} requested from the current [=immersive XR device=].
+
+Note: This flag introduces slow synchronous behavior and is discouraged. Consider calling {{WebGLRenderingContextBase/makeXRCompatible()}} instead for an asynchronous solution.
 
 The [=XR compatible=] boolean can be set either at context creation time or after context creation, potentially incurring a context loss. To set the [=XR compatible=] boolean at context creation time, the {{xrCompatible}} context creation attribute must be set to <code>true</code> when requesting a WebGL context.
 
-<div class="algorithm" data-algorithm="create-with-compatible-xr-device">
+The {{WebGLContextAttributes/xrCompatible}} flag on {{WebGLContextAttributes}}, if <code>true</code>, affects context creation by requesting the user-agent [=create the WebGL context=] using a [=compatible graphics adapter=] for the [=immersive XR device=]. If the user agent succeeds in this, the created context's [=XR compatible=] boolean will be set to true. To obtain the [=immersive XR device=], [=ensure an immersive XR device is selected=] SHOULD be called.
 
-When the {{HTMLCanvasElement}}'s {{HTMLCanvasElement/getContext()}} method is invoked with a {{WebGLContextAttributes}} dictionary with {{xrCompatible}} set to <code>true</code>, run the following steps:
-
-  1. [=ensures an immersive XR device is selected|Ensure an immersive XR device is selected=].
-  1. If the [=XRSystem/immersive XR device=] is <code>null</code>:
-    1. [=Create the WebGL context=] as usual.
-    1. Let |context| be the newly created WebGL context.
-    1. Set |context|'s [=XR compatible=] boolean to false.
-  1. Otherwise:
-    1. [=Create the WebGL context=] as usual, ensuring it is created on a [=compatible graphics adapter=] for the [=XRSystem/immersive XR device=].
-    1. Let |context| be the newly created WebGL context.
-    1. Set |context|'s [=XR compatible=] boolean to true.
-  1. Return |context|.
-
-</div>
+Note: [=Ensure an immersive XR device is selected=] needs to be run [=in parallel=], which introduces slow synchronous behavior on the main thread. User-agents SHOULD print a warning to the console requesting that {{WebGLRenderingContextBase/makeXRCompatible()}} be used instead.
 
 <div class="example">
-The following code creates a WebGL context that is compatible with an [=XRSystem/immersive XR device=] and then uses it to create an {{XRWebGLLayer}}.
+The following code creates a WebGL context that is compatible with an [=immersive XR device=] and then uses it to create an {{XRWebGLLayer}}.
 
 <pre highlight="js">
 function onXRSessionStarted(xrSession) {
@@ -1935,32 +2076,46 @@ function onXRSessionStarted(xrSession) {
 
 To set the [=XR compatible=] boolean after the context has been created, the {{makeXRCompatible()}} method is used.
 
+Note: On some systems this flag may turn on a high powered discrete GPU, for example, or proxy all commands to an on-device GPU. If you are in a situation where you may or may not be using XR, it is suggested that you only call {{makeXRCompatible()}} when you intend to start an [=immersive session=].
+
 <div class="algorithm" data-algorithm="make-xr-compatible">
-The <dfn method for="WebGLRenderingContextBase">makeXRCompatible()</dfn> method ensures the {{WebGLRenderingContextBase}} is running on a [=compatible graphics adapter=] for the [=XRSystem/immersive XR device=].
+The <dfn method for="WebGLRenderingContextBase">makeXRCompatible()</dfn> method ensures the {{WebGLRenderingContextBase}} is running on a [=compatible graphics adapter=] for the [=immersive XR device=].
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |promise| be [=a new Promise=].
-  1. Let |context| be the target {{WebGLRenderingContextBase}} object.
-  1. [=ensures an immersive XR device is selected|Ensure an immersive XR device is selected=].
-  1. Set |context|'s [=XR compatible=] boolean as follows:
-    <dl class="switch">
-      <dt> If |context|'s [=WebGL context lost flag=] is set
-      <dd> Set |context|'s [=XR compatible=] boolean to <code>false</code> and [=reject=] |promise| with an {{InvalidStateError}}.
-      <dt> If the [=XRSystem/immersive XR device=] is <code>null</code>
-      <dd> Set |context|'s [=XR compatible=] boolean to <code>false</code> and [=reject=] |promise| with an {{InvalidStateError}}.
-      <dt> If |context|'s [=XR compatible=] boolean is <code>true</code>
-      <dd> [=/Resolve=] |promise|.
-      <dt> If |context| was created on a [=compatible graphics adapter=] for the [=XRSystem/immersive XR device=]
-      <dd> Set |context|'s [=XR compatible=] boolean to <code>true</code> and [=/resolve=] |promise|.
-      <dt> Otherwise
-      <dd> [=Queue a task=] on the [=/WebGL task source=] to perform the following steps:
-              1. Force |context| to be lost and [=handle the context loss=] as described by the WebGL specification.
-              1. If the [=canceled flag=] of the "webglcontextlost" event fired in the previous step was not set, [=reject=] |promise| with an {{AbortError}} and abort these steps.
-              1. [=Restore the context=] on a [=compatible graphics adapter=] for the [=XRSystem/immersive XR device=].
-              1. Set |context|'s [=XR compatible=] boolean to <code>true</code>.
-              1. [=/Resolve=] |promise|.
-    </dl>
+  1. Let |promise| be [=a new Promise=] created in the [=Realm=] of this {{WebGLRenderingContextBase}}.
+  1. Let |context| be [=this=].
+  1. Run the following steps [=in parallel=]:
+    1. Let |device| be the result of [=ensure an immersive XR device is selected|ensuring an immersive XR device is selected=].
+    1. Set |context|'s [=XR compatible=] boolean as follows:
+        <dl class="switch">
+          <dt> If |context|'s [=WebGL context lost flag=] is set
+          <dd> [=Queue a task=] to set |context|'s [=XR compatible=] boolean to <code>false</code> and [=reject=] |promise| with an {{InvalidStateError}}.
+          <dt> If |device| is <code>null</code>
+          <dd> [=Queue a task=] to set |context|'s [=XR compatible=] boolean to <code>false</code> and [=reject=] |promise| with an {{InvalidStateError}}.
+          <dt> If |context|'s [=XR compatible=] boolean is <code>true</code>
+          <dd> [=Queue a task=] to [=/resolve=] |promise|.
+          <dt> If |context| was created on a [=compatible graphics adapter=] for |device|.
+          <dd> [=Queue a task=] to set |context|'s [=XR compatible=] boolean to <code>true</code> and [=/resolve=] |promise|.
+          <dt> Otherwise
+          <dd> [=Queue a task=] on the [=/WebGL task source=] to perform the following steps:
+                  1. Force |context| to be lost.
+                  1. [=Handle the context loss=] as described by the WebGL specification:
+                      1. Let |canvas| be the |context|'s [=WebGLRenderingContext/canvas=].
+                      1. If |context|'s [=WebGLRenderingContext/webgl context lost flag=] is set, abort these steps.
+                      1. Set |context|'s [=WebGLRenderingContext/webgl context lost flag=].
+                      1. Set the [=WebGLObject/invalidated=] flag of each {{WebGLObject}} instance created by |context|.
+                      1. Disable all extensions except "WEBGL_lose_context".
+                      1. [=Queue a task=] on the [=/WebGL task source=] to perform the following steps:
+                          1. [=Fire a WebGL context event=] |e| named "webglcontextlost" at |canvas|, with {{WebGLContextEvent/statusMessage}} set to "".
+                          1. If |e|'s [=canceled flag=] is not set, [=reject=] |promise| with an {{AbortError}} and abort these steps.
+                          1. Run the following steps [=in parallel=].
+                              1. Await a restorable drawing buffer on a [=compatible graphics adapter=] for |device|.
+                              1. [=Queue a task=] on the [=/WebGL task source=] to perform the following steps:
+                                  1. [=Restore the context=] on a [=compatible graphics adapter=] for |device|.
+                                  1. Set |context|'s [=XR compatible=] boolean to <code>true</code>.
+                                  1. [=/Resolve=] |promise|.
+        </dl>
   1. Return |promise|.
 
 </div>
@@ -2004,6 +2159,8 @@ async function onXRSessionStarted(xrSession) {
 Events {#events}
 ======
 
+The [=task source=] for all [=queue a task|tasks queued=] in this specification is the <dfn export>XR task source</dfn>, unless otherwise specified.
+
 XRSessionEvent {#xrsessionevent-interface}
 --------------
 
@@ -2044,17 +2201,17 @@ dictionary XRInputSourceEventInit : EventInit {
 
 The <dfn attribute for="XRInputSourceEvent">inputSource</dfn> attribute indicates the {{XRInputSource}} that generated this event.
 
-The <dfn attribute for="XRInputSourceEvent">frame</dfn> attribute is an {{XRFrame}} that corresponds with the time that the event took place. It may represent historical data. Any {{XRViewerPose}} queried from the {{XRInputSourceEvent/frame}} MUST have an empty {{XRViewerPose/views}} array.
+The <dfn attribute for="XRInputSourceEvent">frame</dfn> attribute is an {{XRFrame}} that corresponds with the time that the event took place. It may represent historical data. {{XRFrame/getViewerPose()}} MUST throw an exception when called on {{XRInputSourceEvent/frame}}.
 
 <div class="algorithm" data-algorithm="fire-input-source-event">
 
 When the user agent has to <dfn>fire an input source event</dfn> with name |name|, {{XRFrame}} |frame|, and {{XRInputSource}} |source| it MUST run the following steps:
 
   1. Create an {{XRInputSourceEvent}} |event| with {{Event/type}} |name|, {{XRInputSourceEvent/frame}} |frame|, and {{XRInputSourceEvent/inputSource}} |source|.
-  1. Set |frame|'s [=active=] boolean to <code>true</code>.
+  1. Set |frame|'s [=XRFrame/active=] boolean to <code>true</code>.
   1. [=XRFrame/Apply frame updates=] for |frame|.
   1. [=Dispatch=] |event| on |frame|'s {{XRFrame/session}}
-  1. Set |frame|'s [=active=] boolean to <code>false</code>.
+  1. Set |frame|'s [=XRFrame/active=] boolean to <code>false</code>.
 
 </div>
 
@@ -2103,7 +2260,7 @@ interface XRReferenceSpaceEvent : Event {
 
 dictionary XRReferenceSpaceEventInit : EventInit {
   required XRReferenceSpace referenceSpace;
-  XRRigidTransform transform;
+  XRRigidTransform? transform = null;
 };
 </pre>
 
@@ -2116,7 +2273,7 @@ Event Types {#event-types}
 
 The user agent MUST provide the following new events. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
 
-The user agent MUST fire a <dfn event for="XRSystem">devicechange</dfn> event on the {{XRSystem}} object to indicate that the availability of [=XRSystem/immersive XR device=]s has been changed unless the document's origin is not allowed to use the "xr-spatial-tracking" [[#feature-policy|feature policy]]. The event MUST be of type {{Event}}.
+The user agent MUST fire a <dfn event for="XRSystem">devicechange</dfn> event on the {{XRSystem}} object to indicate that the availability of [=immersive XR device=]s has been changed unless the document's origin is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]]. The event MUST be of type {{Event}}.
 
 A user agent MUST dispatch a <dfn event for="XRSession">visibilitychange</dfn> event on an {{XRSession}} each time the [=XRSession/visibility state=] of the {{XRSession}} has changed. The event MUST be of type {{XRSessionEvent}}.
 
@@ -2136,7 +2293,7 @@ A user agent MUST dispatch a <dfn event for="XRSession">squeezeend</dfn> event o
 
 A user agent MUST dispatch a <dfn event for="XRSession">squeeze</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s has fully completed a [=primary squeeze action=]. The event MUST be of type {{XRInputSourceEvent}}.
 
-A user agent MUST dispatch a <dfn event for="XRReferenceSpace">reset</dfn> event on an {{XRReferenceSpace}} when discontinuities of the [=native origin=] or [=effective origin=] occur, i.e. there are significant changes in the origin’s position or orientation relative to the user’s environment. (For example: After user recalibration of their XR device or if the XR device automatically shifts its origin after losing and regaining tracking.) A {{reset}} event MUST also be dispatched when the {{boundsGeometry}} changes for an {{XRBoundedReferenceSpace}}. A {{reset}} event MUST NOT be dispatched if the [=viewer=]'s pose experiences discontinuities but the {{XRReferenceSpace}}'s origin physical mapping remains stable, such as when the [=viewer=] momentarily loses and regains tracking within the same tracking area. A {{reset}} event also MUST NOT be dispatched as an {{unbounded}} reference space makes small adjustments to its [=native origin=] over time to maintain space stability near the user, if a significant discontinuity has not occurred. The event MUST be of type {{XRReferenceSpaceEvent}}, and MUST be dispatched prior to the execution of any [=XR animation frame=]s that make use of the new origin.
+A user agent MUST dispatch a <dfn event for="XRReferenceSpace">reset</dfn> event on an {{XRReferenceSpace}} when discontinuities of the [=native origin=] or [=effective origin=] occur, i.e. there are significant changes in the origin’s position or orientation relative to the user’s environment. (For example: After user recalibration of their XR device or if the XR device automatically shifts its origin after losing and regaining tracking.) A {{reset}} event MUST also be dispatched when the {{boundsGeometry}} changes for an {{XRBoundedReferenceSpace}}. A {{reset}} event MUST NOT be dispatched if the [=viewer=]'s pose experiences discontinuities but the {{XRReferenceSpace}}'s origin physical mapping remains stable, such as when the [=viewer=] momentarily loses and regains tracking within the same tracking area. A {{reset}} event also MUST NOT be dispatched as an {{unbounded}} reference space makes small adjustments to its [=native origin=] over time to maintain space stability near the user, if a significant discontinuity has not occurred. The event MUST be of type {{XRReferenceSpaceEvent}}, and MUST be dispatched prior to the execution of any [=XR animation frame=]s that make use of the new origin. A {{reset}} event MUST be dispatched on all offset reference spaces of a reference space that fires a {{reset}} event, and the {{boundsGeometry}} of offset {{XRBoundedReferenceSpace}}s should also be recomputed.
 
 Note: This does mean that the session needs to hold on to strong references to any {{XRReferenceSpace}}s that have {{XRReferenceSpace/reset}} listeners.
 
@@ -2152,36 +2309,14 @@ Sensitive Information {#sensitive-information-header}
 
 In the context of XR, <dfn>sensitive information</dfn> includes, but is not limited to, user-configurable data such as interpupillary distance (IPD) and sensor-based data such as {{XRPose}}s. All [=immersive sessions=] will expose some amount of sensitive data, due to the user's pose being necessary to render anything. However, in some cases, the same sensitive information will also be exposed via {{XRSessionMode/"inline"}} sessions.
 
-### Active and focused document ### {#active-and-focused-document}
-A document MUST be [=active and focused=] at the time that [=sensitive information=] is requested.
-
-<div class="algorithm" data-algorithm="document-is-active-and-focused">
-
-To determine if a given {{Document}} |document| is <dfn>active and focused</dfn> the user agent MUST run the following steps:
-
-  1. If the [=currently focused area=] does not belong to |document|, return <code>false</code>
-  1. If |document| is not of the [=same origin-domain=] as the [=active document=], return <code>false</code>
-  1. Return <code>true</code>
-
-</div>
-
-### Trustworthy documents and origins ### {#trustworthy-documents}
-In order to expose any [=sensitive information=] the requesting document MUST be considered [=trustworthy=].
-
-<div class="algorithm" data-algorithm="document-is-trustworthy">
-
-To determine if a given {{Document}} |document| is <dfn>trustworthy</dfn> the user agent MUST run the following steps:
-
-  1. If |document| is not a [=responsible=] document, return <code>false</code>
-  1. If |document| is not [=active and focused=], return <code>false</code>
-  1. Return <code>true</code>
-
-</div>
-
 User intention {#user-intention}
 --------------
 
 It is often necessary to be sure of <dfn>user intent</dfn> before exposing sensitive information or allowing actions with a significant effect on the user's experience. This intent may be communicated or observed in a number of ways.
+
+Note: A common way of determining user intent is by [=transient activation=] of a UI control, typically an "enter VR" button. Since activation is transient,
+the [=browsing context=] requesting an XR session must be an [=ancestor=] or a [=same origin-domain=] [=descendant=] of the context containing the UI control, and must recently
+have been the [=active document=] of the browsing context.
 
 ### User activation ### {#user-activation}
 [=Transient activation=] MAY serve as an indication of [=user intent=] in some scenarios.
@@ -2233,7 +2368,6 @@ Users must be in control of when immersive sessions are created because the crea
 To determine if an <dfn>immersive session request is allowed</dfn> for a given |global object| the user agent MUST run the following steps:
 
   1. If the request was not made while the |global object| has [=transient activation=] or when [=launching a web application=], return <code>false</code>
-  1. If the requesting document is not considered [=trustworthy=], return <code>false</code>
   1. If [=user intent=] to begin an [=immersive session=] is not well understood, either via [=explicit consent=] or [=implicit consent=], return <code>false</code>
   1. Return <code>true</code>
 
@@ -2258,9 +2392,7 @@ When based on sensor data, {{XRPose}} and {{XRViewerPose}} will expose [=sensiti
 
 To determine if <dfn>poses may be reported</dfn> to an {{XRSession}} |session|, the user agent MUST run the following steps:
 
-  1. Let |document| be the document that owns |session|.
-  1. If the request does not originate from |document|, return <code>false</code>.
-  1. If |document| is not [=active and focused=], return <code>false</code>.
+  1. If |session|'s [=relevant global object=] is not the [=current global object=], return <code>false</code>.
   1. If |session|'s {{XRSession/visibilityState}} in not {{XRVisibilityState/"visible"}}, return <code>false</code>.
   1. Determine if the pose data can be returned as follows:
     <dl class="switch">
@@ -2274,9 +2406,10 @@ To determine if <dfn>poses may be reported</dfn> to an {{XRSession}} |session|, 
       <dd> Return <code>false</code>.
     </dl>
 
-</div>
 
 Note: The method by which a user agent determines that poses do not expose fingerprintable data is left to the user agent's discretion.
+
+</div>
 
 The primary difference between {{XRViewerPose}} and {{XRPose}} is the inclusion of {{XRView}} information. When more than one view is present and the physical relationship between these views is configurable by the user, the relationship between these views is considered [=sensitive information=] as it can be used to fingerprint or profile the user.
 
@@ -2307,9 +2440,11 @@ To determine if <dfn>poses must be limited</dfn> between two spaces, |space| and
 
   1. If either |space| or |baseSpace| are an {{XRBoundedReferenceSpace}} and the other space's [=native origin=]'s falls further outside the [=native bounds geometry=] than a reasonable distance determined by the user agent, return true.
   1. If either |space| or |baseSpace| are an {{XRReferenceSpace}} with a [=XRReferenceSpace/type=] of {{XRReferenceSpaceType/"local"}} or {{XRReferenceSpaceType/"local-floor"}} and the distance between the spaces' [=native origin=]'s is greater than a reasonable distance determined by the user agent, return <code>true</code>.
-  1. Return false.
+  1. Return <code>false</code>.
 
 </div>
+
+Note: The requirement for document visibility is based on [[DEVICE-ORIENTATION]].
 
 Note: Is is suggested that poses reported relative to a {{XRReferenceSpaceType/"local"}} or {{XRReferenceSpaceType/"local-floor"}} reference space be [=limiting|limited=] to a distance of 15 meters from the {{XRReferenceSpace}}'s [=native origin=].
 
@@ -2338,8 +2473,9 @@ Note: Examples of [=trusted UI=] include:
 
 </div>
 
-The ability to read input information (head pose, input pose, etc) poses a risk to the integrity of [=trusted UI=] as the page may use this information to snoop on the choices made by the user while interacting with the [=trusted UI=]. To prevent this risk the user agent MUST set the [=visibility state=] of all {{XRSession}}s to {{XRVisibilityState/"hidden"}} when the user is interacting with [=trusted UI=] ([=trusted immersive ui|immersive=] or non-immersive) such as URL bars or system dialogs. Additionally, to prevent a malicious page from being able to monitor input on other pages the user agent MUST set the {{XRSession}}'s [=visibility state=] to {{XRVisibilityState/"hidden"}} if the [=currently focused area=] does belong to the document which created the {{XRSession}}.
+The ability to read input information (head pose, input pose, etc) poses a risk to the integrity of [=trusted UI=] as the page may use this information to snoop on the choices made by the user while interacting with the [=trusted UI=], including guessing keyboard input. To prevent this risk the user agent MUST set the [=visibility state=] of all {{XRSession}}s to {{XRVisibilityState/"hidden"}} or {{XRVisibilityState/"visible-blurred"}} when the user is interacting with [=trusted UI=] ([=trusted immersive ui|immersive=] or non-immersive) such as URL bars or system dialogs. Additionally, to prevent a malicious page from being able to monitor input on other pages the user agent MUST set the {{XRSession}}'s [=visibility state=] to {{XRVisibilityState/"hidden"}} if the [=currently focused area=] does not belong to the document which created the {{XRSession}}.
 
+When choosing between using {{XRVisibilityState/"hidden"}} or {{XRVisibilityState/"visible-blurred"}} for a particular instance of [=trusted UI=], the user agent MUST consider whether head pose information is a security risk. For example, [=trusted UI=] involving text input, especially password inputs, can potentially leak the typed text through the user's head pose as they type. The user agent SHOULD also stop exposing any eye tracking-related information in such cases.
 
 The user agent MUST use [=trusted UI=] to show permissions prompts.
 
@@ -2355,7 +2491,9 @@ Context Isolation {#contextisolation-security}
 
 The trusted UI must be drawn by an independent rendering context whose state is isolated from any rendering contexts used by the page. (For example, any WebGL rendering contexts.) This is to prevent the page from corrupting the state of the trusted UI's context, which may prevent it from properly rendering a tracked environment. It also prevents the possibility of the page being able to capture imagery from the trusted UI, which could lead to private information being leaked.
 
-Also, to prevent CORS-related vulnerabilities each page will see a new instance of objects returned by the API, such as {{XRSession}}. Attributes such as the [=XRWebGLLayer/context=] set by one page must not be able to be read by another. Similarly, methods invoked on the API MUST NOT cause an observable state change on other pages. For example: No method will be exposed that enables a system-level orientation reset, as this could be called repeatedly by a malicious page to prevent other pages from tracking properly. The user agent MUST, however, respect system-level orientation resets triggered by a user gesture or system menu.
+Also, to prevent CORS-related vulnerabilities each [=browsing context=] will see a new instance of objects returned by the API, such as {{XRSession}}. Attributes such as the [=XRWebGLLayer/context=] set on an {{XRWebGLLayer}} with one [=relevant realm=] should not be able to be read through an {{XRWebGLLayer}} with a [=relevant realm=] that does not have the [=same origin=]. Similarly, methods invoked on the API MUST NOT cause an observable state change on other [=browsing contexts=]. For example: No method will be exposed that enables a system-level orientation reset, as this could be called repeatedly by a malicious page to prevent other pages from tracking properly. The user agent MUST, however, respect system-level orientation resets triggered by a user gesture or system menu.
+
+Note: this doesn't apply to state changes that are caused by one [=browsing context=] entering immersive mode, acquiring a lock on the device, and potentially firing {{devicechange}} events on other [=browsing contexts=].
 
 Fingerprinting {#fingerprinting-security}
 --------------
@@ -2366,7 +2504,7 @@ Given that the API describes hardware available to the user and its capabilities
 Integrations {#integrations}
 ============
 
-Feature Policy {#feature-policy}
+Permissions Policy {#permissions-policy}
 --------------
 
 This specification defines a [=policy-controlled feature=] that controls whether any {{XRSession}} that requires the use of spatial tracking may be returned by {{XRSystem/requestSession()}}, and whether support for session modes that require spatial tracking may be indicated by either {{XRSystem/isSessionSupported()}} or {{devicechange}} events on the {{Navigator/xr|navigator.xr}} object.
@@ -2375,7 +2513,7 @@ The feature identifier for this feature is <code>"xr-spatial-tracking"</code>.
 
 The [=default allowlist=] for this feature is <code>["self"]</code>.
 
-Note: If the document's origin is not allowed to use the <code>"xr-spatial-tracking"</code> feature policy any [=immersive sessions=] will be blocked, because all [=immersive sessions=] require some use of spatial tracking. [=Inline sessions=] will still be allowed, but restricted to only using the {{XRReferenceSpaceType/"viewer"}} {{XRReferenceSpace}}.
+Note: If the document's origin is not allowed to use the <code>"xr-spatial-tracking"</code> [=permissions policy=] any [=immersive sessions=] will be blocked, because all [=immersive sessions=] require some use of spatial tracking. [=Inline sessions=] will still be allowed, but restricted to only using the {{XRReferenceSpaceType/"viewer"}} {{XRReferenceSpace}}.
 
 
 Permissions API Integration {#permissions}
@@ -2482,16 +2620,24 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
     1. Return the [=tuple=] <code>(|consentRequired|, |consentOptional|, |granted|)</code>
   1. Add every [=feature descriptor=] in the [=default features=] table associated with |mode| to the indicated feature list if it is not already present.
   1. For each |feature| in |requiredFeatures| perform the following steps:
-    1. If |feature| is not a valid [=feature descriptor=], return <code>null</code>.
+    1. If the |feature| is <code>null</code>, [=continue=] to the next entry.
+    1. If |feature| is not a valid [=feature descriptor=], perform the following steps:
+        1. Let |s| be the result of calling [=?=] <a abstract-op>ToString</a>(|feature|).
+        1. If |s| is not a valid [=feature descriptor=] or is <code>undefined</code>, return <code>null</code>.
+        1. Set |feature| to |s|.
     1. If |feature| is already in |granted|, continue to the next entry.
-    1. If the requesting document's origin is not allowed to use any [[#feature-policy|feature policy]] required by |feature| as indicated by the [=feature requirements=] table, return <code>null</code>.
+    1. If the requesting document's origin is not allowed to use any [[#permissions-policy|permissions policy]] required by |feature| as indicated by the [=feature requirements=] table, return <code>null</code>.
     1. If |session|'s [=XRSession/XR device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, return <code>null</code>.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentRequired|.
     1. Else append |feature| to |granted|.
   1. For each |feature| in |optionalFeatures| perform the following steps:
-    1. If |feature| is not a valid [=feature descriptor=], continue to the next entry.
+    1. If the |feature| is <code>null</code>, [=continue=] to the next entry.
+    1. If |feature| is not a valid [=feature descriptor=], perform the following steps:
+        1. Let |s| be the result of calling [=?=] <a abstract-op>ToString</a>(|feature|).
+        1. If |s| is not a valid [=feature descriptor=] or is <code>undefined</code>, [=continue=] to the next entry.
+        1. Set |feature| to |s|.
     1. If |feature| is already in |granted|, continue to the next entry.
-    1. If the requesting document's origin is not allowed to use any [[#feature-policy|feature policy]] required by |feature| as indicated by the [=feature requirements=] table, continue to the next entry.
+    1. If the requesting document's origin is not allowed to use any [[#permissions-policy|permissions policy]] required by |feature| as indicated by the [=feature requirements=] table, continue to the next entry.
     1. If |session|'s [=XRSession/XR device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, continue to the next entry.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentOptional|.
     1. Else append |feature| to |granted|.
@@ -2502,12 +2648,36 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
 Acknowledgements {#ack}
 ================
 
-The following individuals have contributed to the design of the WebXR Device API specification:
+Thank you to the following individuals for their contributions the WebXR Device API specification:
 
   * <a href="mailto:cvan@mozilla.com">Chris Van Wiemeersch</a> (<a href="https://mozilla.org/">Mozilla</a>)
   * <a href="mailto:kgilbert@mozilla.com">Kearwood Gilbert</a> (<a href="https://mozilla.org/">Mozilla</a>)
   * <a href="mailto:rafael.cintron@microsoft.com">Rafael Cintron</a> (<a href="https://microsoft.com/">Microsoft</a>)
   * <a href="mailto:sebastian.sylvan@gmail.com">Sebastian Sylvan</a> (Formerly <a href="https://microsoft.com/">Microsoft</a>)
+  * <a href="mailto:blair@mozilla.com">Blair MacIntyre</a> (<a href="https://mozilla.org/">Mozilla</a>)
+  * <a href="mailto:johnpallett@google.com">John Pallett</a> (<a href="https://www.google.com">Google</a>)
+  * <a href="mailto:taoyagi@mozilla.com">Takahiro Aoyagi</a> (<a href="https://mozilla.org/">Mozilla</a>)
+  * <a href="mailto:nb@8thwall.com">Nicholas Butko</a> (<a href="https://8thwall.com">8th Wall</a>)
+  * <a href="mailto:artyom@fb.com">Artem Bolgar</a> (<a href="https://about.fb.com/company-info/">Facebook, Inc.</a>)
+  * <a href="mailto:cwilso@google.com">Chris Wilson</a> (<a href="https://google.com/">Google</a>)
+  * <a href="mailto:alan@metavrse.com">Alan Smithson</a> (<a href="https://MetaVRse.com">MetaVRse</a>)
+  * <a href="mailto:jmarinacci@mozilla.com">Josh Marinacci</a> (<a href="https://mozilla.org/">Mozilla</a>)
+  * <a href="mailto:loc@locdao.com">Loc Dao</a> (<a href="https://nfb.ca/interactive">National Film Board of Canada</a>)
+  * <a href="mailto:ningxin.hu@intel.com">Ningxin Hu</a> (<a href="https://www.intel.com/">Intel</a>)
+  * <a href="mailto:jared@plutovr.com">Jared Cheshier</a> (<a href="https://www.plutovr.com/">PlutoVR</a>)
+  * <a href="mailto:thodgson@brainwaive.com">Tony Hodgson</a> (<a href="http://www.brainwaive.com">Brainwaive LLC</a>)
+  * <a href="mailto:info@latorly.com">Christopher P. La Torres</a> (<a href="https://exokit.org">Exokit</a>)
+  * <a href="mailto:alexis.menard@intel.com">Alexis Menard</a> (<a href="http://intel.com">Intel Corporation</a>)
+  * <a href="mailto:klausw@google.com">Klaus Weidner</a> (<a href="https://google.com">Google</a>)
+  * <a href="mailto:ajeffrey@mozilla.com">Alan Jeffrey</a> (<a href="https://mozilla.org/">Mozilla</a>)
+  * <a href="mailto:dhosfelt@mozilla.com">Diane Hosfelt</a> (<a href="https://mozilla.org/">Mozilla</a>)
+  * <a href="mailto:gminthe@gmail.com">Kyungsuk</a> (<a href="https://www.xandr.com/">AT&T Xandr</a>)
+  * <a href="mailto:ddorwin@google.com">David Dorwin</a> (<a href="https://google.com">Google</a>)
+  * <a href="mailto:trevor@transmutable.com">Trevor F. Smith</a> (<a href="https://transmutable.com/">Transmutable</a>)
+  * <a href="mailto:ada.cannon@samsung.com">Ada Rose Cannon</a> (<a href="https://samsung.com">Samsung</a>)
+  * <a href="mailto:mlamouri@google.com">Mounir Lamouri</a> (<a href="https://google.com">Google</a>)
+  * <a href="mailto:stew@rtsmith.io">Stewart Smith</a> (<a href="https://moar.io">Moar Technologies Corp</a>)
+  * <a href="mailto:web3d@realism.com">Leonard Daly</a> (<a href="https://realism.com">Daly Realism</a>)
 
 And a special thanks to <a href="mailto:vladv@unity3d.com">Vladimir Vukicevic</a> (<a href="https://unity3d.com/">Unity</a>) for kick-starting this whole adventure!
 
