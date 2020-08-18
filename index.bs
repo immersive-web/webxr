@@ -595,13 +595,13 @@ enum XRVisibilityState {
   [SameObject] readonly attribute XRInputSourceArray inputSources;
 
   // Methods
-  void updateRenderState(optional XRRenderStateInit state = {});
+  undefined updateRenderState(optional XRRenderStateInit state = {});
   [NewObject] Promise&lt;XRReferenceSpace&gt; requestReferenceSpace(XRReferenceSpaceType type);
 
   unsigned long requestAnimationFrame(XRFrameRequestCallback callback);
-  void cancelAnimationFrame(unsigned long handle);
+  undefined cancelAnimationFrame(unsigned long handle);
 
-  Promise&lt;void&gt; end();
+  Promise&lt;undefined&gt; end();
 
   // Events
   attribute EventHandler onend;
@@ -908,7 +908,7 @@ Animation Frames {#animation-frames}
 The primary way an {{XRSession}} provides information about the tracking state of the [=XRSession/XR device=] is via callbacks scheduled by calling {{requestAnimationFrame()}} on the {{XRSession}} instance.
 
 <pre class="idl">
-callback XRFrameRequestCallback = void (DOMHighResTimeStamp time, XRFrame frame);
+callback XRFrameRequestCallback = undefined (DOMHighResTimeStamp time, XRFrame frame);
 </pre>
 
 Each {{XRFrameRequestCallback}} object has a <dfn for="XRFrameRequestCallback">cancelled</dfn> boolean initially set to <code>false</code>.
@@ -2045,7 +2045,7 @@ partial dictionary WebGLContextAttributes {
 };
 
 partial interface mixin WebGLRenderingContextBase {
-    [NewObject] Promise&lt;void&gt; makeXRCompatible();
+    [NewObject] Promise&lt;undefined&gt; makeXRCompatible();
 };
 </pre>
 
