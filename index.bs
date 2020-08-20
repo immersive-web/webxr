@@ -957,7 +957,7 @@ When an {{XRSession}} |session| receives updated [=viewer=] state for timestamp 
     1. Let |now| be the [=current high resolution time=].
     1. Let |frame| be |session|'s [=XRSession/animation frame=].
     1. Set |frame|'s [=XRFrame/time=] to |frameTime|.
-    1. If the [=view/active] flag of any [=view=] in the [=XRSession/list of views=] has changed since the last [=XR animation frame=], [=update the viewports=].
+    1. If the [=view/active=] flag of any [=view=] in the [=XRSession/list of views=] has changed since the last [=XR animation frame=], [=update the viewports=].
     1. If [=check the layers state=] with |session|'s {{XRSession/renderState}} is <code>false</code>, abort these steps.
     1. If |session|'s  [=XRSession/mode=] is {{XRSessionMode/"inline"}} and |session|'s {{XRSession/renderState}}'s [=XRRenderState/output canvas=] is <code>null</code>, abort these steps.
     1. Set  |session|'s [=list of currently running animation frame callbacks=] to be |session|'s [=list of animation frame callbacks=].
