@@ -333,16 +333,32 @@ When this method is invoked, it MUST run the following steps:
   1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of this {{XRSystem}}.
   1. If |mode| is {{XRSessionMode/"inline"}}, [=/resolve=] |promise| with `true` and return it.
   1. If the requesting document's origin is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return it.
-  1. Run the following steps [=in parallel=]:
-    1. Let |device| be the result of [=ensure an immersive XR device is selected|ensuring an immersive XR device is selected=].
-    1. If |device| is `null`, [=/resolve=] |promise| with `false` and abort these steps.
-    1. If |device|'s [=list of supported modes=] does not [=list/contain=] |mode|, [=queue a task=] to [=/resolve=] |promise| with `false` and abort these steps.
-    1. [=queue a task=] to [=/resolve=] |promise| with `true`.
+  1. Check whether the session |mode| is supported as follows:
+    <dl class="switch">
+      : If the user agent and system are known to [=never support=] |mode| sessions
+      :: [=/Resolve=] |promise| with <code>false</code>.
+
+      : If the user agent and system are is known to [=usually support=] |mode| sessions
+      :: |promise| MAY be [=/resolved=] with <code>true</code>.
+
+      : Otherwise
+      :: Run the following steps [=in parallel=]:
+        1. Let |device| be the result of [=ensure an immersive XR device is selected|ensuring an immersive XR device is selected=].
+        1. If |device| is null, [=/resolve=] |promise| with <code>false</code> and abort these steps.
+        1. If |device|'s [=list of supported modes=] does not [=list/contain=] |mode|, [=queue a task=] to [=/resolve=] |promise| with <code>false</code> and abort these steps.
+        1. The user agent SHOULD ensure [=user intent=] to allow pages to know XR capabilities are available is well undertood.
+        1. [=queue a task=] to [=/resolve=] |promise| with <code>true</code>.
+
+    </dl>
   1. Return |promise|.
 
 </div>
 
-Calling {{XRSystem/isSessionSupported()}} MUST NOT trigger device-selection UI as this would cause many sites to display XR-specific dialogs early in the document lifecycle without user activation. Additionally, calling {{XRSystem/isSessionSupported()}} MUST NOT interfere with any running XR applications on the system, and MUST NOT cause XR-related applications to launch such as system trays or storefronts.
+<p class="note">
+Note: The purpose of {{XRSystem/isSessionSupported()}} is not to report with perfect accuracy the user agent's ability to create an {{XRSession}}, but to inform the page whether or not advertising the ability to create sessions of the given mode is advised. A certain level of false-positives are expected, even when user agent checks for the presence of the necessary hardware/software prior to resolving the method. (For example, even if the appropriate hardware is present it may have given exclusive access to another application at the time a session is requested.)
+</p>
+
+It is expected that most pages with XR content will call {{XRSystem/isSessionSupported()}} early in the document lifecycle. As such, calling {{XRSystem/isSessionSupported()}} SHOULD avoid displaying any modal or otherwise intrusive UI. Calling {{XRSystem/isSessionSupported()}} MUST NOT trigger device-selection UI, MUST NOT interfere with any running XR applications on the system, and MUST NOT cause XR-related applications to launch such as system trays or storefronts.
 
 <div class="example">
 The following code checks to see if {{immersive-vr}} sessions are supported.
@@ -350,7 +366,7 @@ The following code checks to see if {{immersive-vr}} sessions are supported.
 <pre highlight="js">
 const supported = await navigator.xr.isSessionSupported('immersive-vr');
 if (supported) {
-  // 'immersive-vr' sessions are supported.
+  // 'immersive-vr' sessions may be supported.
   // Page should advertise support to the user.
 } else {
   // 'immersive-vr' sessions are not supported.
@@ -359,9 +375,17 @@ if (supported) {
 </div>
 
 <p class="note">
-Note: The purpose of {{XRSystem/isSessionSupported()}} is not to report with perfect accuracy the user agent's ability to create an {{XRSession}}, but to inform the page whether or not advertising the ability to create sessions of the given mode is advised. A certain level of false-positives are expected, even when user agent checks for the presence of the necessary hardware/software prior to resolving the method. (For example, even if the appropriate hardware is present it may have given exclusive access to another application at the time a session is requested.)
+Note: <b>Fingerprinting considerations</b>
 <br/><br/>
-Because {{XRSystem/isSessionSupported()}} can be called without user activation and without triggering any consent dialogs, it may be used as a fingerprinting vector despite the limited amount of information it reports. User agents that wish to minimize all fingerprinting while still enabling XR content may wish to have {{XRSystem/isSessionSupported()}} always report `true` for platforms which have any possibility of running the specified mode of XR content, regardless of whether or not the appropriate hardware or software is present. This comes at the cost of user ergonomics, as it will cause pages to advertise XR content to users that cannot view it.
+Because {{XRSystem/isSessionSupported()}} can be called without user activation it may be used as a fingerprinting vector despite the limited amount of information it reports. To reduce the amount of unique information that can be derived from the method, user agents should consider the following mitigations:
+<br/><br/>
+Some devices or user agents will <dfn>never support</dfn> sessions of a given {{XRSessionMode}}. For example: A model of phone that is known to not meet requirements for mobile AR support. In these cases there is little fingerprinting risk in {{XRSystem/isSessionSupported()}} always reporting the {{XRSessionMode}} is not supported because every such device will consistently report the same value and it's assumed that device type and model can be inferred in other ways, such as through user agent strings.
+<br/><br/>
+Other devices and user agents will <dfn>usually support</dfn> sessions of a given {{XRSessionMode}}. For example: User agents that run exclusively within VR headsets are likely to support {{XRSessionMode/"immersive-vr"}} sessions unless specifically blocked by the user. In these cases reporting that the {{XRSessionMode}} is not supported, while accurate, would offer more uniquely identifying information about the user. As such reporting that the {{XRSessionMode}} is always available and allowing {{XRSystem/requestSession()}} to fail is more privacy-preserving while likely not being a source of confusion for the user.
+<br/><br/>
+Devices for which availability of XR capabilities is highly variable, such as desktop systems which support XR peripherals, present the highest fingerprinting risk. User agents on such devices should allow the user to choose if pages can observe that their device has XR capabilities or not.
+<br/><br/>
+User agents that wish to minimize <i>all</i> fingerprinting while still enabling XR content may wish to have {{XRSystem/isSessionSupported()}} always report <code>true</code> even on platforms which do not consistently have XR capabilities available, regardless of whether or not the appropriate hardware or software is present. This comes at the cost of user ergonomics, as it will cause pages to advertise XR content to users that cannot view it.
 </p>
 
 The {{XRSystem}} object has a <dfn>pending immersive session</dfn> boolean, which MUST be initially `false`, an <dfn>active immersive session</dfn>, which MUST be initially `null`, and a <dfn>list of inline sessions</dfn>, which MUST be initially empty.
