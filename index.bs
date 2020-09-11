@@ -346,7 +346,7 @@ When this method is invoked, it MUST run the following steps:
         1. Let |device| be the result of [=ensure an immersive XR device is selected|ensuring an immersive XR device is selected=].
         1. If |device| is null, [=/resolve=] |promise| with <code>false</code> and abort these steps.
         1. If |device|'s [=list of supported modes=] does not [=list/contain=] |mode|, [=queue a task=] to [=/resolve=] |promise| with <code>false</code> and abort these steps.
-        1. The user agent SHOULD ensure [=user intent=] to allow pages to know XR capabilities are available is well undertood.
+        1. If [=user intent=] to [[#issessionsupported-fingerprinting|avoid advertising their system's XR capabilities]] is well understood, [=queue a task=] to [=/resolve=] |promise| with <code>false</code> and abort these steps.
         1. [=queue a task=] to [=/resolve=] |promise| with <code>true</code>.
 
     </dl>
