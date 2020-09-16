@@ -2106,6 +2106,7 @@ The <dfn method for="WebGLRenderingContextBase">makeXRCompatible()</dfn> method 
 
 When this method is invoked, the user agent MUST run the following steps:
 
+  1. If the requesting document's origin is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]], [=/resolve=] |promise| and return it. <span class=note>When the XR permissions policy is disabled, we wish to behave as if there is no XR device in this case, since {{WebGLRenderingContextBase/makeXRCompatible()}} is supposed to be a set-and-forget method.</span>
   1. Let |promise| be [=a new Promise=] created in the [=Realm=] of this {{WebGLRenderingContextBase}}.
   1. Let |context| be [=this=].
   1. Run the following steps [=in parallel=]:
