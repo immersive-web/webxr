@@ -385,9 +385,13 @@ Some user agents [=indistinguishable by user-agent string=] will <dfn>never supp
 
 Other user agents will [=indistinguishable by user-agent string=] <dfn>usually support</dfn> sessions of a given {{XRSessionMode}}. <span class='note'>For example: User agents known to support WebXR that run exclusively within VR headsets are likely to support {{XRSessionMode/"immersive-vr"}} sessions unless specifically blocked by the user.</span> In these cases reporting that the {{XRSessionMode}} is not supported, while accurate, would offer more uniquely identifying information about the user. As such reporting that the {{XRSessionMode}} is always available and allowing {{XRSystem/requestSession()}} to fail is more privacy-preserving while likely not being a source of confusion for the user.
 
-User agents [=indistinguishable by user-agent string=] for which availability of XR capabilities is highly variable, such as desktop systems which support XR peripherals, present the highest fingerprinting risk. User agents on such devices should allow the user to choose if pages can observe that their device has XR capabilities or not.
+User agents [=indistinguishable by user-agent string=] for which availability of XR capabilities is highly variable, such as desktop systems which support XR peripherals, present the highest fingerprinting risk. User agents on such devices MUST NOT allow the {{isSessionSupported()}} API to provide additional fingerprinting bits without there being [=explicit consent=] from the user to do so. This MAY involve one of the following techniques:
 
-Note: User agents that wish to minimize <i>all</i> fingerprinting while still enabling XR content may wish to have {{XRSystem/isSessionSupported()}} always report <code>true</code> even on platforms which do not consistently have XR capabilities available, regardless of whether or not the appropriate hardware or software is present. This comes at the cost of user ergonomics, as it will cause pages to advertise XR content to users that cannot view it.
+ - Always judging [=explicit consent=] (with a potentially cached permissions prompt or similar) when {{XRSystem/isSessionSupported()}} is called.
+ - Have {{XRSystem/isSessionSupported()}} always report <code>true</code> even on platforms which do not consistently have XR capabilities available, regardless of whether or not the appropriate hardware or software is present. <span class=note>This comes at the cost of user ergonomics, as it will cause pages to advertise XR content to users that cannot view it.</span>
+ - Have {{XRSystem/isSessionSupported()}} request [=explicit consent=] when the appropriate hardware is present, and when such hardware is _not_ present, return <code>false</code> after an appropriately random length of time. In such an implementation content MUST NOT be able to distinguish between cases where the user agent was not connected to XR hardware and cases where the user agent was connected to XR hardware but the user declined to provide [=explicit consent=].
+
+Whatever the technique chosen, it MUST NOT reveal additional knowledge about connected XR hardware without [=explicit consent=].
 
 The {{XRSystem}} object has a <dfn>pending immersive session</dfn> boolean, which MUST be initially `false`, an <dfn>active immersive session</dfn>, which MUST be initially `null`, and a <dfn>list of inline sessions</dfn>, which MUST be initially empty.
 
@@ -2431,7 +2435,9 @@ In the context of XR, <dfn>sensitive information</dfn> includes, but is not limi
 User intention {#user-intention}
 --------------
 
-It is often necessary to be sure of <dfn>user intent</dfn> before exposing sensitive information or allowing actions with a significant effect on the user's experience. This intent may be communicated or observed in a number of ways.
+<dfn>User intent</dfn> for a given action is a signal from the user that such an action was intentional and has their consent.
+
+It is often necessary to be sure of [=user intent=] before exposing sensitive information or allowing actions with a significant effect on the user's experience. This intent may be communicated or observed in a number of ways.
 
 Note: A common way of determining user intent is by [=transient activation=] of a UI control, typically an "enter VR" button. Since activation is transient,
 the [=browsing context=] requesting an XR session must be an [=ancestor=] or a [=same origin-domain=] [=descendant=] of the context containing the UI control, and must recently
@@ -2444,9 +2450,10 @@ have been the [=active document=] of the browsing context.
 In some environments a page may be presented as an application, installed with the express intent of running immersive content. In that case <dfn>launching a web application</dfn> MAY also serve as an indication of [=user intent=].
 
 ### Implicit and Explicit consent ### {#user-consent}
-A user agent MAY use <dfn>implicit consent</dfn> based, for example, on the install status of a web application or frequency and recency of visits. Given the sensitivity of XR data, caution is strongly advised when relying on implicit signals.
 
-It is often useful to get <dfn>explicit consent</dfn> from the user before exposing [=sensitive information=]. When gathering explicit user consent, user agents present an explanation of what is being requested and provide users the option to decline. Requests for user consent can be presented in many visual forms based on the features being protected and user agent choice.
+<dfn>Implicit consent</dfn> is when the user agent makes a judgement on the consent of a user without explicitly asking for it, for example, based on the install status of a web application or frequency and recency of visits. Given the sensitivity of XR data, caution is strongly advised when relying on implicit signals.
+
+<dfn>Explicit consent</dfn> is when the user agent makes a judgement on the consent of a user based on having explicitly asked for it. When gathering [=explicit consent=], user agents present an explanation of what is being requested and provide users the option to decline. Requests for user consent can be presented in many visual forms based on the features being protected and user agent choice. Install status of a web application MAY count as a signal of [=explicit consent=] provided some form of [=explicit consent=] is requested at install time.
 
 ### Duration of consent ### {#consent-duration}
 It is recommended that once [=explicit consent=] is granted for a specific [=/origin=] that this consent persist until the [=/browsing context=] has ended. User agents may choose to lengthen or shorten this consent duration based upon implicit or explicit signals of [=user intent=], but implementations are advised to exercise caution when deviating from this recommendation, particularly when relying on implicit signals. For example, it may be appropriate for a web application installed with the express intent of running immersive content to persist the user's consent, but not for an installed web application where immersive content is a secondary feature.
