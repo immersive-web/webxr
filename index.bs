@@ -34,6 +34,7 @@ spec:webidl;
     type:dfn; text:new
 spec:webxr-ar-module-1;
     type:dfn; text:first-person observer view
+spec:html; type:interface; text:Navigator
 </pre>
 
 <pre class="anchors">
@@ -376,13 +377,15 @@ if (supported) {
 
 ### Fingerprinting considerations ### {#issessionsupported-fingerprinting}
 
+A set of user agents is <dfn>indistinguishable by user-agent string</dfn> if they all report the same {{NavigatorID/userAgent}} and {{NavigatorID/appVersion}}. Such classes are typically identified by the browser version and platform/device being run on, but cannot be distinguished by the status of any connected external device. We can use the concept of user agents that are [=indistinguishable by user-agent string=] to properly assess fingerprinting risk.
+
 Because {{XRSystem/isSessionSupported()}} can be called without user activation it may be used as a fingerprinting vector despite the limited amount of information it reports. To reduce the amount of unique information that can be derived from the method, user agents should consider the following mitigations:
 
-Some devices or user agents will <dfn>never support</dfn> sessions of a given {{XRSessionMode}}. <span class='note'>For example: A model of phone that is known to not meet requirements for mobile AR support.</span> In these cases there is little fingerprinting risk in {{XRSystem/isSessionSupported()}} always reporting the {{XRSessionMode}} is not supported because every such device will consistently report the same value and it's assumed that device type and model can be inferred in other ways, such as through user agent strings.
+Some user agents [=indistinguishable by user-agent string=] will <dfn>never support</dfn> sessions of a given {{XRSessionMode}}. <span class='note'>For example: User agents running on a model of phone that is known to not meet requirements for mobile AR support.</span> In these cases there is little fingerprinting risk in {{XRSystem/isSessionSupported()}} always reporting the {{XRSessionMode}} is not supported because every such device will consistently report the same value and it's assumed that device type and model can be inferred in other ways, such as through {{NavigatorID/userAgent}}.
 
-Other devices and user agents will <dfn>usually support</dfn> sessions of a given {{XRSessionMode}}. <span class='note'>For example: User agents that run exclusively within VR headsets are likely to support {{XRSessionMode/"immersive-vr"}} sessions unless specifically blocked by the user.</span> In these cases reporting that the {{XRSessionMode}} is not supported, while accurate, would offer more uniquely identifying information about the user. As such reporting that the {{XRSessionMode}} is always available and allowing {{XRSystem/requestSession()}} to fail is more privacy-preserving while likely not being a source of confusion for the user.
+Other user agents will [=indistinguishable by user-agent string=] <dfn>usually support</dfn> sessions of a given {{XRSessionMode}}. <span class='note'>For example: User agents known to support WebXR that run exclusively within VR headsets are likely to support {{XRSessionMode/"immersive-vr"}} sessions unless specifically blocked by the user.</span> In these cases reporting that the {{XRSessionMode}} is not supported, while accurate, would offer more uniquely identifying information about the user. As such reporting that the {{XRSessionMode}} is always available and allowing {{XRSystem/requestSession()}} to fail is more privacy-preserving while likely not being a source of confusion for the user.
 
-Devices for which availability of XR capabilities is highly variable, such as desktop systems which support XR peripherals, present the highest fingerprinting risk. User agents on such devices should allow the user to choose if pages can observe that their device has XR capabilities or not.
+User agents [=indistinguishable by user-agent string=] for which availability of XR capabilities is highly variable, such as desktop systems which support XR peripherals, present the highest fingerprinting risk. User agents on such devices should allow the user to choose if pages can observe that their device has XR capabilities or not.
 
 Note: User agents that wish to minimize <i>all</i> fingerprinting while still enabling XR content may wish to have {{XRSystem/isSessionSupported()}} always report <code>true</code> even on platforms which do not consistently have XR capabilities available, regardless of whether or not the appropriate hardware or software is present. This comes at the cost of user ergonomics, as it will cause pages to advertise XR content to users that cannot view it.
 
