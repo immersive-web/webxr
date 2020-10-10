@@ -10,13 +10,13 @@
 		counter-reset: example figure issue;
 
 		/* Layout */
-		max-width: 50em;               /* limit line length to 50em for readability   */
+		max-width: 60em;               /* limit line length to 50em for readability   */
 		margin: 0 auto;                /* center text within page                     */
-		padding: 1.6em 1.5em 2em 50px; /* assume 16px font size for downlevel clients */
+		padding: 1.8em 1.6em 4em 60px; /* assume 16px font size for downlevel clients */
 		padding: 1.6em 1.5em 2em calc(26px + 1.5em); /* leave space for status flag     */
 
 		/* Typography */
-		line-height: 1.5;
+		line-height: 1.6;
 		font-family: sans-serif;
 		widows: 2;
 		orphans: 2;
@@ -52,7 +52,7 @@
 
 	.head .logo {
 		float: right;
-		margin: 0.4rem 0 0.2rem .4rem;
+		margin: 0.6rem 0 0.3rem .6rem;
 	}
 
 	.head img[src*="logos/W3C"] {
@@ -402,7 +402,7 @@
 /** Blockquotes ***************************************************************/
 
 	blockquote {
-		border-color: silver;
+		border-color: yellow;
 	}
 
 /** Open issue ****************************************************************/
@@ -478,7 +478,7 @@
 	/*  for attention-grabbing normative statements */
 
 	.advisement {
-		border-color: orange;
+		border-color: green;
 		border-style: none solid;
 		background: #FFEECC;
 	}
@@ -765,10 +765,10 @@ Possible extra rowspan handling
 		white-space: nowrap;
 	}
 	.toc > li li li li .secno {
-		font-size: 85%;
+		font-size: 95%;
 	}
 	.toc > li li li li li .secno {
-		font-size: 100%;
+		font-size: 110%;
 	}
 
 	:not(li) > .toc              { margin-left:  5rem; }
