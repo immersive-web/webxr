@@ -397,7 +397,7 @@ dictionary XRSessionSupportedPermissionDescriptor: PermissionDescriptor {
 {{PermissionDescriptor/name}} for {{XRPermissionDescriptor}} is {{PermissionName/"xr-session-supported"}}.
 
 
-{{PermissionName/"xr-session-supported"}} MAY be granted automatically for systems.
+{{PermissionName/"xr-session-supported"}} may be granted automatically for some systems based on the criteria below.
 
 A set of user agents is <dfn>indistinguishable by user-agent string</dfn> if they all report the same {{NavigatorID/userAgent}} and {{NavigatorID/appVersion}}. Such classes are typically identified by the browser version and platform/device being run on, but cannot be distinguished by the status of any connected external device. We can use the concept of user agents that are [=indistinguishable by user-agent string=] to properly assess fingerprinting risk.
 
