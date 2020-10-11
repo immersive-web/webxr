@@ -340,7 +340,7 @@ When this method is invoked, it MUST run the following steps:
       :: [=/Resolve=] |promise| with <code>false</code>.
 
       : If the user agent and system are is known to [=usually support=] |mode| sessions
-      :: |promise| MAY be [=/resolved=] with <code>true</code>.
+      :: |promise| MAY be [=/resolved=] with <code>true</code> provided that all instances of this user agent [=indistinguishable by user-agent string=] produce the same result here.
 
       : Otherwise
       :: Run the following steps [=in parallel=]:
