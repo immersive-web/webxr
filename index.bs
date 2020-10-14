@@ -337,18 +337,18 @@ When this method is invoked, it MUST run the following steps:
   1. Check whether the session |mode| is supported as follows:
     <dl class="switch">
       : If the user agent and system are known to [=never support=] |mode| sessions
-      :: [=/Resolve=] |promise| with <code>false</code>.
+      :: [=/Resolve=] |promise| with `false`.
 
       : If the user agent and system are is known to [=usually support=] |mode| sessions
-      :: |promise| MAY be [=/resolved=] with <code>true</code> provided that all instances of this user agent [=indistinguishable by user-agent string=] produce the same result here.
+      :: |promise| MAY be [=/resolved=] with `true` provided that all instances of this user agent [=indistinguishable by user-agent string=] produce the same result here.
 
       : Otherwise
       :: Run the following steps [=in parallel=]:
         1. Let |device| be the result of [=ensure an immersive XR device is selected|ensuring an immersive XR device is selected=].
-        1. If |device| is null, [=/resolve=] |promise| with <code>false</code> and abort these steps.
-        1. If |device|'s [=list of supported modes=] does not [=list/contain=] |mode|, [=queue a task=] to [=/resolve=] |promise| with <code>false</code> and abort these steps.
-        1. [=request permission to use=] the [=powerful feature=] {{PermissionName/"xr-session-supported"}} with {{XRSessionSupportedPermissionDescriptor}} with {{XRSessionSupportedPermissionDescriptor/mode}} equal to |mode|. If it returns {{PermissionState/"denied"}} [=queue a task=] to [=/resolve=] |promise| with <code>false</code> and abort these steps.
-        1. [=queue a task=] to [=/resolve=] |promise| with <code>true</code>.
+        1. If |device| is null, [=/resolve=] |promise| with `false` and abort these steps.
+        1. If |device|'s [=list of supported modes=] does not [=list/contain=] |mode|, [=queue a task=] to [=/resolve=] |promise| with `false` and abort these steps.
+        1. [=request permission to use=] the [=powerful feature=] {{PermissionName/"xr-session-supported"}} with {{XRSessionSupportedPermissionDescriptor}} with {{XRSessionSupportedPermissionDescriptor/mode}} equal to |mode|. If it returns {{PermissionState/"denied"}} [=queue a task=] to [=/resolve=] |promise| with `false` and abort these steps.
+        1. [=queue a task=] to [=/resolve=] |promise| with `true`.
 
     </dl>
   1. Return |promise|.
@@ -412,8 +412,8 @@ User agents [=indistinguishable by user-agent string=] for which availability of
 Note: Some acceptable approaches to handle such cases are as follows:
 
  - Always judging [=explicit consent=] for {{PermissionName/"xr-session-supported"}} (with a potentially cached permissions prompt or similar) when {{XRSystem/isSessionSupported()}} is called.
- - Automatically granting {{PermissionName/"xr-session-supported"}} but having {{XRSystem/isSessionSupported()}} always report <code>true</code> even on platforms which do not consistently have XR capabilities available, regardless of whether or not the appropriate hardware or software is present. This comes at the cost of user ergonomics, as it will cause pages to advertise XR content to users that cannot view it.
- - Have {{XRSystem/isSessionSupported()}} request [=explicit consent=] for {{PermissionName/"xr-session-supported"}} when the appropriate hardware is present, and when such hardware is _not_ present, return <code>false</code> after an appropriately random length of time. In such an implementation content must not be able to distinguish between cases where the user agent was not connected to XR hardware and cases where the user agent was connected to XR hardware but the user declined to provide [=explicit consent=].
+ - Automatically granting {{PermissionName/"xr-session-supported"}} but having {{XRSystem/isSessionSupported()}} always report `true` even on platforms which do not consistently have XR capabilities available, regardless of whether or not the appropriate hardware or software is present. This comes at the cost of user ergonomics, as it will cause pages to advertise XR content to users that cannot view it.
+ - Have {{XRSystem/isSessionSupported()}} request [=explicit consent=] for {{PermissionName/"xr-session-supported"}} when the appropriate hardware is present, and when such hardware is _not_ present, return `false` after an appropriately random length of time. In such an implementation content must not be able to distinguish between cases where the user agent was not connected to XR hardware and cases where the user agent was connected to XR hardware but the user declined to provide [=explicit consent=].
 
 </div>
 
