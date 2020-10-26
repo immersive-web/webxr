@@ -75,7 +75,7 @@ glCanvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
 **WebXR**
 ```js
 let glCanvas = document.createElement('canvas');
-let gl = document.getContext('webgl', { xrCompatible: true });
+let gl = glCanvas.getContext('webgl', { xrCompatible: true });
 
 let xrSession = await navigator.xr.requestSession('immersive-vr');
 let xrLayer = new XRWebGLLayer(session, gl);
