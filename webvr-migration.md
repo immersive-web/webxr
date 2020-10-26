@@ -38,7 +38,6 @@ let supported = await navigator.xr.isSessionSupported('immersive-vr');
 if (supported) {
   ShowEnterVRButton();
 }
-});
 ```
 
 Starting VR presentation
@@ -184,7 +183,7 @@ function onFrame(t, frame) {
   }
 
   // Ensure we're rendering to the layer's backbuffer.
-  let layer = session.renederState.baseLayer;
+  let layer = session.renderState.baseLayer;
   gl.bindFramebuffer(gl.FRAMEBUFFER, layer.framebuffer);
 
   // Loop through each of the views reported by the viewer pose.
