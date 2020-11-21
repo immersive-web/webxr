@@ -400,7 +400,7 @@ function onDrawFrame(timestamp, xrFrame) {
       // Set forward facing position
       [ listener.forwardX.value, listener.forwardY.value, listener.forwardZ.value ] = [-m[8], -m[9], -m[10]];
       // set the horizontal position of the top of the listener's head
-      [ listener.upX, listener.upY, listener.upZ ] = [ m[4], m[5], m[6] ];
+      [ listener.upX.value, listener.upY.value, listener.upZ.value ] = [ m[4], m[5], m[6] ];
       // Set the audio listener to travel with the WebXR user position
       // Note that pose.transform.position does equal [m[12], m[13], m[14]]
       [ listener.positionX.value, listener.positionY.value, listener.positionZ.value ] = [m[12], m[13], m[14]];
