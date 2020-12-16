@@ -1453,7 +1453,9 @@ The <dfn attribute for="XRView">projectionMatrix</dfn> attribute is the [=view/p
 
 The <dfn attribute for="XRView">transform</dfn> attribute is the {{XRRigidTransform}} of the viewpoint. It represents the position and orientation of the viewpoint in the {{XRReferenceSpace}} provided in {{XRFrame/getViewerPose()}}.
 
-The optional <dfn attribute for="XRView">recommendedViewportScale</dfn> attribute contains a UA-recommended viewport scale value that the application can use for a {{XRView/requestViewportScale()}} call to configure dynamic viewport scaling. It is `null` if the system does not implement a heuristic or method for determining a recommended scale. If not null, the value MUST be a numeric value greater than 0.0 and less than or equal to 1.0.
+The optional <dfn attribute for="XRView">recommendedViewportScale</dfn> attribute contains a UA-recommended viewport scale value that the application can use for a {{XRView/requestViewportScale()}} call to configure dynamic viewport scaling. It is `null` if the system does not implement a heuristic or method for determining a recommended scale. If not null, the value MUST be a numeric value greater than 0.0 and less than or equal to 1.0, and MUST be [=quantization|quantized=] to avoid providing detailed performance or GPU utilization data.
+
+Note: It is suggested to quantize the recommended viewport scale by rounding it to the nearest value from a short list of possible scale values, and using hysteresis to avoid instant changes when close to a boundary value. (This also helps avoid rapidly oscillating scale values which can be visually distracting or uncomfortable.)
 
 Each {{XRView}} has an associated <dfn for="XRView">session</dfn> which is the {{XRSession}} that produced it.
 
