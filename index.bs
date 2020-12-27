@@ -156,19 +156,19 @@ spec: requestidlecallback; urlPrefix: https://w3c.github.io/requestidlecallback/
   .tg th {
     border-style: solid;
     border-width: 1px;
-    background: #90b8de;
+    background: var(--def-bg);
     color: #fff;
     font-family: sans-serif;
     font-weight: bold;
-    border-color: grey;
+    border-color: var(--def-border);
   }
   .tg td {
     padding: 4px 5px;
-    background-color: rgb(221, 238, 255);
+    background-color: var(--def-bg);
     font-family: monospace;
     border-style: solid;
     border-width: 1px;
-    border-color: grey;
+    border-color: var(--def-border);
     overflow: hidden;
     word-break: normal;
   }
@@ -2826,7 +2826,7 @@ Thank you to the following individuals for their contributions the WebXR Device 
   * <a href="mailto:nb@8thwall.com">Nicholas Butko</a> (<a href="https://8thwall.com">8th Wall</a>)
   * <a href="mailto:artyom@fb.com">Artem Bolgar</a> (<a href="https://about.fb.com/company-info/">Facebook, Inc.</a>)
   * <a href="mailto:cwilso@google.com">Chris Wilson</a> (<a href="https://google.com/">Google</a>)
-  * <a href="mailto:alan@metavrse.com">Alan Smithson</a> (<a href="https://MetaVRse.com">MetaVRse</a>)
+  * <a href="mailto:alanvartavrse.com">Alan Smithson</a> (<a href="https://MetaVRse.com">MetaVRse</a>)
   * <a href="mailto:jmarinacci@mozilla.com">Josh Marinacci</a> (<a href="https://mozilla.org/">Mozilla</a>)
   * <a href="mailto:loc@locdao.com">Loc Dao</a> (<a href="https://nfb.ca/interactive">National Film Board of Canada</a>)
   * <a href="mailto:ningxin.hu@intel.com">Ningxin Hu</a> (<a href="https://www.intel.com/">Intel</a>)
