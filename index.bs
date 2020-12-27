@@ -2649,8 +2649,6 @@ If the virtual environment does not consistently track the user's head motion wi
 
 Additionally, page content has the ability to make users uncomfortable in ways not related to performance. Badly applied tracking, strobing colors, and content intended to offend, frighten, or intimidate are examples of content which may cause the user to want to quickly exit the XR experience. Removing the XR device in these cases may not always be a fast or practical option. To accommodate this the user agent MUST provide users with an action, such as pressing a reserved hardware button or performing a gesture, that escapes out of WebXR content and displays the user agent's [=trusted UI=].
 
-<section class="unstable">
-
 
 Context Isolation {#contextisolation-security}
 -----------------
@@ -2665,7 +2663,7 @@ Fingerprinting {#fingerprinting-security}
 --------------
 
 Given that the API describes hardware available to the user and its capabilities it will inevitably provide additional surface area for fingerprinting. While it's impossible to completely avoid this, user agents should take steps to mitigate the issue. This spec limits reporting of available hardware to only a single device at a time, which prevents using the rare cases of multiple headsets being connected as a fingerprinting signal. Also, the devices that are reported have no string identifiers and expose very little information about the devices capabilities until an XRSession is created, which requires additional protections when [=sensitive information=] will be exposed.
-</section>
+
 
 Integrations {#integrations}
 ============
