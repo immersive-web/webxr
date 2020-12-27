@@ -592,60 +592,6 @@ Note: {{XRReferenceSpaceType/"local"}} is always included in the [=requested fea
 
 Note: For example, several VR devices support either configuring a safe boundary for the user to move around within or skipping boundary configuration and operating in a mode where the user is expected to stand in place. Such a device can be considered to be [=capable of supporting=] {{"bounded-floor"}} {{XRReferenceSpace}}s even if they are currently not configured with safety boundaries, because it's expected that the user could configure the device appropriately if the experience required it. This is to allow user agents to avoid fully initializing the [=XRSession/XR device=] or waiting for the user's environment to be recognized prior to [=resolve the requested features|resolving the requested features=] if desired. If, however, the user agent knows that the boundary state at the time the session is requested without additional initialization it may choose to reject the {{"bounded-floor"}} feature if the safety boundary not already configured.
 
-
-Fingerprinting considerations of {{XRSystem/isSessionSupported()}} {#issessionsupported-fingerprinting}
-----------------------------------
-Because {{XRSystem/isSessionSupported()}} can be called without user activation it may be used as a fingerprinting vector.
-
-<dfn enum-value for="PermissionName">"xr-session-supported"</dfn> [=powerful feature=] gates access to the {{XRSystem/isSessionSupported()}} API.
-
-The {{PermissionName/"xr-session-supported"}}’s permission-related algorithms and types are defined as follows:
-
-
-<dl>
-<dt>[=permission descriptor type=]</dt>
-<dd>
-
-<pre class="idl">
-dictionary XRSessionSupportedPermissionDescriptor: PermissionDescriptor {
-  XRSessionMode mode;
-};
-</pre>
-
-{{PermissionDescriptor/name}} for {{XRPermissionDescriptor}} is {{PermissionName/"xr-session-supported"}}.
-
-</dd></dl>
-
-### Considerations for when to automatically grant {{PermissionName/"xr-session-supported"}} ### {#automatic-granting-xr-session-supported}
-
-<section class="non-normative">
-
-There is often tension between privacy and personalization on the Web. This section provides guidance on where that tradeoff can be circumscribed, and when the user agent can describe the browser's WebXR capabilities to a site via {{XRSystem/isSessionSupported()}} without any privacy reduction.
-
-{{PermissionName/"xr-session-supported"}} may be granted automatically for some systems based on the criteria below. This can provide a better user experience and mitigate permissions fatigue.
-
-A set of user agents is <dfn>indistinguishable by user-agent string</dfn> if they all report the same {{NavigatorID/userAgent}} and {{NavigatorID/appVersion}}. Such classes are typically identified by the browser version and platform/device being run on, but cannot be distinguished by the status of any connected external device. We can use the concept of user agents that are [=indistinguishable by user-agent string=] to properly assess fingerprinting risk.
-
-Some user agents [=indistinguishable by user-agent string=] will <dfn>never support</dfn> sessions of a given {{XRSessionMode}}. <span class='note'>For example: User agents running on a model of phone that is known to not meet requirements for mobile AR support.</span> In these cases there is little fingerprinting risk in {{XRSystem/isSessionSupported()}} always reporting the {{XRSessionMode}} is not supported because every such device will consistently report the same value and it's assumed that device type and model can be inferred in other ways, such as through {{NavigatorID/userAgent}}. Thus, on such systems, the user-agent should automatically deny {{PermissionName/"xr-session-supported"}} for the relevant {{XRSessionMode}}.
-
-Other user agents will [=indistinguishable by user-agent string=] <dfn>usually support</dfn> sessions of a given {{XRSessionMode}}. <span class='note'>For example: User agents known to support WebXR that run exclusively within VR headsets are likely to support {{XRSessionMode/"immersive-vr"}} sessions unless specifically blocked by the user.</span> In these cases reporting that the {{XRSessionMode}} is not supported, while accurate, would offer more uniquely identifying information about the user. As such reporting that the {{XRSessionMode}} is always available and allowing {{XRSystem/requestSession()}} to fail is more privacy-preserving while likely not being a source of confusion for the user. On such systems, the user-agent should automatically grant {{PermissionName/"xr-session-supported"}} for the relevant {{XRSessionMode}}.
-
-User agents [=indistinguishable by user-agent string=] for which availability of XR capabilities is highly variable, such as desktop systems which support XR peripherals, present the highest fingerprinting risk. User agents on such devices should not automatically grant {{PermissionName/"xr-session-supported"}} in a way that allows the {{isSessionSupported()}} API to provide additional fingerprinting bits. 
-
-
-<div class=note>
-Note: Some acceptable approaches to handle such cases are as follows:
-
- - Always judging [=explicit consent=] for {{PermissionName/"xr-session-supported"}} (with a potentially cached permissions prompt or similar) when {{XRSystem/isSessionSupported()}} is called.
- - Automatically granting {{PermissionName/"xr-session-supported"}} but having {{XRSystem/isSessionSupported()}} always report `true` even on platforms which do not consistently have XR capabilities available, regardless of whether or not the appropriate hardware or software is present. This comes at the cost of user ergonomics, as it will cause pages to advertise XR content to users that cannot view it.
- - Have {{XRSystem/isSessionSupported()}} request [=explicit consent=] for {{PermissionName/"xr-session-supported"}} when the appropriate hardware is present, and when such hardware is _not_ present, return `false` after an appropriately random length of time. In such an implementation content must not be able to distinguish between cases where the user agent was not connected to XR hardware and cases where the user agent was connected to XR hardware but the user declined to provide [=explicit consent=].
-
-</div>
-
-Whatever the technique chosen, it should not reveal additional knowledge about connected XR hardware without [=explicit consent=].
-
-</section>
-
 Session {#session}
 =======
 
@@ -2663,6 +2609,60 @@ Fingerprinting {#fingerprinting-security}
 --------------
 
 Given that the API describes hardware available to the user and its capabilities it will inevitably provide additional surface area for fingerprinting. While it's impossible to completely avoid this, user agents should take steps to mitigate the issue. This spec limits reporting of available hardware to only a single device at a time, which prevents using the rare cases of multiple headsets being connected as a fingerprinting signal. Also, the devices that are reported have no string identifiers and expose very little information about the devices capabilities until an XRSession is created, which requires additional protections when [=sensitive information=] will be exposed.
+
+
+Fingerprinting considerations of {{XRSystem/isSessionSupported()}} {#issessionsupported-fingerprinting}
+----------------------------------
+Because {{XRSystem/isSessionSupported()}} can be called without user activation it may be used as a fingerprinting vector.
+
+<dfn enum-value for="PermissionName">"xr-session-supported"</dfn> [=powerful feature=] gates access to the {{XRSystem/isSessionSupported()}} API.
+
+The {{PermissionName/"xr-session-supported"}}’s permission-related algorithms and types are defined as follows:
+
+
+<dl>
+<dt>[=permission descriptor type=]</dt>
+<dd>
+
+<pre class="idl">
+dictionary XRSessionSupportedPermissionDescriptor: PermissionDescriptor {
+  XRSessionMode mode;
+};
+</pre>
+
+{{PermissionDescriptor/name}} for {{XRPermissionDescriptor}} is {{PermissionName/"xr-session-supported"}}.
+
+</dd></dl>
+
+### Considerations for when to automatically grant {{PermissionName/"xr-session-supported"}} ### {#automatic-granting-xr-session-supported}
+
+<section class="non-normative">
+
+There is often tension between privacy and personalization on the Web. This section provides guidance on where that tradeoff can be circumscribed, and when the user agent can describe the browser's WebXR capabilities to a site via {{XRSystem/isSessionSupported()}} without any privacy reduction.
+
+{{PermissionName/"xr-session-supported"}} may be granted automatically for some systems based on the criteria below. This can provide a better user experience and mitigate permissions fatigue.
+
+A set of user agents is <dfn>indistinguishable by user-agent string</dfn> if they all report the same {{NavigatorID/userAgent}} and {{NavigatorID/appVersion}}. Such classes are typically identified by the browser version and platform/device being run on, but cannot be distinguished by the status of any connected external device. We can use the concept of user agents that are [=indistinguishable by user-agent string=] to properly assess fingerprinting risk.
+
+Some user agents [=indistinguishable by user-agent string=] will <dfn>never support</dfn> sessions of a given {{XRSessionMode}}. <span class='note'>For example: User agents running on a model of phone that is known to not meet requirements for mobile AR support.</span> In these cases there is little fingerprinting risk in {{XRSystem/isSessionSupported()}} always reporting the {{XRSessionMode}} is not supported because every such device will consistently report the same value and it's assumed that device type and model can be inferred in other ways, such as through {{NavigatorID/userAgent}}. Thus, on such systems, the user-agent should automatically deny {{PermissionName/"xr-session-supported"}} for the relevant {{XRSessionMode}}.
+
+Other user agents will [=indistinguishable by user-agent string=] <dfn>usually support</dfn> sessions of a given {{XRSessionMode}}. <span class='note'>For example: User agents known to support WebXR that run exclusively within VR headsets are likely to support {{XRSessionMode/"immersive-vr"}} sessions unless specifically blocked by the user.</span> In these cases reporting that the {{XRSessionMode}} is not supported, while accurate, would offer more uniquely identifying information about the user. As such reporting that the {{XRSessionMode}} is always available and allowing {{XRSystem/requestSession()}} to fail is more privacy-preserving while likely not being a source of confusion for the user. On such systems, the user-agent should automatically grant {{PermissionName/"xr-session-supported"}} for the relevant {{XRSessionMode}}.
+
+User agents [=indistinguishable by user-agent string=] for which availability of XR capabilities is highly variable, such as desktop systems which support XR peripherals, present the highest fingerprinting risk. User agents on such devices should not automatically grant {{PermissionName/"xr-session-supported"}} in a way that allows the {{isSessionSupported()}} API to provide additional fingerprinting bits. 
+
+
+<div class=note>
+Note: Some acceptable approaches to handle such cases are as follows:
+
+ - Always judging [=explicit consent=] for {{PermissionName/"xr-session-supported"}} (with a potentially cached permissions prompt or similar) when {{XRSystem/isSessionSupported()}} is called.
+ - Automatically granting {{PermissionName/"xr-session-supported"}} but having {{XRSystem/isSessionSupported()}} always report `true` even on platforms which do not consistently have XR capabilities available, regardless of whether or not the appropriate hardware or software is present. This comes at the cost of user ergonomics, as it will cause pages to advertise XR content to users that cannot view it.
+ - Have {{XRSystem/isSessionSupported()}} request [=explicit consent=] for {{PermissionName/"xr-session-supported"}} when the appropriate hardware is present, and when such hardware is _not_ present, return `false` after an appropriately random length of time. In such an implementation content must not be able to distinguish between cases where the user agent was not connected to XR hardware and cases where the user agent was connected to XR hardware but the user declined to provide [=explicit consent=].
+
+</div>
+
+Whatever the technique chosen, it should not reveal additional knowledge about connected XR hardware without [=explicit consent=].
+
+</section>
 
 
 Integrations {#integrations}
