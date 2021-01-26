@@ -1104,7 +1104,7 @@ When this method is invoked, the user agent MUST run the following steps:
       1. Let |xrview| be a new {{XRView}} object in the [=relevant realm=] of |session|.
       1. Initialize |xrview|'s [=XRView/underlying view=] to |view|.
       1. Initialize |xrview|'s {{XRView/eye}} to |view|'s [=view/eye=].
-      1. Initialize |xrview|'s [=XRView/frame time=] to |frame|'s [=XRFrame/time=].
+      1. Initialize |xrview|'s [=XRView/frame=] to |frame|.
       1. Initialize |xrview|'s [=XRView/session=] to |session|.
       1. Let |offset| be an [=new=] {{XRRigidTransform}} object equal to the [=view offset=] of |view| in the [=relevant realm=] of |session|.
       1. Set |xrview|'s {{XRView/transform}} property to the result of [=multiply transforms|multiplying=] the {{XRViewerPose}}'s {{XRPose/transform}} by the |offset| transform in the relevant realm of |session|
@@ -1405,7 +1405,7 @@ Note: It is suggested to quantize the recommended viewport scale by rounding it 
 
 Each {{XRView}} has an associated <dfn for="XRView">session</dfn> which is the {{XRSession}} that produced it.
 
-Each {{XRView}} has an associated <dfn for="XRView">frame time</dfn> which is the [=XRFrame/time=] of the {{XRFrame}} that produced it.
+Each {{XRView}} has an associated <dfn for="XRView">frame</dfn> which is the {{XRFrame}} that produced it.
 
 Each {{XRView}} has an associated <dfn for="XRView">underlying view</dfn> which is the underlying [=view=] that it represents.
 
@@ -2093,7 +2093,7 @@ The <dfn method for="XRWebGLLayer">getViewport(|view|)</dfn> method, when invoke
   1. Let |frame| be |session|'s [=XRSession/animation frame=].
   1. If |session| is not equal to |layer|'s [=XRWebGLLayer/session=], throw an {{InvalidStateError}} and abort these steps.
   1. If |frame|'s [=XRFrame/active=] boolean is `false`, throw an {{InvalidStateError}} and abort these steps.
-  1. If |view|'s [=XRView/frame time=] is not equal to |frame|'s [=XRFrame/time=], throw an {{InvalidStateError}} and abort these steps.
+  1. If |view|'s [=XRView/frame=] is not equal to |frame|, throw an {{InvalidStateError}} and abort these steps.
   1. If the [=view/viewport modifiable=] flag is `true` and |view|'s [=view/requested viewport scale=] is not equal to [=view/current viewport scale=]:
     1. Set [=view/current viewport scale=] to [=view/requested viewport scale=].
     1. In the [=list of viewport objects=], set the {{XRViewport}} associated with |view| to the {{XRViewport}} result of [=obtain a scaled viewport|obtaining a scaled viewport=] from the [=list of full-sized viewports=] associated with |view| for |session|.
@@ -2118,7 +2118,7 @@ The [=native WebGL framebuffer resolution=] for an {{XRSession}} |session| is de
 
 Additionally, the {{XRSession}} MUST identify a <dfn>recommended WebGL framebuffer resolution</dfn>, which represents a best estimate of the WebGL framebuffer resolution large enough to contain all of the session's {{XRView}}s that provides an average application a good balance between performance and quality. It MAY be smaller than, larger than, or equal to the [=native WebGL framebuffer resolution=]. New [=opaque framebuffer=] will be created with this resolution, with width and height each scaled by any {{XRWebGLLayerInit}}'s {{XRWebGLLayerInit/framebufferScaleFactor}} provided.
 
-Note: The user agent is free to use any method of its choosing to estimate the [=recommended WebGL framebuffer resolution=]. If there are platform-specific methods for querying a recommended size it is recommended that they be used, but not required. The scale factors used by {{XRWebGLLayerInit/framebufferScaleFactor}} and {{XRWebGLLayer/getNativeFramebufferScaleFactor}} apply to width and height separately, so a scale factor of two results in four times the overall pixel count. If the platform exposes an area-based render scale that's based on pixel count, the user agent needs to take the square root of that to convert it to a WebXR scale factor.
+Note: The user agent is free to use any method of its choosing to estimate the [=recommended WebGL framebuffer resolution=]. If there are platform-specific methods for querying a recommended size it is recommended that they be used, but not required. The scale factors used by {{XRWebGLLayerInit/framebufferScaleFactor}} and {{XRWebGLLayer/getNativeFramebufferScaleFactor()}} apply to width and height separately, so a scale factor of two results in four times the overall pixel count. If the platform exposes an area-based render scale that's based on pixel count, the user agent needs to take the square root of that to convert it to a WebXR scale factor.
 
 <div class="algorithm" data-algorithm="get-native-framebuffer-scale-factor">
 
