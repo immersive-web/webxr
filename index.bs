@@ -91,6 +91,7 @@ spec:html; urlPrefix: https://html.spec.whatwg.org/multipage/
     type: dfn; text: same origin-domain; url: origin.html#same-origin-domain
     type: dfn; text: browsing context; url: browsers.html#browsing-context
     type: dfn; text: associated document; url: window-object.html#concept-document-window
+    type: dfn; text: origin; url: origin.html#concept-origin
 spec: SecureContexts; urlPrefix: https://w3c.github.io/webappsec-secure-contexts/#
     type: dfn; text: secure context; url: secure-contexts
 spec: PointerEvents; urlPrefix: https://www.w3.org/TR/pointerevents/#
@@ -333,7 +334,7 @@ When this method is invoked, it MUST run the following steps:
 
   1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of this {{XRSystem}}.
   1. If |mode| is {{XRSessionMode/"inline"}}, [=/resolve=] |promise| with `true` and return it.
-  1. If the requesting document's origin is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return it.
+  1. If the requesting document's [=origin=] is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]], [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return it.
   1. Check whether the session |mode| is supported as follows:
     <dl class="switch">
       : If the user agent and system are known to [=never support=] |mode| sessions
@@ -2170,7 +2171,7 @@ When a user agent implements this specification it MUST set a <dfn>XR compatible
 
 Note: This flag introduces slow synchronous behavior and is discouraged. Consider calling {{WebGLRenderingContextBase/makeXRCompatible()}} instead for an asynchronous solution.
 
-The [=XR compatible=] boolean can be set either at context creation time or after context creation, potentially incurring a context loss. To set the [=XR compatible=] boolean at context creation time, the {{xrCompatible}} context creation attribute must be set to `true` when requesting a WebGL context.   If the requesting document's origin is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]], {{xrCompatible}} has no effect.
+The [=XR compatible=] boolean can be set either at context creation time or after context creation, potentially incurring a context loss. To set the [=XR compatible=] boolean at context creation time, the {{xrCompatible}} context creation attribute must be set to `true` when requesting a WebGL context.   If the requesting document's [=origin=] is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]], {{xrCompatible}} has no effect.
 
 
 The {{WebGLContextAttributes/xrCompatible}} flag on {{WebGLContextAttributes}}, if `true`, affects context creation by requesting the user-agent [=create the WebGL context=] using a [=compatible graphics adapter=] for the [=immersive XR device=]. If the user agent succeeds in this, the created context's [=XR compatible=] boolean will be set to true. To obtain the [=immersive XR device=], [=ensure an immersive XR device is selected=] SHOULD be called.
@@ -2201,7 +2202,7 @@ The <dfn method for="WebGLRenderingContextBase">makeXRCompatible()</dfn> method 
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. If the requesting document's origin is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]], [=/resolve=] |promise| and return it. <span class=note>When the XR permissions policy is disabled, we wish to behave as if there is no XR device in this case, since {{WebGLRenderingContextBase/makeXRCompatible()}} is supposed to be a set-and-forget method.</span>
+  1. If the requesting document's [=origin=] is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]], [=/resolve=] |promise| and return it. <span class=note>When the XR permissions policy is disabled, we wish to behave as if there is no XR device in this case, since {{WebGLRenderingContextBase/makeXRCompatible()}} is supposed to be a set-and-forget method.</span>
   1. Let |promise| be [=a new Promise=] created in the [=Realm=] of this {{WebGLRenderingContextBase}}.
   1. Let |context| be [=this=].
   1. Run the following steps [=in parallel=]:
@@ -2397,7 +2398,7 @@ Event Types {#event-types}
 
 The user agent MUST provide the following new events. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
 
-The user agent MUST fire a <dfn event for="XRSystem">devicechange</dfn> event on the {{XRSystem}} object to indicate that the availability of [=immersive XR device=]s has been changed unless the document's origin is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]]. The event MUST be of type {{Event}}.
+The user agent MUST fire a <dfn event for="XRSystem">devicechange</dfn> event on the {{XRSystem}} object to indicate that the availability of [=immersive XR device=]s has been changed unless the document's [=origin=] is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]]. The event MUST be of type {{Event}}.
 
 A user agent MUST dispatch a <dfn event for="XRSession">visibilitychange</dfn> event on an {{XRSession}} each time the [=XRSession/visibility state=] of the {{XRSession}} has changed. The event MUST be of type {{XRSessionEvent}}.
 
@@ -2696,7 +2697,7 @@ The feature identifier for this feature is `"xr-spatial-tracking"`.
 
 The [=default allowlist=] for this feature is `["self"]`.
 
-Note: If the document's origin is not allowed to use the `"xr-spatial-tracking"` [=permissions policy=] any [=immersive sessions=] will be blocked, because all [=immersive sessions=] require some use of spatial tracking. [=Inline sessions=] will still be allowed, but restricted to only using the {{XRReferenceSpaceType/"viewer"}} {{XRReferenceSpace}}.
+Note: If the document's [=origin=] is not allowed to use the `"xr-spatial-tracking"` [=permissions policy=] any [=immersive sessions=] will be blocked, because all [=immersive sessions=] require some use of spatial tracking. [=Inline sessions=] will still be allowed, but restricted to only using the {{XRReferenceSpaceType/"viewer"}} {{XRReferenceSpace}}.
 
 
 Permissions API Integration {#permissions}
@@ -2765,6 +2766,7 @@ To <dfn lt="request the xr permission">request the "xr" permission</dfn> with an
 
 Note: The user agent has the freedom to batch up permissions prompts for all requested features when gauging if there is a clear signal of [=user intent=], but it is also allowed to show them one at a time.
 
+Note: When determining [=user intent=] for a web application, user agents must check that it was explicitly [=launching a web application|launched by the user=] as an web application. They must NOT just check if the [=origin=] matches that of an installed web application.
 </div>
 
 
@@ -2809,7 +2811,7 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
         1. If |s| is not a valid [=feature descriptor=] or is `undefined`, return `null`.
         1. Set |feature| to |s|.
     1. If |feature| is already in |granted|, continue to the next entry.
-    1. If the requesting document's origin is not allowed to use any [[#permissions-policy|permissions policy]] required by |feature| as indicated by the [=feature requirements=] table, return `null`.
+    1. If the requesting document's [=origin=] is not allowed to use any [[#permissions-policy|permissions policy]] required by |feature| as indicated by the [=feature requirements=] table, return `null`.
     1. If |session|'s [=XRSession/XR device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, return `null`.
     1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentRequired|.
     1. Else append |feature| to |granted|.
