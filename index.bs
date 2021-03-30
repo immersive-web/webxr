@@ -232,7 +232,7 @@ An <dfn for="">XR device</dfn> is a physical unit of hardware that can present i
 
 An [=/XR device=] has a <dfn>list of supported modes</dfn> (a [=/list=] of [=/strings=]) that [=list/contains=] the enumeration values of {{XRSessionMode}} that the [=/XR device=] supports.
 
-Each [=/XR device=] has a <dfn for="XR device">set of enabled features</dfn> for each {{XRSessionMode}} in its [=list of supported modes=], which is a [=/set=] of [=feature descriptors=] which MUST be initially an empty [=/set=].
+Each [=/XR device=] has a <dfn for="XR device">set of granted features</dfn> for each {{XRSessionMode}} in its [=list of supported modes=], which is a [=/set=] of [=feature descriptors=] which MUST be initially an empty [=/set=].
 
 The user-agent has a <dfn for="">list of immersive XR devices</dfn> (a [=/list=] of [=/XR device=]), which MUST be initially an empty [=/list=].
 
@@ -2765,7 +2765,7 @@ To <dfn lt="request the xr permission">request the "xr" permission</dfn> with an
       1. If a clear signal of [=user intent=] to enable |feature| has not been determined, continue to the next entry.
       1. If |feature| is not in |granted|, append |feature| to |granted|.
   1. Set |status|'s {{XRPermissionStatus/granted}} to |granted|.
-  1. Add all elements of |granted| to |device|'s [=set of enabled features=] for |mode|.
+  1. Add all elements of |granted| to |device|'s [=set of granted features=] for |mode|.
   1. Set |status|'s {{PermissionStatus/state}} to {{PermissionState/"granted"}}.
 
 Note: The user agent has the freedom to batch up permissions prompts for all requested features when gauging if there is a clear signal of [=user intent=], but it is also allowed to show them one at a time.
@@ -2805,7 +2805,7 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
   1. Let |consentOptional| be an empty [=/list=] of {{DOMString}}.
   1. Let |granted| be an empty [=/list=] of {{DOMString}}.
   1. Let |device| be the result of [=obtain the current device|obtaining the current device=] for |mode|, |requiredFeatures|, and |optionalFeatures|.
-  1. Let |previouslyEnabled| be |device|'s [=XR device/set of enabled features=] for |mode|.
+  1. Let |previouslyEnabled| be |device|'s [=XR device/set of granted features=] for |mode|.
   1. If |device| is `null` or |device|'s [=list of supported modes=] does not [=list/contain=] |mode|, run the following steps:
     1. Return the [=tuple=] (|consentRequired|, |consentOptional|, |granted|)
   1. Add every [=feature descriptor=] in the [=default features=] table associated with |mode| to |granted| if it is not already present.
