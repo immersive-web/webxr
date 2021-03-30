@@ -2799,11 +2799,12 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
 
   1. Let |consentRequired| be an empty [=/list=] of {{DOMString}}.
   1. Let |consentOptional| be an empty [=/list=] of {{DOMString}}.
+  1. Let |granted| be an empty [=/list=] of {{DOMString}}.
   1. Let |device| be the result of [=obtain the current device|obtaining the current device=] for |mode|, |requiredFeatures|, and |optionalFeatures|.
-  1. Let |granted| be a [=/list=] of {{DOMString}} initialized to |device|'s [=XR device/list of enabled features=] for |mode|.
+  1. Let |previouslyEnabled| be |device|'s [=XR device/list of enabled features=] for |mode|.
   1. If |device| is `null` or |device|'s [=list of supported modes=] does not [=list/contain=] |mode|, run the following steps:
     1. Return the [=tuple=] (|consentRequired|, |consentOptional|, |granted|)
-  1. Add every [=feature descriptor=] in the [=default features=] table associated with |mode| to the indicated feature list if it is not already present.
+  1. Add every [=feature descriptor=] in the [=default features=] table associated with |mode| to |granted| if it is not already present.
   1. For each |feature| in |requiredFeatures| perform the following steps:
     1. If the |feature| is `null`, [=continue=] to the next entry.
     1. If |feature| is not a valid [=feature descriptor=], perform the following steps:
@@ -2813,7 +2814,7 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
     1. If |feature| is already in |granted|, continue to the next entry.
     1. If the requesting document's [=origin=] is not allowed to use any [[#permissions-policy|permissions policy]] required by |feature| as indicated by the [=feature requirements=] table, return `null`.
     1. If |session|'s [=XRSession/XR device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, return `null`.
-    1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentRequired|.
+    1. If the functionality described by |feature| requires [=explicit consent=] and |feature| is not in |previouslyEnabled|, append it to |consentRequired|.
     1. Else append |feature| to |granted|.
   1. For each |feature| in |optionalFeatures| perform the following steps:
     1. If the |feature| is `null`, [=continue=] to the next entry.
@@ -2824,7 +2825,7 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
     1. If |feature| is already in |granted|, continue to the next entry.
     1. If the requesting document's origin is not allowed to use any [[#permissions-policy|permissions policy]] required by |feature| as indicated by the [=feature requirements=] table, continue to the next entry.
     1. If |session|'s [=XRSession/XR device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, continue to the next entry.
-    1. If the functionality described by |feature| requires [=explicit consent=], append it to |consentOptional|.
+    1. If the functionality described by |feature| requires [=explicit consent=] and |feature| is not in |previouslyEnabled|, append it to |consentOptional|.
     1. Else append |feature| to |granted|.
   1. Return the [=tuple=] `(|consentRequired|, |consentOptional|, |granted|)`
 
