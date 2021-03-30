@@ -415,8 +415,9 @@ When this method is invoked, the user agent MUST run the following steps:
             1. [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
             1. If |immersive| is `true`, set [=pending immersive session=] to `false`.
             1. Abort these steps.
+        1. Let |granted| be a [=/set=] obtained from |status|' {{XRPermissionStatus/granted}}.
         1. Let |session| be a [=new=] {{XRSession}} object in the [=relevant realm=] of this {{XRSystem}}.
-        1. [=Initialize the session=] with |session|, |mode|, and |device|.
+        1. [=Initialize the session=] with |session|, |mode|, |granted|, and |device|.
         1. Potentially set the [=active immersive session=] as follows:
             <dl class="switch">
               : If |immersive| is `true`:
@@ -642,11 +643,14 @@ Each {{XRSession}} has a <dfn for="XRSession">mode</dfn>, which is one of the va
 
 Each {{XRSession}} has an <dfn for=XRSession>animation frame</dfn>, which is an {{XRFrame}} initialized with [=XRFrame/active=] set to `false`, [=XRFrame/animationFrame=] set to `true`, and {{XRFrame/session}} set to the {{XRSession}}.
 
+Each {{XRSession}} has a <dfn for=XRSession>set of granted features</dfn>, which is a [=/set=] of {{DOMString}}s corresponding the the [=feature descriptors=] that have been granted to the {{XRSession}}.
+
 <div class="algorithm" data-algorithm="initialize-session">
 
-To <dfn>initialize the session</dfn>, given |session|, |mode|, and |device|, the user agent MUST run the following steps:
+To <dfn>initialize the session</dfn>, given |session|, |mode|, |granted|, and |device|, the user agent MUST run the following steps:
   1. Set |session|'s [=XRSession/mode=] to |mode|.
   1. Set |session|'s [=XRSession/XR device=] to |device|.
+  1. Set |session|'s [=XRSession/set of granted features=] to |granted|.
   1. [=Initialize the render state=].
   1. If no other features of the user agent have done so already, perform the necessary platform-specific steps to initialize the device's tracking and rendering capabilities, including showing any necessary instructions to the user.
 
@@ -1282,7 +1286,7 @@ When an {{XRReferenceSpace}} is requested with {{XRReferenceSpaceType}} |type| f
 <div class="algorithm" data-algorithm="reference-space-supported">
 To check if a <dfn>reference space is supported</dfn> for a given reference space type |type| and {{XRSession}} |session|, run the following steps:
 
-  1. If |type| is not [=list/contain|contained=] in |session|'s [=XRSession/XR device=]'s [=XR device/set of enabled features=] for [=XRSession/mode=] return `false`.
+  1. If |type| is not [=list/contain|contained=] in |session|'s [=XRSession/set of granted features=]'s return `false`.
   1. If |type| is {{viewer}}, return `true`.
   1. If |type| is {{local}} or {{local-floor}}, and |session| is an [=immersive session=], return `true`.
   1. If |type| is {{local}} or {{local-floor}}, and the [=XRSession/XR device=] supports reporting orientation data, return `true`.
