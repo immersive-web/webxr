@@ -614,13 +614,14 @@ enum XRVisibilityState {
 [SecureContext, Exposed=Window] interface XRSession : EventTarget {
   // Attributes
   readonly attribute XRVisibilityState visibilityState;
-  attribute long? targetFrameRate;
-  readonly attribute Uint16Array? supportedFrameRates;
+  readonly attribute float? targetFrameRate;
+  readonly attribute Float32Array? supportedFrameRates;
   [SameObject] readonly attribute XRRenderState renderState;
   [SameObject] readonly attribute XRInputSourceArray inputSources;
 
   // Methods
   undefined updateRenderState(optional XRRenderStateInit state = {});
+  undefined updateTargetFrameRate(float rate);
   [NewObject] Promise&lt;XRReferenceSpace&gt; requestReferenceSpace(XRReferenceSpaceType type);
 
   unsigned long requestAnimationFrame(XRFrameRequestCallback callback);
@@ -638,6 +639,7 @@ enum XRVisibilityState {
   attribute EventHandler onsqueezestart;
   attribute EventHandler onsqueezeend;
   attribute EventHandler onvisibilitychange;
+  attribute EventHandler ontargetframeratechange;
 };
 </pre>
 
@@ -706,6 +708,32 @@ When the user agent will <dfn>update the pending layers state</dfn> with {{XRSes
   1. If |newState|'s {{XRRenderStateInit/layers}}'s value is not `null`, throw a {{NotSupportedError}}.
 
 NOTE: The <a href="https://immersive-web.github.io/layers">WebXR layers module</a> will introduce new semantics for this algorithm.
+
+</div>
+
+<div class="algorithm" data-algorithm="apply-target-frame-rate">
+
+When requested, the {{XRSession}} |session| MUST <dfn>apply the target frame rate</dfn> |rate| by running the following steps:
+  1. [=Queue a task=] to perform the following steps:
+    1. Set the [=XR Compositor=] to the new target frame rate |rate|. If |rate| is <code>0</code>, the [=XR Compositor=] is free to choose any frame rate.
+    1. Set the |session|'s internal [=XRSession/framerate=] to the {{XRSystem}}'s recommendec frame rate.
+    1. Fire an {{XRSessionEvent}} event named {{targetframeratechange!!event}} on |session|.
+
+</div>
+
+NOTE: the [=XR Compositor=] is allowed to run at a different frame rate then the {{XRSession}}'s [=XRSession/framerate=].
+
+<div class="algorithm" data-algorithm="update-target-frame-rate">
+
+The <dfn method for="XRSession">updateTargetFrameRate(|rate|)</dfn> method queues an update to the {{XRSession}}'s frame rate |rate|.
+
+When this method is invoked, the user agent MUST run the following steps:
+  1. Let |session| be [=this=].
+  1. If |session|'s [=XRSession/mode=] value is {{XRSessionMode/"inline"}}, throw an {{InvalidStateError}} and abort these steps.
+  1. If |session|'s [=ended=] value is `true`, throw an {{InvalidStateError}} and abort these steps.
+  1. If |rate| is not in {{XRSession/supportedFrameRates}}, throw a {{TypeError}} and abort these steps.
+  1. If |rate| is equal to [=XRSession/framerate=], abort these steps.
+  1. [=Apply the target frame rate=] with |rate|.
 
 </div>
 
@@ -858,20 +886,7 @@ Note: The {{XRSession}}'s [=visibility state=] does not affect or restrict mouse
 
 Each {{XRSession}} MAY have an internal <dfn for="XRSession">frameRate</dfn> which is the rate per second at which the {{XRSession}} SHOULD produce frames. If the user agent is unable to produce frames each second for this rate, the [=XR Compositor=] MAY use reprojection or other techniques to improve the experience. This attribute is optional and MUST NOT be present for {{XRSessionMode/inline}} sessions. If [=XRSession/frameRate=] is <code>0</code>, the user agent is allowed to dynamically change the frame rate.
 
-The <dfn attribute for="XRSession">targetFrameRate</dfn> attribute reflects the internal [=XRSession/framerate=]. If the {{XRSession}} has no [=XRSession/framerate=], return `null`.
-
-<div class="algorithm" data-algorithm="on-frame-rate-change">
-
-When setting the {{XRSession/targetFrameRate}} |rate| for an {{XRSession}} |session|, the user agent MUST run the following steps:
-
-  1. If |session|'s [=XRSession/mode=] value is {{XRSessionMode/"inline"}}, abort these steps.
-  1. If |session|'s [=ended=] value is `true`, abort these steps.
-  1. If |rate| is not in {{XRSession/supportedFrameRates}}, abort these steps.
-  1. If |rate| is equal to [=XRSession/framerate=], abort these steps.
-  1. Set [=XRSession/framerate=] to |rate|.
-  1. [=Queue a task=] to inform the [=XR Compositor=] of the new target frame rate |rate|.
-
-</div>
+The <dfn attribute for="XRSession">targetFrameRate</dfn> attribute reflects the internal [=XRSession/framerate=]. If the {{XRSession}} has no [=XRSession/framerate=], return `null`. The <dfn attribute for="XRSession">ontargetframeratechange</dfn> attribute is an [=Event handler IDL attribute=] for the {{targetframeratechange}} event type. If the {{XRSession}}'s frame rate is updated for any reason, it MUST [=apply the target frame rate=] with the new frame rate.
 
 The <dfn attribute for="XRSession">supportedFrameRates</dfn> attribute returns a list of supported frame rates. This attribute is optional and MUST NOT be present for {{XRSessionMode/inline}} sessions. If the user agent can dynamically change the frame rate, this should be reflected as a frame rate of <code>0</code>. If the {{XRSession}} has an internal [=XRSession/framerate=], it also MUST support the {{XRSession/supportedFrameRates}} attribute.
 
@@ -2447,6 +2462,8 @@ A user agent MUST dispatch a <dfn event for="XRSession">squeezestart</dfn> event
 A user agent MUST dispatch a <dfn event for="XRSession">squeezeend</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s ends its [=primary squeeze action=] or when an {{XRInputSource}} that has begun a [=primary squeeze action=] is disconnected. The event MUST be of type {{XRInputSourceEvent}}.
 
 A user agent MUST dispatch a <dfn event for="XRSession">squeeze</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s has fully completed a [=primary squeeze action=]. The event MUST be of type {{XRInputSourceEvent}}.
+
+A user agent MUST dispatch a <dfn event for="XRSession">targetframeratechange</dfn> event on an {{XRSession}} when the [=XR Compositor=] changes the {{XRSession}}'s [=XRSession/framerate=]. The event MUST be of type {{XRSessionEvent}}.
 
 A user agent MUST dispatch a <dfn event for="XRReferenceSpace">reset</dfn> event on an {{XRReferenceSpace}} when discontinuities of the [=native origin=] or [=effective origin=] occur, i.e. there are significant changes in the origin’s position or orientation relative to the user’s environment. (For example: After user recalibration of their XR device or if the XR device automatically shifts its origin after losing and regaining tracking.) A {{reset}} event MUST also be dispatched when the {{boundsGeometry}} changes for an {{XRBoundedReferenceSpace}}. A {{reset}} event MUST NOT be dispatched if the [=viewer=]'s pose experiences discontinuities but the {{XRReferenceSpace}}'s origin physical mapping remains stable, such as when the [=viewer=] momentarily loses and regains tracking within the same tracking area. A {{reset}} event also MUST NOT be dispatched as an {{unbounded}} reference space makes small adjustments to its [=native origin=] over time to maintain space stability near the user, if a significant discontinuity has not occurred. The event MUST be of type {{XRReferenceSpaceEvent}}, and MUST be dispatched prior to the execution of any [=XR animation frame=]s that make use of the new origin. A {{reset}} event MUST be dispatched on all offset reference spaces of a reference space that fires a {{reset}} event, and the {{boundsGeometry}} of offset {{XRBoundedReferenceSpace}}s should also be recomputed.
 
