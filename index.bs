@@ -715,9 +715,10 @@ NOTE: The <a href="https://immersive-web.github.io/layers">WebXR layers module</
 
 When requested, the {{XRSession}} |session| MUST <dfn>apply the target frame rate</dfn> |rate| by running the following steps:
   1. [=Queue a task=] to perform the following steps:
-    1. Set the [=XR Compositor=] to the new target frame rate |rate|. If |rate| is <code>0</code>, the [=XR Compositor=] is free to choose any frame rate.
-    1. Set the |session|'s internal [=XRSession/framerate=] to the {{XRSystem}}'s recommendec frame rate.
-    1. Fire an {{XRSessionEvent}} event named {{targetframeratechange!!event}} on |session|.
+    1. Pass the new target frame rate |rate| to the [=XR Compositor=].
+    1. The [=XR Compositor=] MAY use |rate| to update the {{XRSystem}}'s frame rate.
+    1. Set the |session|'s internal [=XRSession/framerate=] to the {{XRSystem}}'s recommended frame rate. It is up to the {{XRSystem}} to determine this recommended frame rate.
+    1. Fire an {{XRSessionEvent}} event named {{targetframeratechange!!event}} on |session| if the internal [=XRSession/framerate=] was changed.
 
 </div>
 
@@ -884,11 +885,11 @@ Note: The {{XRSession}}'s [=visibility state=] does not necessarily imply the vi
 
 Note: The {{XRSession}}'s [=visibility state=] does not affect or restrict mouse behavior on tethered sessions where 2D content is still visible while an [=immersive session=] is active. Content should consider using the [[!pointerlock]] API if it wishes to have stronger control over mouse behavior.
 
-Each {{XRSession}} MAY have an internal <dfn for="XRSession">frameRate</dfn> which is the rate per second at which the {{XRSession}} SHOULD produce frames. If the user agent is unable to produce frames each second for this rate, the [=XR Compositor=] MAY use reprojection or other techniques to improve the experience. This attribute is optional and MUST NOT be present for {{XRSessionMode/inline}} sessions. If [=XRSession/frameRate=] is <code>0</code>, the user agent is allowed to dynamically change the frame rate.
+Each {{XRSession}} MAY have an internal <dfn for="XRSession">frameRate</dfn> which is the rate per second at which the {{XRSession}} SHOULD produce frames. If the user agent is unable to produce frames each second for this rate, the [=XR Compositor=] MAY use reprojection or other techniques to improve the experience. This attribute is optional and MUST NOT be present for {{XRSessionMode/inline}} sessions.
 
 The <dfn attribute for="XRSession">targetFrameRate</dfn> attribute reflects the internal [=XRSession/framerate=]. If the {{XRSession}} has no [=XRSession/framerate=], return `null`. The <dfn attribute for="XRSession">ontargetframeratechange</dfn> attribute is an [=Event handler IDL attribute=] for the {{targetframeratechange}} event type. If the {{XRSession}}'s frame rate is updated for any reason, it MUST [=apply the target frame rate=] with the new frame rate.
 
-The <dfn attribute for="XRSession">supportedFrameRates</dfn> attribute returns a list of supported frame rates. This attribute is optional and MUST NOT be present for {{XRSessionMode/inline}} sessions. If the user agent can dynamically change the frame rate, this should be reflected as a frame rate of <code>0</code>. If the {{XRSession}} has an internal [=XRSession/framerate=], it also MUST support the {{XRSession/supportedFrameRates}} attribute.
+The <dfn attribute for="XRSession">supportedFrameRates</dfn> attribute returns a list of supported frame rates. This attribute is optional and MUST NOT be present for {{XRSessionMode/inline}} sessions or for an {{XRSystem}} that doesn't let the author control the frame rate. If the {{XRSession}} supports the {{XRSession/supportedFrameRates}} attribute, it also MUST support {{XRSession/targetFrameRate}}.
 
 Each {{XRSession}} has a <dfn for="XRSession">viewer reference space</dfn>, which is an {{XRReferenceSpace}} of type {{XRReferenceSpaceType/"viewer"}} with an [=identity transform=] [=XRSpace/origin offset=].
 
