@@ -621,7 +621,7 @@ enum XRVisibilityState {
 
   // Methods
   undefined updateRenderState(optional XRRenderStateInit state = {});
-  undefined updateTargetFrameRate(float rate);
+  Promise&lt;undefined&gt; updateTargetFrameRate(float rate);
   [NewObject] Promise&lt;XRReferenceSpace&gt; requestReferenceSpace(XRReferenceSpaceType type);
 
   unsigned long requestAnimationFrame(XRFrameRequestCallback callback);
@@ -713,12 +713,13 @@ NOTE: The <a href="https://immersive-web.github.io/layers">WebXR layers module</
 
 <div class="algorithm" data-algorithm="apply-target-frame-rate">
 
-When requested, the {{XRSession}} |session| MUST <dfn>apply the target frame rate</dfn> |rate| by running the following steps:
+When requested, the {{XRSession}} |session| MUST <dfn>apply the target frame rate</dfn> |rate| and an optional |promise| by running the following steps:
   1. [=Queue a task=] to perform the following steps:
     1. Pass the new target frame rate |rate| to the [=XR Compositor=].
     1. The [=XR Compositor=] MAY use |rate| to update the {{XRSystem}}'s frame rate.
     1. Set the |session|'s internal [=XRSession/framerate=] to the {{XRSystem}}'s recommended frame rate. It is up to the {{XRSystem}} to determine this recommended frame rate.
-    1. Fire an {{XRSessionEvent}} event named {{targetframeratechange!!event}} on |session| if the internal [=XRSession/framerate=] was changed.
+    1. If the frame rate was changed, fire an {{XRSessionEvent}} event named {{targetframeratechange!!event}} on |session| if the internal [=XRSession/framerate=] was changed.
+    1. If |promise| is not `null`, [=/resolve=] |promise|.
 
 </div>
 
@@ -730,11 +731,11 @@ The <dfn method for="XRSession">updateTargetFrameRate(|rate|)</dfn> method queue
 
 When this method is invoked, the user agent MUST run the following steps:
   1. Let |session| be [=this=].
+  1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of |session|.
   1. If |session|'s [=XRSession/mode=] value is {{XRSessionMode/"inline"}}, throw an {{InvalidStateError}} and abort these steps.
   1. If |session|'s [=ended=] value is `true`, throw an {{InvalidStateError}} and abort these steps.
   1. If |rate| is not in {{XRSession/supportedFrameRates}}, throw a {{TypeError}} and abort these steps.
-  1. If |rate| is equal to [=XRSession/framerate=], abort these steps.
-  1. [=Apply the target frame rate=] with |rate|.
+  1. [=Apply the target frame rate=] with |rate| and |promise|.
 
 </div>
 
@@ -887,7 +888,7 @@ Note: The {{XRSession}}'s [=visibility state=] does not affect or restrict mouse
 
 Each {{XRSession}} MAY have an internal <dfn for="XRSession">frameRate</dfn> which is the rate per second at which the {{XRSession}} SHOULD produce frames. If the user agent is unable to produce frames each second for this rate, the [=XR Compositor=] MAY use reprojection or other techniques to improve the experience. This attribute is optional and MUST NOT be present for {{XRSessionMode/inline}} sessions.
 
-The <dfn attribute for="XRSession">targetFrameRate</dfn> attribute reflects the internal [=XRSession/framerate=]. If the {{XRSession}} has no [=XRSession/framerate=], return `null`. The <dfn attribute for="XRSession">ontargetframeratechange</dfn> attribute is an [=Event handler IDL attribute=] for the {{targetframeratechange}} event type. If the {{XRSession}}'s frame rate is updated for any reason, it MUST [=apply the target frame rate=] with the new frame rate.
+The <dfn attribute for="XRSession">targetFrameRate</dfn> attribute reflects the internal [=XRSession/framerate=]. If the {{XRSession}} has no [=XRSession/framerate=], return `null`. The <dfn attribute for="XRSession">ontargetframeratechange</dfn> attribute is an [=Event handler IDL attribute=] for the {{targetframeratechange}} event type. If the {{XRSession}}'s frame rate is updated for any reason, it MUST [=apply the target frame rate=] with the new frame rate and a `null` promise.
 
 The <dfn attribute for="XRSession">supportedFrameRates</dfn> attribute returns a list of supported frame rates. This attribute is optional and MUST NOT be present for {{XRSessionMode/inline}} sessions or for an {{XRSystem}} that doesn't let the author control the frame rate. If the {{XRSession}} supports the {{XRSession/supportedFrameRates}} attribute, it also MUST support {{XRSession/targetFrameRate}}.
 
