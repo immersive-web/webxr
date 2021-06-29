@@ -718,8 +718,10 @@ When requested, the {{XRSession}} |session| MUST <dfn>apply the target frame rat
     1. Pass the new target frame rate |rate| to the [=XR Compositor=].
     1. The [=XR Compositor=] MAY use |rate| to update the {{XRSystem}}'s frame rate.
     1. Set the |session|'s internal [=XRSession/framerate=] to the {{XRSystem}}'s recommended frame rate. It is up to the {{XRSystem}} to determine this recommended frame rate.
-    1. If the frame rate was changed, fire an {{XRSessionEvent}} event named {{targetframeratechange!!event}} on |session| if the internal [=XRSession/framerate=] was changed.
-    1. If |promise| is not `null`, [=/resolve=] |promise|.
+    1. [=Queue a task=] to perform the following steps:
+        1. Await until the {{XRSystem}}'s frame rate has taken effect.
+        1. If the [=XRSession/framerate=] was changed and |session|’s [=ended=] value is `false`, fire an {{XRSessionEvent}} event named {{targetframeratechange!!event}} on |session|.
+        1. If |promise| is not `null`, [=/resolve=] |promise|.
 
 </div>
 
@@ -736,6 +738,7 @@ When this method is invoked, the user agent MUST run the following steps:
   1. If |session|'s [=ended=] value is `true`, throw an {{InvalidStateError}} and abort these steps.
   1. If |rate| is not in {{XRSession/supportedFrameRates}}, throw a {{TypeError}} and abort these steps.
   1. [=Apply the target frame rate=] with |rate| and |promise|.
+  1. Return |promise|.
 
 </div>
 
