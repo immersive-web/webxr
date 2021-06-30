@@ -734,9 +734,9 @@ The <dfn method for="XRSession">updateTargetFrameRate(|rate|)</dfn> method queue
 When this method is invoked, the user agent MUST run the following steps:
   1. Let |session| be [=this=].
   1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of |session|.
-  1. If |session|'s [=XRSession/mode=] value is {{XRSessionMode/"inline"}}, throw an {{InvalidStateError}} and abort these steps.
-  1. If |session|'s [=ended=] value is `true`, throw an {{InvalidStateError}} and abort these steps.
-  1. If |rate| is not in {{XRSession/supportedFrameRates}}, throw a {{TypeError}} and abort these steps.
+  1. If |session|'s [=XRSession/mode=] value is {{XRSessionMode/"inline"}}, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
+  1. If |session|'s [=ended=] value is `true`, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
+  1. If |rate| is not in {{XRSession/supportedFrameRates}}, [=reject=] |promise| with an "{{TypeError}}" {{DOMException}} and return |promise|.
   1. [=Apply the target frame rate=] with |rate| and |promise|.
   1. Return |promise|.
 
