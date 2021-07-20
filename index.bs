@@ -621,7 +621,7 @@ enum XRVisibilityState {
 
   // Methods
   undefined updateRenderState(optional XRRenderStateInit state = {});
-  Promise&lt;undefined&gt; updateFrameRate(float rate);
+  Promise&lt;undefined&gt; updateTargetFrameRate(float rate);
   [NewObject] Promise&lt;XRReferenceSpace&gt; requestReferenceSpace(XRReferenceSpaceType type);
 
   unsigned long requestAnimationFrame(XRFrameRequestCallback callback);
@@ -711,36 +711,39 @@ NOTE: The <a href="https://immersive-web.github.io/layers">WebXR layers module</
 
 </div>
 
-<div class="algorithm" data-algorithm="apply-frame-rate">
+<div class="algorithm" data-algorithm="apply-nominal-frame-rate">
 
-When the user agent wants to <dfn>apply the frame rate</dfn> |rate| and an optional |promise| for an {{XRSession}} |session|, it MUST run the following steps:
-  1. [=Queue a task=] to perform the following steps:
-    1. Pass the new frame rate |rate| to the [=XR Compositor=].
-    1. The [=XR Compositor=] MAY use |rate| to calculate a new [=display frame rate=] and/or [=nominal frame rate=].
-    1. Let |oldrate| be the [=XRSession/internal framerate=].
-    1. Let |newrate| be the new [=nominal frame rate=].
-    1. [=Queue a task=] to perform the following steps:
-        1. If |newrate| is different from |oldrate| and |session|’s [=ended=] value is `false`, await until the {{XRSystem}}'s actions to update the [=nominal frame rate=] and [=display frame rate=] have taken effect.
-        1. Set |session|'s [=XRSession/internal framerate=] to |newrate|.
-        1. If |newrate| is different from |oldrate| and |session|’s [=ended=] value is `false`, fire an {{XRSessionEvent}} event named {{frameratechange!!event}} on |session|.
-        1. If |promise| is not `null`, [=/resolve=] |promise|.
+When the user agent wants to <dfn>apply the nominal frame rate</dfn> |rate| on an {{XRSession}} |session|, it MUST run the following steps:
+    1. If |rate| is the same as |session|'s [=XRSession/internal nominal framerate=], abort these steps.
+    1. If |session|’s [=ended=] value is `true`, abort these steps.
+    1. Set |session|'s [=XRSession/internal nominal framerate=] to |rate|.
+    1. Fire an {{XRSessionEvent}} event named {{frameratechange!!event}} on |session|.
 
 </div>
 
 <div class="algorithm" data-algorithm="update-frame-rate">
 
-The <dfn method for="XRSession">updateFrameRate(|rate|)</dfn> method passes the [=target frame rate=] |rate| to the {{XRSession}}.
+The <dfn method for="XRSession">updateTargetFrameRate(|rate|)</dfn> method passes the [=target frame rate=] |rate| to the {{XRSession}}.
 
 When this method is invoked, the user agent MUST run the following steps:
   1. Let |session| be [=this=].
   1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of |session|.
-  1. If the |session| has no [=XRSession/internal framerate=], [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
+  1. If the |session| has no [=XRSession/internal nominal framerate=], [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
   1. If |session|'s [=ended=] value is `true`, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
   1. If |rate| is not in {{XRSession/supportedFrameRates}}, [=reject=] |promise| with an "{{TypeError}}" {{DOMException}} and return |promise|.
-  1. [=Apply the frame rate=] with |rate|, |promise| and |session|.
+  1. Set |session|'s [=XRSession/internal target framerate=] to |rate|.
+  1. [=Queue a task=] to perform the following steps:
+    1. The [=XR Compositor=] MAY use |rate| to calculate a new [=display frame rate=] and/or [=nominal frame rate=].
+    1. Let |newrate| be the new [=nominal frame rate=].
+    1. [=Queue a task=] to perform the following steps:
+        1. Await until the {{XRSystem}}'s actions to update the [=nominal frame rate=] to |newrate| have taken effect.
+        1. [=Apply the nominal frame rate=] with |newrate| and |session|.
+        1. If |promise| is not `null`, [=/resolve=] |promise|.
   1. Return |promise|.
 
 </div>
+
+If the [=XR Compositor=] changes the [=nominal frame rate=] for any reason (for example during a {{XRVisibilityState/"visible-blurred"}} event), it SHOULD use the [=XRSession/internal target framerate=] once the event that caused the frame rate change has ended.
 
 <div class="algorithm" data-algorithm="update-render-state">
 
@@ -896,11 +899,13 @@ In an {{XRSystem}}, there are several definitions which can describe a frame rat
   - The <dfn>target frame rate</dfn>: the experience's hint to the {{XRSystem}} on what [=nominal frame rate=] it prefers to target.
   - The <dfn>display frame rate</dfn>: the actual rate at which frames are drawn to the physical display, which MAY be derived from the experience's [=nominal frame rate=]. This is a hardware implementation detail that is not exposed to the experience.
 
-Each {{XRSession}} MAY have an <dfn for="XRSession">internal frameRate</dfn> which is the [=nominal frame rate=]. If the [=effective frame rate=] is lower than the [=nominal frame rate=], the [=XR Compositor=] MAY use reprojection or other techniques to improve the experience. This attribute is optional and MUST NOT be present for {{XRSessionMode/inline}} sessions.
+Each {{XRSession}} MAY have an <dfn for="XRSession">internal target frameRate</dfn> which is the [=target frame rate=].
 
-The <dfn attribute for="XRSession">frameRate</dfn> attribute reflects the [=XRSession/internal framerate=]. If the {{XRSession}} has no [=XRSession/internal framerate=], return `null`.
+Each {{XRSession}} MAY have an <dfn for="XRSession">internal nominal frameRate</dfn> which is the [=nominal frame rate=]. If the [=effective frame rate=] is lower than the [=nominal frame rate=], the [=XR Compositor=] MAY use reprojection or other techniques to improve the experience. It is optional and MUST NOT be present for {{XRSessionMode/inline}} sessions.
 
-The <dfn attribute for="XRSession">onframeratechange</dfn> attribute is an [=Event handler IDL attribute=] for the {{frameratechange}} event type. If {{XRSession}}'s [=nominal frame rate=] is changed for any reason, it MUST [=apply the frame rate=] with the new frame rate, a `null` promise and the {{XRSession}}.
+The <dfn attribute for="XRSession">frameRate</dfn> attribute reflects the [=XRSession/internal nominal framerate=]. If the {{XRSession}} has no [=XRSession/internal nominal framerate=], return `null`.
+
+The <dfn attribute for="XRSession">onframeratechange</dfn> attribute is an [=Event handler IDL attribute=] for the {{frameratechange}} event type. If {{XRSession}}'s [=nominal frame rate=] is changed for any reason, it MUST [=apply the nominal frame rate=] with the new nominal frame rate and the {{XRSession}}.
 
 The <dfn attribute for="XRSession">supportedFrameRates</dfn> attribute returns a list of supported [=target frame rate=] values. This attribute is optional and MUST NOT be present for {{XRSessionMode/inline}} sessions or for an {{XRSystem}} that doesn't let the author control the frame rate. If the {{XRSession}} supports the {{XRSession/supportedFrameRates}} attribute, it also MUST support {{XRSession/frameRate}}.
 
@@ -2477,7 +2482,7 @@ A user agent MUST dispatch a <dfn event for="XRSession">squeezeend</dfn> event o
 
 A user agent MUST dispatch a <dfn event for="XRSession">squeeze</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s has fully completed a [=primary squeeze action=]. The event MUST be of type {{XRInputSourceEvent}}.
 
-A user agent MUST dispatch a <dfn event for="XRSession">frameratechange</dfn> event on an {{XRSession}} when the [=XR Compositor=] changes the {{XRSession}}'s [=XRSession/internal framerate=]. The event MUST be of type {{XRSessionEvent}}.
+A user agent MUST dispatch a <dfn event for="XRSession">frameratechange</dfn> event on an {{XRSession}} when the [=XR Compositor=] changes the {{XRSession}}'s [=XRSession/internal nominal framerate=]. The event MUST be of type {{XRSessionEvent}}.
 
 A user agent MUST dispatch a <dfn event for="XRReferenceSpace">reset</dfn> event on an {{XRReferenceSpace}} when discontinuities of the [=native origin=] or [=effective origin=] occur, i.e. there are significant changes in the origin’s position or orientation relative to the user’s environment. (For example: After user recalibration of their XR device or if the XR device automatically shifts its origin after losing and regaining tracking.) A {{reset}} event MUST also be dispatched when the {{boundsGeometry}} changes for an {{XRBoundedReferenceSpace}}. A {{reset}} event MUST NOT be dispatched if the [=viewer=]'s pose experiences discontinuities but the {{XRReferenceSpace}}'s origin physical mapping remains stable, such as when the [=viewer=] momentarily loses and regains tracking within the same tracking area. A {{reset}} event also MUST NOT be dispatched as an {{unbounded}} reference space makes small adjustments to its [=native origin=] over time to maintain space stability near the user, if a significant discontinuity has not occurred. The event MUST be of type {{XRReferenceSpaceEvent}}, and MUST be dispatched prior to the execution of any [=XR animation frame=]s that make use of the new origin. A {{reset}} event MUST be dispatched on all offset reference spaces of a reference space that fires a {{reset}} event, and the {{boundsGeometry}} of offset {{XRBoundedReferenceSpace}}s should also be recomputed.
 
@@ -2822,7 +2827,7 @@ To <dfn lt="request the xr permission">request the "xr" permission</dfn> with an
       1. If a clear signal of [=user intent=] to enable |feature| has not been determined, continue to the next entry.
       1. If |feature| is not in |granted|, append |feature| to |granted|.
   1. Set |status|'s {{XRPermissionStatus/granted}} to |granted|.
-  1. Add all elements of |granted| to |device|'s [=set of granted features=] for |mode|.
+  1. Add all elements of |granted| to |device|'s [=XR device/set of granted features=] for |mode|.
   1. Set |status|'s {{PermissionStatus/state}} to {{PermissionState/"granted"}}.
 
 Note: The user agent has the freedom to batch up permissions prompts for all requested features when gauging if there is a clear signal of [=user intent=], but it is also allowed to show them one at a time.
