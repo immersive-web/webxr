@@ -20,7 +20,7 @@
 
 - Ada Rose Cannon (Samsung)
 - Alex Turner (Microsoft)
-- Brandon Jones (Google
+- Brandon Jones (Google)
 - Ayşegül Yönet (Microsoft)
 - Jordan Higgins (MITRE)
 - Dylan Fox (XR Access)
@@ -68,7 +68,7 @@ In order for WebXR experiences to be presented with a convincing 3D effect, mult
 - User's eye boxes having no Y or Z disparity
 - User has two eyes
 
-Some basic measurements or approximations of the position of the user's eyes needs to be made available to the page in order for a convincing stereo effect to be displayed. The accuracy of these positions will depend on the hardware's capabilities and in many cases the corecctness of the user's manual configuration. In order to prevent assumptions about the above measurements WebXR does not provide IPD or similar measurements directly, but instead makes them part of an array of view transforms provided to the page. These transforms take into account not only the position of the user's eyes, but also the position and orientation of their head in space and are intended to be used for placement of virtual cameras within the scene. While the user's IPD could potentially be reverse engineered from these values and replaced with atrifical averages, doing so would be significantly more work than simply using the transforms as-is. As a result, the current system creates a 'pit of success' where the easiest way to use the values returned by the API is also the most widely accessible.
+Some basic measurements or approximations of the position of the user's eyes needs to be made available to the page in order for a convincing stereo effect to be displayed. The accuracy of these positions will depend on the hardware's capabilities and in many cases the correctness of the user's manual configuration. In order to prevent assumptions about the above measurements WebXR does not provide IPD or similar measurements directly, but instead makes them part of an array of view transforms provided to the page. These transforms take into account not only the position of the user's eyes, but also the position and orientation of their head in space and are intended to be used for placement of virtual cameras within the scene. While the user's IPD could potentially be reverse engineered from these values and replaced with atrifical averages, doing so would be significantly more work than simply using the transforms as-is. As a result, the current system creates a 'pit of success' where the easiest way to use the values returned by the API is also the most widely accessible.
 
 In term of the number of eyes a user posesses, current hardware has no way of detecting and reporting that, and even if it did we would not want to surface that to the web for privacy reasons. It's expected that wih every few exceptions (a virtual eye test, for example) stereo content should not be unusable for users that lack one eye. Content rendered for stereo presentation will generally show a similar view to both eyes, since experiences that show conflicting information to each eye will be uncofortable to nearly all users. Also, while stereo depth does aid in our perception of a 3 dimensional world it is not the only depth hint our brains process, and other cues such as parallax movement can also be accurately reproduced by most XR systems as a natural consequence of their tracking systems.
 
@@ -77,17 +77,23 @@ In term of the number of eyes a user posesses, current hardware has no way of de
 - Spatial audio
   - Positioning information from the API can be integrated into WebAudio’s spatial audio support to position audio sources in the immersive experience.
   - Ability to control the location of spatialized audio for hearing impairments.
-- Sound levels
 - Screen reading capability
 - Playback speed controls
   - Ability to adjust the speed of audio cues and captions to use preference for faster or slower playback.
 - Haptic and visual feedback on interactions.
+- Sound levels
 - Ability to reduce ambient noises.
+
+WebXR has no explicit APIs for handling audio, but the positional data that it generates can be easily relayed to the WebAudio API's [PannerNode](https://developer.mozilla.org/en-US/docs/Web/API/PannerNode), or libraries built on top of it such as [Resonance Audio](https://resonance-audio.github.io/resonance-audio/), to generate convicing spatial audio. The WebXR Samples repo has a [Positional Audio Sample](https://github.com/immersive-web/webxr-samples/blob/main/positional-audio.html) that demonstrates one way this can be done.
+
+By providing the necessary primitives to communicate between WebXR and WebAudio developers are free to create whatever type of sound processing best meets the needs of their application. It also creates an environment, however, where standards around how spatialized audio should be handled are difficult to establish and will naturally tend to exist at an application/library level rather than within the APIs or OS/hardware itself. The APIs cannot force good spatial audio to be included in every applications, nor can they guarantee that any audio that is played by the application is well aligned with and representative of the visual scene. Similarly, support for accessibility aids such as haptic and visual feedback will most frequently fall to individual libraries that have more context around how the audio is being used than the low-level browser APIs.
+
+Some functionality, such as controlling overall sound volume, will commonly be handled at a system level. Those volume controlls will usually not have the ability to separate out different sound sources, such as dialog or ambient noise, as the low-level sound systems have no way of distinguising the purpose of a given audio stream and multiple audio sources are frequently mixed together prior to being set to the system for playback. As such individual control over the volume of those elements would usually fall to an application or library.
 
 ## Attention concerns/Cognition
 
 - Reduce motion/animations
-  - Reduce peripheral vision motion?
+  - Reduce peripheral vision motion? For example, SteamVR offers a platform-level [Field of View override](https://steamcommunity.com/games/250820/announcements/detail/3021332002084697042)
 - Reduce background audio
 
 ## Blindness/Low Vision/Color Blindness
@@ -100,17 +106,35 @@ In term of the number of eyes a user posesses, current hardware has no way of de
 - Speech interaction 
 - Spatial awareness to describe scene/interactive objects…
 - Spatial audio to guide the user.
+- Color blindness settings 
+    - [playcanvas support](https://playcanvas.com/project/827671/overview/accessibility-fx) based on guidlines from Electronic Arts.
+    - example: ![](https://i.imgur.com/HWKyzZG.png)
+
+- 
 
 ## Photosensitivity (e.g. Epilepsy)
 
 - Reduce contrast and animations
 - Ability to stop the animations at any moment to stop sensitive visuals.
+  - If the platform provides a System/Home button, that should dim and/or pause the scene's visual content sufficiently to meet this goal. (TODO: how is this currently implemented across platforms, and does the spec define behavior?)
 - Simpler scenes to avoid dropping frames
   - UA lowering of viewport size to hit a consistent rate?
 
 ## Speech recognition
 
+Speech Recognition is used to interact with the scene without needing to use any input device. Since there is no universal control scheme for interacting with scenes this would need to be implemented by developers on a per-experience level. They could use commands like "turn left", "move forward" & "press button". This creates issues with internationalisation as it will need to be supported in multiple languages. 
+
+The speech recognition API is unfortunately experimental and has very limited support, this could be an important use case for other browsers to support it.
+
 ## Speech synthesis
+
+There are multiple uses for Speech Synthesis which may require different kinds of voice over. Voice overs which are describing the environment or what the user is currently seeing and the status of objects would probably be best presented through the user's existing assistive technology if it is being used. Using APIs like WebXR DOM Overlay will allow accessible text and interactive elements. Unfortunately DOM Overlay itself has limited use outside of Augmented Reality on handheld devices preventing this from being used for headmounted VR and AR.
+
+The other method is using the [SpeechSynthesis API](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis) to manually trigger read outs. This API has pretty good support. If the user is using assitive voice over technology this will sound different and probably be read out a lot slower than they are accustomed to but if the developer wanted to provide an description of what is currently happening this would be a good method to get started with.
+
+Neither of these methods of Speech Synthesis are not exposed via Web Audio so cannot be spatialised. Using stereo audio to indicate the source of the sound would provide many benefits for helping navigate an environment. Having a method of speech synthesis which is exposed to Web Audio would be very beneficial and worth raising to the group in charge of SpeechSynthesis.
+
+3rd path, machine learning voices...
 
 ## Subtitles/Captioning
 
