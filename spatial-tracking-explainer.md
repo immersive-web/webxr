@@ -429,7 +429,7 @@ In the context of XR, the term _tracking system_ refers to the technology by whi
 ### Decision flow chart
 
 How to pick a reference space:
-![Flow chart](images/frame-of-reference-flow-chart.jpg)
+![Flow chart](images/frame-of-reference-flow-chart.JPG)
 
 ### Reference space examples
 
