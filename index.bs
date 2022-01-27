@@ -2907,6 +2907,43 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
 
 </div>
 
+<h2 id="changes" class="no-num">
+Changes</h2>
+
+
+<h3 id=changes-from-20200724" class="no-num">
+Changes from the <a href="https://www.w3.org/TR/2020/WD-webxr-20200724/">Working Draft 24 July 2020</a></h3>
+
+- Fixed up predictedDisplayTime and defined inline behavior (<a href="https://github.com/immersive-web/webxr/pull/1230">GitHub #1230</a>)
+- Add XRFrame.predictedDisplayTime (<a href="https://github.com/immersive-web/webxr/pull/1217">GitHub #1217</a>)
+- Add support for targetFrameRate and supportedFrameRates (<a href="https://github.com/immersive-web/webxr/pull/1201">GitHub #1201</a>)
+- Add support for foveation ([=XRWebGLLayer/fixedFoveation=] (<a href="https://github.com/immersive-web/webxr/pull/1195">GitHub #1195</a>)
+- Only allow sessions to use features they explicity request or are implicitly granted based on mode (<a href="https://github.com/immersive-web/webxr/pull/1189">GitHub #1189</a>)
+- Enhance examples of implicit user intent (<a href="https://github.com/immersive-web/webxr/pull/1188">GitHub #1188</a>)
+- Added support for angular and linear velocity (<a href="https://github.com/immersive-web/webxr/pull/1182">GitHub #1182</a>)
+- Ensure platform conventions remain consistent for XRReferenceSpaces (<a href="https://github.com/immersive-web/webxr/pull/"1180>GitHub #1180</a>)
+- Inverted composition disabled flag to be [=XRRenderState/composition enabled=] (<a href="https://github.com/immersive-web/webxr/pull/1172">GitHub #1172</a>)
+- Reject promise returned from end() if session is already ended (<a href="https://github.com/immersive-web/webxr/pull/1170">GitHub #1170</a>)
+- During requestAnimationFrame detect if session has ended (<a href="https://github.com/immersive-web/webxr/pull/1169">GitHub #1169</a>)
+- Require quantization for recommendedViewportScale (<a href="https://github.com/immersive-web/webxr/pull/1151">GitHub #1151</a>)
+- Make sessionsupported pref autogranting non-normative  (<a href="https://github.com/immersive-web/webxr/pull/1136">GitHub #1146</a>)
+- Added a definition of XR device that includes nonvisual usage (<a href="https://github.com/immersive-web/webxr/pull/927">GitHub #927</a>)
+- Incorporating conclusions of recent privacy discussions (<a href="https://github.com/immersive-web/webxr/pull/1124">GitHub #1124</a>)
+- Switch isSessionSupported from using user intent to using permissions (<a href="https://github.com/immersive-web/webxr/pull/1136">GitHub #1136</a>)
+- Clarify that minimum viewport scale may change (<a href="https://github.com/immersive-web/webxr/pull/1134">GitHub #1134</a>)
+- Improvements to the fingerprinting PR (<a href="https://github.com/immersive-web/webxr/pull/1133">GitHub #1133</a>)
+- Add requestViewportScale/recommendedViewportScale (<a href="https://github.com/immersive-web/webxr/pull/1132">GitHub #1132</a>)
+- Clarify that framebuffer scale factors apply to width/height separately (<a href="https://github.com/immersive-web/webxr/pull/1131">GitHub #1131</a>)
+- Ensure that pending render state is always applied (<a href="https://github.com/immersive-web/webxr/pull/1128">GitHub #1128</a>)
+- Gate context XR compatability on xr-spatial-tracking permissions policy. (<a href="https://github.com/immersive-web/webxr/pull/1126">GitHub #1126</a>)
+- Change timing of when updateRenderState changes apply (<a href="https://github.com/immersive-web/webxr/pull/1111">GitHub #1111</a>)
+
+
+<h3 id=changes-from-20190205-20200724" class="no-num">
+Changes from the <a href="https://www.w3.org/TR/2019/WD-webxr-20190205/">First Public Working Draft 5 Feburary 2019</a></h3>
+
+
+
 Acknowledgements {#ack}
 ================
 
