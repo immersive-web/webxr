@@ -2921,7 +2921,7 @@ Changes from the <a href="https://www.w3.org/TR/2020/WD-webxr-20200724/">Working
 - Only allow sessions to use features they explicity request or are implicitly granted based on mode (<a href="https://github.com/immersive-web/webxr/pull/1189">GitHub #1189</a>)
 - Enhance examples of implicit user intent (<a href="https://github.com/immersive-web/webxr/pull/1188">GitHub #1188</a>)
 - Added support for angular and linear velocity (<a href="https://github.com/immersive-web/webxr/pull/1182">GitHub #1182</a>)
-- Ensure platform conventions remain consistent for XRReferenceSpaces (<a href="https://github.com/immersive-web/webxr/pull/"1180>GitHub #1180</a>)
+- Ensure platform conventions remain consistent for XRReferenceSpaces (<a href="https://github.com/immersive-web/webxr/pull/1180">GitHub #1180</a>)
 - Inverted composition disabled flag to be [=XRRenderState/composition enabled=] (<a href="https://github.com/immersive-web/webxr/pull/1172">GitHub #1172</a>)
 - Reject promise returned from end() if session is already ended (<a href="https://github.com/immersive-web/webxr/pull/1170">GitHub #1170</a>)
 - During requestAnimationFrame detect if session has ended (<a href="https://github.com/immersive-web/webxr/pull/1169">GitHub #1169</a>)
