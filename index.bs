@@ -2911,7 +2911,7 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
 Changes</h2>
 
 
-<h3 id=changes-from-20200724" class="no-num">
+<h3 id="changes-from-20200724" class="no-num">
 Changes from the <a href="https://www.w3.org/TR/2020/WD-webxr-20200724/">Working Draft 24 July 2020</a></h3>
 
 - Fixed up predictedDisplayTime and defined inline behavior (<a href="https://github.com/immersive-web/webxr/pull/1230">GitHub #1230</a>)
@@ -2939,7 +2939,7 @@ Changes from the <a href="https://www.w3.org/TR/2020/WD-webxr-20200724/">Working
 - Change timing of when updateRenderState changes apply (<a href="https://github.com/immersive-web/webxr/pull/1111">GitHub #1111</a>)
 
 
-<h3 id=changes-from-20190205-20200724" class="no-num">
+<h3 id="changes-from-20190205-20200724" class="no-num">
 Changes from the <a href="https://www.w3.org/TR/2019/WD-webxr-20190205/">First Public Working Draft 5 Feburary 2019</a></h3>
 
 
