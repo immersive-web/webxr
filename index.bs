@@ -2939,15 +2939,15 @@ Changes from the <a href="https://www.w3.org/TR/2020/WD-webxr-20200724/">Working
 - Change timing of when updateRenderState changes apply (<a href="https://github.com/immersive-web/webxr/pull/1111">GitHub #1111</a>)
 
 
-<h3 id="changes-from-20190205-20200724" class="no-num">
-Changes from the <a href="https://www.w3.org/TR/2019/WD-webxr-20190205/">First Public Working Draft 5 Feburary 2019</a></h3>
+<h3 id="changes-from-20191010" class="no-num">
+Changes from the <a href="https://www.w3.org/TR/2019/WD-webxr-20191010/">Working Draft 10 October 2019</a></h3>
 
 New features:
 
 - Add feature for secondary views (<a href="https://github.com/immersive-web/webxr/pull/1083">GitHub #1083</a>)
--  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
--  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
--  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
+- Update XRRenderStateInit with layers sequence (<a href="https://github.com/immersive-web/webxr/pull/999">GitHub #999</a>)
+- Split input sources into primary/auxiliary (<a href="https://github.com/immersive-web/webxr/pull/929">GitHub #929</a>)
+- Define squeeze events (<a href="https://github.com/immersive-web/webxr/pull/893">GitHub #893</a>)
 -  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
 -  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
 
@@ -2973,6 +2973,33 @@ Changes:
 - Short circuit updateRenderState() if no render state is passed (<a href="https://github.com/immersive-web/webxr/pull/1031">GitHub #1031</a>)
 - Removed use of responsible and active and focused documents (<a href="https://github.com/immersive-web/webxr/pull/1030">GitHub #1030</a>)
 - Clarify situation around browsing contexts and realms in context isolation (<a href="https://github.com/immersive-web/webxr/pull/1029">GitHub #1029</a>)
+- Explicitly specify that reset events work on offset spaces (<a href="https://github.com/immersive-web/webxr/pull/1024">GitHub #1024</a>)
+- Made it explicit which realm each object gets created in (<a href="https://github.com/immersive-web/webxr/pull/1023">GitHub #1023</a>)
+- Use current timestamp for rAF() callback arguments (<a href="https://github.com/immersive-web/webxr/pull/1015">GitHub #1015</a>)
+- Session feature requests no longer need the session parameter (<a href="https://github.com/immersive-web/webxr/pull/1012">GitHub #1012</a>)
+- Allow cancelling rAF callbacks from within rAF (<a href="https://github.com/immersive-web/webxr/pull/1005">GitHub #1005</a>)
+- Mention that the opaque framebuffer holds a reference to a particular session (<a href="https://github.com/immersive-web/webxr/pull/1004">GitHub #1004</a>)
+- Defer initial inputsourcechange event till after the promise resolves (<a href="https://github.com/immersive-web/webxr/pull/1002">GitHub #1002</a>)
+- Documented the effects of the framebufferScaleFactor (<a href="https://github.com/immersive-web/webxr/pull/993">GitHub #993</a>)
+- Allow depth&&stencil result if depth||stencil requested (<a href="https://github.com/immersive-web/webxr/pull/987">GitHub #987</a>)
+- Allow more flexibility in what isSessionSupported returns (<a href="https://github.com/immersive-web/webxr/pull/986">GitHub #986</a>)
+- Clarify when tracking/input data is exposed via inline devices (<a href="https://github.com/immersive-web/webxr/pull/985">GitHub #985</a>)
+- Add common sense restrictions on viewport shape (<a href="https://github.com/immersive-web/webxr/pull/976">GitHub #976</a>)
+- Specify that preserveDrawingBuffer has no power here (<a href="https://github.com/immersive-web/webxr/pull/975">GitHub #975</a>)
+- Clarified the behavior of visiblityState for inline sessions (<a href="https://github.com/immersive-web/webxr/pull/974">GitHub #974</a>)
+- Defining when an opaque framebuffer is considered dirty (<a href="https://github.com/immersive-web/webxr/pull/970">GitHub #970</a>)
+- Potentially update the inline device when the device changes (<a href="https://github.com/immersive-web/webxr/pull/947">GitHub #947</a>)
+- Clarify bounded reference space behavior (<a href="https://github.com/immersive-web/webxr/pull/938">GitHub #938</a>)
+- Multiple fixes to XR compatibility algorithms (<a href="https://github.com/immersive-web/webxr/pull/921">GitHub #921</a>)
+- Fill out section on trusted UI  (<a href="https://github.com/immersive-web/webxr/pull/875">GitHub #875</a>)
+- Better define how depthNear and depthFar are used (<a href="https://github.com/immersive-web/webxr/pull/888">GitHub #888</a>)
+- Clarify that emulatedPosition is not true when the local-floor space is using an estimated height (<a href="https://github.com/immersive-web/webxr/pull/871">GitHub #871</a>)
+
+
+<h3 id="changes-from-20190205" class="no-num">
+Changes from the <a href="https://www.w3.org/TR/2019/WD-webxr-20190205/">First Public Working Draft 5 Feburary 2019</a></h3>
+
+-  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
 -  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
 -  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
 -  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
