@@ -2942,6 +2942,45 @@ Changes from the <a href="https://www.w3.org/TR/2020/WD-webxr-20200724/">Working
 <h3 id="changes-from-20190205-20200724" class="no-num">
 Changes from the <a href="https://www.w3.org/TR/2019/WD-webxr-20190205/">First Public Working Draft 5 Feburary 2019</a></h3>
 
+New features:
+
+- Add feature for secondary views (<a href="https://github.com/immersive-web/webxr/pull/1083">GitHub #1083</a>)
+-  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
+-  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
+-  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
+-  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
+-  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
+
+Changes:
+
+- Primary views MUST always be active (<a href="https://github.com/immersive-web/webxr/pull/1105">GitHub #1105</a>)
+- Correctly handle context loss in makeXRCompatible() (<a href="https://github.com/immersive-web/webxr/pull/1097">GitHub #1097</a>)
+- Introduce concept of active view (<a href="https://github.com/immersive-web/webxr/pull/1096">GitHub #1096</a>)
+- Fixup frame and viewport caching to be explicit (<a href="https://github.com/immersive-web/webxr/pull/1093">GitHub #1093</a>)
+- Allow caching various objects (<a href="https://github.com/immersive-web/webxr/pull/1088">GitHub #1088</a>)
+- Allow clamping framebufferScaleFactor (<a href="https://github.com/immersive-web/webxr/pull/1084">GitHub #1084</a>)
+- Clarify threading nature of "ensure an immersive device is selected", deprecate xrCompatible (<a href="https://github.com/immersive-web/webxr/pull/1081">GitHub #1081</a>)
+- Clarify some things about native origins (<a href="https://github.com/immersive-web/webxr/pull/1071">GitHub #1071</a>)
+- Change document visibility check to be UA choice (<a href="https://github.com/immersive-web/webxr/pull/1067">GitHub #1067</a>)
+- added 'check the layers state' algorithm (<a href="https://github.com/immersive-web/webxr/pull/1064">GitHub #1064</a>)
+- Various changes around null and emulated poses (<a href="https://github.com/immersive-web/webxr/pull/1058">GitHub #1058</a>)
+- Mention correct input frame semantics on XRInputSource/frame (<a href="https://github.com/immersive-web/webxr/pull/1053">GitHub #1053</a>)
+- Added validation for XRRigidTransform (<a href="https://github.com/immersive-web/webxr/pull/1043">GitHub #1043</a>)
+- Minor change to when empty input profile arrays are appropriate. (<a href="https://github.com/immersive-web/webxr/pull/1037">GitHub #1037</a>)
+- Allow trusted ui to use visible-blurred, cautioning against text input leakage (<a href="https://github.com/immersive-web/webxr/pull/1034">GitHub #1034</a>)
+- Some clarifications about window.rAF() (<a href="https://github.com/immersive-web/webxr/pull/1033">GitHub #1033</a>)
+- Cleanups on how we do tasks and promises (<a href="https://github.com/immersive-web/webxr/pull/1032">GitHub #1032</a>)
+- Short circuit updateRenderState() if no render state is passed (<a href="https://github.com/immersive-web/webxr/pull/1031">GitHub #1031</a>)
+- Removed use of responsible and active and focused documents (<a href="https://github.com/immersive-web/webxr/pull/1030">GitHub #1030</a>)
+- Clarify situation around browsing contexts and realms in context isolation (<a href="https://github.com/immersive-web/webxr/pull/1029">GitHub #1029</a>)
+-  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
+-  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
+-  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
+-  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
+-  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
+-  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
+-  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
+-  (<a href="https://github.com/immersive-web/webxr/pull/">GitHub #</a>)
 
 
 Acknowledgements {#ack}
