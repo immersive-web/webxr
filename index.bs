@@ -76,9 +76,9 @@ spec: WebGL; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: dfn; text: invalidated; for: WebGLObject; url: #webgl-object-invalidated-flag
 spec: WebGL 2.0; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/2.0/
     type: interface; text: WebGL2RenderingContext; url: WebGL2RenderingContext
-spec: Orientation Sensor; urlPrefix: https://w3c.github.io/orientation-sensor/
-    type: interface; text: AbsoluteOrientationSensor
-    type: interface; text: RelativeOrientationSensor
+spec: Orientation Sensor; urlPrefix: https://www.w3.org/TR/orientation-sensor/
+    type: interface; text: AbsoluteOrientationSensor; url: absoluteorientationsensor
+    type: interface; text: RelativeOrientationSensor; url: relativeorientationsensor
 spec: WebIDL; urlPrefix: https://webidl.spec.whatwg.org/
     type: dfn; text: invoke the Web IDL callback function; url:invoke-a-callback-function
 spec:html; urlPrefix: https://html.spec.whatwg.org/multipage/
@@ -92,15 +92,14 @@ spec:html; urlPrefix: https://html.spec.whatwg.org/multipage/
     type: dfn; text: browsing context; url: browsers.html#browsing-context
     type: dfn; text: associated document; url: window-object.html#concept-document-window
     type: dfn; text: origin; url: origin.html#concept-origin
-spec: SecureContexts; urlPrefix: https://w3c.github.io/webappsec-secure-contexts/#
-    type: dfn; text: secure context; url: secure-contexts
+    type: dfn; text: secure context; url: secure-context
 spec: PointerEvents; urlPrefix: https://www.w3.org/TR/pointerevents/#
     type: dfn; text: primary pointer; url: dfn-primary-pointer
 spec: PageVisibility; urlPrefix: https://www.w3.org/TR/page-visibility-2/#
     type: dfn; text: visibilityState; url: visibilitystate-attribute
     type: dfn; text: hidden; url: dom-visibilitystate-hidden
 
-spec: ECMAScript; urlPrefix: https://tc39.github.io/ecma262/#
+spec: ECMAScript; urlPrefix: https://tc39.es/ecma262/#
     type: method; text: IsDetachedBuffer; url: sec-isdetachedbuffer
     type: dfn; text: ?; url: sec-returnifabrupt-shorthands
     type: dfn; text: Realm; url: realm
@@ -108,7 +107,7 @@ spec: ECMAScript; urlPrefix: https://tc39.github.io/ecma262/#
 spec: dom; urlPrefix: https://dom.spec.whatwg.org/#
     type:algorithm; text:fire an event; url: concept-event-fire
 
-spec: requestidlecallback; urlPrefix: https://w3c.github.io/requestidlecallback/#
+spec: requestidlecallback; urlPrefix: https://www.w3.org/TR/requestidlecallback/#
     type:method; text: requestIdleCallback(); for: Window; url:the-requestidlecallback-method
 </pre>
 
@@ -483,7 +482,7 @@ enum XRSessionMode {
 
   - A session mode of <dfn enum-value for="XRSessionMode">inline</dfn> indicates that the session's output will be shown as an element in the HTML document. {{inline}} session content MUST be displayed in mono (i.e., with a single [=view=]). It MAY allow for [=viewer=] tracking. User agents MUST allow {{inline}} sessions to be created.
   - A session mode of <dfn enum-value for="XRSessionMode">immersive-vr</dfn> indicates that the session's output will be given [=exclusive access=] to the [=immersive XR device=] display and that content <b>is not</b> intended to be integrated with the user's environment.
-  - The behavior of the <dfn enum-value for="XRSessionMode">immersive-ar</dfn> session mode is defined in the <a href="https://immersive-web.github.io/webxr-ar-module/">WebXR AR Module</a> and MUST NOT be added to the [=immersive XR device=]'s [=list of supported modes=] unless the UA implements that module.
+  - The behavior of the <dfn enum-value for="XRSessionMode">immersive-ar</dfn> session mode is defined in the <a href="https://www.w3.org/TR/webxr-ar-module-1/">WebXR AR Module</a> and MUST NOT be added to the [=immersive XR device=]'s [=list of supported modes=] unless the UA implements that module.
 
 In this document, the term <dfn>inline session</dfn> is synonymous with an {{inline}} session and the term <dfn>immersive session</dfn> refers to either an {{immersive-vr}} or {{immersive-ar}} session.
 
@@ -706,7 +705,7 @@ Each {{XRSession}} has a <dfn>minimum near clip plane</dfn> and a <dfn>maximum f
 When the user agent will <dfn>update the pending layers state</dfn> with {{XRSession}} <var ignore>session</var> and {{XRRenderStateInit}} |newState|, it must run the following steps:
   1. If |newState|'s {{XRRenderStateInit/layers}}'s value is not `null`, throw a {{NotSupportedError}}.
 
-NOTE: The <a href="https://immersive-web.github.io/layers">WebXR layers module</a> will introduce new semantics for this algorithm.
+NOTE: The <a href="https://www.w3.org/TR/webxrlayers-1/">WebXR layers module</a> will introduce new semantics for this algorithm.
 
 </div>
 
@@ -887,7 +886,7 @@ The <dfn attribute for="XRSession">visibilityState</dfn> attribute returns the {
 
 The [=visibility state=] MAY be changed by the user agent at any time other than during the processing of an [=XR animation frame=], and the user agent SHOULD monitor the XR platform when possible to observe when session visibility has been affected external to the user agent and update the [=visibility state=] accordingly.
 
-Note: The {{XRSession}}'s [=visibility state=] does not necessarily imply the visibility of the HTML document. Depending on the system configuration the page may continue to be visible while an [=immersive session=] is active. (For example, a headset connected to a PC may continue to display the page on the monitor while the headset is viewing content from an [=immersive session=].) Developers should continue to rely on the [Page Visibility API](https://w3c.github.io/page-visibility/) to determine page visibility.
+Note: The {{XRSession}}'s [=visibility state=] does not necessarily imply the visibility of the HTML document. Depending on the system configuration the page may continue to be visible while an [=immersive session=] is active. (For example, a headset connected to a PC may continue to display the page on the monitor while the headset is viewing content from an [=immersive session=].) Developers should continue to rely on the [Page Visibility API](https://www.w3.org/TR/page-visibility-2/) to determine page visibility.
 
 Note: The {{XRSession}}'s [=visibility state=] does not affect or restrict mouse behavior on tethered sessions where 2D content is still visible while an [=immersive session=] is active. Content should consider using the [[!pointerlock]] API if it wishes to have stronger control over mouse behavior.
 
@@ -1031,7 +1030,7 @@ To <dfn>check the layers state</dfn> with {{XRSession/renderState}} |state|, the
   1. If |state|'s {{XRRenderState/baseLayer}} is `null`, return `false`.
   1. return `true`.
 
-NOTE: The <a href="https://immersive-web.github.io/layers">WebXR layers module</a> will introduce new semantics for this algorithm.
+NOTE: The <a href="https://www.w3.org/TR/webxrlayers-1/">WebXR layers module</a> will introduce new semantics for this algorithm.
 
 </div>
 
@@ -1826,7 +1825,7 @@ interface XRInputSource {
 };
 </pre>
 
-Note: The {{XRInputSource}} interface is also extended by the <a href="https://immersive-web.github.io/webxr-gamepads-module/">WebXR Gamepads Module</a>
+Note: The {{XRInputSource}} interface is also extended by the <a href="https://www.w3.org/TR/webxr-gamepads-module-1/">WebXR Gamepads Module</a>
 
 The <dfn attribute for="XRInputSource">handedness</dfn> attribute describes which hand the [=XR input source=] is associated with, if any. Input sources with no natural handedness (such as headset-mounted controls) or for which the handedness is not currently known MUST set this attribute {{XRHandedness/"none"}}.
 
