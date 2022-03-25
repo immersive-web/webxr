@@ -32,6 +32,7 @@ spec:permissions-1;
     type:dfn; text:powerful feature
 spec:webidl;
     type:dfn; text:new
+    type:interface; text:any
 spec:webxr-ar-module-1;
     type:dfn; text:first-person observer view
 spec:html; type:interface; text:Navigator
@@ -2916,7 +2917,7 @@ Changes from the <a href="https://www.w3.org/TR/2020/WD-webxr-20200724/">Working
 - Fixed up predictedDisplayTime and defined inline behavior (<a href="https://github.com/immersive-web/webxr/pull/1230">GitHub #1230</a>)
 - Add XRFrame.predictedDisplayTime (<a href="https://github.com/immersive-web/webxr/pull/1217">GitHub #1217</a>)
 - Add support for targetFrameRate and supportedFrameRates (<a href="https://github.com/immersive-web/webxr/pull/1201">GitHub #1201</a>)
-- Add support for foveation ([=XRWebGLLayer/fixedFoveation=] (<a href="https://github.com/immersive-web/webxr/pull/1195">GitHub #1195</a>)
+- Add support for foveation ({{XRWebGLLayer/fixedFoveation}} (<a href="https://github.com/immersive-web/webxr/pull/1195">GitHub #1195</a>)
 - Only allow sessions to use features they explicity request or are implicitly granted based on mode (<a href="https://github.com/immersive-web/webxr/pull/1189">GitHub #1189</a>)
 - Enhance examples of implicit user intent (<a href="https://github.com/immersive-web/webxr/pull/1188">GitHub #1188</a>)
 - Added support for angular and linear velocity (<a href="https://github.com/immersive-web/webxr/pull/1182">GitHub #1182</a>)
@@ -2959,7 +2960,7 @@ Changes:
 - Clarify threading nature of "ensure an immersive device is selected", deprecate xrCompatible (<a href="https://github.com/immersive-web/webxr/pull/1081">GitHub #1081</a>)
 - Clarify some things about native origins (<a href="https://github.com/immersive-web/webxr/pull/1071">GitHub #1071</a>)
 - Change document visibility check to be UA choice (<a href="https://github.com/immersive-web/webxr/pull/1067">GitHub #1067</a>)
-- added 'check the layers state' algorithm (<a href="https://github.com/immersive-web/webxr/pull/1064">GitHub #1064</a>)
+- added \'check the layers state\' algorithm (<a href="https://github.com/immersive-web/webxr/pull/1064">GitHub #1064</a>)
 - Various changes around null and emulated poses (<a href="https://github.com/immersive-web/webxr/pull/1058">GitHub #1058</a>)
 - Mention correct input frame semantics on XRInputSource/frame (<a href="https://github.com/immersive-web/webxr/pull/1053">GitHub #1053</a>)
 - Added validation for XRRigidTransform (<a href="https://github.com/immersive-web/webxr/pull/1043">GitHub #1043</a>)
@@ -3035,8 +3036,8 @@ Changes:
 - Disallow stereo inline sessions for now (<a href="https://github.com/immersive-web/webxr/pull/829">GitHub #829</a>)
 - Handle detached buffers in projectionMatrix (<a href="https://github.com/immersive-web/webxr/pull/830">GitHub #830</a>)
 - Ensure an immersive device is selected in makeXRCompatible() (<a href="https://github.com/immersive-web/webxr/pull/809">GitHub #809</a>)
-- Change features to a sequence of 'any' (<a href="https://github.com/immersive-web/webxr/pull/807">GitHub #807</a>)
-- Link to 'fire an input source' algorithm, explicitly construct frame (<a href="https://github.com/immersive-web/webxr/pull/797">GitHub #797</a>)
+- Change features to a sequence of \'any\' (<a href="https://github.com/immersive-web/webxr/pull/807">GitHub #807</a>)
+- Link to \'fire an input source\' algorithm, explicitly construct frame (<a href="https://github.com/immersive-web/webxr/pull/797">GitHub #797</a>)
 - Remove Environment blend mode from spec and explainer (<a href="https://github.com/immersive-web/webxr/pull/804">GitHub #804</a>)
 - Provide descriptions for each method (<a href="https://github.com/immersive-web/webxr/pull/798">GitHub #798</a>)
 - Require UAs to show manual device activation steps (<a href="https://github.com/immersive-web/webxr/pull/799">GitHub #799</a>)
@@ -3052,7 +3053,7 @@ Changes:
 - Use TAG recommendations for returning promises (<a href="https://github.com/immersive-web/webxr/pull/700">GitHub #700</a>)
 - Move racy parts of requestSession() to the main thread (<a href="https://github.com/immersive-web/webxr/pull/706">GitHub #706</a>)
 - Clarify that small overlay UIs are allowed in exclusive access (<a href="https://github.com/immersive-web/webxr/pull/709">GitHub #709</a>)
-- Merge 'end the session' with 'shut down the session', clarify, add onend event (<a href="https://github.com/immersive-web/webxr/pull/710">GitHub #710</a>)
+- Merge \'end the session\' with \'shut down the session\', clarify, add onend event (<a href="https://github.com/immersive-web/webxr/pull/710">GitHub #710</a>)
 - Don't check XR compat flag for inline sessions (<a href="https://github.com/immersive-web/webxr/pull/705">GitHub #705</a>)
 - Validate position DOMPointInit (<a href="https://github.com/immersive-web/webxr/pull/568">GitHub #568</a>)
 - Explicitly spec out native origins (<a href="https://github.com/immersive-web/webxr/pull/621">GitHub #621</a>)
@@ -3071,7 +3072,7 @@ Changes:
 - Fix detached array in XRRay.matrix algorithm (<a href="https://github.com/immersive-web/webxr/pull/716">GitHub #716</a>)
 - Simplify handling of unsupported modes in requestSession() (<a href="https://github.com/immersive-web/webxr/pull/714">GitHub #714</a>)
 - Some XRRenderState clarifications (<a href="https://github.com/immersive-web/webxr/pull/703">GitHub #703</a>)
-- Replace 'list of pending render states' with 'pending render state' (<a href="https://github.com/immersive-web/webxr/pull/701">GitHub #701</a>)
+- Replace \'list of pending render states\' with \'pending render state\' (<a href="https://github.com/immersive-web/webxr/pull/701">GitHub #701</a>)
 - Better define gamepad placeholder buttons and axes (<a href="https://github.com/immersive-web/webxr/pull/661">GitHub #661</a>)
 - Clarify what value a touchpad should report when not being touched (<a href="https://github.com/immersive-web/webxr/pull/660">GitHub #660</a>)
 - Rename getPose arg referenceSpace->baseSpace (<a href="https://github.com/immersive-web/webxr/pull/659">GitHub #659</a>)
@@ -3096,7 +3097,7 @@ Changes:
 - Move outputContext to XRRenderState (<a href="https://github.com/immersive-web/webxr/pull/536">GitHub #536</a>)
 - Specify that getViewerPose throws an error for non-rAF XRFrames (<a href="https://github.com/immersive-web/webxr/pull/535">GitHub #535</a>)
 - Remove viewMatrix and add XRTransform.inverse() (<a href="https://github.com/immersive-web/webxr/pull/531">GitHub #531</a>)
-- Changed XRHandedness enum to use 'none' instead of '' (<a href="https://github.com/immersive-web/webxr/pull/526">GitHub #526</a>)
+- Changed XRHandedness enum to use \'none\' instead of \'\' (<a href="https://github.com/immersive-web/webxr/pull/526">GitHub #526</a>)
 - Indicate the preferred ergonomics of a tracked-pointer ray (<a href="https://github.com/immersive-web/webxr/pull/524">GitHub #524</a>)
 - Clarify XRRay constructor and define normalization (<a href="https://github.com/immersive-web/webxr/pull/521">GitHub #521</a>)
 - Spec text for the identity reference space (<a href="https://github.com/immersive-web/webxr/pull/520">GitHub #520</a>)
