@@ -2813,7 +2813,30 @@ interface XRPermissionStatus: PermissionStatus {
 </dd>
 
 
-<dt>[=permission request algorithm=]</dt>
+<dt>[=permission query algorithm=]</dt>
+<dd>
+<div class=algorithm data-algorithm="xr-permission-query-algorithm">
+To query the "xr" permission with an {{XRPermissionDescriptor}} |descriptor| and a {{XRPermissionStatus}} |status|, the UA MUST run the following steps:
+
+  1. Set |status|'s {{PermissionStatus/state}} to |descriptor|'s [=permission state=].
+  1. If |status|'s {{PermissionStatus/state}} is {{PermissionState/"denied"}}, set |status|'s {{XRPermissionStatus/granted}} to an empty {{FrozenArray}} and abort these steps.
+  1. Let |result| be the result of [=resolve the requested features|resolving the requested features=] given |descriptor|'s {{XRPermissionDescriptor/requiredFeatures}}, {{XRPermissionDescriptor/optionalFeatures}}, and {{XRPermissionDescriptor/mode}}.
+  1. If |result| is `null`, run the following steps:
+    1. Set |status|'s {{XRPermissionStatus/granted}} to an empty {{FrozenArray}}.
+    1. Set |status|'s {{PermissionStatus/state}} to {{PermissionState/"denied"}}.
+    1. Abort these steps.
+  1. Let (|consentRequired|, |consentOptional|, |granted|) be the fields of |result|.
+  1. Set |status|'s {{XRPermissionStatus/granted}} to |granted|.
+  1. If |consentRequired| [=list/is empty=] and |consentOptional| [=list/is empty=], set |status|'s {{PermissionStatus/state}} to {{PermissionState/"granted"}} and abort these steps
+  1. Set |status|'s {{PermissionStatus/state}} to {{PermissionState/"prompt"}}.
+
+</div>
+
+</dd>
+
+
+
+<dt>permission request algorithm</dt>
 <dd>
 <div class=algorithm data-algorithm="xr-permission-request-algorithm">
 To <dfn lt="request the xr permission">request the "xr" permission</dfn> with an {{XRPermissionDescriptor}} |descriptor| and a {{XRPermissionStatus}} |status|, the UA MUST run the following steps:
@@ -2844,29 +2867,6 @@ Note: The user agent has the freedom to batch up permissions prompts for all req
 
 Note: When determining [=user intent=] for a web application, user agents must check that it was explicitly [=launching a web application|launched by the user=] as a web application. They must NOT just check if the [=origin=] matches that of an installed web application.
 </div>
-
-
-<dt>[=permission query algorithm=]</dt>
-<dd>
-<div class=algorithm data-algorithm="xr-permission-query-algorithm">
-To query the "xr" permission with an {{XRPermissionDescriptor}} |descriptor| and a {{XRPermissionStatus}} |status|, the UA MUST run the following steps:
-
-  1. Set |status|'s {{PermissionStatus/state}} to |descriptor|'s [=permission state=].
-  1. If |status|'s {{PermissionStatus/state}} is {{PermissionState/"denied"}}, set |status|'s {{XRPermissionStatus/granted}} to an empty {{FrozenArray}} and abort these steps.
-  1. Let |result| be the result of [=resolve the requested features|resolving the requested features=] given |descriptor|'s {{XRPermissionDescriptor/requiredFeatures}}, {{XRPermissionDescriptor/optionalFeatures}}, and {{XRPermissionDescriptor/mode}}.
-  1. If |result| is `null`, run the following steps:
-    1. Set |status|'s {{XRPermissionStatus/granted}} to an empty {{FrozenArray}}.
-    1. Set |status|'s {{PermissionStatus/state}} to {{PermissionState/"denied"}}.
-    1. Abort these steps.
-  1. Let (|consentRequired|, |consentOptional|, |granted|) be the fields of |result|.
-  1. Set |status|'s {{XRPermissionStatus/granted}} to |granted|.
-  1. If |consentRequired| [=list/is empty=] and |consentOptional| [=list/is empty=], set |status|'s {{PermissionStatus/state}} to {{PermissionState/"granted"}} and abort these steps
-  1. Set |status|'s {{PermissionStatus/state}} to {{PermissionState/"prompt"}}.
-
-</div>
-
-</dd>
-
 </dl>
 
 <div class="algorithm" data-algorithm="resolve-features">
