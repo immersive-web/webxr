@@ -2474,31 +2474,31 @@ The <dfn attribute for="XRReferenceSpaceEvent">transform</dfn> attribute describ
 Event Types {#event-types}
 -----------
 
-The user agent MUST provide the following new events. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
+The user agent MUST provide the following new events. Registration for and firing of the events must follow the usual behavior of DOM Events.
 
-The user agent MUST fire a <dfn event for="XRSystem">devicechange</dfn> event on the {{XRSystem}} object to indicate that the availability of [=immersive XR device=]s has been changed unless the document's [=origin=] is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]]. The event MUST be of type {{Event}}.
+The user agent MUST [= fire an event =] named <dfn event for="XRSystem">devicechange</dfn> event on the {{XRSystem}} object to indicate that the availability of [=immersive XR device=]s has been changed unless the document's [=origin=] is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]].
 
-A user agent MUST dispatch a <dfn event for="XRSession">visibilitychange</dfn> event on an {{XRSession}} each time the [=XRSession/visibility state=] of the {{XRSession}} has changed. The event MUST be of type {{XRSessionEvent}}.
+A user agent MUST [= fire an event =] named <dfn event for="XRSession">visibilitychange</dfn> using {{XRSessionEvent}} on an {{XRSession}} each time the [=XRSession/visibility state=] of the {{XRSession}} has changed.
 
-A user agent MUST dispatch an <dfn event for="XRSession">end</dfn> event on an {{XRSession}} when the session ends, either by the application or the user agent. The event MUST be of type {{XRSessionEvent}}.
+A user agent MUST [= fire an event =] named <dfn event for="XRSession">end</dfn> using {{XRSessionEvent}} on an {{XRSession}} when the session ends, either by the application or the user agent.
 
-A user agent MUST dispatch an <dfn event for="XRSession">inputsourceschange</dfn> event on an {{XRSession}} when the session's [=list of active XR input sources=] has changed. The event MUST be of type {{XRInputSourcesChangeEvent}}.
+A user agent MUST [= fire an event =] named <dfn event for="XRSession">inputsourceschange</dfn> using {{XRInputSourcesChangeEvent}} on an {{XRSession}} when the session's [=list of active XR input sources=] has changed.
 
-A user agent MUST dispatch a <dfn event for="XRSession">selectstart</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s begins its [=primary action=]. The event MUST be of type {{XRInputSourceEvent}}.
+A user agent MUST [= fire an event =] named <dfn event for="XRSession">selectstart</dfn> using {{XRInputSourceEvent}} on an {{XRSession}} when one of its {{XRInputSource}}s begins its [=primary action=]. The event MUST be of type .
 
-A user agent MUST dispatch a <dfn event for="XRSession">selectend</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s ends its [=primary action=] or when an {{XRInputSource}} that has begun a [=primary action=] is disconnected. The event MUST be of type {{XRInputSourceEvent}}.
+A user agent MUST [= fire an event =] named <dfn event for="XRSession">selectend</dfn> using {{XRInputSourceEvent}} on an {{XRSession}} when one of its {{XRInputSource}}s ends its [=primary action=] or when an {{XRInputSource}} that has begun a [=primary action=] is disconnected.
 
-A user agent MUST dispatch a <dfn event for="XRSession">select</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s has fully completed a [=primary action=]. The event MUST be of type {{XRInputSourceEvent}}.
+A user agent MUST [= fire an event =] named <dfn event for="XRSession">select</dfn> using {{XRInputSourceEvent}} on an {{XRSession}} when one of its {{XRInputSource}}s has fully completed a [=primary action=].
 
-A user agent MUST dispatch a <dfn event for="XRSession">squeezestart</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s begins its [=primary squeeze action=]. The event MUST be of type {{XRInputSourceEvent}}.
+A user agent MUST [= fire an event =] named <dfn event for="XRSession">squeezestart</dfn> using {{XRInputSourceEvent}}  on an {{XRSession}} when one of its {{XRInputSource}}s begins its [=primary squeeze action=].
 
-A user agent MUST dispatch a <dfn event for="XRSession">squeezeend</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s ends its [=primary squeeze action=] or when an {{XRInputSource}} that has begun a [=primary squeeze action=] is disconnected. The event MUST be of type {{XRInputSourceEvent}}.
+A user agent MUST [= fire an event =] named <dfn event for="XRSession">squeezeend</dfn> using {{XRInputSourceEvent}} on an {{XRSession}} when one of its {{XRInputSource}}s ends its [=primary squeeze action=] or when an {{XRInputSource}} that has begun a [=primary squeeze action=] is disconnected.
 
-A user agent MUST dispatch a <dfn event for="XRSession">squeeze</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s has fully completed a [=primary squeeze action=]. The event MUST be of type {{XRInputSourceEvent}}.
+A user agent MUST [= fire an event =] named <dfn event for="XRSession">squeeze</dfn> using {{XRInputSourceEvent}} on an {{XRSession}} when one of its {{XRInputSource}}s has fully completed a [=primary squeeze action=].
 
-A user agent MUST dispatch a <dfn event for="XRSession">frameratechange</dfn> event on an {{XRSession}} when the [=XR Compositor=] changes the {{XRSession}}'s [=XRSession/internal nominal framerate=]. The event MUST be of type {{XRSessionEvent}}.
+A user agent MUST [= fire an event =] named <dfn event for="XRSession">frameratechange</dfn> using {{XRSessionEvent}} on an {{XRSession}} when the [=XR Compositor=] changes the {{XRSession}}'s [=XRSession/internal nominal framerate=].
 
-A user agent MUST dispatch a <dfn event for="XRReferenceSpace">reset</dfn> event on an {{XRReferenceSpace}} when discontinuities of the [=native origin=] or [=effective origin=] occur, i.e. there are significant changes in the origin’s position or orientation relative to the user’s environment. (For example: After user recalibration of their XR device or if the XR device automatically shifts its origin after losing and regaining tracking.) A {{reset}} event MUST also be dispatched when the {{boundsGeometry}} changes for an {{XRBoundedReferenceSpace}}. A {{reset}} event MUST NOT be dispatched if the [=viewer=]'s pose experiences discontinuities but the {{XRReferenceSpace}}'s origin physical mapping remains stable, such as when the [=viewer=] momentarily loses and regains tracking within the same tracking area. A {{reset}} event also MUST NOT be dispatched as an {{unbounded}} reference space makes small adjustments to its [=native origin=] over time to maintain space stability near the user, if a significant discontinuity has not occurred. The event MUST be of type {{XRReferenceSpaceEvent}}, and MUST be dispatched prior to the execution of any [=XR animation frame=]s that make use of the new origin. A {{reset}} event MUST be dispatched on all offset reference spaces of a reference space that fires a {{reset}} event, and the {{boundsGeometry}} of offset {{XRBoundedReferenceSpace}}s should also be recomputed.
+A user agent MUST [= fire an event =] named <dfn event for="XRReferenceSpace">reset</dfn> using {{XRReferenceSpaceEvent}} on an {{XRReferenceSpace}} when discontinuities of the [=native origin=] or [=effective origin=] occur, i.e. there are significant changes in the origin’s position or orientation relative to the user’s environment. (For example: After user recalibration of their XR device or if the XR device automatically shifts its origin after losing and regaining tracking.) A {{reset}} event MUST also be dispatched when the {{boundsGeometry}} changes for an {{XRBoundedReferenceSpace}}. A {{reset}} event MUST NOT be dispatched if the [=viewer=]'s pose experiences discontinuities but the {{XRReferenceSpace}}'s origin physical mapping remains stable, such as when the [=viewer=] momentarily loses and regains tracking within the same tracking area. A {{reset}} event also MUST NOT be dispatched as an {{unbounded}} reference space makes small adjustments to its [=native origin=] over time to maintain space stability near the user, if a significant discontinuity has not occurred. The event MUST be dispatched prior to the execution of any [=XR animation frame=]s that make use of the new origin. A {{reset}} event MUST be dispatched on all offset reference spaces of a reference space that fires a {{reset}} event, and the {{boundsGeometry}} of offset {{XRBoundedReferenceSpace}}s should also be recomputed.
 
 Note: This does mean that the session needs to hold on to strong references to any {{XRReferenceSpace}}s that have {{XRReferenceSpace/reset}} listeners.
 
