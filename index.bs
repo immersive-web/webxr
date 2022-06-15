@@ -2,12 +2,17 @@
 Shortname: webxr
 Title: WebXR Device API
 Group: immersivewebwg
-Status: ED
+Status: CR
 TR: https://www.w3.org/TR/webxr/
 ED: https://immersive-web.github.io/webxr/
 Repository: immersive-web/webxr
 Level: none
 Mailing List Archives: https://lists.w3.org/Archives/Public/public-immersive-web-wg/
+
+Date: 2022-03-31
+Deadline: 2022-04-28
+Implementation Report: https://wpt.fyi/results/webxr?label=master&label=experimental&aligned
+WPT Path Prefix: webxr
 
 !Participate: <a href="https://github.com/immersive-web/webxr/issues/new">File an issue</a> (<a href="https://github.com/immersive-web/webxr/issues">open issues</a>)
 !Participate: <a href="https://lists.w3.org/Archives/Public/public-immersive-web-wg/">Mailing list archive</a>
@@ -16,7 +21,7 @@ Mailing List Archives: https://lists.w3.org/Archives/Public/public-immersive-web
 Editor: Brandon Jones 87824, Google https://google.com/, bajones@google.com
 Former Editor: Nell Waliczek 93109, Amazon [Microsoft until 2018] https://amazon.com/, nhw@amazon.com
 Editor: Manish Goregaokar 109489, Google [Mozilla until 2020], manishearth@google.com
-Editor: Rik Cabanier 106988, Facebook https://oculus.com, cabanier@fb.com
+Editor: Rik Cabanier 106988, Meta https://facebook.com, cabanier@fb.com
 
 Abstract: This specification describes support for accessing virtual reality (VR) and augmented reality (AR) devices, including sensors and head-mounted displays, on the Web.
 
@@ -32,6 +37,7 @@ spec:permissions-1;
     type:dfn; text:powerful feature
 spec:webidl;
     type:dfn; text:new
+    type:interface; text:any
 spec:webxr-ar-module-1;
     type:dfn; text:first-person observer view
 spec:html; type:interface; text:Navigator
@@ -76,31 +82,29 @@ spec: WebGL; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/1.0/
     type: dfn; text: invalidated; for: WebGLObject; url: #webgl-object-invalidated-flag
 spec: WebGL 2.0; urlPrefix: https://www.khronos.org/registry/webgl/specs/latest/2.0/
     type: interface; text: WebGL2RenderingContext; url: WebGL2RenderingContext
-spec: Orientation Sensor; urlPrefix: https://w3c.github.io/orientation-sensor/
-    type: interface; text: AbsoluteOrientationSensor
-    type: interface; text: RelativeOrientationSensor
-spec: WebIDL; urlPrefix: https://heycam.github.io/webidl/#
+spec: Orientation Sensor; urlPrefix: https://www.w3.org/TR/orientation-sensor/
+    type: interface; text: AbsoluteOrientationSensor; url: absoluteorientationsensor
+    type: interface; text: RelativeOrientationSensor; url: relativeorientationsensor
+spec: WebIDL; urlPrefix: https://webidl.spec.whatwg.org/
     type: dfn; text: invoke the Web IDL callback function; url:invoke-a-callback-function
 spec:html; urlPrefix: https://html.spec.whatwg.org/multipage/
     type: method; for:HTMLCanvasElement; text:getContext(contextId); url: canvas.html#dom-canvas-getcontext
     type: method; for:Window; text:requestAnimationFrame(callback); url: imagebitmap-and-animations.html#dom-animationframeprovider-requestanimationframe
     type: dfn; text: currently focused area; url: interaction.html#currently-focused-area-of-a-top-level-browsing-context
-    type: dfn; text: responsible; url: webappapis.html#responsible-document
     type: dfn; text: rendering opportunity; url: webappapis.html#rendering-opportunity
     type: dfn; text: current realm; url: webappapis.html#current
     type: dfn; text: same origin-domain; url: origin.html#same-origin-domain
     type: dfn; text: browsing context; url: browsers.html#browsing-context
     type: dfn; text: associated document; url: window-object.html#concept-document-window
     type: dfn; text: origin; url: origin.html#concept-origin
-spec: SecureContexts; urlPrefix: https://w3c.github.io/webappsec-secure-contexts/#
-    type: dfn; text: secure context; url: secure-contexts
+    type: dfn; text: secure context; url: secure-context
 spec: PointerEvents; urlPrefix: https://www.w3.org/TR/pointerevents/#
     type: dfn; text: primary pointer; url: dfn-primary-pointer
 spec: PageVisibility; urlPrefix: https://www.w3.org/TR/page-visibility-2/#
     type: dfn; text: visibilityState; url: visibilitystate-attribute
     type: dfn; text: hidden; url: dom-visibilitystate-hidden
 
-spec: ECMAScript; urlPrefix: https://tc39.github.io/ecma262/#
+spec: ECMAScript; urlPrefix: https://tc39.es/ecma262/#
     type: method; text: IsDetachedBuffer; url: sec-isdetachedbuffer
     type: dfn; text: ?; url: sec-returnifabrupt-shorthands
     type: dfn; text: Realm; url: realm
@@ -108,7 +112,7 @@ spec: ECMAScript; urlPrefix: https://tc39.github.io/ecma262/#
 spec: dom; urlPrefix: https://dom.spec.whatwg.org/#
     type:algorithm; text:fire an event; url: concept-event-fire
 
-spec: requestidlecallback; urlPrefix: https://w3c.github.io/requestidlecallback/#
+spec: requestidlecallback; urlPrefix: https://www.w3.org/TR/requestidlecallback/#
     type:method; text: requestIdleCallback(); for: Window; url:the-requestidlecallback-method
 </pre>
 
@@ -158,7 +162,6 @@ spec: requestidlecallback; urlPrefix: https://w3c.github.io/requestidlecallback/
     border-style: solid;
     border-width: 1px;
     background: var(--def-bg);
-    color: #fff;
     font-family: sans-serif;
     font-weight: bold;
     border-color: var(--def-border);
@@ -199,12 +202,12 @@ This document uses the acronym <b>XR</b> throughout to refer to the spectrum of 
 
 The important commonality between them being that they offer some degree of spatial tracking with which to simulate a view of virtual content.
 
-Terms like "XR device", "XR Application", etc. are generally understood to apply to any of the above. Portions of this document that only apply to a subset of these devices will indicate so as appropriate.
+Terms like "XR device", "XR application", etc. are generally understood to apply to any of the above. Portions of this document that only apply to a subset of these devices will indicate so as appropriate.
 
 The terms [=3DoF=] and [=6DoF=] are used throughout this document to describe the tracking capabilities of [=/XR devices=].
 
- - A <dfn>3DoF</dfn> device, short for "Three Degrees of Freedom", is one that can only track rotational movement. This is common in devices which rely exclusively on accelerometer and gyroscope readings to provide tracking. [=3DoF=] devices do not respond translational movements from the user, though they may employ algorithms to estimate translational changes based on modeling of the neck or arms.
- - A <dfn>6DoF</dfn> device, short for "Six Degrees of Freedom", is one that can track both rotation and translation, enabling for precise 1:1 tracking in space. This typically requires some level of understanding of the user's environment. That environmental understanding may be achieved via inside-out tracking, where sensors on the tracked device itself (such as cameras or depth sensors) are used to determine the device's position, or outside-in tracking, where external devices placed in the user's environment (like a camera or light emitting device) provides a stable point of reference against which the [=/XR device=] can determine its position.
+ - A <dfn>3DoF</dfn> device, short for "Three Degrees of Freedom", is one that can only track rotational movement. This is common in devices which rely exclusively on accelerometer and gyroscope readings to provide tracking. [=3DoF=] devices do not respond to translational movements from the user, though they may employ algorithms to estimate translational changes based on modeling of the neck or arms.
+ - A <dfn>6DoF</dfn> device, short for "Six Degrees of Freedom", is one that can track both rotation and translation, enabling precise 1:1 tracking in space. This typically requires some level of understanding of the user's environment. That environmental understanding may be achieved via inside-out tracking, where sensors on the tracked device itself (such as cameras or depth sensors) are used to determine the device's position, or outside-in tracking, where external devices placed in the user's environment (like a camera or light emitting device) provides a stable point of reference against which the [=/XR device=] can determine its position.
 
 Application flow {#applicationflow}
 ----------------
@@ -228,21 +231,21 @@ Model {#model}
 XR device {#xr-device-concept}
 ---------
 
-An <dfn for="">XR device</dfn> is a physical unit of hardware that can present immersive content to the user. Content is considered to be "immersive" if it produces visual, audio, haptic, or other sensory output that simulates or augments various aspects of the users environment. Most frequently this involves tracking the user's motion in space and producing outputs that are synchronized to the user's movement. On desktop clients, this is usually a headset peripheral. On mobile clients, it may represent the mobile device itself in conjunction with a viewer harness. It may also represent devices without stereo-presentation capabilities but with more advanced tracking.
+An <dfn for="">XR device</dfn> is a physical unit of hardware that can present immersive content to the user. Content is considered to be "immersive" if it produces visual, audio, haptic, or other sensory output that simulates or augments various aspects of the user's environment. Most frequently this involves tracking the user's motion in space and producing outputs that are synchronized to the user's movement. On desktop clients, this is usually a headset peripheral. On mobile clients, it may represent the mobile device itself in conjunction with a viewer harness. It may also represent devices without stereo-presentation capabilities but with more advanced tracking.
 
 An [=/XR device=] has a <dfn>list of supported modes</dfn> (a [=/list=] of [=/strings=]) that [=list/contains=] the enumeration values of {{XRSessionMode}} that the [=/XR device=] supports.
 
 Each [=/XR device=] has a <dfn for="XR device">set of granted features</dfn> for each {{XRSessionMode}} in its [=list of supported modes=], which is a [=/set=] of [=feature descriptors=] which MUST be initially an empty [=/set=].
 
-The user-agent has a <dfn for="">list of immersive XR devices</dfn> (a [=/list=] of [=/XR device=]), which MUST be initially an empty [=/list=].
+The user agent has a <dfn for="">list of immersive XR devices</dfn> (a [=/list=] of [=/XR device=]), which MUST be initially an empty [=/list=].
 
-The user-agent has an <dfn for="">immersive XR device</dfn> (`null` or [=/XR device=]) which is initially `null` and represents the active [=/XR device=] from the [=list of immersive XR devices=]. This object MAY live on a separate thread and be updated asynchronously.
+The user agent has an <dfn for="">immersive XR device</dfn> (`null` or [=/XR device=]) which is initially `null` and represents the active [=/XR device=] from the [=list of immersive XR devices=]. This object MAY live on a separate thread and be updated asynchronously.
 
-The user-agent MUST have a <dfn for="">default inline XR device</dfn>, which is an [=/XR device=] that MUST [=list/contains|contain=] {{XRSessionMode/"inline"}} in its [=list of supported modes=]. The [=/default inline XR device=] MUST NOT report any pose information, and MUST NOT report [=XR input source=]s or events other than those created by pointer events.
+The user agent MUST have a <dfn for="">default inline XR device</dfn>, which is an [=/XR device=] that MUST [=list/contains|contain=] {{XRSessionMode/"inline"}} in its [=list of supported modes=]. The [=/default inline XR device=] MUST NOT report any pose information, and MUST NOT report [=XR input source=]s or events other than those created by pointer events.
 
 Note: The [=/default inline XR device=] exists purely as a convenience for developers, allowing them to use the same rendering and input logic for both inline and immersive content. The [=/default inline XR device=] does not expose any information not already available to the developer through other mechanisms on the page (such as pointer events for input), it only surfaces those values in an XR-centric format.
 
-The user-agent MUST have a <dfn for="">inline XR device</dfn>, which is an [=/XR device=] that MUST [=list/contains|contain=] {{XRSessionMode/"inline"}} in its [=list of supported modes=]. The [=/inline XR device=] MAY be the [=immersive XR device=] if the tracking it provides makes sense to expose to inline content or the [=/default inline XR device=] otherwise.
+The user agent MUST have a <dfn for="">inline XR device</dfn>, which is an [=/XR device=] that MUST [=list/contains|contain=] {{XRSessionMode/"inline"}} in its [=list of supported modes=]. The [=/inline XR device=] MAY be the [=immersive XR device=] if the tracking it provides makes sense to expose to inline content or the [=/default inline XR device=] otherwise.
 
 Note: On phones, the [=/inline XR device=] may report pose information derived from the phone's internal sensors, such as the gyroscope and accelerometer. On desktops and laptops without similar sensors, the [=/inline XR device=] will not be able to report a pose, and as such should fall back to the [=/default inline XR device=]. In case the user agent is already running on an [=/XR device=], the [=/inline XR device=] will be the same device, and may support multiple [=view|views=]. User consent must be given before any tracking or input features beyond what the [=/default inline XR device=] exposes are provided.
 
@@ -303,7 +306,7 @@ Each time the [=list of immersive XR devices=] changes the user agent should <df
   1. If this is the first time devices have been enumerated or |oldDevice| equals the [=immersive XR device=], abort these steps.
   1. [=Shut down the session|Shut down=] any active {{XRSession}}s.
   1. [=Queue a task=] to set the [=XR compatible=] boolean of all {{WebGLRenderingContextBase}} instances to `false`.
-  1. [=Queue a task=] to [=fire an event=] named <a for="XRSystem" data-link-type="event">devicechange</a> on the [=context object=]'s {{Window/navigator}}'s {{Navigator/xr}}.
+  1. [=Queue a task=] to [=fire an event=] named <a for="XRSystem" data-link-type="event">devicechange</a> on the [=relevant Global object=]'s {{Window/navigator}}'s {{Navigator/xr}}.
   1. [=Queue a task=] to fire appropriate `change` events on any {{XRPermissionStatus}} objects who are affected by the change in the [=immersive XR device=] or [=/inline XR device=].
 
 Note: These steps should always be run [=in parallel=].
@@ -340,15 +343,15 @@ When this method is invoked, it MUST run the following steps:
       : If the user agent and system are known to [=never support=] |mode| sessions
       :: [=/Resolve=] |promise| with `false`.
 
-      : If the user agent and system are is known to [=usually support=] |mode| sessions
-      :: |promise| MAY be [=/resolved=] with `true` provided that all instances of this user agent [=indistinguishable by user-agent string=] produce the same result here.
+      : If the user agent and system are known to [=usually support=] |mode| sessions
+      :: |promise| MAY be [=/resolved=] with `true` provided that all instances of this user agent [=indistinguishable by user agent string=] produce the same result here.
 
       : Otherwise
       :: Run the following steps [=in parallel=]:
         1. Let |device| be the result of [=ensure an immersive XR device is selected|ensuring an immersive XR device is selected=].
         1. If |device| is null, [=/resolve=] |promise| with `false` and abort these steps.
         1. If |device|'s [=list of supported modes=] does not [=list/contain=] |mode|, [=queue a task=] to [=/resolve=] |promise| with `false` and abort these steps.
-        1. [=request permission to use=] the [=powerful feature=] {{PermissionName/"xr-session-supported"}} with {{XRSessionSupportedPermissionDescriptor}} with {{XRSessionSupportedPermissionDescriptor/mode}} equal to |mode|. If it returns {{PermissionState/"denied"}} [=queue a task=] to [=/resolve=] |promise| with `false` and abort these steps. <span class=note>See [[#issessionsupported-fingerprinting|Fingerprinting considerations]] for more information.
+        1. [=request permission to use=] the [=powerful feature=] <a permission>"xr-session-supported"</a> with {{XRSessionSupportedPermissionDescriptor}} with {{XRSessionSupportedPermissionDescriptor/mode}} equal to |mode|. If it returns {{PermissionState/"denied"}} [=queue a task=] to [=/resolve=] |promise| with `false` and abort these steps. <span class=note>See [[#issessionsupported-fingerprinting|Fingerprinting considerations]] for more information.
         1. [=queue a task=] to [=/resolve=] |promise| with `true`.
 
     </dl>
@@ -484,17 +487,17 @@ enum XRSessionMode {
 
   - A session mode of <dfn enum-value for="XRSessionMode">inline</dfn> indicates that the session's output will be shown as an element in the HTML document. {{inline}} session content MUST be displayed in mono (i.e., with a single [=view=]). It MAY allow for [=viewer=] tracking. User agents MUST allow {{inline}} sessions to be created.
   - A session mode of <dfn enum-value for="XRSessionMode">immersive-vr</dfn> indicates that the session's output will be given [=exclusive access=] to the [=immersive XR device=] display and that content <b>is not</b> intended to be integrated with the user's environment.
-  - The behavior of the <dfn enum-value for="XRSessionMode">immersive-ar</dfn> session mode is defined in the <a href="https://immersive-web.github.io/webxr-ar-module/">WebXR AR Module</a> and MUST NOT be added to the [=immersive XR device=]'s [=list of supported modes=] unless the UA implements that module.
+  - The behavior of the <dfn enum-value for="XRSessionMode">immersive-ar</dfn> session mode is defined in the <a href="https://www.w3.org/TR/webxr-ar-module-1/">WebXR AR Module</a> and MUST NOT be added to the [=immersive XR device=]'s [=list of supported modes=] unless the UA implements that module.
 
 In this document, the term <dfn>inline session</dfn> is synonymous with an {{inline}} session and the term <dfn>immersive session</dfn> refers to either an {{immersive-vr}} or {{immersive-ar}} session.
 
 [=Immersive sessions=] MUST provide some level of [=viewer=] tracking, and content MUST be shown at the proper scale relative to the user and/or the surrounding environment. Additionally, [=Immersive sessions=] MUST be given <dfn>exclusive access</dfn> to the [=immersive XR device=], meaning that while the [=immersive session=] is {{XRVisibilityState/"visible"}} the HTML document is not shown on the [=immersive XR device=]'s display, nor does content from any other source have exclusive access. [=Exclusive access=] does not prevent the user agent from overlaying its own UI, however this UI SHOULD be minimal.
 
-Note: Future specifications or modules may expand the definition of [=immersive session=] include additional session modes.
+Note: Future specifications or modules may expand the definition of [=immersive session=] to include additional session modes.
 
 Note: Examples of ways [=exclusive access=] may be presented include stereo content displayed on a virtual reality headset.
 
-Note: As an example of overlaid UI, the user-agent or operating system in an [=immersive session=] may show notifications over the rendered content.
+Note: As an example of overlaid UI, the user agent or operating system in an [=immersive session=] may show notifications over the rendered content.
 
 Note: While the HTML document is not shown on the [=immersive XR device=]'s display during an [=immersive session=], it may still be shown on a separate display, e.g. when the user is entering the [=immersive session=] from a 2d browser on their computer tethered to their  [=immersive XR device=].
 
@@ -505,7 +508,7 @@ Some features of an {{XRSession}} may not be universally available for a number 
 
 Since it is a poor user experience to initialize the underlying XR platform and create an {{XRSession}} only to immediately notify the user that the applications cannot function correctly, developers can indicate <dfn>required features</dfn> by passing an {{XRSessionInit}} dictionary to {{XRSystem/requestSession()}}. This will block the creation of the {{XRSession}} if any of the [=required features=] are unavailable due to device limitations or in the absence of a clear signal of [=user intent=] to expose [=sensitive information=] related to the feature.
 
-Additionally, developers are encouraged to design experiences which progressively enhance their functionality when run one more capable devices. <dfn>Optional features</dfn> which the experience does not require but will take advantage of when available must also be indicated in an {{XRSessionInit}} dictionary to ensure that [=user intent=] can be determined before enabling the feature if necessary.
+Additionally, developers are encouraged to design experiences which progressively enhance their functionality when run on more capable devices. <dfn>Optional features</dfn> which the experience does not require but will take advantage of when available must also be indicated in an {{XRSessionInit}} dictionary to ensure that [=user intent=] can be determined before enabling the feature if necessary.
 
 <pre class="idl">
 dictionary XRSessionInit {
@@ -592,7 +595,7 @@ Note: {{XRReferenceSpaceType/"local"}} is always included in the [=requested fea
 
 [=Requested features=] can only be enabled for a session if the [=XRSession/XR device=] is <dfn>capable of supporting</dfn> the feature, which means that the feature is known to be supported by the [=XRSession/XR device=] in some configurations, even if the current configuration has not yet been verified as supporting the feature. The user agent MAY apply more rigorous constraints if desired in order to yield a more consistent user experience.
 
-Note: For example, several VR devices support either configuring a safe boundary for the user to move around within or skipping boundary configuration and operating in a mode where the user is expected to stand in place. Such a device can be considered to be [=capable of supporting=] {{"bounded-floor"}} {{XRReferenceSpace}}s even if they are currently not configured with safety boundaries, because it's expected that the user could configure the device appropriately if the experience required it. This is to allow user agents to avoid fully initializing the [=XRSession/XR device=] or waiting for the user's environment to be recognized prior to [=resolve the requested features|resolving the requested features=] if desired. If, however, the user agent knows that the boundary state at the time the session is requested without additional initialization it may choose to reject the {{"bounded-floor"}} feature if the safety boundary not already configured.
+Note: For example, several VR devices support either configuring a safe boundary for the user to move around within or skipping boundary configuration and operating in a mode where the user is expected to stand in place. Such a device can be considered to be [=capable of supporting=] {{"bounded-floor"}} {{XRReferenceSpace}}s even if they are currently not configured with safety boundaries, because it's expected that the user could configure the device appropriately if the experience required it. This is to allow user agents to avoid fully initializing the [=XRSession/XR device=] or waiting for the user's environment to be recognized prior to [=resolve the requested features|resolving the requested features=] if desired. If, however, the user agent knows the boundary state at the time the session is requested without additional initialization it may choose to reject the {{"bounded-floor"}} feature if the safety boundary is not already configured.
 
 Session {#session}
 =======
@@ -647,7 +650,7 @@ Each {{XRSession}} has a <dfn for="XRSession">mode</dfn>, which is one of the va
 
 Each {{XRSession}} has an <dfn for=XRSession>animation frame</dfn>, which is an {{XRFrame}} initialized with [=XRFrame/active=] set to `false`, [=XRFrame/animationFrame=] set to `true`, and {{XRFrame/session}} set to the {{XRSession}}.
 
-Each {{XRSession}} has a <dfn for=XRSession>set of granted features</dfn>, which is a [=/set=] of {{DOMString}}s corresponding the the [=feature descriptors=] that have been granted to the {{XRSession}}.
+Each {{XRSession}} has a <dfn for=XRSession>set of granted features</dfn>, which is a [=/set=] of {{DOMString}}s corresponding to the [=feature descriptors=] that have been granted to the {{XRSession}}.
 
 <div class="algorithm" data-algorithm="initialize-session">
 
@@ -707,7 +710,7 @@ Each {{XRSession}} has a <dfn>minimum near clip plane</dfn> and a <dfn>maximum f
 When the user agent will <dfn>update the pending layers state</dfn> with {{XRSession}} <var ignore>session</var> and {{XRRenderStateInit}} |newState|, it must run the following steps:
   1. If |newState|'s {{XRRenderStateInit/layers}}'s value is not `null`, throw a {{NotSupportedError}}.
 
-NOTE: The <a href="https://immersive-web.github.io/layers">WebXR layers module</a> will introduce new semantics for this algorithm.
+NOTE: The <a href="https://www.w3.org/TR/webxrlayers-1/">WebXR layers module</a> will introduce new semantics for this algorithm.
 
 </div>
 
@@ -888,7 +891,7 @@ The <dfn attribute for="XRSession">visibilityState</dfn> attribute returns the {
 
 The [=visibility state=] MAY be changed by the user agent at any time other than during the processing of an [=XR animation frame=], and the user agent SHOULD monitor the XR platform when possible to observe when session visibility has been affected external to the user agent and update the [=visibility state=] accordingly.
 
-Note: The {{XRSession}}'s [=visibility state=] does not necessarily imply the visibility of the HTML document. Depending on the system configuration the page may continue to be visible while an [=immersive session=] is active. (For example, a headset connected to a PC may continue to display the page on the monitor while the headset is viewing content from an [=immersive session=].) Developers should continue to rely on the [Page Visibility API](https://w3c.github.io/page-visibility/) to determine page visibility.
+Note: The {{XRSession}}'s [=visibility state=] does not necessarily imply the visibility of the HTML document. Depending on the system configuration the page may continue to be visible while an [=immersive session=] is active. (For example, a headset connected to a PC may continue to display the page on the monitor while the headset is viewing content from an [=immersive session=].) Developers should continue to rely on the [Page Visibility API](https://www.w3.org/TR/page-visibility-2/) to determine page visibility.
 
 Note: The {{XRSession}}'s [=visibility state=] does not affect or restrict mouse behavior on tethered sessions where 2D content is still visible while an [=immersive session=] is active. Content should consider using the [[!pointerlock]] API if it wishes to have stronger control over mouse behavior.
 
@@ -954,9 +957,9 @@ dictionary XRRenderStateInit {
 
 Each {{XRRenderState}} has a <dfn for="XRRenderState">output canvas</dfn>, which is an {{HTMLCanvasElement}} initially set to `null`. The [=XRRenderState/output canvas=] is the DOM element that will display any content rendered for an {{XRSessionMode/"inline"}} {{XRSession}}.
 
-Each {{XRRenderState}} also has <dfn for="XRRenderState">composition enabled</dfn> boolean, which is initially `true`. The {{XRRenderState}} is considered to be have [=XRRenderState/composition enabled=] if rendering commands are performed against a surface provided by the API and displayed by the [=XR Compositor=]. If rendering is performed for an {{XRSessionMode/"inline"}} {{XRSession}} in such a way that it is directly displayed into [=XRRenderState/output canvas=], the {{XRRenderState}}'s [=XRRenderState/composition enabled=] flag MUST be `false`.
+Each {{XRRenderState}} also has a <dfn for="XRRenderState">composition enabled</dfn> boolean, which is initially `true`. The {{XRRenderState}} is considered to have [=XRRenderState/composition enabled=] if rendering commands are performed against a surface provided by the API and displayed by the [=XR Compositor=]. If rendering is performed for an {{XRSessionMode/"inline"}} {{XRSession}} in such a way that it is directly displayed into an [=XRRenderState/output canvas=], the {{XRRenderState}}'s [=XRRenderState/composition enabled=] flag MUST be `false`.
 
-Note: At this point the {{XRRenderState}} will only have an [=XRRenderState/output canvas=] if it has [=XRRenderState/composition enabled=] set to `false`, but future versions of the specification are likely to introduce methods for setting [=XRRenderState/output canvas=]' that support more advanced uses like mirroring and layer compositing that will require composition.
+Note: At this point the {{XRRenderState}} will only have an [=XRRenderState/output canvas=] if it has [=XRRenderState/composition enabled=] set to `false`, but future versions of the specification are likely to introduce methods for setting [=XRRenderState/output canvas|output canvases=] that support more advanced uses like mirroring and layer compositing that will require composition.
 
 <div class="algorithm" data-algorithm="initialize-renderstate">
 
@@ -1007,7 +1010,7 @@ The <dfn method for="XRSession">requestAnimationFrame(|callback|)</dfn> method q
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |session| be the [=this=].
+  1. Let |session| be [=this=].
   1. If |session|'s [=ended=] value is `true`, return `0` and abort these steps.
   1. Increment |session|'s [=animation frame callback identifier=] by one.
   1. Append |callback| to |session|'s [=list of animation frame callbacks=], associated with |session|'s [=animation frame callback identifier=]’s current value.
@@ -1021,7 +1024,7 @@ The <dfn method for="XRSession">cancelAnimationFrame(|handle|)</dfn> method canc
 
 When this method is invoked, the user agent MUST run the following steps:
 
-  1. Let |session| be the [=this=].
+  1. Let |session| be [=this=].
   1. Find the entry in |session|'s [=list of animation frame callbacks=] or |session|'s [=list of currently running animation frame callbacks=] that is associated with the value |handle|.
   1. If there is such an entry, set its [=cancelled=] boolean to `true` and remove it from |session|'s [=list of animation frame callbacks=].
 
@@ -1032,7 +1035,7 @@ To <dfn>check the layers state</dfn> with {{XRSession/renderState}} |state|, the
   1. If |state|'s {{XRRenderState/baseLayer}} is `null`, return `false`.
   1. return `true`.
 
-NOTE: The <a href="https://immersive-web.github.io/layers">WebXR layers module</a> will introduce new semantics for this algorithm.
+NOTE: The <a href="https://www.w3.org/TR/webxrlayers-1/">WebXR layers module</a> will introduce new semantics for this algorithm.
 
 </div>
 
@@ -1324,7 +1327,7 @@ An {{XRReferenceSpace}} is most frequently obtained by calling {{XRSession/reque
 
   - Passing a type of <dfn enum-value for="XRReferenceSpaceType">unbounded</dfn> creates an {{XRReferenceSpace}} instance. It represents a tracking space where the user is expected to move freely around their environment, potentially even long distances from their starting point. Tracking in an {{unbounded}} reference space is optimized for stability around the user's current position, and as such the [=native origin=] may drift over time.
 
-Note: it is assumed that the conventions of the underlying platform regarding Y axes of the reference spaces stay consistent across different types of {{XRReferenceSpace}}s. In other words, if an XR system supports multiple reference spaces, their Y axes will be parallel to each other and point in the same direction for the duration of the {{XRSession}} in which they were created. This does not apply to {{XRReferenceSpaceType/"viewer"}}, which does not rely on the conventions of the underlying platform for its orientation. {{XRReferenceSpaceType/"unbounded"}} reference spaces should align their Y axes with other reference spaces when their origins are nearby, but may deviate if the user moves over large distances.
+Note: It is assumed that the conventions of the underlying platform regarding Y axes of the reference spaces stay consistent across different types of {{XRReferenceSpace}}s. In other words, if an XR system supports multiple reference spaces, their Y axes will be parallel to each other and point in the same direction for the duration of the {{XRSession}} in which they were created. This does not apply to {{XRReferenceSpaceType/"viewer"}}, which does not rely on the conventions of the underlying platform for its orientation. {{XRReferenceSpaceType/"unbounded"}} reference spaces should align their Y axes with other reference spaces when their origins are nearby, but may deviate if the user moves over large distances.
 
 Devices that support {{XRReferenceSpaceType/"local"}} reference spaces MUST support {{XRReferenceSpaceType/"local-floor"}} reference spaces, through emulation if necessary, and vice versa.
 
@@ -1352,7 +1355,7 @@ When an {{XRReferenceSpace}} is requested with {{XRReferenceSpaceType}} |type| f
 <div class="algorithm" data-algorithm="reference-space-supported">
 To check if a <dfn>reference space is supported</dfn> for a given reference space type |type| and {{XRSession}} |session|, run the following steps:
 
-  1. If |type| is not [=list/contain|contained=] in |session|'s [=XRSession/set of granted features=]'s return `false`.
+  1. If |type| is not [=list/contain|contained=] in |session|'s [=XRSession/set of granted features=], return `false`.
   1. If |type| is {{viewer}}, return `true`.
   1. If |type| is {{local}} or {{local-floor}}, and |session| is an [=immersive session=], return `true`.
   1. If |type| is {{local}} or {{local-floor}}, and the [=XRSession/XR device=] supports reporting orientation data, return `true`.
@@ -1386,7 +1389,7 @@ Note: It's expected that some applications will use {{getOffsetReferenceSpace()}
 XRBoundedReferenceSpace {#xrboundedreferencespace-interface}
 -----------------------
 
-{{XRBoundedReferenceSpace}} extends {{XRReferenceSpace}} to include {{boundsGeometry}}, indicating the pre-configured boundaries of the users space.
+{{XRBoundedReferenceSpace}} extends {{XRReferenceSpace}} to include {{boundsGeometry}}, indicating the pre-configured boundaries of the user's space.
 
 <pre class="idl">
 [SecureContext, Exposed=Window]
@@ -1421,7 +1424,7 @@ To check if <dfn>bounded reference spaces are supported</dfn> run the following 
     1. Return true.
 </div>
 
-Note: Bounded references spaces may be returned if the boundaries or floor height have not been resolved at the time of the reference space request, but the XR device is known to support them.
+Note: Bounded reference spaces may be returned if the boundaries or floor height have not been resolved at the time of the reference space request, but the XR device is known to support them.
 
 Note: Content should not require the user to move beyond the {{boundsGeometry}}. It is possible for the user to move beyond the bounds if their physical surroundings allow for it, resulting in position values outside of the polygon they describe. This is not an error condition and should be handled gracefully by page content.
 
@@ -1474,7 +1477,7 @@ enum XREye {
 };
 </pre>
 
-The <dfn attribute for="XRView">eye</dfn> attribute describes is the [=view/eye=] of the underlying [=view=]. This attribute's primary purpose is to ensure that pre-rendered stereo content can present the correct portion of the content to the correct eye.
+The <dfn attribute for="XRView">eye</dfn> attribute describes the [=view/eye=] of the underlying [=view=]. This attribute's primary purpose is to ensure that pre-rendered stereo content can present the correct portion of the content to the correct eye.
 
 The <dfn attribute for="XRView">projectionMatrix</dfn> attribute is the [=view/projection matrix=] of the underlying [=view=]. It is <b>strongly recommended</b> that applications use this matrix without modification or decomposition. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort. This attribute MUST be computed by [=XRView/obtain the projection matrix|obtaining the projection matrix=] for the {{XRView}}.
 
@@ -1512,7 +1515,7 @@ Note: The method ignores null or undefined scale values so that applications can
 
 <div class=algorithm data-algorithm="obtain-xrview-projection">
 
-To <dfn for="XRView">obtain the projection matrix</dfn> for a given {{XRView}} |view|
+To <dfn for="XRView">obtain the projection matrix</dfn> for a given {{XRView}} |view|:
 
   1. If |view|'s [=XRView/internal projection matrix=] is not `null`, perform the following steps:
     1. If the operation {{IsDetachedBuffer}} on [=XRView/internal projection matrix=]  is `false`, return |view|'s [=XRView/internal projection matrix=].
@@ -1536,11 +1539,11 @@ When the [=view/active=] flag of any [=view=] in the [=XRSession/list of views=]
 
 <div class=algorithm data-algorithm="obtain-scaled-viewport">
 
-To <dfn for="XRView">obtain a scaled viewport</dfn> for a given {{XRView}} |view| for an {{XRSession}} |session|
+To <dfn for="XRView">obtain a scaled viewport</dfn> for a given {{XRView}} |view| for an {{XRSession}} |session|:
 
     1. Let |glFullSizedViewport| be the [=WebGL viewport=] from the [=list of full-sized viewports=] associated with |view|.
     1. Let |scale| be the |view|'s [=view/current viewport scale=].
-    1. The user-agent MAY choose to clamp |scale| to apply a minimum viewport scale factor.
+    1. The user agent MAY choose to clamp |scale| to apply a minimum viewport scale factor.
     1. Let |glViewport| be a new [=WebGL viewport=].
     1. Set |glViewport|'s `width` to an integer value less than or equal to |glFullSizedViewport|'s `width` multiplied by |scale|.
     1. If |glViewport|'s `width` is less than 1, set it to 1.
@@ -1564,7 +1567,7 @@ Primary and Secondary Views {#primary-and-secondary-views}
 
 A [=view=] is a <dfn>primary view</dfn> when rendering to it is necessary for an immersive experience. [=Primary views=] MUST be [=view/active=] for the entire duration of the {{XRSession}}.
 
-A [=view=] is a <dfn>secondary view</dfn> when it is possible for content to choose to not render to it and still produce a working immersive experience. When content chooses to not render to these views, the user-agent MAY be able to reconstruct them via reprojection. Secondary views MUST NOT be [=view/active=] unless the "[=secondary view/secondary-views=]" feature is enabled.
+A [=view=] is a <dfn>secondary view</dfn> when it is possible for content to choose to not render to it and still produce a working immersive experience. When content chooses to not render to these views, the user agent MAY be able to reconstruct them via reprojection. Secondary views MUST NOT be [=view/active=] unless the "[=secondary view/secondary-views=]" feature is enabled.
 
 <div class="example">
 Examples of [=primary views=] include the main mono view for a handheld AR session, the main two stereo views for headworn AR/VR sessions, or all of the wall views for a CAVE session.
@@ -1576,16 +1579,16 @@ Examples of [=secondary views=] include the [=first-person observer view=] used 
 <div class=note>
 While content should be written to assume that there may be any number of views, we expect a significant amount of content to make incorrect assumptions about the {{XRViewerPose/views}} array and thus break when presented with more than two views.
 
-Because user-agents may have the ability to use mechanisms like reprojection to render to these [=secondary views=] in lieu of the content, it is desirable to be able to distinguish between content that plans on handling these [=secondary views=] itself and content that is either oblivious to the existence of such [=secondary views=] or does not wish to deal with them.
+Because user agents may have the ability to use mechanisms like reprojection to render to these [=secondary views=] in lieu of the content, it is desirable to be able to distinguish between content that plans on handling these [=secondary views=] itself and content that is either oblivious to the existence of such [=secondary views=] or does not wish to deal with them.
 </div>
 
-To provide for this, user-agents that expose [=secondary views=] MUST support an "<dfn for="secondary view">secondary-views</dfn>" [=feature descriptor=] as a hint. Content enabling this feature is expected to:
+To provide for this, user agents that expose [=secondary views=] MUST support an "<dfn for="secondary view">secondary-views</dfn>" [=feature descriptor=] as a hint. Content enabling this feature is expected to:
 
  - Handle any nonzero number of [=views=] in the {{XRViewerPose/views}} array.
  - Handle the existence of multiple [=views=] that have the same [=view/eye=].
  - Handle the size of the {{XRViewerPose/views}} array changing from frame to frame. <span class=note>This can happen when video capture is enabled, for example</span>
 
-When "[=secondary view/secondary-views=]" is enabled, the user-agent MAY surface any [=secondary views=] the device supports to the {{XRSession}}, when necessary. The user-agent MUST NOT use reprojection to reconstruct [=secondary views=] in such a case, and instead rely on whatever the content decides to render.
+When "[=secondary view/secondary-views=]" is enabled, the user agent MAY surface any [=secondary views=] the device supports to the {{XRSession}}, when necessary. The user agent MUST NOT use reprojection to reconstruct [=secondary views=] in such a case, and instead rely on whatever the content decides to render.
 
 Note: We recommend content use {{XRSessionInit/optionalFeatures}} to enable "[=secondary view/secondary-views=]" to ensure maximum compatibility.
 
@@ -1719,19 +1722,19 @@ Note: This matrix when premultiplied onto a column vector will rotate the vector
 
 <div class=algorithm data-algorithm="obtain-xrrigidtransform-matrix">
 
-To <dfn for="XRRigidTransform">obtain the matrix</dfn> for a given {{XRRigidTransform}} |transform|
+To <dfn for="XRRigidTransform">obtain the matrix</dfn> for a given {{XRRigidTransform}} |transform|:
 
   1. If |transform|'s [=XRRigidTransform/internal matrix=] is not `null`, perform the following steps:
     1. If the operation {{IsDetachedBuffer}} on [=XRRigidTransform/internal matrix=] is `false`, return |transform|'s [=XRRigidTransform/internal matrix=].
   1. Let |translation| be a new [=matrix=] which is a column-vector translation matrix corresponding to {{XRRigidTransform/position}}. Mathematically, if {{XRRigidTransform/position}} is `(x, y, z)`, this matrix is
 
-        <img src="images/translation_matrix.svg" alt="Mathematical expression for column-vector translation matrix" />
-  1. Let |rotation| be a new [=matrix=] which is a column-vector rotation matrix corresponding to {{XRRigidTransform/orientation}}. Mathematically, if {{XRRigidTransform/orientation}} is the unit quaternion `(q<sub>x</sub>, q<sub>y</sub>, q<sub>z</sub>, q<sub>w</sub>)`, this matrix is
+        <img src="images/translation_matrix.svg" width="6733" height="5386" style="height: 6em; width: auto;" alt="Mathematical expression for column-vector translation matrix" />
+  1. Let |rotation| be a new [=matrix=] which is a column-vector rotation matrix corresponding to {{XRRigidTransform/orientation}}. Mathematically, if {{XRRigidTransform/orientation}} is the unit quaternion (<code>q<sub>x</sub>, q<sub>y</sub>, q<sub>z</sub>, q<sub>w</sub></code>), this matrix is
 
-        <img src="images/rotation_matrix.svg" alt="Mathematical expression for column-vector rotation matrix" />
+        <img src="images/rotation_matrix.svg" width="24008" height="5817" style="height: 6em; width: auto" alt="Mathematical expression for column-vector rotation matrix" />
   1. Set |transform|'s [=XRRigidTransform/internal matrix=] to a [=new=] {{Float32Array}} in the [=relevant realm=] of |transform| set to the result of multiplying |translation| and |rotation| with |translation| on the left (`translation * rotation`) in the [=relevant realm=] of |transform|. Mathematically, this matrix is
 
-       <img src="images/rigid_matrix.svg" alt="Mathematical expression for matrix of multiplying translation and rotation with translation on the left" />
+       <img src="images/rigid_matrix.svg" width="24080" height="5817" style="height: 6em; width: auto" alt="Mathematical expression for matrix of multiplying translation and rotation with translation on the left" />
   1. Return |transform|'s [=XRRigidTransform/internal matrix=].
 
 </div>
@@ -1784,7 +1787,7 @@ The <dfn attribute for="XRPose">emulatedPosition</dfn> attribute is `false` when
 XRViewerPose {#xrviewerpose-interface}
 ------------
 
-An {{XRViewerPose}} is an {{XRPose}} describing the state of a <dfn>viewer</dfn> of the XR scene as tracked by the [=XRSession/XR device=]. A [=viewer=] may represent a tracked piece of hardware, the observed position of a users head relative to the hardware, or some other means of computing a series of viewpoints into the XR scene. {{XRViewerPose}}s can only be queried relative to an {{XRReferenceSpace}}. It provides, in addition to the {{XRPose}} values, an array of [=view=]s which include rigid transforms to indicate the viewpoint and projection matrices. These values should be used by the application when rendering a frame of an XR scene.
+An {{XRViewerPose}} is an {{XRPose}} describing the state of a <dfn>viewer</dfn> of the XR scene as tracked by the [=XRSession/XR device=]. A [=viewer=] may represent a tracked piece of hardware, the observed position of a user's head relative to the hardware, or some other means of computing a series of viewpoints into the XR scene. {{XRViewerPose}}s can only be queried relative to an {{XRReferenceSpace}}. It provides, in addition to the {{XRPose}} values, an array of [=view=]s which include rigid transforms to indicate the viewpoint and projection matrices. These values should be used by the application when rendering a frame of an XR scene.
 
 <pre class="idl">
 [SecureContext, Exposed=Window] interface XRViewerPose : XRPose {
@@ -1827,7 +1830,7 @@ interface XRInputSource {
 };
 </pre>
 
-Note: The {{XRInputSource}} interface is also extended by the <a href="https://immersive-web.github.io/webxr-gamepads-module/">WebXR Gamepads Module</a>
+Note: The {{XRInputSource}} interface is also extended by the <a href="https://www.w3.org/TR/webxr-gamepads-module-1/">WebXR Gamepads Module</a>
 
 The <dfn attribute for="XRInputSource">handedness</dfn> attribute describes which hand the [=XR input source=] is associated with, if any. Input sources with no natural handedness (such as headset-mounted controls) or for which the handedness is not currently known MUST set this attribute {{XRHandedness/"none"}}.
 
@@ -1837,9 +1840,9 @@ The <dfn attribute for="XRInputSource">targetRayMode</dfn> attribute describes t
   - <dfn enum-value for="XRTargetRayMode">tracked-pointer</dfn> indicates that the target ray originates from either a handheld device or other hand-tracking mechanism and represents that the user is using their hands or the held device for pointing. The orientation of the target ray relative to the tracked object MUST follow platform-specific ergonomics guidelines when available. In the absence of platform-specific guidance, the target ray SHOULD point in the same direction as the user's index finger if it was outstretched.
   - <dfn enum-value for="XRTargetRayMode">screen</dfn> indicates that the input source was an interaction with the canvas element associated with an inline session's output context, such as a mouse click or touch event.
 
-The <dfn attribute for="XRInputSource">targetRaySpace</dfn> attribute is an {{XRSpace}} that has a [=native origin=] tracking the position and orientation of the preferred pointing ray of the {{XRInputSource}} (along its -Z axis), as defined by the {{targetRayMode}}.
+The <dfn attribute for="XRInputSource">targetRaySpace</dfn> attribute is an {{XRSpace}} that has a [=native origin=] tracking the position and orientation of the preferred pointing ray of the {{XRInputSource}} (along its `-Z` axis), as defined by the {{targetRayMode}}.
 
-The <dfn attribute for="XRInputSource">gripSpace</dfn> attribute is an {{XRSpace}} that has a [=native origin=] tracking to the pose that should be used to render virtual objects such that they appear to be held in the user's hand. If the user were to hold a straight rod, this {{XRSpace}} places the [=native origin=] at the centroid of their curled fingers and where the `-Z` axis points along the length of the rod towards their thumb. The `X` axis is perpendicular to the back of the hand being described, with back of the users right hand pointing towards `+X` and the back of the user's left hand pointing towards `-X`. The `Y` axis is implied by the relationship between the `X` and `Z` axis, with `+Y` roughly pointing in the direction of the user's arm.
+The <dfn attribute for="XRInputSource">gripSpace</dfn> attribute is an {{XRSpace}} that has a [=native origin=] tracking to the pose that should be used to render virtual objects such that they appear to be held in the user's hand. If the user were to hold a straight rod, this {{XRSpace}} places the [=native origin=] at the centroid of their curled fingers and where the `-Z` axis points along the length of the rod towards their thumb. The `X` axis is perpendicular to the back of the hand being described, with the back of the user's right hand pointing towards `+X` and the back of the user's left hand pointing towards `-X`. The `Y` axis is implied by the relationship between the `X` and `Z` axis, with `+Y` roughly pointing in the direction of the user's arm.
 
 The {{gripSpace}} MUST be `null` if the input source isn't inherently trackable such as for input sources with a {{targetRayMode}} of {{XRTargetRayMode/"gaze"}} or {{XRTargetRayMode/"screen"}}.
 
@@ -1851,7 +1854,7 @@ Profiles are given in descending order of specificity. Any [=input profile name=
 
 If the {{XRSession}}'s [=mode=] is {{XRSessionMode/"inline"}}, {{XRInputSource/profiles}} MUST be an empty list.
 
-The user agent MAY choose to only report an appropriate generic [=input profile name=]s or an empty list at its discretion. Some scenarios where this would be appropriate are if the input device cannot be reliably identified, no known input profiles match the input device, or the user agent wishes to mask the input device being used.
+The user agent MAY choose to only report an appropriate generic [=input profile name=] or an empty list at its discretion. Some scenarios where this would be appropriate are if the input device cannot be reliably identified, no known input profiles match the input device, or the user agent wishes to mask the input device being used.
 
 <p class="note">
 For example, the Samsung HMD Odyssey's controller is a design variant of the standard Windows Mixed Reality controller. Both controllers share the same input layout. As a result, the {{XRInputSource/profiles}} for a Samsung HMD Odyssey controller could be: `["samsung-odyssey", "microsoft-mixed-reality", "generic-trigger-squeeze-touchpad-thumbstick"]`. The appearance of the controller is most precisely communicated by the first profile in the list, with the second profile describing an acceptable substitute, and the last profile a generic fallback that describes the device in the roughest sense. (It's a controller with a trigger, squeeze button, touchpad and thumbstick.)
@@ -1861,7 +1864,7 @@ Similarly, the Valve Index controller is backwards compatible with the HTC Vive 
 (Exact strings are examples only. Actual profile names are managed in the <a href="https://github.com/immersive-web/webxr-input-profiles/tree/master/packages/registry">WebXR Input Profiles Registry</a>.)
 </p>
 
-Note: {{XRInputSource}}s in an {{XRSession}}'s {{XRSession/inputSources}} array are "live". As such values within them are updated in-place. This means that it doesn't work to save a reference to an {{XRInputSource}}'s attribute on one frame and compare it to the same attribute in a subsequent frame to test for state changes, because they will be the same object. Therefore developers that wish to compare input state from frame to frame should copy the content of the state in question.
+Note: {{XRInputSource}}s in an {{XRSession}}'s {{XRSession/inputSources}} array are "live". As such, values within them are updated in-place. This means that it doesn't work to save a reference to an {{XRInputSource}}'s attribute on one frame and compare it to the same attribute in a subsequent frame to test for state changes, because they will be the same object. Therefore developers that wish to compare input state from frame to frame should copy the content of the state in question.
 
 An [=XR input source=] is a <dfn>primary input source</dfn> if it supports a <dfn>primary action</dfn>. The [=primary action=] is a platform-specific action that, when engaged, produces {{XRSession/selectstart}}, {{XRSession/selectend}}, and {{XRSession/select}} events. Examples of possible [=primary action=]s are pressing a trigger, touchpad, or button, speaking a command, or making a hand gesture. If the platform guidelines define a recommended primary input then it should be used as the [=primary action=], otherwise the user agent is free to select one. The device MUST support at least one [=primary input source=].
 
@@ -1909,7 +1912,7 @@ When an [=XR input source=] |source| for {{XRSession}} |session| ends its [=prim
 
 </div>
 
-Sometimes platform-specific behavior can result in a [=primary action=] or [=primary squeeze action=] being interrupted or cancelled. For example, a [=/XR input source=] may be removed from the [=XRSession/XR device=] after the [=primary action=] or [=primary squeeze action=] is started but before it ends.
+Sometimes platform-specific behavior can result in a [=primary action=] or [=primary squeeze action=] being interrupted or cancelled. For example, an [=/XR input source=] may be removed from the [=XRSession/XR device=] after the [=primary action=] or [=primary squeeze action=] is started but before it ends.
 
 <div class="algorithm" data-algorithm="on-input-cancelled">
 
@@ -2085,7 +2088,7 @@ The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |laye
       ::
         1. Initialize |layer|'s {{XRWebGLLayer/antialias}} to |layerInit|'s {{XRWebGLLayerInit/antialias}} value.
         1. Let |scaleFactor| be |layerInit|'s {{XRWebGLLayerInit/framebufferScaleFactor}}.
-        1. The user-agent MAY choose to clamp or round |scaleFactor| as it sees fit here, for example if it wishes to fit the buffer dimensions into a power of two for performance reasons.
+        1. The user agent MAY choose to clamp or round |scaleFactor| as it sees fit here, for example if it wishes to fit the buffer dimensions into a power of two for performance reasons.
         1. Let |framebufferSize| be the [=recommended WebGL framebuffer resolution=] with width and height separately multiplied by |scaleFactor|.
         1. Initialize |layer|'s {{XRWebGLLayer/framebuffer}} to a [=new=] {{WebGLFramebuffer}} in the [=relevant realm=] of |context|, which is an [=opaque framebuffer=] with the dimensions |framebufferSize| created with |context|, [=opaque framebuffer/session=] initialized to |session|, and |layerInit|'s {{XRWebGLLayerInit/depth}}, {{XRWebGLLayerInit/stencil}}, and {{XRWebGLLayerInit/alpha}} values.
         1. Allocate and initialize resources compatible with |session|'s [=XRSession/XR device=], including GPU accessible memory buffers, as required to support the compositing of |layer|.
@@ -2120,7 +2123,7 @@ An <dfn>opaque framebuffer</dfn> functions identically to a standard {{WebGLFram
  - An [=opaque framebuffer=]'s color buffer will have an alpha channel if and only if {{XRWebGLLayerInit/alpha}} is `true`.
  - The [=XR Compositor=] will assume the [=opaque framebuffer=] contains colors with premultiplied alpha. This is true regardless of the {{WebGLContextAttributes|premultipliedAlpha}} value set in the {{XRWebGLLayer/context}}'s [=actual context parameters=].
 
-Note: User agents are required to respect `true` values of {{XRWebGLLayerInit/depth}} and {{XRWebGLLayerInit/stencil}}, which is similar to WebGL's behavior when [=create a drawing buffer|creating a drawing buffer=]
+Note: User agents are required to respect `true` values of {{XRWebGLLayerInit/depth}} and {{XRWebGLLayerInit/stencil}}, which is similar to WebGL's behavior when [=create a drawing buffer|creating a drawing buffer=].
 
 The buffers attached to an [=opaque framebuffer=] MUST be cleared to the values in the table below when first created, or prior to the processing of each [=XR animation frame=]. This is identical to the behavior of the WebGL context's [=default framebuffer=]. [=Opaque framebuffers=] will always be cleared regardless of the associated WebGL context's {{WebGLContextAttributes|preserveDrawingBuffer}} value.
 
@@ -2160,17 +2163,17 @@ Each {{XRWebGLLayer}} has a <dfn for="XRWebGLLayer">target framebuffer</dfn>, wh
 
 The <dfn attribute for="XRWebGLLayer">framebufferWidth</dfn> and <dfn attribute for="XRWebGLLayer">framebufferHeight</dfn> attributes return the width and height of the [=XRWebGLLayer/target framebuffer=]'s attachments, respectively.
 
-The <dfn attribute for="XRWebGLLayer">antialias</dfn> attribute is `true` if the [=XRWebGLLayer/target framebuffer=] supports antialiasing using a technique of the UAs choosing, and `false` if no antialiasing will be performed.
+The <dfn attribute for="XRWebGLLayer">antialias</dfn> attribute is `true` if the [=XRWebGLLayer/target framebuffer=] supports antialiasing using a technique of the UA's choosing, and `false` if no antialiasing will be performed.
 
 The <dfn attribute for="XRWebGLLayer">ignoreDepthValues</dfn> attribute, if `true`, indicates the [=XR Compositor=] MUST NOT make use of values in the depth buffer attachment when rendering. When the attribute is `false` it indicates that the content of the depth buffer attachment will be used by the [=XR Compositor=] and is expected to be representative of the scene rendered into the layer.
 
-Depth values stored in the buffer are expected to be between `0.0` and `1.0`, with `0.0` representing the distance of {{XRRenderState/depthNear}} and `1.0` representing the distance of {{XRRenderState/depthFar}}, with intermediate values interpolated linearly. This is the default behavior of WebGL. (See documentation for the <a href="https://www.khronos.org/registry/OpenGL-Refpages/es2.0/xhtml/glDepthRangef.xml">depthRange function</a> for additional details.))
+Depth values stored in the buffer are expected to be between `0.0` and `1.0`, with `0.0` representing the distance of {{XRRenderState/depthNear}} and `1.0` representing the distance of {{XRRenderState/depthFar}}, with intermediate values interpolated linearly. This is the default behavior of WebGL. (See documentation for the <a href="https://www.khronos.org/registry/OpenGL-Refpages/es2.0/xhtml/glDepthRangef.xml">depthRange function</a> for additional details.)
 
 Note: Making the scene's depth buffer available to the compositor allows some platforms to provide quality and comfort improvements such as improved reprojection.
 
-The <dfn attribute for="XRWebGLLayer">fixedFoveation</dfn> attribute controls the amount of foveation used by the [=XR Compositor=]. If the user agent or device does not support this attribute, they should return <code>null</code> on getting, and setting should be a <code>no-op</code>. Setting {{XRWebGLLayer/fixedFoveation}} to a value less than <code>0</code> will set it to <code>0</code> and setting it to a value higher than <code>1</code> will set it to <code>1</code>. <code>0</code> sets the minimum amount of foveation while <code>1</code> set the maximum. It is up to the user agent how the [=XR Compositor=] interprets these values. If the {{XRWebGLLayer/fixedFoveation}} level was changed, it will take effect at the next {{XRFrame}}.
+The <dfn attribute for="XRWebGLLayer">fixedFoveation</dfn> attribute controls the amount of foveation used by the [=XR Compositor=]. If the user agent or device does not support this attribute, they should return <code>null</code> on getting, and setting should be a <code>no-op</code>. Setting {{XRWebGLLayer/fixedFoveation}} to a value less than <code>0</code> will set it to <code>0</code> and setting it to a value higher than <code>1</code> will set it to <code>1</code>. <code>0</code> sets the minimum amount of foveation while <code>1</code> sets the maximum. It is up to the user agent how the [=XR Compositor=] interprets these values. If the {{XRWebGLLayer/fixedFoveation}} level was changed, it will take effect at the next {{XRFrame}}.
 
-NOTE: Fixed foveation is a technique that reduces the resolution content renders at near the edges of the users field of view. It can significantly improve experiences that are limited by GPU fill performance. It reduces power consumption and enables applications to increase the resolution of eye textures. It is most useful for low contrast textures, such as background images but less for high contrast ones such as text or detailed images. Authors can adjust the level on a per frame basis to achieve the best tradeoff between performance and visual quality.
+NOTE: Fixed foveation is a technique that reduces the resolution content renders at near the edges of the user's field of view. It can significantly improve experiences that are limited by GPU fill performance. It reduces power consumption and enables applications to increase the resolution of eye textures. It is most useful for low contrast textures, such as background images but less for high contrast ones such as text or detailed images. Authors can adjust the level on a per frame basis to achieve the best tradeoff between performance and visual quality.
 
 Each {{XRWebGLLayer}} MUST have a <dfn>list of full-sized viewports</dfn> which is a [=/list=] containing one [=WebGL viewport=] for each [=view=] the {{XRSession}} may expose, including [=secondary views=] that are not currently [=view/active=] but may become [=view/active=] for the current session. The viewports MUST have a {{XRViewport/width}} and {{XRViewport/height}} greater than `0` and MUST describe a rectangle that does not exceed the bounds of the [=target framebuffer=]. The viewports MUST NOT be overlapping. If [=XRWebGLLayer/composition enabled=] is `false`, the [=list of full-sized viewports=] MUST contain a single [=WebGL viewport=] that covers the [=XRWebGLLayer/context=]'s entire default framebuffer.
 
@@ -2228,7 +2231,7 @@ WebGL Context Compatibility {#contextcompatibility}
 
 In order for a WebGL context to be used as a source for immersive XR imagery it must be created on a <dfn>compatible graphics adapter</dfn> for the [=immersive XR device=]. What is considered a [=compatible graphics adapter=] is platform dependent, but is understood to mean that the graphics adapter can supply imagery to the [=immersive XR device=] without undue latency. If a WebGL context was not already created on the [=compatible graphics adapter=], it typically must be re-created on the adapter in question before it can be used with an {{XRWebGLLayer}}.
 
-Note: On an XR platform with a single GPU, it can safely be assumed that the GPU is compatible with the [=immersive XR device=]s advertised by the platform, and thus any hardware accelerated WebGL contexts are compatible as well. On PCs with both an integrated and discrete GPU the discrete GPU is often considered the [=compatible graphics adapter=] since it generally a higher performance chip. On desktop PCs with multiple graphics adapters installed, the one with the [=immersive XR device=] physically connected to it is likely to be considered the [=compatible graphics adapter=].
+Note: On an XR platform with a single GPU, it can safely be assumed that the GPU is compatible with the [=immersive XR device=]s advertised by the platform, and thus any hardware accelerated WebGL contexts are compatible as well. On PCs with both an integrated and discrete GPU the discrete GPU is often considered the [=compatible graphics adapter=] since it generally is a higher performance chip. On desktop PCs with multiple graphics adapters installed, the one with the [=immersive XR device=] physically connected to it is likely to be considered the [=compatible graphics adapter=].
 
 Note: {{XRSessionMode/"inline"}} sessions render using the same graphics adapter as canvases, and thus do not need {{WebGLContextAttributes/xrCompatible}} contexts.
 
@@ -2242,16 +2245,16 @@ partial interface mixin WebGLRenderingContextBase {
 };
 </pre>
 
-When a user agent implements this specification it MUST set a <dfn>XR compatible</dfn> boolean, initially set to `false`, on every {{WebGLRenderingContextBase}}. Once the [=XR compatible=] boolean is set to `true`, the context can be used with layers for any {{XRSession}} requested from the current [=immersive XR device=].
+When a user agent implements this specification it MUST set an <dfn>XR compatible</dfn> boolean, initially set to `false`, on every {{WebGLRenderingContextBase}}. Once the [=XR compatible=] boolean is set to `true`, the context can be used with layers for any {{XRSession}} requested from the current [=immersive XR device=].
 
 Note: This flag introduces slow synchronous behavior and is discouraged. Consider calling {{WebGLRenderingContextBase/makeXRCompatible()}} instead for an asynchronous solution.
 
 The [=XR compatible=] boolean can be set either at context creation time or after context creation, potentially incurring a context loss. To set the [=XR compatible=] boolean at context creation time, the {{xrCompatible}} context creation attribute must be set to `true` when requesting a WebGL context.   If the requesting document's [=origin=] is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]], {{xrCompatible}} has no effect.
 
 
-The {{WebGLContextAttributes/xrCompatible}} flag on {{WebGLContextAttributes}}, if `true`, affects context creation by requesting the user-agent [=create the WebGL context=] using a [=compatible graphics adapter=] for the [=immersive XR device=]. If the user agent succeeds in this, the created context's [=XR compatible=] boolean will be set to true. To obtain the [=immersive XR device=], [=ensure an immersive XR device is selected=] SHOULD be called.
+The {{WebGLContextAttributes/xrCompatible}} flag on {{WebGLContextAttributes}}, if `true`, affects context creation by requesting the user agent [=create the WebGL context=] using a [=compatible graphics adapter=] for the [=immersive XR device=]. If the user agent succeeds in this, the created context's [=XR compatible=] boolean will be set to true. To obtain the [=immersive XR device=], [=ensure an immersive XR device is selected=] SHOULD be called.
 
-Note: [=Ensure an immersive XR device is selected=] needs to be run [=in parallel=], which introduces slow synchronous behavior on the main thread. User-agents SHOULD print a warning to the console requesting that {{WebGLRenderingContextBase/makeXRCompatible()}} be used instead.
+Note: [=Ensure an immersive XR device is selected=] needs to be run [=in parallel=], which introduces slow synchronous behavior on the main thread. User agents SHOULD print a warning to the console requesting that {{WebGLRenderingContextBase/makeXRCompatible()}} be used instead.
 
 <div class="example">
 The following code creates a WebGL context that is compatible with an [=immersive XR device=] and then uses it to create an {{XRWebGLLayer}}.
@@ -2471,31 +2474,31 @@ The <dfn attribute for="XRReferenceSpaceEvent">transform</dfn> attribute describ
 Event Types {#event-types}
 -----------
 
-The user agent MUST provide the following new events. Registration for and firing of the events must follow the usual behavior of DOM4 Events.
+The user agent MUST provide the following new events. Registration for and firing of the events must follow the usual behavior of DOM Events.
 
-The user agent MUST fire a <dfn event for="XRSystem">devicechange</dfn> event on the {{XRSystem}} object to indicate that the availability of [=immersive XR device=]s has been changed unless the document's [=origin=] is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]]. The event MUST be of type {{Event}}.
+The user agent MUST [=fire an event=] named <dfn event for="XRSystem">devicechange</dfn> event on the {{XRSystem}} object to indicate that the availability of [=immersive XR device=]s has been changed unless the document's [=origin=] is not allowed to use the "xr-spatial-tracking" [[#permissions-policy|permissions policy]].
 
-A user agent MUST dispatch a <dfn event for="XRSession">visibilitychange</dfn> event on an {{XRSession}} each time the [=XRSession/visibility state=] of the {{XRSession}} has changed. The event MUST be of type {{XRSessionEvent}}.
+A user agent MUST [=fire an event=] named <dfn event for="XRSession">visibilitychange</dfn> using {{XRSessionEvent}} on an {{XRSession}} each time the [=XRSession/visibility state=] of the {{XRSession}} has changed.
 
-A user agent MUST dispatch an <dfn event for="XRSession">end</dfn> event on an {{XRSession}} when the session ends, either by the application or the user agent. The event MUST be of type {{XRSessionEvent}}.
+A user agent MUST [=fire an event=] named <dfn event for="XRSession">end</dfn> using {{XRSessionEvent}} on an {{XRSession}} when the session ends, either by the application or the user agent.
 
-A user agent MUST dispatch an <dfn event for="XRSession">inputsourceschange</dfn> event on an {{XRSession}} when the session's [=list of active XR input sources=] has changed. The event MUST be of type {{XRInputSourcesChangeEvent}}.
+A user agent MUST [=fire an event=] named <dfn event for="XRSession">inputsourceschange</dfn> using {{XRInputSourcesChangeEvent}} on an {{XRSession}} when the session's [=list of active XR input sources=] has changed.
 
-A user agent MUST dispatch a <dfn event for="XRSession">selectstart</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s begins its [=primary action=]. The event MUST be of type {{XRInputSourceEvent}}.
+A user agent MUST [=fire an event=] named <dfn event for="XRSession">selectstart</dfn> using {{XRInputSourceEvent}} on an {{XRSession}} when one of its {{XRInputSource}}s begins its [=primary action=]. The event MUST be of type .
 
-A user agent MUST dispatch a <dfn event for="XRSession">selectend</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s ends its [=primary action=] or when an {{XRInputSource}} that has begun a [=primary action=] is disconnected. The event MUST be of type {{XRInputSourceEvent}}.
+A user agent MUST [=fire an event=] named <dfn event for="XRSession">selectend</dfn> using {{XRInputSourceEvent}} on an {{XRSession}} when one of its {{XRInputSource}}s ends its [=primary action=] or when an {{XRInputSource}} that has begun a [=primary action=] is disconnected.
 
-A user agent MUST dispatch a <dfn event for="XRSession">select</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s has fully completed a [=primary action=]. The event MUST be of type {{XRInputSourceEvent}}.
+A user agent MUST [=fire an event=] named <dfn event for="XRSession">select</dfn> using {{XRInputSourceEvent}} on an {{XRSession}} when one of its {{XRInputSource}}s has fully completed a [=primary action=].
 
-A user agent MUST dispatch a <dfn event for="XRSession">squeezestart</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s begins its [=primary squeeze action=]. The event MUST be of type {{XRInputSourceEvent}}.
+A user agent MUST [=fire an event=] named <dfn event for="XRSession">squeezestart</dfn> using {{XRInputSourceEvent}}  on an {{XRSession}} when one of its {{XRInputSource}}s begins its [=primary squeeze action=].
 
-A user agent MUST dispatch a <dfn event for="XRSession">squeezeend</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s ends its [=primary squeeze action=] or when an {{XRInputSource}} that has begun a [=primary squeeze action=] is disconnected. The event MUST be of type {{XRInputSourceEvent}}.
+A user agent MUST [=fire an event=] named <dfn event for="XRSession">squeezeend</dfn> using {{XRInputSourceEvent}} on an {{XRSession}} when one of its {{XRInputSource}}s ends its [=primary squeeze action=] or when an {{XRInputSource}} that has begun a [=primary squeeze action=] is disconnected.
 
-A user agent MUST dispatch a <dfn event for="XRSession">squeeze</dfn> event on an {{XRSession}} when one of its {{XRInputSource}}s has fully completed a [=primary squeeze action=]. The event MUST be of type {{XRInputSourceEvent}}.
+A user agent MUST [=fire an event=] named <dfn event for="XRSession">squeeze</dfn> using {{XRInputSourceEvent}} on an {{XRSession}} when one of its {{XRInputSource}}s has fully completed a [=primary squeeze action=].
 
-A user agent MUST dispatch a <dfn event for="XRSession">frameratechange</dfn> event on an {{XRSession}} when the [=XR Compositor=] changes the {{XRSession}}'s [=XRSession/internal nominal framerate=]. The event MUST be of type {{XRSessionEvent}}.
+A user agent MUST [=fire an event=] named <dfn event for="XRSession">frameratechange</dfn> using {{XRSessionEvent}} on an {{XRSession}} when the [=XR Compositor=] changes the {{XRSession}}'s [=XRSession/internal nominal framerate=].
 
-A user agent MUST dispatch a <dfn event for="XRReferenceSpace">reset</dfn> event on an {{XRReferenceSpace}} when discontinuities of the [=native origin=] or [=effective origin=] occur, i.e. there are significant changes in the origin’s position or orientation relative to the user’s environment. (For example: After user recalibration of their XR device or if the XR device automatically shifts its origin after losing and regaining tracking.) A {{reset}} event MUST also be dispatched when the {{boundsGeometry}} changes for an {{XRBoundedReferenceSpace}}. A {{reset}} event MUST NOT be dispatched if the [=viewer=]'s pose experiences discontinuities but the {{XRReferenceSpace}}'s origin physical mapping remains stable, such as when the [=viewer=] momentarily loses and regains tracking within the same tracking area. A {{reset}} event also MUST NOT be dispatched as an {{unbounded}} reference space makes small adjustments to its [=native origin=] over time to maintain space stability near the user, if a significant discontinuity has not occurred. The event MUST be of type {{XRReferenceSpaceEvent}}, and MUST be dispatched prior to the execution of any [=XR animation frame=]s that make use of the new origin. A {{reset}} event MUST be dispatched on all offset reference spaces of a reference space that fires a {{reset}} event, and the {{boundsGeometry}} of offset {{XRBoundedReferenceSpace}}s should also be recomputed.
+A user agent MUST [=fire an event=] named <dfn event for="XRReferenceSpace">reset</dfn> using {{XRReferenceSpaceEvent}} on an {{XRReferenceSpace}} when discontinuities of the [=native origin=] or [=effective origin=] occur, i.e. there are significant changes in the origin’s position or orientation relative to the user’s environment. (For example: After user recalibration of their XR device or if the XR device automatically shifts its origin after losing and regaining tracking.) A {{reset}} event MUST also be dispatched when the {{boundsGeometry}} changes for an {{XRBoundedReferenceSpace}}. A {{reset}} event MUST NOT be dispatched if the [=viewer=]'s pose experiences discontinuities but the {{XRReferenceSpace}}'s origin physical mapping remains stable, such as when the [=viewer=] momentarily loses and regains tracking within the same tracking area. A {{reset}} event also MUST NOT be dispatched as an {{unbounded}} reference space makes small adjustments to its [=native origin=] over time to maintain space stability near the user, if a significant discontinuity has not occurred. The event MUST be dispatched prior to the execution of any [=XR animation frame=]s that make use of the new origin. A {{reset}} event MUST be dispatched on all offset reference spaces of a reference space that fires a {{reset}} event, and the {{boundsGeometry}} of offset {{XRBoundedReferenceSpace}}s should also be recomputed.
 
 Note: This does mean that the session needs to hold on to strong references to any {{XRReferenceSpace}}s that have {{XRReferenceSpace/reset}} listeners.
 
@@ -2555,7 +2558,7 @@ In some cases, security and privacy threats can be mitigated through <dfn>data a
 <dfn>Throttling</dfn> is when [=sensitive information=] is reported at a lower frequency than otherwise possible. This mitigation has the potential to reduce a site's ability to infer user intent, infer location, or perform user profiling. However, when not used appropriately throttling runs a significant risk of causing user discomfort. In addition, under many circumstances it may be inadequate to provide a complete mitigation.
 
 ### Rounding, quantization, and fuzzing ### {#rounding-and-friends}
-Rounding, quantization, and fuzzing are three categories of mitigations that modify the raw data that would otherwise be returned to the developer. <dfn>Rounding</dfn> decreases the precision of data by reducing the number of digits used to express it. <dfn>Quantization</dfn> constrains continuous data to instead report a discrete subset of values. Fuzzing is the introduction of slight, random errors into the the data. Collectively, these mitigations are useful to avoid fingerprinting, and are especially useful when doing so does not cause noticeable impact on user comfort.
+Rounding, quantization, and fuzzing are three categories of mitigations that modify the raw data that would otherwise be returned to the developer. <dfn>Rounding</dfn> decreases the precision of data by reducing the number of digits used to express it. <dfn>Quantization</dfn> constrains continuous data to instead report a discrete subset of values. Fuzzing is the introduction of slight, random errors into the data. Collectively, these mitigations are useful to avoid fingerprinting, and are especially useful when doing so does not cause noticeable impact on user comfort.
 
 ### Limiting ### {#limiting-header}
 <dfn>Limiting</dfn> is when data is reported only when it is within a specific range. For example, it is possible to comfortably limit reporting positional pose data when a user has moved beyond a specific distance away from an approved location. Care should be taken to ensure that the user experience is not negatively affected when employing this mitigation. It is often desirable to avoid a 'hard stop' at the end of a range as this may cause disruptive user experiences.
@@ -2566,7 +2569,7 @@ Protected functionality {#protected-functionality}
 The [=sensitive information=] exposed by the API can be divided into categories that share threat profiles and necessary protections against those threats.
 
 ### Immersiveness ### {#protect-immersiveness}
-Users must be in control of when immersive sessions are created because the creation causes invasive changes on a user's machine. For example, starting an [=immersive session=] will engage the [=/XR device=] sensors, take over access to the device's display, and begin presentating immersive content which may terminate another application's access to the XR hardware. It may also incur significant power or performance overhead on some systems or trigger the launching of a status tray or storefront.
+Users must be in control of when immersive sessions are created because the creation causes invasive changes on a user's machine. For example, starting an [=immersive session=] will engage the [=/XR device=] sensors, take over access to the device's display, and begin presenting immersive content which may terminate another application's access to the XR hardware. It may also incur significant power or performance overhead on some systems or trigger the launching of a status tray or storefront.
 
 <div class="algorithm" data-algorithm="immersive-session-allowed">
 
@@ -2584,9 +2587,9 @@ Starting an {{XRSessionMode/"inline"}} session does not implicitly carry the sam
 
 To determine if an <dfn>inline session request is allowed</dfn> for a given |global object| the user agent MUST run the following steps:
 
-  1. If the session request contained any [=required features=] or [=optional features=] and the request was not made while the |global object| has [=transient activation=] or when [=launching a web application=], return `false`
-  1. If the requesting document is not [=responsible=], return `false`
-  1. Return `true`
+  1. If the session request contained any [=required features=] or [=optional features=] and the request was not made while the |global object| has [=transient activation=] or when [=launching a web application=], return `false`.
+  1. If the |global object| is not a {{Window}}, return `false`.
+  1. Return `true`.
 
 </div>
 
@@ -2598,7 +2601,7 @@ When based on sensor data, {{XRPose}} and {{XRViewerPose}} will expose [=sensiti
 To determine if <dfn>poses may be reported</dfn> to an {{XRSession}} |session|, the user agent MUST run the following steps:
 
   1. If |session|'s [=relevant global object=] is not the [=current global object=], return `false`.
-  1. If |session|'s {{XRSession/visibilityState}} in not {{XRVisibilityState/"visible"}}, return `false`.
+  1. If |session|'s {{XRSession/visibilityState}} is not {{XRVisibilityState/"visible"}}, return `false`.
   1. Determine if the pose data can be returned as follows:
     <dl class="switch">
       : If the pose data is known by the user agent to not expose fingerprintable sensor data
@@ -2633,11 +2636,11 @@ Depending on the reference spaces used, several different types of [=sensitive i
 
  - On devices which support [=6DoF=] tracking, {{XRReferenceSpaceType/"local-floor"}} reference spaces may be used to perform gait analysis, allowing user profiling and fingerprinting. In addition, because the {{XRReferenceSpaceType/"local-floor"}} reference spaces provide an established floor level, it may be possible for a site to infer the user's height, allowing user profiling and fingerprinting.
 
- - {{XRReferenceSpaceType/"bounded-floor"}} reference spaces, when sufficiently constrained in size, do not enable developers to determine geographic location. However, because the floor level is established and users are able to walk around, it may be possible for a site to infer the user's height or perform gait analysis, allowing user profiling and fingerprinting. In addition, it may be possible perform fingerprinting using the bounds reported by a bounded reference space.
+ - {{XRReferenceSpaceType/"bounded-floor"}} reference spaces, when sufficiently constrained in size, do not enable developers to determine geographic location. However, because the floor level is established and users are able to walk around, it may be possible for a site to infer the user's height or perform gait analysis, allowing user profiling and fingerprinting. In addition, it may be possible to perform fingerprinting using the bounds reported by a bounded reference space.
 
- - {{XRReferenceSpaceType/"unbounded"}} reference spaces reveal the largest amount of spatial data and may result in user profiling and fingerprinting. For example, this data may enable determining user's specific geographic location or to perform gait analysis.
+ - {{XRReferenceSpaceType/"unbounded"}} reference spaces reveal the largest amount of spatial data and may result in user profiling and fingerprinting. For example, this data may enable determining a user's specific geographic location or to perform gait analysis.
 
-As a result the various reference space types have restrictions placed on their creation to ensure the [=sensitive information=] expose is handled safely:
+As a result the various reference space types have restrictions placed on their creation to ensure the [=sensitive information=] exposed is handled safely:
 
 Most reference spaces require that [=user intent=] to use the reference space is well understood, either via [=explicit consent=] or [=implicit consent=]. See the [=feature requirements=] table for details.
 
@@ -2647,17 +2650,17 @@ Any group of {{XRReferenceSpaceType/"local"}}, {{XRReferenceSpaceType/"local-flo
 
 To determine if <dfn>poses must be limited</dfn> between two spaces, |space| and |baseSpace|, the user agent MUST run the following steps:
 
-  1. If either |space| or |baseSpace| are an {{XRBoundedReferenceSpace}} and the other space's [=native origin=]'s falls further outside the [=native bounds geometry=] than a reasonable distance determined by the user agent, return true.
-  1. If either |space| or |baseSpace| are an {{XRReferenceSpace}} with a [=XRReferenceSpace/type=] of {{XRReferenceSpaceType/"local"}} or {{XRReferenceSpaceType/"local-floor"}} and the distance between the spaces' [=native origin=]'s is greater than a reasonable distance determined by the user agent, return `true`.
+  1. If either |space| or |baseSpace| are an {{XRBoundedReferenceSpace}} and the other space's [=native origin=] falls further outside the [=native bounds geometry=] than a reasonable distance determined by the user agent, return true.
+  1. If either |space| or |baseSpace| are an {{XRReferenceSpace}} with a [=XRReferenceSpace/type=] of {{XRReferenceSpaceType/"local"}} or {{XRReferenceSpaceType/"local-floor"}} and the distance between the spaces' [=native origin|native origins=] is greater than a reasonable distance determined by the user agent, return `true`.
   1. Return `false`.
 
 </div>
 
 Note: The requirement for document visibility is based on [[DEVICE-ORIENTATION]].
 
-Note: Is is suggested that poses reported relative to a {{XRReferenceSpaceType/"local"}} or {{XRReferenceSpaceType/"local-floor"}} reference space be [=limiting|limited=] to a distance of 15 meters from the {{XRReferenceSpace}}'s [=native origin=].
+Note: It is suggested that poses reported relative to a {{XRReferenceSpaceType/"local"}} or {{XRReferenceSpaceType/"local-floor"}} reference space be [=limiting|limited=] to a distance of 15 meters from the {{XRReferenceSpace}}'s [=native origin=].
 
-Note: Is is suggested that poses reported relative to a {{XRBoundedReferenceSpace}} be [=limiting|limited=] to a distance of 1 meter outside the {{XRBoundedReferenceSpace}}'s [=native bounds geometry=].
+Note: It is suggested that poses reported relative to an {{XRBoundedReferenceSpace}} be [=limiting|limited=] to a distance of 1 meter outside the {{XRBoundedReferenceSpace}}'s [=native bounds geometry=].
 
 
 Trusted Environment {#trustedenvironment-security}
@@ -2700,7 +2703,7 @@ The trusted UI must be drawn by an independent rendering context whose state is 
 
 Also, to prevent CORS-related vulnerabilities each [=browsing context=] will see a new instance of objects returned by the API, such as {{XRSession}}. Attributes such as the [=XRWebGLLayer/context=] set on an {{XRWebGLLayer}} with one [=relevant realm=] should not be able to be read through an {{XRWebGLLayer}} with a [=relevant realm=] that does not have the [=same origin=]. Similarly, methods invoked on the API MUST NOT cause an observable state change on other [=browsing contexts=]. For example: No method will be exposed that enables a system-level orientation reset, as this could be called repeatedly by a malicious page to prevent other pages from tracking properly. The user agent MUST, however, respect system-level orientation resets triggered by a user gesture or system menu.
 
-Note: this doesn't apply to state changes that are caused by one [=browsing context=] entering immersive mode, acquiring a lock on the device, and potentially firing <a for="XRSystem" data-link-type="event">devicechange</a> events on other [=browsing contexts=].
+Note: This doesn't apply to state changes that are caused by one [=browsing context=] entering immersive mode, acquiring a lock on the device, and potentially firing <a for="XRSystem" data-link-type="event">devicechange</a> events on other [=browsing contexts=].
 
 Fingerprinting {#fingerprinting-security}
 --------------
@@ -2712,9 +2715,9 @@ Fingerprinting considerations of {{XRSystem/isSessionSupported()}} {#issessionsu
 ----------------------------------
 Because {{XRSystem/isSessionSupported()}} can be called without user activation it may be used as a fingerprinting vector.
 
-<dfn enum-value for="PermissionName">"xr-session-supported"</dfn> [=powerful feature=] gates access to the {{XRSystem/isSessionSupported()}} API.
+<dfn permission>"xr-session-supported"</dfn> [=powerful feature=] gates access to the {{XRSystem/isSessionSupported()}} API.
 
-The {{PermissionName/"xr-session-supported"}}’s permission-related algorithms and types are defined as follows:
+The <a permission>"xr-session-supported"</a>’s permission-related algorithms and types are defined as follows:
 
 
 <dl>
@@ -2727,33 +2730,33 @@ dictionary XRSessionSupportedPermissionDescriptor: PermissionDescriptor {
 };
 </pre>
 
-{{PermissionDescriptor/name}} for {{XRPermissionDescriptor}} is {{PermissionName/"xr-session-supported"}}.
+{{PermissionDescriptor/name}} for {{XRPermissionDescriptor}} is <a permission>"xr-session-supported"</a>.
 
 </dd></dl>
 
-### Considerations for when to automatically grant {{PermissionName/"xr-session-supported"}} ### {#automatic-granting-xr-session-supported}
+### Considerations for when to automatically grant <a permission>"xr-session-supported"</a> ### {#automatic-granting-xr-session-supported}
 
 <section class="non-normative">
 
 There is often tension between privacy and personalization on the Web. This section provides guidance on where that tradeoff can be circumscribed, and when the user agent can describe the browser's WebXR capabilities to a site via {{XRSystem/isSessionSupported()}} without any privacy reduction.
 
-{{PermissionName/"xr-session-supported"}} may be granted automatically for some systems based on the criteria below. This can provide a better user experience and mitigate permissions fatigue.
+<a permission>"xr-session-supported"</a> may be granted automatically for some systems based on the criteria below. This can provide a better user experience and mitigate permissions fatigue.
 
-A set of user agents is <dfn>indistinguishable by user-agent string</dfn> if they all report the same {{NavigatorID/userAgent}} and {{NavigatorID/appVersion}}. Such classes are typically identified by the browser version and platform/device being run on, but cannot be distinguished by the status of any connected external device. We can use the concept of user agents that are [=indistinguishable by user-agent string=] to properly assess fingerprinting risk.
+A set of user agents is <dfn>indistinguishable by user agent string</dfn> if they all report the same {{NavigatorID/userAgent}} and {{NavigatorID/appVersion}}. Such classes are typically identified by the browser version and platform/device being run on, but cannot be distinguished by the status of any connected external device. We can use the concept of user agents that are [=indistinguishable by user agent string=] to properly assess fingerprinting risk.
 
-Some user agents [=indistinguishable by user-agent string=] will <dfn>never support</dfn> sessions of a given {{XRSessionMode}}. <span class='note'>For example: User agents running on a model of phone that is known to not meet requirements for mobile AR support.</span> In these cases there is little fingerprinting risk in {{XRSystem/isSessionSupported()}} always reporting the {{XRSessionMode}} is not supported because every such device will consistently report the same value and it's assumed that device type and model can be inferred in other ways, such as through {{NavigatorID/userAgent}}. Thus, on such systems, the user-agent should automatically deny {{PermissionName/"xr-session-supported"}} for the relevant {{XRSessionMode}}.
+Some user agents [=indistinguishable by user agent string=] will <dfn>never support</dfn> sessions of a given {{XRSessionMode}}. <span class='note'>For example: User agents running on a model of phone that is known to not meet requirements for mobile AR support.</span> In these cases there is little fingerprinting risk in {{XRSystem/isSessionSupported()}} always reporting the {{XRSessionMode}} is not supported because every such device will consistently report the same value and it's assumed that device type and model can be inferred in other ways, such as through {{NavigatorID/userAgent}}. Thus, on such systems, the user agent should automatically deny <a permission>"xr-session-supported"</a> for the relevant {{XRSessionMode}}.
 
-Other user agents will [=indistinguishable by user-agent string=] <dfn>usually support</dfn> sessions of a given {{XRSessionMode}}. <span class='note'>For example: User agents known to support WebXR that run exclusively within VR headsets are likely to support {{XRSessionMode/"immersive-vr"}} sessions unless specifically blocked by the user.</span> In these cases reporting that the {{XRSessionMode}} is not supported, while accurate, would offer more uniquely identifying information about the user. As such reporting that the {{XRSessionMode}} is always available and allowing {{XRSystem/requestSession()}} to fail is more privacy-preserving while likely not being a source of confusion for the user. On such systems, the user-agent should automatically grant {{PermissionName/"xr-session-supported"}} for the relevant {{XRSessionMode}}.
+Other user agents [=indistinguishable by user agent string=] will <dfn>usually support</dfn> sessions of a given {{XRSessionMode}}. <span class='note'>For example: User agents known to support WebXR that run exclusively within VR headsets are likely to support {{XRSessionMode/"immersive-vr"}} sessions unless specifically blocked by the user.</span> In these cases reporting that the {{XRSessionMode}} is not supported, while accurate, would offer more uniquely identifying information about the user. As such reporting that the {{XRSessionMode}} is always available and allowing {{XRSystem/requestSession()}} to fail is more privacy-preserving while likely not being a source of confusion for the user. On such systems, the user agent should automatically grant <a permission>"xr-session-supported"</a> for the relevant {{XRSessionMode}}.
 
-User agents [=indistinguishable by user-agent string=] for which availability of XR capabilities is highly variable, such as desktop systems which support XR peripherals, present the highest fingerprinting risk. User agents on such devices should not automatically grant {{PermissionName/"xr-session-supported"}} in a way that allows the {{isSessionSupported()}} API to provide additional fingerprinting bits.
+User agents [=indistinguishable by user agent string=] for which availability of XR capabilities is highly variable, such as desktop systems which support XR peripherals, present the highest fingerprinting risk. User agents on such devices should not automatically grant <a permission>"xr-session-supported"</a> in a way that allows the {{isSessionSupported()}} API to provide additional fingerprinting bits.
 
 
 <div class=note>
 Note: Some acceptable approaches to handle such cases are as follows:
 
- - Always judging [=explicit consent=] for {{PermissionName/"xr-session-supported"}} (with a potentially cached permissions prompt or similar) when {{XRSystem/isSessionSupported()}} is called.
- - Automatically granting {{PermissionName/"xr-session-supported"}} but having {{XRSystem/isSessionSupported()}} always report `true` even on platforms which do not consistently have XR capabilities available, regardless of whether or not the appropriate hardware or software is present. This comes at the cost of user ergonomics, as it will cause pages to advertise XR content to users that cannot view it.
- - Have {{XRSystem/isSessionSupported()}} request [=explicit consent=] for {{PermissionName/"xr-session-supported"}} when the appropriate hardware is present, and when such hardware is _not_ present, return `false` after an appropriately random length of time. In such an implementation content must not be able to distinguish between cases where the user agent was not connected to XR hardware and cases where the user agent was connected to XR hardware but the user declined to provide [=explicit consent=].
+ - Always judging [=explicit consent=] for <a permission>"xr-session-supported"</a> (with a potentially cached permissions prompt or similar) when {{XRSystem/isSessionSupported()}} is called.
+ - Automatically granting <a permission>"xr-session-supported"</a> but having {{XRSystem/isSessionSupported()}} always report `true` even on platforms which do not consistently have XR capabilities available, regardless of whether or not the appropriate hardware or software is present. This comes at the cost of user ergonomics, as it will cause pages to advertise XR content to users that cannot view it.
+ - Have {{XRSystem/isSessionSupported()}} request [=explicit consent=] for <a permission>"xr-session-supported"</a> when the appropriate hardware is present, and when such hardware is _not_ present, return `false` after an appropriately random length of time. In such an implementation content must not be able to distinguish between cases where the user agent was not connected to XR hardware and cases where the user agent was connected to XR hardware but the user declined to provide [=explicit consent=].
 
 </div>
 
@@ -2782,7 +2785,7 @@ Permissions API Integration {#permissions}
 
 The [[!permissions]] API provides a uniform way for websites to request permissions from users and query which permissions they have been granted.
 
-The <dfn enum-value for="PermissionName">"xr"</dfn> [=powerful feature=]’s permission-related algorithms and types are defined as follows:
+The <dfn permission>"xr"</dfn> [=powerful feature=]’s permission-related algorithms and types are defined as follows:
 
 
 <dl>
@@ -2797,7 +2800,7 @@ dictionary XRPermissionDescriptor: PermissionDescriptor {
 };
 </pre>
 
-{{PermissionDescriptor/name}} for {{XRPermissionDescriptor}} is {{PermissionName/"xr"}}.
+{{PermissionDescriptor/name}} for {{XRPermissionDescriptor}} is <a permission>"xr"</a>.
 
 
 </dd>
@@ -2814,7 +2817,30 @@ interface XRPermissionStatus: PermissionStatus {
 </dd>
 
 
-<dt>[=permission request algorithm=]</dt>
+<dt>[=permission query algorithm=]</dt>
+<dd>
+<div class=algorithm data-algorithm="xr-permission-query-algorithm">
+To query the "xr" permission with an {{XRPermissionDescriptor}} |descriptor| and a {{XRPermissionStatus}} |status|, the UA MUST run the following steps:
+
+  1. Set |status|'s {{PermissionStatus/state}} to |descriptor|'s [=permission state=].
+  1. If |status|'s {{PermissionStatus/state}} is {{PermissionState/"denied"}}, set |status|'s {{XRPermissionStatus/granted}} to an empty {{FrozenArray}} and abort these steps.
+  1. Let |result| be the result of [=resolve the requested features|resolving the requested features=] given |descriptor|'s {{XRPermissionDescriptor/requiredFeatures}}, {{XRPermissionDescriptor/optionalFeatures}}, and {{XRPermissionDescriptor/mode}}.
+  1. If |result| is `null`, run the following steps:
+    1. Set |status|'s {{XRPermissionStatus/granted}} to an empty {{FrozenArray}}.
+    1. Set |status|'s {{PermissionStatus/state}} to {{PermissionState/"denied"}}.
+    1. Abort these steps.
+  1. Let (|consentRequired|, |consentOptional|, |granted|) be the fields of |result|.
+  1. Set |status|'s {{XRPermissionStatus/granted}} to |granted|.
+  1. If |consentRequired| [=list/is empty=] and |consentOptional| [=list/is empty=], set |status|'s {{PermissionStatus/state}} to {{PermissionState/"granted"}} and abort these steps
+  1. Set |status|'s {{PermissionStatus/state}} to {{PermissionState/"prompt"}}.
+
+</div>
+
+</dd>
+
+
+
+<dt>permission request algorithm</dt>
 <dd>
 <div class=algorithm data-algorithm="xr-permission-request-algorithm">
 To <dfn lt="request the xr permission">request the "xr" permission</dfn> with an {{XRPermissionDescriptor}} |descriptor| and a {{XRPermissionStatus}} |status|, the UA MUST run the following steps:
@@ -2843,31 +2869,8 @@ To <dfn lt="request the xr permission">request the "xr" permission</dfn> with an
 
 Note: The user agent has the freedom to batch up permissions prompts for all requested features when gauging if there is a clear signal of [=user intent=], but it is also allowed to show them one at a time.
 
-Note: When determining [=user intent=] for a web application, user agents must check that it was explicitly [=launching a web application|launched by the user=] as an web application. They must NOT just check if the [=origin=] matches that of an installed web application.
+Note: When determining [=user intent=] for a web application, user agents must check that it was explicitly [=launching a web application|launched by the user=] as a web application. They must NOT just check if the [=origin=] matches that of an installed web application.
 </div>
-
-
-<dt>[=permission query algorithm=]</dt>
-<dd>
-<div class=algorithm data-algorithm="xr-permission-query-algorithm">
-To query the "xr" permission with an {{XRPermissionDescriptor}} |descriptor| and a {{XRPermissionStatus}} |status|, the UA MUST run the following steps:
-
-  1. Set |status|'s {{PermissionStatus/state}} to |descriptor|'s [=permission state=].
-  1. If |status|'s {{PermissionStatus/state}} is {{PermissionState/"denied"}}, set |status|'s {{XRPermissionStatus/granted}} to an empty {{FrozenArray}} and abort these steps.
-  1. Let |result| be the result of [=resolve the requested features|resolving the requested features=] given |descriptor|'s {{XRPermissionDescriptor/requiredFeatures}}, {{XRPermissionDescriptor/optionalFeatures}}, and {{XRPermissionDescriptor/mode}}.
-  1. If |result| is `null`, run the following steps:
-    1. Set |status|'s {{XRPermissionStatus/granted}} to an empty {{FrozenArray}}.
-    1. Set |status|'s {{PermissionStatus/state}} to {{PermissionState/"denied"}}.
-    1. Abort these steps.
-  1. Let (|consentRequired|, |consentOptional|, |granted|) be the fields of |result|.
-  1. Set |status|'s {{XRPermissionStatus/granted}} to |granted|.
-  1. If |consentRequired| [=list/is empty=] and |consentOptional| [=list/is empty=], set |status|'s {{PermissionStatus/state}} to {{PermissionState/"granted"}} and abort these steps
-  1. Set |status|'s {{PermissionStatus/state}} to {{PermissionState/"prompt"}}.
-
-</div>
-
-</dd>
-
 </dl>
 
 <div class="algorithm" data-algorithm="resolve-features">
@@ -2908,6 +2911,203 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
 
 </div>
 
+<h2 id="changes" class="no-num">
+Changes</h2>
+
+
+<h3 id="changes-from-20200724" class="no-num">
+Changes from the <a href="https://www.w3.org/TR/2020/WD-webxr-20200724/">Working Draft 24 July 2020</a></h3>
+
+- Fixed up predictedDisplayTime and defined inline behavior (<a href="https://github.com/immersive-web/webxr/pull/1230">GitHub #1230</a>)
+- Add XRFrame.predictedDisplayTime (<a href="https://github.com/immersive-web/webxr/pull/1217">GitHub #1217</a>)
+- Add support for targetFrameRate and supportedFrameRates (<a href="https://github.com/immersive-web/webxr/pull/1201">GitHub #1201</a>)
+- Add support for foveation ({{XRWebGLLayer/fixedFoveation}} (<a href="https://github.com/immersive-web/webxr/pull/1195">GitHub #1195</a>)
+- Only allow sessions to use features they explicity request or are implicitly granted based on mode (<a href="https://github.com/immersive-web/webxr/pull/1189">GitHub #1189</a>)
+- Enhance examples of implicit user intent (<a href="https://github.com/immersive-web/webxr/pull/1188">GitHub #1188</a>)
+- Added support for angular and linear velocity (<a href="https://github.com/immersive-web/webxr/pull/1182">GitHub #1182</a>)
+- Ensure platform conventions remain consistent for XRReferenceSpaces (<a href="https://github.com/immersive-web/webxr/pull/1180">GitHub #1180</a>)
+- Inverted composition disabled flag to be [=XRRenderState/composition enabled=] (<a href="https://github.com/immersive-web/webxr/pull/1172">GitHub #1172</a>)
+- Reject promise returned from end() if session is already ended (<a href="https://github.com/immersive-web/webxr/pull/1170">GitHub #1170</a>)
+- During requestAnimationFrame detect if session has ended (<a href="https://github.com/immersive-web/webxr/pull/1169">GitHub #1169</a>)
+- Require quantization for recommendedViewportScale (<a href="https://github.com/immersive-web/webxr/pull/1151">GitHub #1151</a>)
+- Make sessionsupported pref autogranting non-normative  (<a href="https://github.com/immersive-web/webxr/pull/1136">GitHub #1146</a>)
+- Added a definition of XR device that includes nonvisual usage (<a href="https://github.com/immersive-web/webxr/pull/927">GitHub #927</a>)
+- Incorporating conclusions of recent privacy discussions (<a href="https://github.com/immersive-web/webxr/pull/1124">GitHub #1124</a>)
+- Switch isSessionSupported from using user intent to using permissions (<a href="https://github.com/immersive-web/webxr/pull/1136">GitHub #1136</a>)
+- Clarify that minimum viewport scale may change (<a href="https://github.com/immersive-web/webxr/pull/1134">GitHub #1134</a>)
+- Improvements to the fingerprinting PR (<a href="https://github.com/immersive-web/webxr/pull/1133">GitHub #1133</a>)
+- Add requestViewportScale/recommendedViewportScale (<a href="https://github.com/immersive-web/webxr/pull/1132">GitHub #1132</a>)
+- Clarify that framebuffer scale factors apply to width/height separately (<a href="https://github.com/immersive-web/webxr/pull/1131">GitHub #1131</a>)
+- Ensure that pending render state is always applied (<a href="https://github.com/immersive-web/webxr/pull/1128">GitHub #1128</a>)
+- Gate context XR compatability on xr-spatial-tracking permissions policy. (<a href="https://github.com/immersive-web/webxr/pull/1126">GitHub #1126</a>)
+- Change timing of when updateRenderState changes apply (<a href="https://github.com/immersive-web/webxr/pull/1111">GitHub #1111</a>)
+
+
+<h3 id="changes-from-20191010" class="no-num">
+Changes from the <a href="https://www.w3.org/TR/2019/WD-webxr-20191010/">Working Draft 10 October 2019</a></h3>
+
+New features:
+
+- Add feature for secondary views (<a href="https://github.com/immersive-web/webxr/pull/1083">GitHub #1083</a>)
+- Update XRRenderStateInit with layers sequence (<a href="https://github.com/immersive-web/webxr/pull/999">GitHub #999</a>)
+- Split input sources into primary/auxiliary (<a href="https://github.com/immersive-web/webxr/pull/929">GitHub #929</a>)
+- Define squeeze events (<a href="https://github.com/immersive-web/webxr/pull/893">GitHub #893</a>)
+
+Changes:
+
+- Primary views MUST always be active (<a href="https://github.com/immersive-web/webxr/pull/1105">GitHub #1105</a>)
+- Correctly handle context loss in makeXRCompatible() (<a href="https://github.com/immersive-web/webxr/pull/1097">GitHub #1097</a>)
+- Introduce concept of active view (<a href="https://github.com/immersive-web/webxr/pull/1096">GitHub #1096</a>)
+- Fixup frame and viewport caching to be explicit (<a href="https://github.com/immersive-web/webxr/pull/1093">GitHub #1093</a>)
+- Allow caching various objects (<a href="https://github.com/immersive-web/webxr/pull/1088">GitHub #1088</a>)
+- Allow clamping framebufferScaleFactor (<a href="https://github.com/immersive-web/webxr/pull/1084">GitHub #1084</a>)
+- Clarify threading nature of "ensure an immersive device is selected", deprecate xrCompatible (<a href="https://github.com/immersive-web/webxr/pull/1081">GitHub #1081</a>)
+- Clarify some things about native origins (<a href="https://github.com/immersive-web/webxr/pull/1071">GitHub #1071</a>)
+- Change document visibility check to be UA choice (<a href="https://github.com/immersive-web/webxr/pull/1067">GitHub #1067</a>)
+- added \'check the layers state\' algorithm (<a href="https://github.com/immersive-web/webxr/pull/1064">GitHub #1064</a>)
+- Various changes around null and emulated poses (<a href="https://github.com/immersive-web/webxr/pull/1058">GitHub #1058</a>)
+- Mention correct input frame semantics on XRInputSource/frame (<a href="https://github.com/immersive-web/webxr/pull/1053">GitHub #1053</a>)
+- Added validation for XRRigidTransform (<a href="https://github.com/immersive-web/webxr/pull/1043">GitHub #1043</a>)
+- Minor change to when empty input profile arrays are appropriate. (<a href="https://github.com/immersive-web/webxr/pull/1037">GitHub #1037</a>)
+- Allow trusted ui to use visible-blurred, cautioning against text input leakage (<a href="https://github.com/immersive-web/webxr/pull/1034">GitHub #1034</a>)
+- Some clarifications about window.rAF() (<a href="https://github.com/immersive-web/webxr/pull/1033">GitHub #1033</a>)
+- Cleanups on how we do tasks and promises (<a href="https://github.com/immersive-web/webxr/pull/1032">GitHub #1032</a>)
+- Short circuit updateRenderState() if no render state is passed (<a href="https://github.com/immersive-web/webxr/pull/1031">GitHub #1031</a>)
+- Removed use of responsible and active and focused documents (<a href="https://github.com/immersive-web/webxr/pull/1030">GitHub #1030</a>)
+- Clarify situation around browsing contexts and realms in context isolation (<a href="https://github.com/immersive-web/webxr/pull/1029">GitHub #1029</a>)
+- Explicitly specify that reset events work on offset spaces (<a href="https://github.com/immersive-web/webxr/pull/1024">GitHub #1024</a>)
+- Made it explicit which realm each object gets created in (<a href="https://github.com/immersive-web/webxr/pull/1023">GitHub #1023</a>)
+- Use current timestamp for rAF() callback arguments (<a href="https://github.com/immersive-web/webxr/pull/1015">GitHub #1015</a>)
+- Session feature requests no longer need the session parameter (<a href="https://github.com/immersive-web/webxr/pull/1012">GitHub #1012</a>)
+- Allow cancelling rAF callbacks from within rAF (<a href="https://github.com/immersive-web/webxr/pull/1005">GitHub #1005</a>)
+- Mention that the opaque framebuffer holds a reference to a particular session (<a href="https://github.com/immersive-web/webxr/pull/1004">GitHub #1004</a>)
+- Defer initial inputsourcechange event till after the promise resolves (<a href="https://github.com/immersive-web/webxr/pull/1002">GitHub #1002</a>)
+- Documented the effects of the framebufferScaleFactor (<a href="https://github.com/immersive-web/webxr/pull/993">GitHub #993</a>)
+- Allow depth&&stencil result if depth||stencil requested (<a href="https://github.com/immersive-web/webxr/pull/987">GitHub #987</a>)
+- Allow more flexibility in what isSessionSupported returns (<a href="https://github.com/immersive-web/webxr/pull/986">GitHub #986</a>)
+- Clarify when tracking/input data is exposed via inline devices (<a href="https://github.com/immersive-web/webxr/pull/985">GitHub #985</a>)
+- Add common sense restrictions on viewport shape (<a href="https://github.com/immersive-web/webxr/pull/976">GitHub #976</a>)
+- Specify that preserveDrawingBuffer has no power here (<a href="https://github.com/immersive-web/webxr/pull/975">GitHub #975</a>)
+- Clarified the behavior of visiblityState for inline sessions (<a href="https://github.com/immersive-web/webxr/pull/974">GitHub #974</a>)
+- Defining when an opaque framebuffer is considered dirty (<a href="https://github.com/immersive-web/webxr/pull/970">GitHub #970</a>)
+- Potentially update the inline device when the device changes (<a href="https://github.com/immersive-web/webxr/pull/947">GitHub #947</a>)
+- Clarify bounded reference space behavior (<a href="https://github.com/immersive-web/webxr/pull/938">GitHub #938</a>)
+- Multiple fixes to XR compatibility algorithms (<a href="https://github.com/immersive-web/webxr/pull/921">GitHub #921</a>)
+- Fill out section on trusted UI  (<a href="https://github.com/immersive-web/webxr/pull/875">GitHub #875</a>)
+- Better define how depthNear and depthFar are used (<a href="https://github.com/immersive-web/webxr/pull/888">GitHub #888</a>)
+- Clarify that emulatedPosition is not true when the local-floor space is using an estimated height (<a href="https://github.com/immersive-web/webxr/pull/871">GitHub #871</a>)
+
+
+<h3 id="changes-from-20190205" class="no-num">
+Changes from the <a href="https://www.w3.org/TR/2019/WD-webxr-20190205/">First Public Working Draft 5 Feburary 2019</a></h3>
+
+New features:
+
+- Added XRInputSource->profiles for list of input profile name (<a href="https://github.com/immersive-web/webxr/pull/695">GitHub #695</a>)
+- Add none variant to XREye (<a href="https://github.com/immersive-web/webxr/pull/641">GitHub #641</a>)
+- Add an explicit inline XR device (<a href="https://github.com/immersive-web/webxr/pull/737">GitHub #737</a>)
+- Pose privacy considerations with data adjustments and protected functionality (<a href="https://github.com/immersive-web/webxr/pull/761">GitHub #761</a>)
+- Reference space privacy considerations (<a href="https://github.com/immersive-web/webxr/pull/762">GitHub #762</a>)
+- Define sensitive information and user intent (<a href="https://github.com/immersive-web/webxr/pull/757">GitHub #757</a>)
+- Required and optional features (Feature dependencies) (<a href="https://github.com/immersive-web/webxr/pull/749">GitHub #749</a>)
+- Tracking loss and tracking recovery (<a href="https://github.com/immersive-web/webxr/pull/559">GitHub #559</a>)
+- Change blur/focus to visibilitychange (<a href="https://github.com/immersive-web/webxr/pull/687">GitHub #687</a>)
+- Define event order of input sources (<a href="https://github.com/immersive-web/webxr/pull/629">GitHub #629</a>)
+- Describe how the input source list is maintained (<a href="https://github.com/immersive-web/webxr/pull/628">GitHub #628</a>)
+- Make origin offset immutable (<a href="https://github.com/immersive-web/webxr/pull/612">GitHub #612</a>)
+- Add inlineVerticalFieldOfView to XRRenderState (<a href="https://github.com/immersive-web/webxr/pull/519">GitHub #519</a>)
+- Document Gamepad integration (<a href="https://github.com/immersive-web/webxr/pull/553">GitHub #553</a>)
+- Add ignoreDepthValues attribute to the XRWebGLLayer (<a href="https://github.com/immersive-web/webxr/pull/548">GitHub #548</a>)
+- Added XRSpace XREnvironmentBlendMode.viewerSpace (<a href="https://github.com/immersive-web/webxr/pull/522">GitHub #522</a>)
+- Added XRPose and related refactors to the spec (<a href="https://github.com/immersive-web/webxr/pull/496">GitHub #496</a>)
+
+Removed features:
+
+- Changed canvas inline to single, drop XRPresentationContext (<a href="https://github.com/immersive-web/webxr/pull/656">GitHub #656</a>)
+- Remove XRLayer base type (<a href="https://github.com/immersive-web/webxr/pull/688">GitHub #688</a>)
+- Remove XRWebGLLayer.requestViewportScaling() (<a href="https://github.com/immersive-web/webxr/pull/631">GitHub #631</a>)
+- Remove context Attribute from XRWebGLLayer (<a href="https://github.com/immersive-web/webxr/pull/707">GitHub #707</a>)
+- Remove attribs that only reflect requested values (<a href="https://github.com/immersive-web/webxr/pull/574">GitHub #574</a>)
+- Remove XRSessionCreationOptions (<a href="https://github.com/immersive-web/webxr/pull/566">GitHub #566</a>)
+
+Changes:
+
+- Decribe the required clear behavior of an XRWebGLLayer (<a href="https://github.com/immersive-web/webxr/pull/866">GitHub #866</a>)
+- Specified that XRWebGLLayer framebuffers always use premultiplied alpha (<a href="https://github.com/immersive-web/webxr/pull/840">GitHub #840</a>)
+- Clarify the transform direction for the reset event (<a href="https://github.com/immersive-web/webxr/pull/843">GitHub #843</a>)
+- Define how feature requirements are satisfied (<a href="https://github.com/immersive-web/webxr/pull/839">GitHub #839</a>)
+- Check whether a session is inline rather than immersive when appropriate (<a href="https://github.com/immersive-web/webxr/pull/834">GitHub #834</a>)
+- Disallow stereo inline sessions for now (<a href="https://github.com/immersive-web/webxr/pull/829">GitHub #829</a>)
+- Handle detached buffers in projectionMatrix (<a href="https://github.com/immersive-web/webxr/pull/830">GitHub #830</a>)
+- Ensure an immersive device is selected in makeXRCompatible() (<a href="https://github.com/immersive-web/webxr/pull/809">GitHub #809</a>)
+- Change features to a sequence of \'any\' (<a href="https://github.com/immersive-web/webxr/pull/807">GitHub #807</a>)
+- Link to \'fire an input source\' algorithm, explicitly construct frame (<a href="https://github.com/immersive-web/webxr/pull/797">GitHub #797</a>)
+- Remove Environment blend mode from spec and explainer (<a href="https://github.com/immersive-web/webxr/pull/804">GitHub #804</a>)
+- Provide descriptions for each method (<a href="https://github.com/immersive-web/webxr/pull/798">GitHub #798</a>)
+- Require UAs to show manual device activation steps (<a href="https://github.com/immersive-web/webxr/pull/799">GitHub #799</a>)
+- Clarify the compositor a bit (<a href="https://github.com/immersive-web/webxr/pull/805">GitHub #805</a>)
+- Clarify matrix math for obtaining matrices for rigid transforms (<a href="https://github.com/immersive-web/webxr/pull/806">GitHub #806</a>)
+- Allow UA to constrain clip planes (<a href="https://github.com/immersive-web/webxr/pull/802">GitHub #802</a>)
+- Forbid using stale XRViews in getViewport() (<a href="https://github.com/immersive-web/webxr/pull/796">GitHub #796</a>)
+- Explicitly mention how depth/alpha/stencil values get used (<a href="https://github.com/immersive-web/webxr/pull/800">GitHub #800</a>)
+- Fire input source events when profiles changes (<a href="https://github.com/immersive-web/webxr/pull/795">GitHub #795</a>)
+- Clarify when the reset event gets fired (<a href="https://github.com/immersive-web/webxr/pull/637">GitHub #637</a>)
+- Explicitly spec out when requestReferenceSpace() can reject queries (<a href="https://github.com/immersive-web/webxr/pull/651">GitHub #651</a>)
+- Make XRRay.matrix unique, add steps for obtaining it (<a href="https://github.com/immersive-web/webxr/pull/655">GitHub #655</a>)
+- Use TAG recommendations for returning promises (<a href="https://github.com/immersive-web/webxr/pull/700">GitHub #700</a>)
+- Move racy parts of requestSession() to the main thread (<a href="https://github.com/immersive-web/webxr/pull/706">GitHub #706</a>)
+- Clarify that small overlay UIs are allowed in exclusive access (<a href="https://github.com/immersive-web/webxr/pull/709">GitHub #709</a>)
+- Merge \'end the session\' with \'shut down the session\', clarify, add onend event (<a href="https://github.com/immersive-web/webxr/pull/710">GitHub #710</a>)
+- Don't check XR compat flag for inline sessions (<a href="https://github.com/immersive-web/webxr/pull/705">GitHub #705</a>)
+- Validate position DOMPointInit (<a href="https://github.com/immersive-web/webxr/pull/568">GitHub #568</a>)
+- Explicitly spec out native origins (<a href="https://github.com/immersive-web/webxr/pull/621">GitHub #621</a>)
+- Remove buttonIndex (<a href="https://github.com/immersive-web/webxr/pull/741">GitHub #741</a>)
+- Removes references to "immersive-ar" and XRRay (<a href="https://github.com/immersive-web/webxr/pull/784">GitHub #784</a>)
+- Removes references to XRInputSource.gamepad from explainer and index.bs (<a href="https://github.com/immersive-web/webxr/pull/782">GitHub #782</a>)
+- getViewport with an invalid view throws an error (<a href="https://github.com/immersive-web/webxr/pull/771">GitHub #771</a>)
+- Block mid-session consent requests (<a href="https://github.com/immersive-web/webxr/pull/767">GitHub #767</a>)
+- Spec XRPresentationContext creation (<a href="https://github.com/immersive-web/webxr/pull/501">GitHub #501</a>)
+- Change inputSources getter from method to attrib (<a href="https://github.com/immersive-web/webxr/pull/624">GitHub #624</a>)
+- Change required gamepad index to -1 (<a href="https://github.com/immersive-web/webxr/pull/690">GitHub #690</a>)
+- Handle detached arrays (<a href="https://github.com/immersive-web/webxr/pull/684">GitHub #684</a>)
+- Require that sensitive UI hides WebXR content (<a href="https://github.com/immersive-web/webxr/pull/742">GitHub #742</a>)
+- Made the xr-standard gamepad mapping more rigid (<a href="https://github.com/immersive-web/webxr/pull/735">GitHub #735</a>)
+- Fix algorithm to compute XRRay.matrix (<a href="https://github.com/immersive-web/webxr/pull/728">GitHub #728</a>)
+- Fix detached array in XRRay.matrix algorithm (<a href="https://github.com/immersive-web/webxr/pull/716">GitHub #716</a>)
+- Simplify handling of unsupported modes in requestSession() (<a href="https://github.com/immersive-web/webxr/pull/714">GitHub #714</a>)
+- Some XRRenderState clarifications (<a href="https://github.com/immersive-web/webxr/pull/703">GitHub #703</a>)
+- Replace \'list of pending render states\' with \'pending render state\' (<a href="https://github.com/immersive-web/webxr/pull/701">GitHub #701</a>)
+- Better define gamepad placeholder buttons and axes (<a href="https://github.com/immersive-web/webxr/pull/661">GitHub #661</a>)
+- Clarify what value a touchpad should report when not being touched (<a href="https://github.com/immersive-web/webxr/pull/660">GitHub #660</a>)
+- Rename getPose arg referenceSpace->baseSpace (<a href="https://github.com/immersive-web/webxr/pull/659">GitHub #659</a>)
+- Fix multiplication order for transforms (<a href="https://github.com/immersive-web/webxr/pull/649">GitHub #649</a>)
+- Clarify assumptions for local and local-floor tracking (<a href="https://github.com/immersive-web/webxr/pull/648">GitHub #648</a>)
+- Simplify available spaces (<a href="https://github.com/immersive-web/webxr/pull/626">GitHub #626</a>)
+- requestSession: Check for user activation first (<a href="https://github.com/immersive-web/webxr/pull/685">GitHub #685</a>)
+- Make boundsGeometry work relative to the effective origin (<a href="https://github.com/immersive-web/webxr/pull/613">GitHub #613</a>)
+- Explicitly specify how the views array is populated (<a href="https://github.com/immersive-web/webxr/pull/614">GitHub #614</a>)
+- Identify cases where the Gamepad id should be unknown (<a href="https://github.com/immersive-web/webxr/pull/615">GitHub #615</a>)
+- Overhaul XRSpace, get(Viewer)Pose definitions (<a href="https://github.com/immersive-web/webxr/pull/609">GitHub #609</a>)
+- Rename supportsSessionMode to supportsSession (<a href="https://github.com/immersive-web/webxr/pull/595">GitHub #595</a>)
+- Consolidate reference space types and interfaces (<a href="https://github.com/immersive-web/webxr/pull/587">GitHub #587</a>)
+- inverse attribute always returns the same object (<a href="https://github.com/immersive-web/webxr/pull/586">GitHub #586</a>)
+- Reject outstanding promises on session shut down (<a href="https://github.com/immersive-web/webxr/pull/585">GitHub #585</a>)
+- Specify that projection matrices may include shear (<a href="https://github.com/immersive-web/webxr/pull/575">GitHub #575</a>)
+- Describe exceptions that updateRenderState may throw (<a href="https://github.com/immersive-web/webxr/pull/511">GitHub #511</a>)
+- Edit requestSession() and Initialize the session (<a href="https://github.com/immersive-web/webxr/pull/601">GitHub #601</a>)
+- Change XRRigidTransform inverse from a method to an attribute (<a href="https://github.com/immersive-web/webxr/pull/560">GitHub #560</a>)
+- Indicate when compositing is using depth values (<a href="https://github.com/immersive-web/webxr/pull/563">GitHub #563</a>)
+- Stationary subtype support is all-or-nothing (<a href="https://github.com/immersive-web/webxr/pull/537">GitHub #537</a>)
+- Move outputContext to XRRenderState (<a href="https://github.com/immersive-web/webxr/pull/536">GitHub #536</a>)
+- Specify that getViewerPose throws an error for non-rAF XRFrames (<a href="https://github.com/immersive-web/webxr/pull/535">GitHub #535</a>)
+- Remove viewMatrix and add XRTransform.inverse() (<a href="https://github.com/immersive-web/webxr/pull/531">GitHub #531</a>)
+- Changed XRHandedness enum to use \'none\' instead of \'\' (<a href="https://github.com/immersive-web/webxr/pull/526">GitHub #526</a>)
+- Indicate the preferred ergonomics of a tracked-pointer ray (<a href="https://github.com/immersive-web/webxr/pull/524">GitHub #524</a>)
+- Clarify XRRay constructor and define normalization (<a href="https://github.com/immersive-web/webxr/pull/521">GitHub #521</a>)
+- Spec text for the identity reference space (<a href="https://github.com/immersive-web/webxr/pull/520">GitHub #520</a>)
+- Clarified when immersive sessions are rejected (<a href="https://github.com/immersive-web/webxr/pull/360">GitHub #360</a>)
+- Specify that frame callbacks are not called without a base layer (<a href="https://github.com/immersive-web/webxr/pull/512">GitHub #512</a>)
+
 Acknowledgements {#ack}
 ================
 
@@ -2917,6 +3117,8 @@ Thank you to the following individuals for their contributions the WebXR Device 
   * <a href="mailto:kgilbert@mozilla.com">Kearwood Gilbert</a> (<a href="https://mozilla.org/">Mozilla</a>)
   * <a href="mailto:rafael.cintron@microsoft.com">Rafael Cintron</a> (<a href="https://microsoft.com/">Microsoft</a>)
   * <a href="mailto:sebastian.sylvan@gmail.com">Sebastian Sylvan</a> (Formerly <a href="https://microsoft.com/">Microsoft</a>)
+  * <a href="mailto:alexturn@microsoft.com">Alex Turner</a> (<a href="https://microsoft.com/">Microsoft</a>)
+  * <a href="mailto:laford@microsoft.com">Lachlan Ford</a> (<a href="https://microsoft.com/">Microsoft</a>)
   * <a href="mailto:blair@mozilla.com">Blair MacIntyre</a> (<a href="https://mozilla.org/">Mozilla</a>)
   * <a href="mailto:johnpallett@google.com">John Pallett</a> (<a href="https://www.google.com">Google</a>)
   * <a href="mailto:taoyagi@mozilla.com">Takahiro Aoyagi</a> (<a href="https://mozilla.org/">Mozilla</a>)

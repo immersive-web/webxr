@@ -26,27 +26,7 @@ The [WebXR Device API Specification][1] is the repository of the [Immersive Web 
 * [Privacy & Security Explainer][23]
 * [Spatial Tracking Explainer][24]
 
-### Other specifications in the Immersive Web Working Group
-
-* [WebXR Gamepads Module][25]: For accessing the associated gamepad object for a WebXR Input Source
-* [WebXR AR Module][26]: For enabling AR capable Displays & Sessions
-* [Dom Overlays][27]: A mechanism for providing a simple DOM overlay on top of the graphics
-* [Hit Test][28]: Cast a ray onto real world geometry
-* [Layers][30]: Exposes WebGL and media layers for WebXR
-* [WebXR Hands Input][31]: Adds hand input support in WebXR
-
-### Immersive Web Community Group Specifications
-
-* [Anchors][32]
-* [Computer Vision][33]
-* [Geo Alignment][34]
-* [Lighting Estimation][35]
-* [Navigation][36]
-* [Performance Improvements][37]
-* [Real World Geometry][38]
-* [Spatial Favicons][39]
-* [Depth Sensing][40]
-* [WebXR WebGPU Binding][41]
+See also [list of all specifications with detailed status in Working Group and Community Group](https://www.w3.org/immersive-web/list_spec.html). 
 
 ### Related Specifications
 

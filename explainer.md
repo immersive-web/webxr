@@ -154,7 +154,7 @@ async function checkForXRSupport() {
       enterXrBtn.addEventListener("click", beginXRSession);
       document.body.appendChild(enterXrBtn);
     } else {
-      console.log("Session not supported: " + reason);
+      console.log("Immersive VR sessions not supported.");
     }
   });
 }

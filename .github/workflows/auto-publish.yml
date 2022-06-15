@@ -23,7 +23,7 @@ jobs:
           W3C_ECHIDNA_TOKEN: ${{ secrets.W3C_TR_TOKEN }}
           W3C_WG_DECISION_URL: https://lists.w3.org/Archives/Public/public-immersive-web-wg/2021Sep/0004.html
           W3C_BUILD_OVERRIDE: |
-            status: WD
+            status: CRD
 
 # not set 'warning' to BUILD_FAIL_ON (not to cause error by bikeshed warning?)
 
