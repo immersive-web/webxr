@@ -274,6 +274,7 @@ XRSystem {#xrsystem-interface}
   // Methods
   Promise&lt;boolean&gt; isSessionSupported(XRSessionMode mode);
   [NewObject] Promise&lt;XRSession&gt; requestSession(XRSessionMode mode, optional XRSessionInit options = {});
+  [NewObject] Promise&lt;XRSession&gt; offerSession(XRSessionMode mode, optional XRSessionInit options = {});
 
   // Events
   attribute EventHandler ondevicechange;
@@ -441,6 +442,68 @@ When this method is invoked, the user agent MUST run the following steps:
   1. Return |promise|.
 
 </div>
+
+<div class="algorithm" data-algorithm="offer-session">
+
+The <dfn method for="XRSystem">offerSession(|mode|, |options|)</dfn> method allows the user to initialize an {{XRSession}} for the given |mode| if possible, entering immersive mode if necessary.
+
+When this method is invoked, the user agent MUST run the following steps:
+
+  1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of this {{XRSystem}}.
+  1. Let |immersive| be `true` if |mode| is an [=immersive session=] mode, and `false` otherwise.
+  1. Let |global object| be the [=relevant Global object=] for the {{XRSystem}} on which this method was invoked.
+  1. Check whether the session request is allowed as follows:
+    <dl class="switch">
+      : If |immersive| is `true`:
+      :: Set [=pending immersive session=] to `true`.
+      : Otherwise:
+      :: Check if an [=inline session request is allowed=] for the |global object|, and if not [=reject=] |promise| with a "{{SecurityError}}" {{DOMException}} and return |promise|.
+
+    </dl>
+  1. Run the following steps [=in parallel=]:
+    1. Let |requiredFeatures| be |options|' {{XRSessionInit/requiredFeatures}}.
+    1. Let |optionalFeatures| be |options|' {{XRSessionInit/optionalFeatures}}.
+    1. Set |device| to the result of [=obtain the current device|obtaining the current device=] for |mode|, |requiredFeatures|, and |optionalFeatures|.
+    1. [=Queue a task=] to perform the following steps:
+        1. If |device| is `null` or |device|'s [=list of supported modes=] does not [=list/contain=] |mode|, run the following steps:
+            1. [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
+            1. If |immersive| is `true`, set [=pending immersive session=] to `false`.
+            1. Abort these steps.
+        1. If [=pending immersive session=] is `true` and the user agent decides to disallow the session, run the following steps:
+            1. [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
+            1. If |immersive| is `true`, set [=pending immersive session=] to `false`.
+            1. Abort these steps.
+        1. Let |descriptor| be an {{XRPermissionDescriptor}} initialized with |mode|, |requiredFeatures|, and |optionalFeatures|
+        1. Let |status| be an {{XRPermissionStatus}}, initially `null`
+        1. [=Request the xr permission=] with |descriptor| and |status|.
+        1. If |status|' {{PermissionStatus/state}} is {{PermissionState/"denied"}} run the following steps:
+            1. [=Reject=] |promise| with a "{{NotSupportedError}}" {{DOMException}}.
+            1. If |immersive| is `true`, set [=pending immersive session=] to `false`.
+            1. Abort these steps.
+        1. Let |granted| be a [=/set=] obtained from |status|' {{XRPermissionStatus/granted}}.
+        1. Let |session| be a [=new=] {{XRSession}} object in the [=relevant realm=] of this {{XRSystem}}.
+        1. [=Initialize the session=] with |session|, |mode|, |granted|, and |device|.
+        1. Potentially set the [=active immersive session=] as follows:
+            <dl class="switch">
+              : If |immersive| is `true`:
+              :: Set the [=active immersive session=] to |session|, and set [=pending immersive session=] to `false`.
+
+              : Otherwise:
+              :: Append |session| to the [=list of inline sessions=].
+
+            </dl>
+        1. [=/Resolve=] |promise| with |session|.
+        1. [=Queue a task=] to perform the following steps:
+            <div class=note>Note: These steps ensure that initial {{inputsourceschange!!event}} events occur after the initial session is resolved.</div>
+            1. Set |session|'s [=XRSession/promise resolved=] flag to `true`.
+            1. Let |sources| be any existing input sources attached to |session|.
+            1. If |sources| is non-empty, perform the following steps:
+                1. Set |session|'s [=list of active XR input sources=] to |sources|.
+                1. Fire an {{XRInputSourcesChangeEvent}} named {{inputsourceschange!!event}} on |session| with {{XRInputSourcesChangeEvent/added}} set to |sources|.
+  1. Return |promise|.
+
+</div>
+
 
 <div class=algorithm data-algorithm="device-for-mode">
 
