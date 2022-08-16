@@ -512,8 +512,8 @@ Additionally, developers are encouraged to design experiences which progressivel
 
 <pre class="idl">
 dictionary XRSessionInit {
-  sequence&lt;any&gt; requiredFeatures;
-  sequence&lt;any&gt; optionalFeatures;
+  sequence&lt;DOMString&gt; requiredFeatures;
+  sequence&lt;DOMString&gt; optionalFeatures;
 };
 </pre>
 
@@ -523,13 +523,11 @@ The <dfn dict-member for="XRSessionInit">optionalFeatures</dfn> array contains a
 
 Values given in the feature lists are considered a valid <dfn>feature descriptor</dfn> if the value is one of the following:
 
- - Any {{XRReferenceSpaceType}} enum value
+ - The string representation of any {{XRReferenceSpaceType}} enum value
 
 Future iterations of this specification and additional modules may expand the list of accepted [=feature descriptors=].
 
-Note: Features are accepted as an array of {{any}} values to ensure forwards compatibility. It allows unrecognized optional values to be properly ignored as new [=feature descriptor=] types are added.
-
-Note: Features that can be stringified via <a abstract-op>ToString</a>() will be converted.
+Note: If a feature needs additional initialization, {{XRSessionInit}} should be extended with a new field for that feature.
 
 Depending on the {{XRSessionMode}} requested, certain [=feature descriptors=] are added to the {{XRSessionInit/requiredFeatures}} or {{XRSessionInit/optionalFeatures}} lists by default. The following table describes the <dfn>default features</dfn> associated with each session type and feature list:
 
@@ -621,6 +619,7 @@ enum XRVisibilityState {
   readonly attribute Float32Array? supportedFrameRates;
   [SameObject] readonly attribute XRRenderState renderState;
   [SameObject] readonly attribute XRInputSourceArray inputSources;
+  readonly attribute FrozenArray&lt;DOMString&gt; enabledFeatures;
 
   // Methods
   undefined updateRenderState(optional XRRenderStateInit state = {});
@@ -651,6 +650,8 @@ Each {{XRSession}} has a <dfn for="XRSession">mode</dfn>, which is one of the va
 Each {{XRSession}} has an <dfn for=XRSession>animation frame</dfn>, which is an {{XRFrame}} initialized with [=XRFrame/active=] set to `false`, [=XRFrame/animationFrame=] set to `true`, and {{XRFrame/session}} set to the {{XRSession}}.
 
 Each {{XRSession}} has a <dfn for=XRSession>set of granted features</dfn>, which is a [=/set=] of {{DOMString}}s corresponding to the [=feature descriptors=] that have been granted to the {{XRSession}}.
+
+The <dfn attribute for="XRSession">enabledFeatures</dfn> attribute returns the features in the [=XRSession/set of granted features=] as an array of {{DOMString}}s.
 
 <div class="algorithm" data-algorithm="initialize-session">
 
@@ -2795,8 +2796,8 @@ The <dfn permission>"xr"</dfn> [=powerful feature=]’s permission-related algor
 <pre class="idl">
 dictionary XRPermissionDescriptor: PermissionDescriptor {
   XRSessionMode mode;
-  sequence&lt;any&gt; requiredFeatures;
-  sequence&lt;any&gt; optionalFeatures;
+  sequence&lt;DOMString&gt; requiredFeatures;
+  sequence&lt;DOMString&gt; optionalFeatures;
 };
 </pre>
 
@@ -2810,7 +2811,7 @@ dictionary XRPermissionDescriptor: PermissionDescriptor {
 <pre class=idl>
 [Exposed=Window]
 interface XRPermissionStatus: PermissionStatus {
-  attribute FrozenArray&lt;any&gt; granted;
+  attribute FrozenArray&lt;DOMString&gt; granted;
 };
 </pre>
 
@@ -2887,10 +2888,7 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
   1. Add every [=feature descriptor=] in the [=default features=] table associated with |mode| to |granted| if it is not already present.
   1. For each |feature| in |requiredFeatures| perform the following steps:
     1. If the |feature| is `null`, [=continue=] to the next entry.
-    1. If |feature| is not a valid [=feature descriptor=], perform the following steps:
-        1. Let |s| be the result of calling [=?=] <a abstract-op>ToString</a>(|feature|).
-        1. If |s| is not a valid [=feature descriptor=] or is `undefined`, return `null`.
-        1. Set |feature| to |s|.
+    1. If |feature| is not a valid [=feature descriptor=], return `null`.
     1. If |feature| is already in |granted|, continue to the next entry.
     1. If the requesting document's [=origin=] is not allowed to use any [[#permissions-policy|permissions policy]] required by |feature| as indicated by the [=feature requirements=] table, return `null`.
     1. If |session|'s [=XRSession/XR device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, return `null`.
@@ -2898,10 +2896,7 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
     1. Else append |feature| to |granted|.
   1. For each |feature| in |optionalFeatures| perform the following steps:
     1. If the |feature| is `null`, [=continue=] to the next entry.
-    1. If |feature| is not a valid [=feature descriptor=], perform the following steps:
-        1. Let |s| be the result of calling [=?=] <a abstract-op>ToString</a>(|feature|).
-        1. If |s| is not a valid [=feature descriptor=] or is `undefined`, [=continue=] to the next entry.
-        1. Set |feature| to |s|.
+    1. If |feature| is not a valid [=feature descriptor=], [=continue=] to the next entry.
     1. If |feature| is already in |granted|, continue to the next entry.
     1. If the requesting document's origin is not allowed to use any [[#permissions-policy|permissions policy]] required by |feature| as indicated by the [=feature requirements=] table, continue to the next entry.
     1. If |session|'s [=XRSession/XR device=] is not [=capable of supporting=] the functionality described by |feature| or the user agent has otherwise determined to reject the feature, continue to the next entry.
