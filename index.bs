@@ -651,7 +651,7 @@ Each {{XRSession}} has an <dfn for=XRSession>animation frame</dfn>, which is an 
 
 Each {{XRSession}} has a <dfn for=XRSession>set of granted features</dfn>, which is a [=/set=] of {{DOMString}}s corresponding to the [=feature descriptors=] that have been granted to the {{XRSession}}.
 
-The <dfn attribute for="XRSession">enabledFeatures</dfn> attribute returns the features in the [=XRSession/set of granted features=] as an array of {{DOMString}}s.
+The <dfn attribute for="XRSession">enabledFeatures</dfn> attribute returns the features in the [=XRSession/set of granted features=] as a new array of {{DOMString}}s.
 
 <div class="algorithm" data-algorithm="initialize-session">
 
