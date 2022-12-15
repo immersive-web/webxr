@@ -182,7 +182,7 @@ In this sample, the `beginXRSession` function, which is assumed to be run by cli
 
 If `isSessionSupported` resolved to _true_ for a given mode, then requesting a session with the same mode should be reasonably expected to succeed, barring external factors (such as `requestSession` not being called in a user activation event for an immersive session.) The UA is ultimately responsible for determining if it can honor the request.
 
-Only one immersive session per XR hardware device is allowed at a time across the entire UA. If an immersive session is requested and the UA already has an active immersive session or a pending request for an immersive session, then the new request must be rejected. All inline sessions are [suspended](#handling-suspended-sessions) when an immersive session is active. Inline sessions are not required to be created within a user activation event unless paired with another option that explicitly does require it. 
+Only one immersive session per XR hardware device is allowed at a time across the entire UA. If an immersive session is requested and the UA already has an active immersive session or a pending request for an immersive session, then the new request must be rejected. All inline sessions are [suspended](#handling-suspended-sessions) when an immersive session is active. Inline sessions are not required to be created within a user activation event unless paired with another option that explicitly does require it.
 
 Once the session has started, some setup must be done to prepare for rendering.
 - An `XRReferenceSpace` should be created to establish a space in which `XRViewerPose` data will be defined. See the [Spatial Tracking Explainer](spatial-tracking-explainer.md) for more information.
@@ -346,7 +346,7 @@ function drawScene(view) {
     view.projectionMatrix[14],
     view.projectionMatrix[15]
   );
-  
+
   scene.renderWithCamera(camera);
 }
 ```
@@ -526,7 +526,7 @@ WebXR allows the following features to be requested:
 This list is currently limited to a subset of reference space types, but in the future will expand to include additional features. Some potential future features under discussion that would be candidates for this list are: eye tracking, plane detection, geo alignment, etc.
 
 Developers communicate their feature requirements by categorizing them into one of the following sequences in the `XRSessionInit` that can be passed into `xr.requestSession()`:
-* **`requiredFeatures`** This feature must be available in order for the experience to function at all. If [explicit consent](privacy-security-explainer.md#explicit-consent) is necessary, users will be prompted in response to `xr.requestSession()`. Session creation will be rejected if the feature is unavailable for the XR device, if the UA determines the user does not wish the feature enabled, or if the UA does not recognize the feature being requested. 
+* **`requiredFeatures`** This feature must be available in order for the experience to function at all. If [explicit consent](privacy-security-explainer.md#explicit-consent) is necessary, users will be prompted in response to `xr.requestSession()`. Session creation will be rejected if the feature is unavailable for the XR device, if the UA determines the user does not wish the feature enabled, or if the UA does not recognize the feature being requested.
 * **`optionalFeatures`** The experience would like to use this feature for the entire session, but can function without it. Again, if [explicit consent](privacy-security-explainer.md#explicit-consent) is necessary, users will be prompted in response to `xr.requestSession()`. However, session creation will succeed regardless of the feature's hardware support or user intent. Developers must not assume optional features are available in the session and check the result from attempting to use them.
 
 (NOTE: `xr.isSessionSupported()` does not accept an `XRSessionInit` parameter and supplying one will have no effect)
@@ -555,13 +555,15 @@ navigator.xr.requestSession('inline', {
 .then(onSessionStarted);
 
 function onSessionStarted(session) {
-  session.requestReferenceSpace('local')
-  .then(onLocalReferenceSpaceCreated)
-  .catch(() => {
+  if (session.enabledFeatures.includes('local')) {
+    session.requestReferenceSpace('local').then(onLocalReferenceSpaceCreated);
+  } else {
     session.requestReferenceSpace('viewer').then(onViewerReferenceSpaceCreated);
-  });
+  }
 }
 ```
+
+Note that for reference spaces, as an alternative the site could simply use .catch() for the fallback behavior, as the promise will reject if the reference space cannot be supported; but other features may not have similar patterns available.
 
 Some features recognized by the UA but not explicitly listed in these arrays will be enabled by default for a session. This is only done if the feature does not require a signal of [user intent](privacy-security-explainer.md#user-intent) nor impact performance or the behavior of other features when enabled. At this time, only the following features will be enabled by default:
 
