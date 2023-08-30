@@ -495,6 +495,8 @@ In this document, the term <dfn>inline session</dfn> is synonymous with an {{inl
 
 [=Immersive sessions=] MUST provide some level of [=viewer=] tracking, and content MUST be shown at the proper scale relative to the user and/or the surrounding environment. Additionally, [=Immersive sessions=] MUST be given <dfn>exclusive access</dfn> to the [=immersive XR device=], meaning that while the [=immersive session=] is {{XRVisibilityState/"visible"}} the HTML document is not shown on the [=immersive XR device=]'s display, nor does content from any other source have exclusive access. [=Exclusive access=] does not prevent the user agent from overlaying its own UI, however this UI SHOULD be minimal.
 
+Note: UA may choose to overlay content for accessibility or safety such as guardian boundaries, obstructions or the user's hands when there are no alternative input sources.
+
 Note: Future specifications or modules may expand the definition of [=immersive session=] to include additional session modes.
 
 Note: Examples of ways [=exclusive access=] may be presented include stereo content displayed on a virtual reality headset.
