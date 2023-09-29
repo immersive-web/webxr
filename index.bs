@@ -625,6 +625,7 @@ enum XRVisibilityState {
   [SameObject] readonly attribute XRInputSourceArray inputSources;
   readonly attribute FrozenArray&lt;DOMString&gt; enabledFeatures;
   readonly attribute boolean isSystemKeyboardSupported;
+  readonly attribute XRSpace? comfortSpace;
 
   // Methods
   undefined updateRenderState(optional XRRenderStateInit state = {});
@@ -659,6 +660,8 @@ Each {{XRSession}} has a <dfn for=XRSession>set of granted features</dfn>, which
 The <dfn attribute for="XRSession">enabledFeatures</dfn> attribute returns the features in the [=XRSession/set of granted features=] as a new array of {{DOMString}}s.
 
 The <dfn attribute for="XRSession">isSystemKeyboardSupported</dfn> attribute indicates that the {{XRSystem}} has the ability to display the system keyboard while the {{XRSession}} is active. If {{XRSession/isSystemKeyboardSupported}} is <code>true</code>, Web APIs that would trigger the overlay keyboard (such as [=focus=]) will show the system keyboard. The {{XRSession}} MUST set the [=visibility state=] of the {{XRSession}} to {{XRVisibilityState/"visible-blurred"}} while the keyboard is shown.
+
+The <dfn attribute for="XRSession">comfortSpace</dfn> attribute is an {{XRSpace}} which represents a space which will be a sensible place to put content which is designed to be physically interacted with. Most platforms have a limited space in which the user can do interactions, these limits come from the limits of the user's reach and height and also the tracking capabilities of the hardware. Ideally this space can be used by the developer to adjust their experiences to keep the interactive objects in reach. This can be null when hand based interactions don't make sense for the platform e.g. handheld WebXR experiences. This should have some fuzz applied to it each session so that it cannot be used to fingerprint users. 
 
 <div class="algorithm" data-algorithm="initialize-session">
 
