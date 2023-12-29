@@ -626,6 +626,7 @@ enum XRVisibilityState {
   readonly attribute FrozenArray&lt;DOMString&gt; enabledFeatures;
   readonly attribute boolean isSystemKeyboardSupported;
   readonly attribute XRSpace? comfortSpace;
+  readonly attribute Float32Array[6]? comfortSpaceAABB;
 
   // Methods
   undefined updateRenderState(optional XRRenderStateInit state = {});
@@ -661,7 +662,9 @@ The <dfn attribute for="XRSession">enabledFeatures</dfn> attribute returns the f
 
 The <dfn attribute for="XRSession">isSystemKeyboardSupported</dfn> attribute indicates that the {{XRSystem}} has the ability to display the system keyboard while the {{XRSession}} is active. If {{XRSession/isSystemKeyboardSupported}} is <code>true</code>, Web APIs that would trigger the overlay keyboard (such as [=focus=]) will show the system keyboard. The {{XRSession}} MUST set the [=visibility state=] of the {{XRSession}} to {{XRVisibilityState/"visible-blurred"}} while the keyboard is shown.
 
-The <dfn attribute for="XRSession">comfortSpace</dfn> attribute is an {{XRSpace}} which represents a space which will be a sensible place to put content which is designed to be physically interacted with. Most platforms have a limited space in which the user can do interactions, these limits come from the limits of the user's reach and height and also the tracking capabilities of the hardware. Ideally this space can be used by the developer to adjust their experiences to keep the interactive objects in reach. This can be null when hand based interactions don't make sense for the platform e.g. handheld WebXR experiences. This should have some fuzz applied to it each session so that it cannot be used to fingerprint users. 
+The <dfn attribute for="XRSession">comfortSpace</dfn> attribute is an {{XRSpace}} which represents a space which will be a sensible place to put content which is designed to be physically interacted with. Most platforms have a limited space in which the user can do interactions, these limits come from the limits of the user's reach and height and also the tracking capabilities of the hardware. Ideally this space can be used by the developer to adjust their experiences to keep the interactive objects in reach. This can be null when hand based interactions don't make sense for the platform e.g. handheld WebXR experiences. This should have some fuzz applied to it each session so that it cannot be used to fingerprint users. Although this space can be moved around by the user agent the space shouldn't follow the user as they move around it should be based on their position when they started the session. 
+
+The <dfn attribute for="XRSession">comfortSpaceAABB</dfn> attribute defines an Axis-Aligned Bounding Box for the size of the comfortable area, the box is aligned to the comfortSpace in the format [minX, minY, minZ, maxX, maxY, maxZ]. For example a box which is 1m wide, 0.8m tall, and 0.6m deep could have an AABB of [-0.5, 0, -0.3, 0.5, 0.8, 0.3] so that the box rests with the center of the bottom face at the origin of the comfortSpace. If the user has the comfort space set to a desk surface the minY should be 0. It's okay for the bounding box to not be symmetrical about the origin.
 
 <div class="algorithm" data-algorithm="initialize-session">
 
