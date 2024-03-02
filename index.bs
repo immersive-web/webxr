@@ -630,6 +630,7 @@ enum XRVisibilityState {
   readonly attribute Float32Array? supportedFrameRates;
   [SameObject] readonly attribute XRRenderState renderState;
   [SameObject] readonly attribute XRInputSourceArray inputSources;
+  [SameObject] readonly attribute XRInputSourceArray trackedSources;
   readonly attribute FrozenArray&lt;DOMString&gt; enabledFeatures;
   readonly attribute boolean isSystemKeyboardSupported;
 
@@ -831,11 +832,13 @@ When this method is invoked, the user agent MUST run the following steps:
 
 </div>
 
-Each {{XRSession}} has a <dfn>list of active XR input sources</dfn> (a [=/list=] of {{XRInputSource}}) which MUST be initially an empty [=/list=].
+Each {{XRSession}} has a <dfn>list of active XR input sources</dfn> (a [=/list=] of {{XRInputSource}}) and a <dfn>list of active XR tracked sources</dfn> (a [=/list=] of {{XRInputSource}}) which MUST be initially an empty [=/list=].
 
 Each {{XRSession}} has an <dfn for="XRSession">XR device</dfn>, which is an [=/XR device=] set at initialization.
 
 The <dfn attribute for="XRSession">inputSources</dfn> attribute returns the {{XRSession}}'s [=list of active XR input sources=].
+
+The <dfn attribute for="XRSession">trackedSources</dfn> attribute returns the {{XRSession}}'s [=list of active XR tracked sources=].
 
 The user agent MUST monitor any [=XR input source=]s associated with the [=XRSession/XR device=], including detecting when [=XR input source=]s are added, removed, or changed.
 
@@ -848,13 +851,23 @@ NOTE: The purpose of this flag is to ensure that the [=XRSession/add input sourc
 When <dfn for="XRSession" lt="add input source">new [=XR input source=]s become available</dfn> for {{XRSession}} |session|, the user agent MUST run the following steps:
 
   1. If |session|'s [=XRSession/promise resolved=] flag is not set, abort these steps.
-  1. Let |added| be a new [=/list=].
+  1. Let |added primary| be a new [=/list=].
+  1. Let |added auxiliary| be a new [=/list=].
   1. For each new [=XR input source=]:
-    1. Let |inputSource| be a [=new=] {{XRInputSource}} in the [=relevant realm=] of this {{XRSession}}.
-    1. Add |inputSource| to |added|.
+    1. Let |inputSource| be a [=new=] {{XRInputSource}} in the [=relevant realm=] of this {{XRSession}}, then perform the following step:
+        <dl class="switch">
+            : If |inputSource| is a [=primary input source=]:
+            ::
+                Add |inputSource| to |added primary|.
+            : Otherwise:
+            ::
+                Add |inputSource| to |added auxiliary|.
+        </dl>
   1. [=Queue a task=] to perform the following steps:
-    1. [=list/Extend=] |session|'s [=list of active XR input sources=] with |added|.
-    1. Fire an {{XRInputSourcesChangeEvent}} named {{inputsourceschange!!event}} on |session| with {{XRInputSourcesChangeEvent/added}} set to |added|.
+    1. [=list/Extend=] |session|'s [=list of active XR input sources=] with |added primary|.
+    1. Fire an {{XRInputSourcesChangeEvent}} named {{inputsourceschange!!event}} on |session| with {{XRInputSourcesChangeEvent/added}} set to |added primary|.
+    1. [=list/Extend=] |session|'s [=list of active XR tracked sources=] with |added auxiliary|.
+    1. Fire an {{XRTrackedSourcesChangeEvent}} named {{trackedsourceschange!!event}} on |session| with {{XRTrackedSourcesChangeEvent/added}} set to |added auxiliary|.
 
 </div>
 
@@ -863,13 +876,23 @@ When <dfn for="XRSession" lt="add input source">new [=XR input source=]s become 
 When any previously added <dfn for="XRSession" lt="remove input source">[=XR input source=]s are no longer available</dfn> for {{XRSession}} |session|, the user agent MUST run the following steps:
 
   1. If |session|'s [=XRSession/promise resolved=] flag is not set, abort these steps.
-  1. Let |removed| be a new [=/list=].
+  1. Let |removed primary| be a new [=/list=].
+  1. Let |removed auxiliary| be a new [=/list=].
   1. For each [=XR input source=] that is no longer available:
-    1. Let |inputSource| be the {{XRInputSource}} in |session|'s [=list of active XR input sources=] associated with the [=XR input source=].
-    1. Add |inputSource| to |removed|.
+    1. Let |inputSource| be the {{XRInputSource}} in |session|'s [=list of active XR input sources=] associated with the [=XR input source=], then perform the following step:
+        <dl class="switch">
+            : If |inputSource| is a [=primary input source=]:
+            ::
+                Add |inputSource| to |removed primary|.
+            : Otherwise:
+            ::
+                Add |inputSource| to |removed auxiliary|.
+        </dl>
   1. [=Queue a task=] to perform the following steps:
-    1. [=list/Remove=] each {{XRInputSource}} in |removed| from |session|'s [=list of active XR input sources=].
-    1. Fire an {{XRInputSourcesChangeEvent}} named {{inputsourceschange!!event}} on |session| with {{XRInputSourcesChangeEvent/removed}} set to |removed|.
+    1. [=list/Remove=] each {{XRInputSource}} in |removed primary| from |session|'s [=list of active XR input sources=].
+    1. Fire an {{XRInputSourcesChangeEvent}} named {{inputsourceschange!!event}} on |session| with {{XRInputSourcesChangeEvent/removed}} set to |removed primary|.
+    1. [=list/Remove=] each {{XRInputSource}} in |removed auxiliary| from |session|'s [=list of active XR tracked sources=].
+    1. Fire an {{XRTrackedSourcesChangeEvent}} named {{trackedsourceschange!!event}} on |session| with {{XRTrackedSourcesChangeEvent/removed}} set to |removed auxiliary|.
 
 Note: The user agent MAY fire this event when an input source temporarily loses both position and orientation tracking. It is recommended that this only be done for physical handheld controller input sources. It is not recommended that this event be fired when this happens for tracked hand input sources, because this will happen often, nor is it recommended when this happens for tracker object input sources, since this makes it harder for the application to maintain a notion of identity.
 
@@ -880,17 +903,36 @@ Note: The user agent MAY fire this event when an input source temporarily loses 
 When the <dfn for="XRSession" export lt="change input source">{{XRInputSource/handedness}}, {{XRInputSource/targetRayMode}}, {{XRInputSource/profiles}}, or presence of a {{XRInputSource/gripSpace}} for any [=XR input source=]s change</dfn> for {{XRSession}} |session|, the user agent MUST run the following steps:
 
   1. If |session|'s [=XRSession/promise resolved=] flag is not set, abort these steps.
-  1. Let |added| be a new [=/list=].
-  1. Let |removed| be a new [=/list=].
+  1. Let |added primary| be a new [=/list=].
+  1. Let |removed primary| be a new [=/list=].
+  1. Let |added auxiliary| be a new [=/list=].
+  1. Let |removed auxiliary| be a new [=/list=].
   1. For each changed [=XR input source=]:
-    1. Let |oldInputSource| be the {{XRInputSource}} in |session|'s [=list of active XR input sources=] previously associated with the [=XR input source=].
-    1. Let |newInputSource| be a [=new=] {{XRInputSource}} in the [=relevant realm=] of |session|.
-    1. Add |oldInputSource| to |removed|.
-    1. Add |newInputSource| to |added|.
+    1. Let |oldInputSource| be the {{XRInputSource}} in |session|'s [=list of active XR input sources=] previously associated with the [=XR input source=], then perform the following step:
+        <dl class="switch">
+            : If |oldInputSource| is a [=primary input source=]:
+            ::
+                Add |oldInputSource| to |removed primary|.
+            : Otherwise:
+            ::
+                Add |oldInputSource| to |removed auxiliary|.
+        </dl>
+    1. Let |newInputSource| be a [=new=] {{XRInputSource}} in the [=relevant realm=] of |session|, then perform the following step:
+        <dl class="switch">
+            : If |newInputSource| is a [=primary input source=]:
+            ::
+                Add |newInputSource| to |added primary|.
+            : Otherwise:
+            ::
+                Add |newInputSource| to |added auxiliary|.
+        </dl>
   1. [=Queue a task=] to perform the following steps:
-    1. [=list/Remove=] each {{XRInputSource}} in |removed| from |session|'s [=list of active XR input sources=].
-    1. [=list/Extend=] |session|'s [=list of active XR input sources=] with |added|.
-    1. Fire an {{XRInputSourcesChangeEvent}} named {{inputsourceschange!!event}} on |session| with{{XRInputSourcesChangeEvent/added}} set to |added| and {{XRInputSourcesChangeEvent/removed}} set to |removed|.
+    1. [=list/Remove=] each {{XRInputSource}} in |removed primary| from |session|'s [=list of active XR input sources=].
+    1. [=list/Extend=] |session|'s [=list of active XR input sources=] with |added primary|.
+    1. Fire an {{XRInputSourcesChangeEvent}} named {{inputsourceschange!!event}} on |session| with{{XRInputSourcesChangeEvent/added}} set to |added primary| and {{XRInputSourcesChangeEvent/removed}} set to |removed primary|.
+    1. [=list/Remove=] each {{XRInputSource}} in |removed auxiliary| from |session|'s [=list of active XR tracked sources=].
+    1. [=list/Extend=] |session|'s [=list of active XR input sources=] with |added auxiliary|.
+    1. Fire an {{XRTrackedSourcesChangeEvent}} named {{trackedsourceschange!!event}} on |session| with{{XRTrackedSourcesChangeEvent/added}} set to |added auxiliary| and {{XRTrackedSourcesChangeEvent/removed}} set to |removed auxiliary|.
 
 </div>
 
@@ -934,6 +976,8 @@ Each {{XRSession}} has a <dfn for="XRSession">list of views</dfn>, which is a [=
 The <dfn attribute for="XRSession">onend</dfn> attribute is an [=Event handler IDL attribute=] for the {{end}} event type.
 
 The <dfn attribute for="XRSession">oninputsourceschange</dfn> attribute is an [=Event handler IDL attribute=] for the {{inputsourceschange}} event type.
+
+The <dfn attribute for="XRSession">ontrackedsourceschange</dfn> attribute is an [=Event handler IDL attribute=] for the {{trackedsourceschange}} event type.
 
 The <dfn attribute for="XRSession">onselectstart</dfn> attribute is an [=Event handler IDL attribute=] for the {{XRSession/selectstart}} event type.
 
@@ -2457,7 +2501,7 @@ When the user agent has to <dfn>fire an input source event</dfn> with name |name
 XRInputSourcesChangeEvent {#xrinputsourceschangeevent-interface}
 -------------------------
 
-{{XRInputSourcesChangeEvent}}s are fired to indicate changes to the {{XRInputSource}}s that are available to an {{XRSession}}.
+{{XRInputSourcesChangeEvent}}s are fired to indicate changes to the [=list of active XR input sources=] that are available to an {{XRSession}}.
 
 <pre class="idl">
 [SecureContext, Exposed=Window]
@@ -2481,6 +2525,34 @@ The <dfn attribute for="XRInputSourcesChangeEvent">session</dfn> attribute indic
 The <dfn attribute for="XRInputSourcesChangeEvent">added</dfn> attribute is a [=/list=] of {{XRInputSource}}s that were added to the {{XRSession}} at the time of the event.
 
 The <dfn attribute for="XRInputSourcesChangeEvent">removed</dfn> attribute is a [=/list=] of {{XRInputSource}}s that were removed from the {{XRSession}} at the time of the event.
+
+XRTrackedSourcesChangeEvent {#xrtrackedsourceschangeevent-interface}
+-------------------------
+
+{{XRTrackedSourcesChangeEvent}}s are fired to indicate changes to the [=list of active XR tracked sources=] that are available to an {{XRSession}}.
+
+<pre class="idl">
+[SecureContext, Exposed=Window]
+interface XRTrackedSourcesChangeEvent : Event {
+  constructor(DOMString type, XRTrackedSourcesChangeEventInit eventInitDict);
+  [SameObject] readonly attribute XRSession session;
+  [SameObject] readonly attribute FrozenArray&lt;XRInputSource&gt; added;
+  [SameObject] readonly attribute FrozenArray&lt;XRInputSource&gt; removed;
+};
+
+dictionary XRTrackedSourcesChangeEventInit : EventInit {
+  required XRSession session;
+  required FrozenArray&lt;XRInputSource&gt; added;
+  required FrozenArray&lt;XRInputSource&gt; removed;
+
+};
+</pre>
+
+The <dfn attribute for="XRTrackedSourcesChangeEvent">session</dfn> attribute indicates the {{XRSession}} that generated the event.
+
+The <dfn attribute for="XRTrackedSourcesChangeEvent">added</dfn> attribute is a [=/list=] of {{XRInputSource}}s that were added to the {{XRSession}} at the time of the event.
+
+The <dfn attribute for="XRTrackedSourcesChangeEvent">removed</dfn> attribute is a [=/list=] of {{XRInputSource}}s that were removed from the {{XRSession}} at the time of the event.
 
 
 XRReferenceSpaceEvent {#xrreferencespaceevent-interface}
@@ -2518,6 +2590,8 @@ A user agent MUST [=fire an event=] named <dfn event for="XRSession">visibilityc
 A user agent MUST [=fire an event=] named <dfn event for="XRSession">end</dfn> using {{XRSessionEvent}} on an {{XRSession}} when the session ends, either by the application or the user agent.
 
 A user agent MUST [=fire an event=] named <dfn event for="XRSession">inputsourceschange</dfn> using {{XRInputSourcesChangeEvent}} on an {{XRSession}} when the session's [=list of active XR input sources=] has changed.
+
+A user agent MUST [=fire an event=] named <dfn event for="XRSession">trackedsourceschange</dfn> using {{XRTrackedSourcesChangeEvent}} on an {{XRSession}} when the session's [=list of active XR tracked sources=] has changed.
 
 A user agent MUST [=fire an event=] named <dfn event for="XRSession">selectstart</dfn> using {{XRInputSourceEvent}} on an {{XRSession}} when one of its {{XRInputSource}}s begins its [=primary action=]. The event MUST be of type .
 
