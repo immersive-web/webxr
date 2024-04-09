@@ -2470,8 +2470,8 @@ interface XRInputSourcesChangeEvent : Event {
 
 dictionary XRInputSourcesChangeEventInit : EventInit {
   required XRSession session;
-  required FrozenArray&lt;XRInputSource&gt; added;
-  required FrozenArray&lt;XRInputSource&gt; removed;
+  required sequence&lt;XRInputSource&gt; added;
+  required sequence&lt;XRInputSource&gt; removed;
 
 };
 </pre>
@@ -3012,7 +3012,7 @@ Changes:
 - Mention that the opaque framebuffer holds a reference to a particular session (<a href="https://github.com/immersive-web/webxr/pull/1004">GitHub #1004</a>)
 - Defer initial inputsourcechange event till after the promise resolves (<a href="https://github.com/immersive-web/webxr/pull/1002">GitHub #1002</a>)
 - Documented the effects of the framebufferScaleFactor (<a href="https://github.com/immersive-web/webxr/pull/993">GitHub #993</a>)
-- Allow depth&&stencil result if depth||stencil requested (<a href="https://github.com/immersive-web/webxr/pull/987">GitHub #987</a>)
+- Allow depth&amp;&amp;stencil result if depth||stencil requested (<a href="https://github.com/immersive-web/webxr/pull/987">GitHub #987</a>)
 - Allow more flexibility in what isSessionSupported returns (<a href="https://github.com/immersive-web/webxr/pull/986">GitHub #986</a>)
 - Clarify when tracking/input data is exposed via inline devices (<a href="https://github.com/immersive-web/webxr/pull/985">GitHub #985</a>)
 - Add common sense restrictions on viewport shape (<a href="https://github.com/immersive-web/webxr/pull/976">GitHub #976</a>)
@@ -3165,7 +3165,7 @@ Thank you to the following individuals for their contributions the WebXR Device 
   * <a href="mailto:klausw@google.com">Klaus Weidner</a> (<a href="https://google.com">Google</a>)
   * <a href="mailto:ajeffrey@mozilla.com">Alan Jeffrey</a> (<a href="https://mozilla.org/">Mozilla</a>)
   * <a href="mailto:dhosfelt@mozilla.com">Diane Hosfelt</a> (<a href="https://mozilla.org/">Mozilla</a>)
-  * <a href="mailto:gminthe@gmail.com">Kyungsuk</a> (<a href="https://www.xandr.com/">AT&T Xandr</a>)
+  * <a href="mailto:gminthe@gmail.com">Kyungsuk</a> (<a href="https://www.xandr.com/">AT&amp;T Xandr</a>)
   * <a href="mailto:ddorwin@google.com">David Dorwin</a> (<a href="https://google.com">Google</a>)
   * <a href="mailto:trevor@transmutable.com">Trevor F. Smith</a> (<a href="https://transmutable.com/">Transmutable</a>)
   * <a href="mailto:ada.cannon@samsung.com">Ada Rose Cannon</a> (<a href="https://samsung.com">Samsung</a>)
