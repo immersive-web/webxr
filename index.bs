@@ -888,7 +888,7 @@ When any previously added <dfn for="XRSession" lt="remove input source">[=XR inp
         </dl>
   1. [=Queue a task=] to perform the following steps:
     1. [=list/Remove=] each {{XRInputSource}} in |removed primary sources| from |session|'s [=list of active XR input sources=].
-    1. ire an {{XRInputSourcesChangeEvent}} named {{inputsourceschange!!event}} on |session| with {{XRInputSourcesChangeEvent/removed}} set to |removed primary sources|.
+    1. If |removed primary sources| is not empty, fire an {{XRInputSourcesChangeEvent}} named {{inputsourceschange!!event}} on |session| with {{XRInputSourcesChangeEvent/removed}} set to |removed primary sources|.
     1. [=list/Remove=] each {{XRInputSource}} in |removed tracked sources| from |session|'s [=list of active XR tracked sources=].
     1. If |removed tracked sources| is not empty, fire an {{XRTrackedSourcesChangeEvent}} named {{trackedsourceschange!!event}} on |session| with {{XRTrackedSourcesChangeEvent/removed}} set to |removed tracked sources|.
 
@@ -898,7 +898,7 @@ Note: The user agent MAY fire this event when an input source temporarily loses 
 
 <div class="algorithm" data-algorithm="on-input-source-change">
 
-When the <dfn for="XRSession" export lt="change input source">{{XRInputSource/handedness}}, {{XRInputSource/targetRayMode}}, {{XRInputSource/profiles}}, presence of a {{XRInputSource/gripSpace}} or the state of the [=primary input source=] or [=tracked input source=] for any [=XR input source=]s change</dfn> for {{XRSession}} |session|, the user agent MUST run the following steps:
+When the <dfn for="XRSession" export lt="change input source">{{XRInputSource/handedness}}, {{XRInputSource/targetRayMode}}, {{XRInputSource/profiles}}, presence of a {{XRInputSource/gripSpace}} or the status as a [=primary input source=] or [=tracked input source=] for any [=XR input source=]s change</dfn> for {{XRSession}} |session|, the user agent MUST run the following steps:
 
   1. If |session|'s [=XRSession/promise resolved=] flag is not set, abort these steps.
   1. Let |added primary sources| be a new [=/list=].
@@ -1940,7 +1940,8 @@ Note: {{XRInputSource}}s in an {{XRSession}}'s {{XRSession/inputSources}} array 
 
 An [=XR input source=] is a <dfn>primary input source</dfn> if it supports a <dfn>primary action</dfn>. The [=primary action=] is a platform-specific action that, when engaged, produces {{XRSession/selectstart}}, {{XRSession/selectend}}, and {{XRSession/select}} events. Examples of possible [=primary action=]s are pressing a trigger, touchpad, or button, speaking a command, or making a hand gesture. If the platform guidelines define a recommended primary input then it should be used as the [=primary action=], otherwise the user agent is free to select one. The device MUST support at least one [=primary input source=].
 
-An [=XR input source=] is an <dfn>tracked input source</dfn> if it does not support a [=primary action=], for example [=transient input sources=] associated with secondary screen touches on a multitouch device.
+An [=XR input source=] is an <dfn>tracked input source</dfn> if it does not support a [=primary action=]. These inputs are primarily intended to provide pose data.
+Note: An example of a [=tracked input source=] would be tracking attachments for a users legs or a prop. Tracked hands may also be considered a [=tracked input source=] if there is no gesture recognition being performed to detect [=primary action=]s.
 
 <div class="algorithm" data-algorithm="on-input-start">
 
