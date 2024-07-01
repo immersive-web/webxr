@@ -105,11 +105,9 @@ spec:html; urlPrefix: https://html.spec.whatwg.org/multipage/
     type: dfn; text: associated document; url: window-object.html#concept-document-window
     type: dfn; text: origin; url: origin.html#concept-origin
     type: dfn; text: secure context; url: secure-context
+    type: dfn; for: Document; text: visibilityState; url: interaction.html#dom-document-visibilitystate
 spec: PointerEvents; urlPrefix: https://www.w3.org/TR/pointerevents/#
     type: dfn; text: primary pointer; url: dfn-primary-pointer
-spec: PageVisibility; urlPrefix: https://www.w3.org/TR/page-visibility-2/#
-    type: dfn; text: visibilityState; url: visibilitystate-attribute
-    type: dfn; text: hidden; url: dom-visibilitystate-hidden
 
 spec: ECMAScript; urlPrefix: https://tc39.es/ecma262/#
     type: method; text: IsDetachedBuffer; url: sec-isdetachedbuffer
@@ -894,7 +892,7 @@ When the <dfn for="XRSession" export lt="change input source">{{XRInputSource/ha
 
 </div>
 
-Each {{XRSession}} has a <dfn for="XRSession">visibility state</dfn> value, which is an enum. For [=inline sessions=] the [=XRSession/visibility state=] MUST mirror the {{Document}}'s [=visibilityState=]. For [=immersive sessions=] the [=XRSession/visibility state=] MUST be set to whichever of the following values best matches the state of session.
+Each {{XRSession}} has a <dfn for="XRSession">visibility state</dfn> value, which is an enum. For [=inline sessions=] the [=XRSession/visibility state=] MUST mirror the {{Document}}'s [=Document/visibilityState=]. For [=immersive sessions=] the [=XRSession/visibility state=] MUST be set to whichever of the following values best matches the state of session.
 
   - A state of <dfn enum-value for="XRVisibilityState">visible</dfn> indicates that imagery rendered by the {{XRSession}} can be seen by the user and {{XRSession/requestAnimationFrame()}} callbacks are processed at the [=XRSession/XR device=]'s native refresh rate. Input is processed by the {{XRSession}} normally.
 
@@ -906,7 +904,7 @@ The <dfn attribute for="XRSession">visibilityState</dfn> attribute returns the {
 
 The [=visibility state=] MAY be changed by the user agent at any time other than during the processing of an [=XR animation frame=], and the user agent SHOULD monitor the XR platform when possible to observe when session visibility has been affected external to the user agent and update the [=visibility state=] accordingly.
 
-Note: The {{XRSession}}'s [=visibility state=] does not necessarily imply the visibility of the HTML document. Depending on the system configuration the page may continue to be visible while an [=immersive session=] is active. (For example, a headset connected to a PC may continue to display the page on the monitor while the headset is viewing content from an [=immersive session=].) Developers should continue to rely on the [Page Visibility API](https://www.w3.org/TR/page-visibility-2/) to determine page visibility.
+Note: The {{XRSession}}'s [=visibility state=] does not necessarily imply the visibility of the HTML document. Depending on the system configuration the page may continue to be visible while an [=immersive session=] is active. (For example, a headset connected to a PC may continue to display the page on the monitor while the headset is viewing content from an [=immersive session=].) Developers should continue to rely on the [Page Visibility](https://html.spec.whatwg.org/multipage/interaction.html#page-visibility) to determine page visibility.
 
 Note: The {{XRSession}}'s [=visibility state=] does not affect or restrict mouse behavior on tethered sessions where 2D content is still visible while an [=immersive session=] is active. Content should consider using the [[!pointerlock]] API if it wishes to have stronger control over mouse behavior.
 
