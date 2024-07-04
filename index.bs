@@ -2950,6 +2950,16 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
 <h2 id="changes" class="no-num">
 Changes</h2>
 
+<h3 id="changes-from-20220331" class="no-num">
+Changes from the <a href="https://www.w3.org/TR/2022/CR-webxr-20220331/">Candidate Recommendation Snapshot, 31 March 2022</h3>
+
+- Expose XRSession's granted features (<a href="https://github.com/immersive-web/webxr/pull/1296">GitHub #1296</a>)
+- Add support for the isSystemKeyboardSupported attribute (<a href="https://github.com/immersive-web/webxr/pull/1314">GitHub #1314</a>)
+- Clarify getPose behavior with visibile-blurred (<a href="https://github.com/immersive-web/webxr/pull/1332">GitHub #1332</a>)
+- Transient intent addition (<a href="https://github.com/immersive-web/webxr/pull/1343">GitHub #1343</a>)
+- First draft for adding a property to XRInputSource to say it's visible elsewhere (<a href="https://github.com/immersive-web/webxr/pull/1353">GitHub #1353</a>)
+- Clarify rgb vs srgb behavior (<a href="https://github.com/immersive-web/webxr/pull/1359">GitHub #1359</a>)
+
 
 <h3 id="changes-from-20200724" class="no-num">
 Changes from the <a href="https://www.w3.org/TR/2020/WD-webxr-20200724/">Working Draft 24 July 2020</a></h3>
