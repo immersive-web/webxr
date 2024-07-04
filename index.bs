@@ -2951,7 +2951,7 @@ To <dfn>resolve the requested features</dfn> given |requiredFeatures| and |optio
 Changes</h2>
 
 <h3 id="changes-from-20220331" class="no-num">
-Changes from the <a href="https://www.w3.org/TR/2022/CR-webxr-20220331/">Candidate Recommendation Snapshot, 31 March 2022</h3>
+Changes from the <a href="https://www.w3.org/TR/2022/CR-webxr-20220331/">Candidate Recommendation Snapshot, 31 March 2022</a></h3>
 
 - Expose XRSession's granted features (<a href="https://github.com/immersive-web/webxr/pull/1296">GitHub #1296</a>)
 - Add support for the isSystemKeyboardSupported attribute (<a href="https://github.com/immersive-web/webxr/pull/1314">GitHub #1314</a>)
