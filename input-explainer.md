@@ -66,7 +66,7 @@ The `inputSources` attribute on an `XRSession` returns a list of all `XRInputSou
 let inputSources = xrSession.inputSources;
 ```
 
-When input sources are added to or removed from the list of available input sources the `inputsourceschange` event must be fired on the `XRSession` object to indicate that any cached copies of the list should be refreshed. In addition, the `inputsourceschange` event will also fire once after the session creation callback completes. This event is of the type `XRInputSourceChangeEvent` and will contain three attributes: `session` is associated session being changed, `added` is the new input sources, and `removed` is the input sources that will no longer be reported.
+When input sources are added to or removed from the list of available input sources the `inputsourceschange` event must be fired on the `XRSession` object to indicate that any cached copies of the list should be refreshed. In addition, the `inputsourceschange` event will also fire once after the session creation callback completes. This event is of the type `XRInputSourcesChangeEvent` and will contain three attributes: `session` is associated session being changed, `added` is the new input sources, and `removed` is the input sources that will no longer be reported.
 
 ```js
 function onSessionStarted(session) {
@@ -148,7 +148,7 @@ function onSelectStart(event) {
     preferredInputSource = event.inputSource;
 }
 
-function onInputSourceChanged(event) {
+function onInputSourcesChanged(event) {
   xrInputSources = event.session.inputSources;
 
   // Choose an appropriate default from available inputSources, such as 
@@ -400,14 +400,14 @@ dictionary XRSessionEventInit : EventInit {
   required XRSession session;
 };
 
-[SecureContext, Exposed=Window, Constructor(DOMString type, XRInputSourceChangeEventInit eventInitDict)]
-interface XRInputSourceChangeEvent : Event {
+[SecureContext, Exposed=Window, Constructor(DOMString type, XRInputSourcesChangeEventInit eventInitDict)]
+interface XRInputSourcesChangeEvent : Event {
   readonly attribute XRSession session;
   readonly attribute FrozenArray<XRInputSource> removed;
   readonly attribute FrozenArray<XRInputSource> added;
 };
 
-dictionary XRInputSourceChangeEventInit : EventInit {
+dictionary XRInputSourcesChangeEventInit : EventInit {
   required XRSession session;
   required FrozenArray<XRInputSource> removed;
   required FrozenArray<XRInputSource> added;
