@@ -1079,8 +1079,7 @@ When an {{XRSession}} |session| receives updated [=viewer=] state for timestamp 
         1. [=XRFrame/Apply frame updates=] for |frame|.
         1. For each |entry| in |session|'s [=list of currently running animation frame callbacks=], in order:
           1. If the |entry|'s [=cancelled=] boolean is `true`, continue to the next entry.
-          1. [=Invoke the Web IDL callback function=] for |entry|, passing |now| and |frame| as the  arguments
-          1. If an exception is thrown, [=report the exception=].
+          1. [=Invoke the Web IDL callback function|Invoke=] |entry| with « |now|, |frame| » and "`report`".
         1. Set |session|'s [=list of currently running animation frame callbacks=] to the empty [=/list=].
         1. Set |frame|'s [=XRFrame/active=] boolean to `false`.
     1. If |session|'s [=pending render state=] is not `null`, [=apply the pending render state=].
