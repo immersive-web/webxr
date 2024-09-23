@@ -2510,7 +2510,9 @@ dictionary XRReferenceSpaceEventInit : EventInit {
 
 The <dfn attribute for="XRReferenceSpaceEvent">referenceSpace</dfn> attribute indicates the {{XRReferenceSpace}} that generated this event.
 
-The <dfn attribute for="XRReferenceSpaceEvent">transform</dfn> attribute describes the post-event position and orientation of the {{XRReferenceSpaceEvent/referenceSpace}}'s [=native origin=] in the pre-event coordinate system.
+The optional <dfn attribute for="XRReferenceSpaceEvent">transform</dfn> attribute describes the post-event position and orientation of the {{XRReferenceSpaceEvent/referenceSpace}}'s [=native origin=] in the pre-event coordinate system. This attribute MAY be `null` if the {{XRSystem}} can't determine the delta between the old and the new coordinate system.
+
+NOTE: situations where {{XRReferenceSpaceEvent/referenceSpace}} or {{XRReferenceSpaceEventInit/referenceSpace}} can be when the headset was doffed and donned between 2 seperate locations. In such cases, if the experience relies on world-locked content, it should warn the user and reset the scene.
 
 Event Types {#event-types}
 -----------
