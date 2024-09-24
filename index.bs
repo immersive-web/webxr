@@ -2754,8 +2754,8 @@ Fingerprinting {#fingerprinting-security}
 Given that the API describes hardware available to the user and its capabilities it will inevitably provide additional surface area for fingerprinting. While it's impossible to completely avoid this, user agents should take steps to mitigate the issue. This spec limits reporting of available hardware to only a single device at a time, which prevents using the rare cases of multiple headsets being connected as a fingerprinting signal. Also, the devices that are reported have no string identifiers and expose very little information about the devices capabilities until an XRSession is created, which requires additional protections when [=sensitive information=] will be exposed.
 
 
-Fingerprinting considerations of {{XRSystem/isSessionSupported()}} {#issessionsupported-fingerprinting}
-----------------------------------
+### Fingerprinting considerations of {{XRSystem/isSessionSupported()}} ### {#issessionsupported-fingerprinting}
+
 Because {{XRSystem/isSessionSupported()}} can be called without user activation it may be used as a fingerprinting vector.
 
 <dfn permission>"xr-session-supported"</dfn> [=powerful feature=] gates access to the {{XRSystem/isSessionSupported()}} API.
