@@ -1046,9 +1046,9 @@ The <dfn attribute for="XRRenderState">depthNear</dfn> attribute defines the dis
 
 Note: Typically when constructing a perspective projection matrix for rendering the developer specifies the viewing frustum and the near and far clip planes. When displaying to an [=immersive XR device=] the correct viewing frustum is determined by some combination of the optics, displays, and cameras being used. The near and far clip planes, however, may be modified by the application since the appropriate values depend on the type of content being rendered.
 
-The <dfn attribute for="XRRenderState">pasthroughFullyObscured</dfn> attribute is a hint to the {{XRSystem}} from the author to indicate that the pixels of the immersive experience completely cover the viewport.
+The <dfn attribute for="XRRenderState">pasthroughFullyObscured</dfn> attribute is a hint to the {{XRSystem}} from the author to indicate that they intend to completely cover the viewport with virtual content. The author SHOULD set this flag back to <code>false</code> once the viewport is no longer covered by opaque pixels.
 
-NOTE: the {{XRSystem}} MAY use this to temporarily disable passthrough to save system resources.
+NOTE: the {{XRSystem}} MAY use this as a hint to temporarily disable passthrough. On devices with see-through optics, the user will continue to see their environment and this flag will have no effect.
 
 The <dfn attribute for="XRRenderState">inlineVerticalFieldOfView</dfn> attribute defines the default vertical field of view in radians used when computing projection matrices for {{XRSessionMode/"inline"}} {{XRSession}}s. The projection matrix calculation also takes into account the aspect ratio of the [=XRRenderState/output canvas=]. This value MUST be `null` for [=immersive sessions=].
 
