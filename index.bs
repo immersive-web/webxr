@@ -358,7 +358,7 @@ When this method is invoked, it MUST run the following steps:
         1. Let |device| be the result of [=ensure an immersive XR device is selected|ensuring an immersive XR device is selected=].
         1. If |device| is null, [=/resolve=] |promise| with `false` and abort these steps.
         1. If |device|'s [=list of supported modes=] does not [=list/contain=] |mode|, [=queue a task=] to [=/resolve=] |promise| with `false` and abort these steps.
-        1. [=request permission to use=] the [=powerful feature=] <a permission>"xr-session-supported"</a> with {{XRSessionSupportedPermissionDescriptor}} with {{XRSessionSupportedPermissionDescriptor/mode}} equal to |mode|. If it returns {{PermissionState/"denied"}} [=queue a task=] to [=/resolve=] |promise| with `false` and abort these steps. <span class=note>See [[#issessionsupported-fingerprinting|Fingerprinting considerations]] for more information.
+        1. [=request permission to use=] the [=powerful feature=] <a permission>"xr-session-supported"</a> with {{XRSessionSupportedPermissionDescriptor}} with {{XRSessionSupportedPermissionDescriptor/mode}} equal to |mode|. If it returns {{PermissionState/"denied"}} [=queue a task=] to [=/resolve=] |promise| with `false` and abort these steps. <span class=note>See [[#issessionsupported-fingerprinting|Fingerprinting considerations]] for more information.</span>
         1. [=queue a task=] to [=/resolve=] |promise| with `true`.
 
     </dl>
@@ -775,7 +775,8 @@ When this method is invoked, the user agent MUST run the following steps:
   1. Run [=update the pending layers state=] with |session| and |newState|.
   1. Let |activeState| be |session|'s [=active render state=].
   1. If |session|'s [=pending render state=] is `null`, set it to a copy of |activeState|.
-  1. If |newState|'s {{XRRenderStateInit/depthNear}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/depthNear}} to |newState|'s {{XRRenderStateInit/depthNear}}.
+  1. If |newState|'s {{XRRenderStateInit/pasthroughFullyObscured}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/pasthroughFullyObscured}} to |newState|'s {{XRRenderStateInit/pasthroughFullyObscured}}.
+  1. If |newState|'s {{XRRenderStateInit/depthNear}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/depthNear}} to |newState|'s {{XRRenderStateInit/depthNear}}.  
   1. If |newState|'s {{XRRenderStateInit/depthFar}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/depthFar}} to |newState|'s {{XRRenderStateInit/depthFar}}.
   1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set, set |session|'s [=pending render state=]'s {{XRRenderState/inlineVerticalFieldOfView}} to |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}}.
   1. If |newState|'s {{XRRenderStateInit/baseLayer}} is set, set |session|'s [=pending render state=]'s {{XRRenderState/baseLayer}} to |newState|'s {{XRRenderStateInit/baseLayer}}.
@@ -997,6 +998,7 @@ An {{XRRenderState}} represents a set of configurable values which affect how an
 dictionary XRRenderStateInit {
   double depthNear;
   double depthFar;
+  boolean pasthroughFullyObscured;
   double inlineVerticalFieldOfView;
   XRWebGLLayer? baseLayer;
   sequence&lt;XRLayer&gt;? layers;
@@ -1005,6 +1007,7 @@ dictionary XRRenderStateInit {
 [SecureContext, Exposed=Window] interface XRRenderState {
   readonly attribute double depthNear;
   readonly attribute double depthFar;
+  readonly attribute boolean? pasthroughFullyObscured;
   readonly attribute double? inlineVerticalFieldOfView;
   readonly attribute XRWebGLLayer? baseLayer;
 };
@@ -1023,6 +1026,7 @@ When an {{XRRenderState}} object is created for an {{XRSession}} |session|, the 
   1. Let |state| be a [=new=] {{XRRenderState}} object in the [=relevant realm=] of |session|.
   1. Initialize |state|'s {{XRRenderState/depthNear}} to `0.1`.
   1. Initialize |state|'s {{XRRenderState/depthFar}} to `1000.0`.
+  1. Initialize |state|'s {{XRRenderState/pasthroughFullyObscured}} to `false`.
   1. Initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} as follows:
     <dl class="switch">
       : If |session| is an [=inline session=]:
@@ -1041,6 +1045,10 @@ The <dfn attribute for="XRRenderState">depthNear</dfn> attribute defines the dis
 {{XRRenderState/depthNear}} and {{XRRenderState/depthFar}} are used in the computation of the {{XRView/projectionMatrix}} of {{XRView}}s. When the {{XRView/projectionMatrix}} is used during rendering, only geometry with a distance to the [=viewer=] that falls between {{XRRenderState/depthNear}} and {{XRRenderState/depthFar}} will be drawn. They also determine how the values of an {{XRWebGLLayer}} depth buffer are interpreted. {{XRRenderState/depthNear}} MAY be greater than {{XRRenderState/depthFar}}.
 
 Note: Typically when constructing a perspective projection matrix for rendering the developer specifies the viewing frustum and the near and far clip planes. When displaying to an [=immersive XR device=] the correct viewing frustum is determined by some combination of the optics, displays, and cameras being used. The near and far clip planes, however, may be modified by the application since the appropriate values depend on the type of content being rendered.
+
+The <dfn attribute for="XRRenderState">pasthroughFullyObscured</dfn> attribute is a hint to the {{XRSystem}} from the author to indicate that the pixels of the immersive experience completely cover the viewport.
+
+NOTE: the {{XRSystem}} MAY use this to temporarily disable passthrough to save system resources.
 
 The <dfn attribute for="XRRenderState">inlineVerticalFieldOfView</dfn> attribute defines the default vertical field of view in radians used when computing projection matrices for {{XRSessionMode/"inline"}} {{XRSession}}s. The projection matrix calculation also takes into account the aspect ratio of the [=XRRenderState/output canvas=]. This value MUST be `null` for [=immersive sessions=].
 
@@ -1928,9 +1936,9 @@ The user agent MAY choose to only report an appropriate generic [=input profile 
 
 <p class="note">
 For example, the Samsung HMD Odyssey's controller is a design variant of the standard Windows Mixed Reality controller. Both controllers share the same input layout. As a result, the {{XRInputSource/profiles}} for a Samsung HMD Odyssey controller could be: `["samsung-odyssey", "microsoft-mixed-reality", "generic-trigger-squeeze-touchpad-thumbstick"]`. The appearance of the controller is most precisely communicated by the first profile in the list, with the second profile describing an acceptable substitute, and the last profile a generic fallback that describes the device in the roughest sense. (It's a controller with a trigger, squeeze button, touchpad and thumbstick.)
-</br></br>
+<br>
 Similarly, the Valve Index controller is backwards compatible with the HTC Vive controller, but the Index controller has additional buttons and axes. As a result, the {{XRInputSource/profiles}} for the Valve Index controller could be: `["valve-index", "htc-vive", "generic-trigger-squeeze-touchpad-thumbstick"]`. In this case the input layout described by the `"valve-index"` profile is a superset of the layout described by the `"htc-vive"` profile. Also, the `"valve-index"` profile indicates the precise appearance of the controller, while the `"htc-vive"` controller has a significantly different appearance. In this case the UA would have deemed that difference acceptable. And as in the first example, the last profile is a generic fallback.
-</br></br>
+<br>
 (Exact strings are examples only. Actual profile names are managed in the <a href="https://github.com/immersive-web/webxr-input-profiles/tree/master/packages/registry">WebXR Input Profiles Registry</a>.)
 </p>
 
@@ -3237,4 +3245,3 @@ Thank you to the following individuals for their contributions the WebXR Device 
 
 And a special thanks to <a href="mailto:vladv@unity3d.com">Vladimir Vukicevic</a> (<a href="https://unity3d.com/">Unity</a>) for kick-starting this whole adventure!
 
-</section>
