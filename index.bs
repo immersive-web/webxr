@@ -775,7 +775,7 @@ When this method is invoked, the user agent MUST run the following steps:
   1. Run [=update the pending layers state=] with |session| and |newState|.
   1. Let |activeState| be |session|'s [=active render state=].
   1. If |session|'s [=pending render state=] is `null`, set it to a copy of |activeState|.
-  1. If |newState|'s {{XRRenderStateInit/pasthroughFullyObscured}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/pasthroughFullyObscured}} to |newState|'s {{XRRenderStateInit/pasthroughFullyObscured}}.
+  1. If |newState|'s {{XRRenderStateInit/passthroughFullyObscured}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/passthroughFullyObscured}} to |newState|'s {{XRRenderStateInit/passthroughFullyObscured}}.
   1. If |newState|'s {{XRRenderStateInit/depthNear}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/depthNear}} to |newState|'s {{XRRenderStateInit/depthNear}}.  
   1. If |newState|'s {{XRRenderStateInit/depthFar}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/depthFar}} to |newState|'s {{XRRenderStateInit/depthFar}}.
   1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set, set |session|'s [=pending render state=]'s {{XRRenderState/inlineVerticalFieldOfView}} to |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}}.
@@ -998,7 +998,7 @@ An {{XRRenderState}} represents a set of configurable values which affect how an
 dictionary XRRenderStateInit {
   double depthNear;
   double depthFar;
-  boolean pasthroughFullyObscured;
+  boolean passthroughFullyObscured;
   double inlineVerticalFieldOfView;
   XRWebGLLayer? baseLayer;
   sequence&lt;XRLayer&gt;? layers;
@@ -1007,7 +1007,7 @@ dictionary XRRenderStateInit {
 [SecureContext, Exposed=Window] interface XRRenderState {
   readonly attribute double depthNear;
   readonly attribute double depthFar;
-  readonly attribute boolean? pasthroughFullyObscured;
+  readonly attribute boolean? passthroughFullyObscured;
   readonly attribute double? inlineVerticalFieldOfView;
   readonly attribute XRWebGLLayer? baseLayer;
 };
@@ -1026,7 +1026,7 @@ When an {{XRRenderState}} object is created for an {{XRSession}} |session|, the 
   1. Let |state| be a [=new=] {{XRRenderState}} object in the [=relevant realm=] of |session|.
   1. Initialize |state|'s {{XRRenderState/depthNear}} to `0.1`.
   1. Initialize |state|'s {{XRRenderState/depthFar}} to `1000.0`.
-  1. Initialize |state|'s {{XRRenderState/pasthroughFullyObscured}} to `false`.
+  1. Initialize |state|'s {{XRRenderState/passthroughFullyObscured}} to `false`.
   1. Initialize |state|'s {{XRRenderState/inlineVerticalFieldOfView}} as follows:
     <dl class="switch">
       : If |session| is an [=inline session=]:
@@ -1046,7 +1046,7 @@ The <dfn attribute for="XRRenderState">depthNear</dfn> attribute defines the dis
 
 Note: Typically when constructing a perspective projection matrix for rendering the developer specifies the viewing frustum and the near and far clip planes. When displaying to an [=immersive XR device=] the correct viewing frustum is determined by some combination of the optics, displays, and cameras being used. The near and far clip planes, however, may be modified by the application since the appropriate values depend on the type of content being rendered.
 
-The <dfn attribute for="XRRenderState">pasthroughFullyObscured</dfn> attribute is a hint to the {{XRSystem}} from the author to indicate that they intend to completely cover the viewport with virtual content. The author SHOULD set this flag back to <code>false</code> once the viewport is no longer covered by opaque pixels.
+The <dfn attribute for="XRRenderState">passthroughFullyObscured</dfn> attribute is a hint to the {{XRSystem}} from the author to indicate that they intend to completely cover the viewport with virtual content. The author SHOULD set this flag back to <code>false</code> once the viewport is no longer covered by opaque pixels.
 
 NOTE: the {{XRSystem}} MAY use this as a hint to temporarily disable passthrough. On devices with see-through optics, the user will continue to see their environment and this flag will have no effect.
 
