@@ -1244,6 +1244,7 @@ When this method is invoked, the user agent MUST run the following steps:
       1. Initialize |xrview|'s {{XRView/eye}} to |view|'s [=view/eye=].
       1. Initialize |xrview|'s [=XRView/frame=] to |frame|.
       1. Initialize |xrview|'s [=XRView/session=] to |session|.
+      1. Initialize |xrview|'s [=view/reference space=] to |referenceSpace|.
       1. Let |offset| be an [=new=] {{XRRigidTransform}} object equal to the [=view offset=] of |view| in the [=relevant realm=] of |session|.
       1. Set |xrview|'s {{XRViewCalibration/transform}} property to the result of [=multiply transforms|multiplying=] the {{XRViewerPose}}'s {{XRPose/transform}} by the |offset| transform in the relevant realm of |session|
       1. [=list/Append=] |xrview| to |xrviews|
@@ -1558,6 +1559,8 @@ A [=view=] has an internal <dfn for="view">requested viewport scale</dfn> value 
 
 A [=view=] has an internal <dfn for="view">current viewport scale</dfn> value that represents the current viewport scale for this view as used internally by the system. It is initially set to 1.0. It is updated to match the [=view/requested viewport scale=] when the viewport change is successfully applied by a {{XRWebGLLayer/getViewport()}} call.
 
+A [=view=] has an <dfn for="view">reference space</dfn>, which is the {{XRReferenceSpace}} space used to obtain this [=view=] in {{XRFrame/getViewerPose()}}
+
 Note: Dynamic viewport scaling allows applications to render to a subset of the full-sized viewport using a scale factor that can be changed every animation frame. This is intended to be efficiently modifiable on a per-frame basis without reallocation. For correct rendering, it's essential that the XR system and application agree on the active viewport. An application can call {{XRView/requestViewportScale()}} for an {{XRView}} multiple times within a single animation frame, but the requested scale does not take effect until the application calls {{XRWebGLLayer/getViewport()}} for that view. The first `getViewport` call in an animation frame applies the change (taking effect immediately for the current animation frame), locks in the view's current scaled viewport for the remainder of this animation frame, and sets the scale as the new default for future animation frames. Optionally, the system can provide a suggested value through the {{XRView/recommendedViewportScale}} attribute based on internal performance heuristics and target framerates.
 
 <pre class="idl">
@@ -1577,7 +1580,7 @@ enum XREye {
 XRView includes XRViewCalibration;
 </pre>
 
-The {{XRViewCalibration/transform}} is given in the {{XRReferenceSpace}} provided in {{XRFrame/getViewerPose()}}.
+The {{XRViewCalibration/transform}} is given in it's [=view/reference space=].
 
 The <dfn attribute for="XRView">eye</dfn> attribute describes the [=view/eye=] of the underlying [=view=]. This attribute's primary purpose is to ensure that pre-rendered stereo content can present the correct portion of the content to the correct eye.
 
