@@ -679,13 +679,13 @@ Note: Some devices require additional user instructions for activation. For exam
 
 </div>
 
-A number of different circumstances may <dfn>shut down the session</dfn>, which is permanent and irreversible. Once a session has been shut down the only way to access the [=XRSession/XR device=]'s tracking or rendering capabilities again is to request a new session. Each {{XRSession}} has an <dfn>ended</dfn> boolean, initially set to `false`, that indicates if it has been shut down.
+A number of different circumstances may <dfn>shut down the session</dfn>, which is permanent and irreversible. Once a session has been shut down the only way to access the [=XRSession/XR device=]'s tracking or rendering capabilities again is to request a new session. Each {{XRSession}} has an <dfn for="XRSession">ended</dfn> boolean, initially set to `false`, that indicates if it has been shut down.
 
 <div class="algorithm" data-algorithm="shut-down-session">
 
 When an {{XRSession}} |session| is shut down the following steps are run:
 
-  1. Set |session|'s [=ended=] value to `true`.
+  1. Set |session|'s [=XRSession/ended=] value to `true`.
   1. If the [=active immersive session=] is equal to |session|, set the [=active immersive session=] to `null`.
   1. Remove |session| from the [=list of inline sessions=].
   1. [=Reject=] any outstanding promises returned by |session| with an {{InvalidStateError}}, except for any promises returned by {{XRSession/end()}}.
@@ -702,7 +702,7 @@ When an {{XRSession}} |session| is shut down the following steps are run:
 The <dfn method for="XRSession">end()</dfn> method provides a way to manually shut down a session. When invoked, it MUST run the following steps:
 
   1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of this {{XRSession}}.
-  1. If the [=ended=] value of [=this=] is `true`, [=reject=] |promise| with a "{{InvalidStateError}}" {{DOMException}} and return |promise|.
+  1. If the [=XRSession/ended=] value of [=this=] is `true`, [=reject=] |promise| with a "{{InvalidStateError}}" {{DOMException}} and return |promise|.
   1. [=Shut down the session|Shut down=] [=this=].
   1. [=Queue a task=] to perform the following steps:
     1. Wait until any platform-specific steps related to shutting down the session have completed.
@@ -732,7 +732,7 @@ NOTE: The <a href="https://www.w3.org/TR/webxrlayers-1/">WebXR layers module</a>
 
 When the user agent wants to <dfn>apply the nominal frame rate</dfn> |rate| on an {{XRSession}} |session|, it MUST run the following steps:
     1. If |rate| is the same as |session|'s [=XRSession/internal nominal framerate=], abort these steps.
-    1. If |session|’s [=ended=] value is `true`, abort these steps.
+    1. If |session|’s [=XRSession/ended=] value is `true`, abort these steps.
     1. Set |session|'s [=XRSession/internal nominal framerate=] to |rate|.
     1. Fire an {{XRSessionEvent}} event named {{frameratechange!!event}} on |session|.
 
@@ -746,7 +746,7 @@ When this method is invoked, the user agent MUST run the following steps:
   1. Let |session| be [=this=].
   1. Let |promise| be [=a new Promise=] in the [=relevant realm=] of |session|.
   1. If the |session| has no [=XRSession/internal nominal framerate=], [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
-  1. If |session|'s [=ended=] value is `true`, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
+  1. If |session|'s [=XRSession/ended=] value is `true`, [=reject=] |promise| with an "{{InvalidStateError}}" {{DOMException}} and return |promise|.
   1. If |rate| is not in {{XRSession/supportedFrameRates}}, [=reject=] |promise| with an "{{TypeError}}" {{DOMException}} and return |promise|.
   1. Set |session|'s [=XRSession/internal target framerate=] to |rate|.
   1. [=Queue a task=] to perform the following steps:
@@ -768,7 +768,7 @@ The <dfn method for="XRSession">updateRenderState(|newState|)</dfn> method queue
 
 When this method is invoked, the user agent MUST run the following steps:
   1. Let |session| be [=this=].
-  1. If |session|'s [=ended=] value is `true`, throw an {{InvalidStateError}} and abort these steps.
+  1. If |session|'s [=XRSession/ended=] value is `true`, throw an {{InvalidStateError}} and abort these steps.
   1. If |newState|'s {{XRRenderStateInit/baseLayer}} was created with an {{XRSession}} other than |session|, throw an {{InvalidStateError}} and abort these steps.
   1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set and |session| is an [=immersive session=], throw an {{InvalidStateError}} and abort these steps.
   1. If none of |newState|'s {{XRRenderStateInit/depthNear}}, {{XRRenderStateInit/depthFar}}, {{XRRenderStateInit/inlineVerticalFieldOfView}}, {{XRRenderStateInit/baseLayer}}, {{XRRenderStateInit/layers}} are set, abort these steps.
@@ -776,7 +776,7 @@ When this method is invoked, the user agent MUST run the following steps:
   1. Let |activeState| be |session|'s [=active render state=].
   1. If |session|'s [=pending render state=] is `null`, set it to a copy of |activeState|.
   1. If |newState|'s {{XRRenderStateInit/passthroughFullyObscured}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/passthroughFullyObscured}} to |newState|'s {{XRRenderStateInit/passthroughFullyObscured}}.
-  1. If |newState|'s {{XRRenderStateInit/depthNear}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/depthNear}} to |newState|'s {{XRRenderStateInit/depthNear}}.  
+  1. If |newState|'s {{XRRenderStateInit/depthNear}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/depthNear}} to |newState|'s {{XRRenderStateInit/depthNear}}.
   1. If |newState|'s {{XRRenderStateInit/depthFar}} value is set, set |session|'s [=pending render state=]'s {{XRRenderState/depthFar}} to |newState|'s {{XRRenderStateInit/depthFar}}.
   1. If |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}} is set, set |session|'s [=pending render state=]'s {{XRRenderState/inlineVerticalFieldOfView}} to |newState|'s {{XRRenderStateInit/inlineVerticalFieldOfView}}.
   1. If |newState|'s {{XRRenderStateInit/baseLayer}} is set, set |session|'s [=pending render state=]'s {{XRRenderState/baseLayer}} to |newState|'s {{XRRenderStateInit/baseLayer}}.
@@ -1074,7 +1074,7 @@ The <dfn method for="XRSession">requestAnimationFrame(|callback|)</dfn> method q
 When this method is invoked, the user agent MUST run the following steps:
 
   1. Let |session| be [=this=].
-  1. If |session|'s [=ended=] value is `true`, return `0` and abort these steps.
+  1. If |session|'s [=XRSession/ended=] value is `true`, return `0` and abort these steps.
   1. Increment |session|'s [=animation frame callback identifier=] by one.
   1. Append |callback| to |session|'s [=list of animation frame callbacks=], associated with |session|'s [=animation frame callback identifier=]’s current value.
   1. Return |session|'s [=animation frame callback identifier=]’s current value.
@@ -2145,7 +2145,7 @@ Each {{XRWebGLLayer}} has an associated <dfn for="XRWebGLLayer">session</dfn>, w
 The <dfn constructor for="XRWebGLLayer">XRWebGLLayer(|session|, |context|, |layerInit|)</dfn> constructor MUST perform the following steps when invoked:
 
   1. Let |layer| be a [=new=] {{XRWebGLLayer}} in the [=relevant realm=] of |session|.
-  1. If |session|'s [=ended=] value is `true`, throw an {{InvalidStateError}} and abort these steps.
+  1. If |session|'s [=XRSession/ended=] value is `true`, throw an {{InvalidStateError}} and abort these steps.
   1. If |context| is lost, throw an {{InvalidStateError}} and abort these steps.
   1. If |session| is an [=immersive session=] and |context|'s [=XR compatible=] boolean is `false`, throw an {{InvalidStateError}} and abort these steps.
   1. Initialize |layer|'s [=XRWebGLLayer/context=] to |context|.
@@ -2313,7 +2313,7 @@ Note: The user agent is free to use any method of its choosing to estimate the [
 The <dfn method for="XRWebGLLayer">getNativeFramebufferScaleFactor(|session|)</dfn> method, when invoked, MUST run the following steps:
 
   1. Let |session| be [=this=].
-  1. If |session|'s [=ended=] value is `true`, return `0.0` and abort these steps.
+  1. If |session|'s [=XRSession/ended=] value is `true`, return `0.0` and abort these steps.
   1. Return the value that the |session|'s [=recommended WebGL framebuffer resolution=] width and height must each be multiplied by to yield the |session|'s [=native WebGL framebuffer resolution=].
 
 </div>
@@ -2635,7 +2635,7 @@ In some environments a page may be presented as an application, installed with t
 ### Duration of consent ### {#consent-duration}
 It is recommended that once [=explicit consent=] is granted for a specific [=/origin=] that this consent persist until the [=/browsing context=] has ended. User agents may choose to lengthen or shorten this consent duration based upon implicit or explicit signals of [=user intent=], but implementations are advised to exercise caution when deviating from this recommendation, particularly when relying on implicit signals. For example, it may be appropriate for a web application installed with the express intent of running immersive content to persist the user's consent, but not for an installed web application where immersive content is a secondary feature.
 
-Regardless of how long the user agent chooses to persist the user's consent, [=sensitive information=] MUST only be exposed by an {{XRSession}} which has not [=ended=].
+Regardless of how long the user agent chooses to persist the user's consent, [=sensitive information=] MUST only be exposed by an {{XRSession}} which has not [=XRSession/ended=].
 
 Mid-session consent {#mid-session-consent}
 -------------------
