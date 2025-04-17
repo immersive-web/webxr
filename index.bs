@@ -1042,7 +1042,7 @@ When an {{XRRenderState}} object is created for an {{XRSession}} |session|, the 
 
 The <dfn attribute for="XRRenderState">depthNear</dfn> attribute defines the distance, in meters, of the near clip plane from the [=viewer=]. The <dfn attribute for="XRRenderState">depthFar</dfn> attribute defines the distance, in meters, of the far clip plane from the [=viewer=].
 
-{{XRRenderState/depthNear}} and {{XRRenderState/depthFar}} are used in the computation of the {{XRViewCalibration/projectionMatrix}} of {{XRView}}s. When the {{XRViewCalibration/projectionMatrix}} is used during rendering, only geometry with a distance to the [=viewer=] that falls between {{XRRenderState/depthNear}} and {{XRRenderState/depthFar}} will be drawn. They also determine how the values of an {{XRWebGLLayer}} depth buffer are interpreted. {{XRRenderState/depthNear}} MAY be greater than {{XRRenderState/depthFar}}.
+{{XRRenderState/depthNear}} and {{XRRenderState/depthFar}} are used in the computation of the {{XRViewGeometry/projectionMatrix}} of {{XRView}}s. When the {{XRViewGeometry/projectionMatrix}} is used during rendering, only geometry with a distance to the [=viewer=] that falls between {{XRRenderState/depthNear}} and {{XRRenderState/depthFar}} will be drawn. They also determine how the values of an {{XRWebGLLayer}} depth buffer are interpreted. {{XRRenderState/depthNear}} MAY be greater than {{XRRenderState/depthFar}}.
 
 Note: Typically when constructing a perspective projection matrix for rendering the developer specifies the viewing frustum and the near and far clip planes. When displaying to an [=immersive XR device=] the correct viewing frustum is determined by some combination of the optics, displays, and cameras being used. The near and far clip planes, however, may be modified by the application since the appropriate values depend on the type of content being rendered.
 
@@ -1246,7 +1246,7 @@ When this method is invoked, the user agent MUST run the following steps:
       1. Initialize |xrview|'s [=XRView/session=] to |session|.
       1. Initialize |xrview|'s [=view/reference space=] to |referenceSpace|.
       1. Let |offset| be an [=new=] {{XRRigidTransform}} object equal to the [=view offset=] of |view| in the [=relevant realm=] of |session|.
-      1. Set |xrview|'s {{XRViewCalibration/transform}} property to the result of [=multiply transforms|multiplying=] the {{XRViewerPose}}'s {{XRPose/transform}} by the |offset| transform in the relevant realm of |session|
+      1. Set |xrview|'s {{XRViewGeometry/transform}} property to the result of [=multiply transforms|multiplying=] the {{XRViewerPose}}'s {{XRPose/transform}} by the |offset| transform in the relevant realm of |session|
       1. [=list/Append=] |xrview| to |xrviews|
   1. Set |pose|'s {{XRViewerPose/views}} to |xrviews|
   1. Return |pose|.
@@ -1497,46 +1497,48 @@ Note: Content generally should not provide a visualization of the {{boundsGeomet
 Views {#views}
 =====
 
-XRViewCalibration {#xrviewcalibration-mixin}
+XRViewGeometry {#xrviewGeometry-mixin}
 ------
 
-Objects including the {{XRViewCalibration}} interface mixin represent either a display used by an XR device to present imagery to the user or a sensor used to collect visual information about the real world. These objects contain a [=view calibration=].
+Objects including the {{XRViewGeometry}} interface mixin represent either a display used by an XR device to present imagery to the user or a sensor used to collect visual information about the real world. These objects contain a [=view geometry=].
 
-A <dfn>view calibration</dfn> corresponds to the set of intrinsics and extrinsics used to translate between a point in the [=XRSession/viewer reference space=]'s [=coordinate system=], and in the [=view calibration/containing object=]'s [=view calibration/screen space=].
+A <dfn>view geometry</dfn> corresponds to the set of intrinsics and extrinsics used to translate between a point in the [=XRSession/viewer reference space=]'s [=coordinate system=], and in the [=view geometry/containing object=]'s [=view geometry/screen space=].
 
-A [=view calibration=] has a <dfn for="view calibration">containing object</dfn> which is the physical piece of hardware that the [=view calibration=] contains data for.
+A [=view geometry=] has a <dfn for="view geometry">containing object</dfn> which is the physical piece of hardware that the [=view geometry=] contains data for.
 
-A [=view calibration=]'s [=view calibration/containing object=] has an associated <dfn for="view calibration">screen space</dfn>, which is described as the 2D plane that this [=view calibration/containing object=] either reads data from or renders data to.
+A [=view geometry=]'s [=view geometry/containing object=] has an associated <dfn for="view geometry">screen space</dfn>, which is described as the 2D plane that this [=view geometry/containing object=] either reads data from or renders data to.
 
-A [=view calibration=] has an associated <dfn for="view calibration">view offset</dfn>, which is an {{XRRigidTransform}} describing the position and orientation of the [=view calibration/containing object=] in the [=XRSession/viewer reference space=]'s [=coordinate system=].
+A [=view geometry=] has an associated <dfn for="view geometry">view offset</dfn>, which is an {{XRRigidTransform}} describing the position and orientation of the [=view geometry/containing object=] in the [=XRSession/viewer reference space=]'s [=coordinate system=].
 
 NOTE: There are no constraints on what the view offset might be, and views are allowed to have differing orientations. This can crop up in head-mounted devices with eye displays centered at an angle, and it can also surface itself in more extreme cases like CAVE rendering. Techniques like z-sorting and culling may need to be done per-eye because of this.
 
-A [=view calibration=] has an associated <dfn for="view calibration">projection matrix</dfn> which is a [=matrix=] describing the projection to be used when rendering to the [=view calibration/containing object=] (or the inverse of the projection to use when reading from the object), provided by the underlying XR device. The [=view calibration/projection matrix=] MAY include transformations such as shearing that prevent the projection from being accurately described by a simple frustum.
+A [=view geometry=] has an associated <dfn for="view geometry">projection matrix</dfn> which is a [=matrix=] describing the projection to be used when rendering to the [=view geometry/containing object=] provided by the underlying XR device. The [=view geometry/projection matrix=] MAY include transformations such as shearing that prevent the projection from being accurately described by a simple frustum.
+
+Note: The inverse of this matrix is suitable for "reading" pixels out of the [=view geometry/screen space=] and translating them back to the [=coordinate system=] with the [=view geometry/containing object=] as the origin.
 
 <pre class="idl">
-[SecureContext, Exposed=Window] interface mixin XRViewCalibration {
+[SecureContext, Exposed=Window] interface mixin XRViewGeometry {
   readonly attribute Float32Array projectionMatrix;
   [SameObject] readonly attribute XRRigidTransform transform;
 };
 </pre>
 
-Each {{XRViewCalibration}} has an associated <dfn for="XRViewCalibration">internal projection matrix</dfn> which stores the [=view calibration/projection matrix=] of its [=view calibration/containing object=]. It is initially `null`.
+Each {{XRViewGeometry}} has an associated <dfn for="XRViewGeometry">internal projection matrix</dfn> which stores the [=view geometry/projection matrix=] of its [=view geometry/containing object=]. It is initially `null`.
 
-Note: The {{XRViewCalibration/transform}} can be used to position camera objects in many rendering libraries. If a more traditional view matrix is needed by the application one can be retrieved by calling `transform.inverse.matrix`.
+Note: The {{XRViewGeometry/transform}} can be used to position camera objects in many rendering libraries. If a more traditional view matrix is needed by the application one can be retrieved by calling `transform.inverse.matrix`.
 
-The <dfn attribute for="XRViewCalibration">projectionMatrix</dfn> attribute is the [=view calibration/projection matrix=] of the underlying [=view calibration=]. It is <b>strongly recommended</b> that applications use this matrix without modification or decomposition. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort. This attribute MUST be computed by [=XRViewCalibration/obtain the projection matrix|obtaining the projection matrix=] for the {{XRViewCalibration}}.
+The <dfn attribute for="XRViewGeometry">projectionMatrix</dfn> attribute is the [=view geometry/projection matrix=] of the underlying [=view geometry=]. It is <b>strongly recommended</b> that applications use this matrix without modification or decomposition. Failure to use the provided projection matrices when rendering may cause the presented frame to be distorted or badly aligned, resulting in varying degrees of user discomfort. This attribute MUST be computed by [=XRViewGeometry/obtain the projection matrix|obtaining the projection matrix=] for the {{XRViewGeometry}}.
 
-The <dfn attribute for="XRViewCalibration">transform</dfn> attribute is the {{XRRigidTransform}} of the object. It represents the position and orientation of the object in the {{XRReferenceSpace}} used to obtain the object.
+The <dfn attribute for="XRViewGeometry">transform</dfn> attribute is the {{XRRigidTransform}} of the object. It represents the position and orientation of the object in the {{XRReferenceSpace}} used to obtain the object.
 
-<div class=algorithm data-algorithm="obtain-xrviewcalibration-projection">
+<div class=algorithm data-algorithm="obtain-xrviewGeometry-projection">
 
-To <dfn for="XRViewCalibration">obtain the projection matrix</dfn> for a given {{XRViewCalibration}} |view calibration|:
+To <dfn for="XRViewGeometry">obtain the projection matrix</dfn> for a given {{XRViewGeometry}} |view geometry|:
 
-  1. If |view calibration|'s [=XRViewCalibration/internal projection matrix=] is not `null`, perform the following steps:
-    1. If the operation {{IsDetachedBuffer}} on [=XRViewCalibration/internal projection matrix=]  is `false`, return |view calibration|'s [=XRViewCalibration/internal projection matrix=].
-  1. Set |view calibration|'s [=XRViewCalibration/internal projection matrix=] to a [=new=] [=matrix=] in the [=relevant realm=] of |view calibration| which is equal to |view calibration|'s [=view calibration/projection matrix=].
-  1. Return |view calibration|'s [=XRViewCalibration/internal projection matrix=].
+  1. If |view geometry|'s [=XRViewGeometry/internal projection matrix=] is not `null`, perform the following steps:
+    1. If the operation {{IsDetachedBuffer}} on [=XRViewGeometry/internal projection matrix=]  is `false`, return |view geometry|'s [=XRViewGeometry/internal projection matrix=].
+  1. Set |view geometry|'s [=XRViewGeometry/internal projection matrix=] to a [=new=] [=matrix=] in the [=relevant realm=] of |view geometry| which is equal to |view geometry|'s [=view geometry/projection matrix=].
+  1. Return |view geometry|'s [=XRViewGeometry/internal projection matrix=].
 
 </div>
 
@@ -1577,10 +1579,10 @@ enum XREye {
   undefined requestViewportScale(double? scale);
 };
 
-XRView includes XRViewCalibration;
+XRView includes XRViewGeometry;
 </pre>
 
-The {{XRViewCalibration/transform}} is given in it's [=view/reference space=].
+The {{XRViewGeometry/transform}} is given in it's [=view/reference space=].
 
 The <dfn attribute for="XRView">eye</dfn> attribute describes the [=view/eye=] of the underlying [=view=]. This attribute's primary purpose is to ensure that pre-rendered stereo content can present the correct portion of the content to the correct eye.
 
