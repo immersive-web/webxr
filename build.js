@@ -7,7 +7,7 @@ const fs = require('fs');
 const INPUT_PATH = 'index.bs';
 const OUTPUT_PATH = 'index.html';
 
-const BIKESHED_URL = 'http://api.csswg.org/bikeshed/';
+const BIKESHED_URL = 'https://api.csswg.org/bikeshed/';
 
 function checkErrors() {
   let stream = request.post({
