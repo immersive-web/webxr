@@ -1,67 +1,105 @@
 // Does the same thing as the make file, but isn't absurdly annoying to get
 // running on Windows. ;)
 
-const request = require('request');
+const axios = require('axios');
 const fs = require('fs');
+const FormData = require('form-data');
+const { promisify } = require('util');
 
 const INPUT_PATH = 'index.bs';
 const OUTPUT_PATH = 'index.html';
 
 const BIKESHED_URL = 'https://api.csswg.org/bikeshed/';
+const REQUEST_TIMEOUT = 30000; // 30 seconds timeout
 
-function checkErrors() {
-  let stream = request.post({
-    url: BIKESHED_URL,
-    formData: {
-      file: fs.createReadStream(INPUT_PATH),
-      output: 'err'
-    },
-  });
-  stream.pipe(process.stdout);
+const rename = promisify(fs.rename);
+const unlink = promisify(fs.unlink);
 
-  return new Promise((resolve, reject) => {
-    stream
-      .on('error', err => {
-        reject(err);
-      }).on('end', () => {
-        resolve();
-      }).on('finish', () => {
-        resolve();
-      });
-  });
+async function checkErrors() {
+  try {
+    const formData = new FormData();
+    formData.append('file', fs.createReadStream(INPUT_PATH));
+    formData.append('output', 'err');
+
+    const response = await axios.post(BIKESHED_URL, formData, {
+      headers: formData.getHeaders(),
+      timeout: REQUEST_TIMEOUT,
+      responseType: 'text'
+    });
+
+    if (response.data && response.data.trim()) {
+      console.log('Bikeshed errors/warnings:');
+      console.log(response.data);
+      return response.data;
+    }
+    
+    return null;
+  } catch (error) {
+    throw new Error(`Error checking Bikeshed errors: ${error.message}`);
+  }
 }
 
-function writeOutput() {
-  let stream = request.post({
-    url: BIKESHED_URL,
-    formData: {
-      file: fs.createReadStream(INPUT_PATH),
-      force: '1'
-    },
-  });
+async function writeOutput() {
+  const tmpPath = OUTPUT_PATH + '_TMP';
+  
+  try {
+    const formData = new FormData();
+    formData.append('file', fs.createReadStream(INPUT_PATH));
+    formData.append('force', '1');
 
-  return new Promise((resolve, reject) => {
-    let tmpPath = OUTPUT_PATH + '_TMP';
-    stream.pipe(fs.createWriteStream(tmpPath))
-      .on('error', (err) => {
-        fs.unlinkSync(tmpPath);
-        reject(err);
-      }).on('finish', () => {
-        fs.rename(tmpPath, OUTPUT_PATH, function (err) {
-          if (err)
-            reject(err);
-          else
-            resolve();
-        });
-      });
-  });
+    const response = await axios.post(BIKESHED_URL, formData, {
+      headers: formData.getHeaders(),
+      timeout: REQUEST_TIMEOUT,
+      responseType: 'stream'
+    });
+
+    // Write to temporary file
+    const writeStream = fs.createWriteStream(tmpPath);
+    response.data.pipe(writeStream);
+
+    await new Promise((resolve, reject) => {
+      writeStream.on('finish', resolve);
+      writeStream.on('error', reject);
+      response.data.on('error', reject);
+    });
+
+    // Atomically move temp file to final location
+    await rename(tmpPath, OUTPUT_PATH);
+    
+  } catch (error) {
+    // Clean up temp file if it exists
+    try {
+      await unlink(tmpPath);
+    } catch (unlinkError) {
+      // Ignore unlink errors
+    }
+    throw new Error(`Error writing output: ${error.message}`);
+  }
 }
 
-Promise.all([
-  checkErrors(),
-  writeOutput()
-]).then(() => {
-  console.log('\nComplete!');
-}).catch((err) => {
-  console.error('\nAn error was encountered: ' + err);
-});
+async function main() {
+  try {
+    console.log('Starting Bikeshed build process...');
+    
+    // First check for errors
+    const errors = await checkErrors();
+    
+    // Only proceed if no critical errors
+    if (errors && errors.includes('FATAL ERROR')) {
+      throw new Error('Fatal errors found, aborting build');
+    }
+    
+    // Generate the output
+    await writeOutput();
+    
+    console.log('\n✅ Build completed successfully!');
+    console.log(`📄 Generated: ${OUTPUT_PATH}`);
+    
+  } catch (error) {
+    console.error('\n❌ Build failed:', error.message);
+    process.exit(1);
+  }
+}
+
+// Run the main function
+main();
