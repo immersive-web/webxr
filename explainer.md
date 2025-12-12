@@ -63,12 +63,12 @@ Enable XR applications on the web by allowing pages to do the following:
 Examples of supported devices include (but are not limited to):
 
  - [ARCore-compatible devices](https://developers.google.com/ar/discover/supported-devices)
- - [Google Daydream](https://vr.google.com/daydream/)
+ - [Android XR-compatible devices](https://www.android.com/xr/)
  - [HTC Vive](https://www.htcvive.com/)
  - [Magic Leap One](https://www.magicleap.com/magic-leap-one)
  - [Microsoft Hololens](https://www.microsoft.com/en-us/hololens/)
  - [Meta Quest 1, 2, and Pro](https://www.meta.com/quest/products/quest-2/)
- - [Samsung Gear VR](http://www.samsung.com/global/galaxy/gear-vr/)
+ - [Samsung Galaxy XR](http://www.samsung.com/us/xr/galaxy-xr/galaxy-xr/)
  - [Windows Mixed Reality headsets](https://developer.microsoft.com/en-us/windows/mixed-reality)
 
 ### What's the X in XR mean?
@@ -79,7 +79,7 @@ There's a lot of "_____ Reality" buzzwords flying around today. Virtual Reality,
 
 Khronos' upcoming [OpenXR API](https://www.khronos.org/openxr) does cover the same basic capabilities as the WebXR Device API for native applications. As such it may seem like WebXR and OpenXR have a relationship like WebGL and OpenGL, where the web API is a near 1:1 mapping of the native API. This is **not** the case with WebXR and OpenXR, as they are distinct APIs being developed by different standards bodies.
 
-That said, given the shared subject matter many of the same concepts are represented by both APIs in different ways and we do expect that once OpenXR becomes publically available it will be reasonable to implement WebXR's feature set using OpenXR as one of multiple possible native backends.
+That said, given the shared subject matter many of the same concepts are represented by both APIs in different ways and we do expect that once OpenXR becomes publicly available it will be reasonable to implement WebXR's feature set using OpenXR as one of multiple possible native backends.
 
 ## Use cases
 Given the marketing of early XR hardware to gamers, one may naturally assume that this API will primarily be used for development of games. While that’s certainly something we expect to see given the history of the WebGL API, which is tightly related, we’ll probably see far more “long tail”-style content than large-scale games. Broadly, XR content on the web will likely cover areas that do not cleanly fit into the app-store models being used as the primary distribution methods by all the major VR/AR hardware providers, or where the content itself is not permitted by the store guidelines. Some high level examples are:
@@ -264,7 +264,7 @@ loadSceneGraphics(gl);
 
 Ensuring context compatibility with an XR device through either method may have side effects on other graphics resources in the page, such as causing the entire user agent to switch from rendering using an integrated GPU to a discrete GPU.
 
-> **Note:** The `XRWebGLLayer` uses a WebGL context created by a Canvas element or `OffscreenCanvas` rather than creating its own to both allow for the same content to be rendered to the XR device and the page, as well as allowing the page to load it's WebGL resources prior to the session being created.
+> **Note:** The `XRWebGLLayer` uses a WebGL context created by a Canvas element or `OffscreenCanvas` rather than creating its own to both allow for the same content to be rendered to the XR device and the page, as well as allowing the page to load its WebGL resources prior to the session being created.
 
 If the system's underlying XR device changes (signaled by the `devicechange` event on the `navigator.xr` object) any previously set context compatibility bits will be cleared, and `makeXRCompatible` will need to be called again prior to using the context with a `XRWebGLLayer`. Any active sessions will also be ended, and as a result new `XRSession`s with corresponding new `XRWebGLLayer`s will need to be created.
 
@@ -274,7 +274,7 @@ The WebXR Device API provides information about the current frame to be rendered
 
 `XRWebGLLayer` objects are not updated automatically. To present new frames, developers must use `XRSession`'s `requestAnimationFrame()` method. When the `requestAnimationFrame()` callback functions are run, they are passed both a timestamp and an `XRFrame`. They will contain fresh rendering data that must be used to draw into the `XRWebGLLayer`s `framebuffer` during the callback.
 
-A new `XRFrame` is created for each batch of `requestAnimationFrame()` callbacks or for certain events that are associated with tracking data. `XRFrame` objects act as snapshots of the state of the XR device and all associated inputs. The state may represent historical data, current sensor readings, or a future projection. Due to it's time-sensitive nature, an `XRFrame` is only valid during the execution of the callback that it is passed into.  Once control is returned to the browser any active `XRFrame` objects are marked as inactive. Calling any method of an inactive `XRFrame` will throw an [`InvalidStateError`](https://heycam.github.io/webidl/#invalidstateerror).
+A new `XRFrame` is created for each batch of `requestAnimationFrame()` callbacks or for certain events that are associated with tracking data. `XRFrame` objects act as snapshots of the state of the XR device and all associated inputs. The state may represent historical data, current sensor readings, or a future projection. Due to its time-sensitive nature, an `XRFrame` is only valid during the execution of the callback that it is passed into.  Once control is returned to the browser any active `XRFrame` objects are marked as inactive. Calling any method of an inactive `XRFrame` will throw an [`InvalidStateError`](https://heycam.github.io/webidl/#invalidstateerror).
 
 The `XRFrame` also makes a copy of the  `XRSession`'s `renderState`, such as `depthNear/Far` values and the `baseLayer`, just prior to the `requestAnimationFrame()` callbacks in the current batch being called. This captured `renderState` is what will be used when computing view information like projection matrices and when the frame is being composited by the XR hardware. Any subsequent calls the developer makes to `updateRenderState()` will not be applied until the next `XRFrame`'s callbacks are processed.
 
@@ -609,7 +609,7 @@ Framebuffer scaling is typically configured once per session, but can be changed
 function rescaleWebGLLayer(scale) {
     let glLayer = new XRWebGLLayer(xrSession, gl, { framebufferScaleFactor: scale });
     xrSession.updateRenderState({ baseLayer: glLayer });
-  });
+  };
 ```
 
 Rescaling the framebuffer may involve reallocating render buffers and should only be done rarely, for example when transitioning from a game mode to a text-heavy menu mode or similar. See [Dynamic viewport scaling](#dynamic-viewport-scaling) for an alternative if your application needs more frequent adjustments.
@@ -704,7 +704,7 @@ The data provided by an `XRViewerPose` instance is similar to the data provided 
 
 It should be noted that `DeviceOrientation` events have not been standardized, have behavioral differences between browser, and there are ongoing efforts to change or remove the API. This makes it difficult for developers to rely on for a use case where accurate tracking is necessary to prevent user discomfort.
 
-The `DeviceOrientation` events specification is superceded by [Orientation Sensor](https://w3c.github.io/orientation-sensor/) specification that defines the [`RelativeOrientationSensor`](https://w3c.github.io/orientation-sensor/#relativeorientationsensor) and [`AbsoluteOrientationSensor`](https://w3c.github.io/orientation-sensor/#absoluteorientationsensor) interfaces. This next generation API is purpose-built for WebXR Device API polyfill. It represents orientation data in WebGL-compatible formats (quaternion, rotation matrix), satisfies stricter latency requirements, and addresses known interoperability issues that plagued `DeviceOrientation` events by explicitly defining which [low-level motion sensors](https://w3c.github.io/motion-sensors/#fusion-sensors) are used in obtaining the orientation data.
+The `DeviceOrientation` events specification is superseded by [Orientation Sensor](https://w3c.github.io/orientation-sensor/) specification that defines the [`RelativeOrientationSensor`](https://w3c.github.io/orientation-sensor/#relativeorientationsensor) and [`AbsoluteOrientationSensor`](https://w3c.github.io/orientation-sensor/#absoluteorientationsensor) interfaces. This next generation API is purpose-built for WebXR Device API polyfill. It represents orientation data in WebGL-compatible formats (quaternion, rotation matrix), satisfies stricter latency requirements, and addresses known interoperability issues that plagued `DeviceOrientation` events by explicitly defining which [low-level motion sensors](https://w3c.github.io/motion-sensors/#fusion-sensors) are used in obtaining the orientation data.
 
 ### WebSockets
 A local [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) service could be set up to relay headset poses to the browser. Some early VR experiments with the browser tried this route, and some tracking devices (most notably [Leap Motion](https://www.leapmotion.com/)) have built their JavaScript SDKs around this concept. Unfortunately, this has proven to be a high-latency route. A key element of a good XR experience is low latency. For head mounted displays, ideally, the movement of your head should result in an update on the device (referred to as “motion-to-photons time”) in 20ms or less. The browser’s rendering pipeline already makes hitting this goal difficult, and adding more overhead for communication over WebSockets only exaggerates the problem. Additionally, using such a method requires users to install a separate service, likely as a native app, on their machine, eroding away much of the benefit of having access to the hardware via the browser. It also falls down on mobile where there’s no clear way for users to install such a service.
@@ -726,7 +726,7 @@ It’s important to realize that all of the alternative solutions offer no metho
 
 There's understandably some confusion between the WebXR and an API that some browsers have implemented at various points in the past called WebVR. Both handle communication with Virtual Reality hardware, and both have very similar names. So what's the difference between these two APIs?
 
-**WebVR** was an API developed in the earliest days of the current generation of Virtual Reality hardware/software, starting around the time that the Oculus DK2 was announced. Native VR APIs were still in their formative stages, and the capabilities of commercial devices were still being determined. As such the WebVR API developed around some assumptions that would not hold true long term. For example, the API assumed that applications would always need to render a single left and right eye view of the scene, that the separation between eyes would only ever involve translation and not rotation, and that only one cannonical tracking space was necessary to support. In addition, the API design made forward compatibility with newer device types, like mobile AR, difficult, to the point that it may have necessitated a separate API. WebVR also made some questionable descisions regarding integration with the rest of the web platform, specifically in terms of how it interacted with WebGL and the Gamepad API. Despite this, it worked well enough in the short term that some UAs, especially those shipped specifically for VR devices, decided to ship the API to their users.
+**WebVR** was an API developed in the earliest days of the current generation of Virtual Reality hardware/software, starting around the time that the Oculus DK2 was announced. Native VR APIs were still in their formative stages, and the capabilities of commercial devices were still being determined. As such the WebVR API developed around some assumptions that would not hold true long term. For example, the API assumed that applications would always need to render a single left and right eye view of the scene, that the separation between eyes would only ever involve translation and not rotation, and that only one canonical tracking space was necessary to support. In addition, the API design made forward compatibility with newer device types, like mobile AR, difficult, to the point that it may have necessitated a separate API. WebVR also made some questionable decisions regarding integration with the rest of the web platform, specifically in terms of how it interacted with WebGL and the Gamepad API. Despite this, it worked well enough in the short term that some UAs, especially those shipped specifically for VR devices, decided to ship the API to their users.
 
 In the meantime the group that developed WebVR recognized the issues with the initial API, in part through feedback from developers and standards bodies, and worked towards resolving them. Eventually they recognized that in order to create a more scalable and more ergonomic API they would have to break backwards compatibility with WebVR. This new revision of the API was referred to as WebVR 2.0 for a while, but eventually was officially renamed **WebXR** in recognition of the fact that the new API would support both VR and AR content. Developement of WebXR has been able to benefit not only from the group's experience with WebVR but also from a more mature landscape of immersive computing devices that now includes multiple commercial headsets, the emergence of both mobile and headset AR, and multiple mature native APIs.
 
