@@ -533,6 +533,7 @@ The <dfn dict-member for="XRSessionInit">optionalFeatures</dfn> array contains a
 Values given in the feature lists are considered a valid <dfn>feature descriptor</dfn> if the value is one of the following:
 
  - The string representation of any {{XRReferenceSpaceType}} enum value
+ - The string "<dfn for="feature descriptor">tracked-sources</dfn>"
 
 Future iterations of this specification and additional modules may expand the list of accepted [=feature descriptors=].
 
@@ -837,7 +838,7 @@ Each {{XRSession}} has an <dfn for="XRSession">XR device</dfn>, which is an [=/X
 
 The <dfn attribute for="XRSession">inputSources</dfn> attribute returns the {{XRSession}}'s [=list of active XR input sources=].
 
-The <dfn attribute for="XRSession">trackedSources</dfn> attribute returns the {{XRSession}}'s [=list of active XR tracked sources=].
+The <dfn attribute for="XRSession">trackedSources</dfn> attribute returns the {{XRSession}}'s [=list of active XR tracked sources=]. The [=list of active XR tracked sources=] MUST only be populated if {{feature descriptor/"tracked-sources"}} is included in the [=XRSession/set of granted features=].
 
 The user agent MUST monitor any [=XR input source=]s associated with the [=XRSession/XR device=], including detecting when [=XR input source=]s are added, removed, or changed.
 
@@ -858,7 +859,7 @@ When <dfn for="XRSession" lt="add input source">new [=XR input source=]s become 
             : If |inputSource| is a [=primary input source=]:
             ::
                 Add |inputSource| to |added primary sources|.
-            : Otherwise:
+            : Otherwise, if {{feature descriptor/"tracked-sources"}} is included in |session|'s [=XRSession/set of granted features=]:
             ::
                 Add |inputSource| to |added tracked sources|.
         </dl>
@@ -883,7 +884,7 @@ When any previously added <dfn for="XRSession" lt="remove input source">[=XR inp
             : If |inputSource| is a [=primary input source=]:
             ::
                 Add |inputSource| to |removed primary sources|.
-            : Otherwise:
+            : Otherwise, if {{feature descriptor/"tracked-sources"}} is included in |session|'s [=XRSession/set of granted features=]:
             ::
                 Add |inputSource| to |removed tracked sources|.
         </dl>
@@ -912,7 +913,7 @@ When the <dfn for="XRSession" export lt="change input source">{{XRInputSource/ha
             : If |oldInputSource| is a [=primary input source=] or its state changed from a [=primary input source=] to [=tracked input source=] a:
             ::
                 Add |oldInputSource| to |removed primary sources|.
-            : Otherwise:
+            : Otherwise, if {{feature descriptor/"tracked-sources"}} is included in |session|'s [=XRSession/set of granted features=]:
             ::
                 Add |oldInputSource| to |removed tracked sources|.
         </dl>
@@ -921,7 +922,7 @@ When the <dfn for="XRSession" export lt="change input source">{{XRInputSource/ha
             : If |newInputSource| is a [=primary input source=] or its state changed from a [=tracked input source=] to [=primary input source=] :
             ::
                 Add |newInputSource| to |added primary sources|.
-            : Otherwise:
+            : Otherwise, if {{feature descriptor/"tracked-sources"}} is included in |session|'s [=XRSession/set of granted features=]:
             ::
                 Add |newInputSource| to |added tracked sources|.
         </dl>
@@ -2653,7 +2654,7 @@ A user agent MUST [=fire an event=] named <dfn event for="XRSession">end</dfn> u
 
 A user agent MUST [=fire an event=] named <dfn event for="XRSession">inputsourceschange</dfn> using {{XRInputSourcesChangeEvent}} on an {{XRSession}} when the session's [=list of active XR input sources=] has changed.
 
-A user agent MUST [=fire an event=] named <dfn event for="XRSession">trackedsourceschange</dfn> using {{XRInputSourcesChangeEvent}} on an {{XRSession}} when the session's [=list of active XR tracked sources=] has changed.
+A user agent MUST [=fire an event=] named <dfn event for="XRSession">trackedsourceschange</dfn> using {{XRInputSourcesChangeEvent}} on an {{XRSession}} when the session's [=list of active XR tracked sources=] has changed. This event MUST only be fired if {{feature descriptor/"tracked-sources"}} is included in the session's [=XRSession/set of granted features=].
 
 A user agent MUST [=fire an event=] named <dfn event for="XRSession">selectstart</dfn> using {{XRInputSourceEvent}} on an {{XRSession}} when one of its {{XRInputSource}}s begins its [=primary action=]. The event MUST be of type .
 
