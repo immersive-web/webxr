@@ -1,9 +1,27 @@
+<pre class="metadata">
+Shortname: webxr-privacy-security
+Title: WebXR Privacy and Security Guidelines
+Group: immersivewebwg
+Status: ED
+TR: https://www.w3.org/TR/webxr-privacy-security/
+ED: https://immersive-web.github.io/webxr/privacy-security-explainer.html
+Repository: immersive-web/webxr
+Level: none
+Mailing List Archives: https://lists.w3.org/Archives/Public/public-immersive-web-wg/
+
+Editor: 
+Abstract: 
+Markup Shorthands: markdown yes
+</pre>
+
+
 # Privacy and security
 
 The WebXR Device API enables developers to build content for AR and VR hardware that uses one or more sensors to infer information about the real world, and may then present information about the real world either to developers or directly to the end user. In such systems there are a wide range of input sensor types used (cameras, accelerometers, etc), and a variety of real-world data generated. This data is what allows web developers to author WebXR-based experiences. It also enables developers to infer information about users such as profiling them, fingerprinting their device, and input sniffing. Due to the nature of the Web, WebXR has a higher responsibility to protect users from malicious data usage than XR experiences delivered through closed ecosystem app stores.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<!--
 ## Contents
 
   - [Concepts](#concepts)
@@ -37,6 +55,7 @@ The WebXR Device API enables developers to build content for AR and VR hardware 
     - [Bounded reference spaces](#bounded-reference-spaces)
     - [Local-floor spaces](#local-floor-spaces)
     - [Local reference spaces](#local-reference-spaces)
+-->
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -157,8 +176,8 @@ function onVRClick() {
 In response, the UA must ensure that:
 * The function was invoked in response to a [user activation](#user-activation) event
 * The request originates from a [trustworthy document and origin](#trustworthy-documents-and-origins)
-* The request originates from a document that is [visible and has focus](#visibility-and-focus)
-* The request originates from a document allowed to use the WebXR [feature policy](#feature-policy) as well as the [underlying sensors' feature policies](#underlying-sensors-feature-policies)
+* The request originates from a document that is [visible and has focus](#focus-and-visibility)
+* The request originates from a document allowed to use the WebXR [feature policy](#feature-policy) as well as the [underlying sensors' feature policies](#underlying-sensors-feature-policy)
 * User intention is well understood, either via [explicit consent](#explicit-consent) or [implied consent](#implied-consent)
 
 If these requirements are not met, the promise returned from `requestSession()` must reject.
@@ -178,7 +197,7 @@ function onSessionRafCallback(XRFrame frame) {
 For every call to `XRFrame.getPose()`, the UA must ensure that:
 * User intention is well understood, either via [explicit consent](#explicit-consent) or [implied consent](#implied-consent); alternatively, in cases where the user experience is not negatively affected, [data adjustments](#data-adjustments) may be applied to prevent the fingerprinting of underlying sensor data
 * The request originates from the document which owns the `XRFrame`'s `XRSession`
-* The document is [visible and has focus](#visibility-and-focus)
+* The document is [visible and has focus](#focus-and-visibility)
 * The `XRSession.visibility` is set to `visible` 
 
 > Note: On some systems it is possible that XRPose data may allow a site to fingerprint a device through sensor calibration data (ref: [1](https://www.ieee-security.org/TC/SP2019/papers/405.pdf), [2](https://arxiv.org/pdf/1605.08763.pdf), [3](https://arxiv.org/pdf/1503.01874.pdf)). This risk may vary depending upon hardware, operating system, and the methods used to generate pose data from sensors. User agents must either mitigate such fingerprinting risk, or be sure of user intent before exposing such data.
@@ -271,8 +290,8 @@ In response, the UA must ensure that:
 * Bounded reference spaces are allowed to be created based on the restrictions above
 * Any group of `local`, `local-floor`, and `bounded-floor` reference spaces that are capable of being related to one another must share a common native origin; this restriction does not apply when `unbounded` reference spaces are also able to be created
 * `XRBoundedReferenceSpace.boundsGeometry` must be [limited](#limiting) to a reasonable distance from the reference space's native origin; the suggested default distance is 15 meters in each direction
-* Each point in the `XRBoundedReferenceSpace.boundsGeometry` must be [rounded](#rounding) sufficiently to prevent fingerprinting while still ensuring the rounded bounds geometry fits inside the original shape. Rounding to the nearest 5cm is suggested.
-* If the floor level is based on sensor data or is set to a non-default emulated value, the `y` value of the native origin must be [rounded](#rounding) sufficiently to prevent fingerprinting of lower-order bits; rounding to the nearest 1cm is suggested
+* Each point in the `XRBoundedReferenceSpace.boundsGeometry` must be [rounded](#rounding-quantization-and-fuzzing) sufficiently to prevent fingerprinting while still ensuring the rounded bounds geometry fits inside the original shape. Rounding to the nearest 5cm is suggested.
+* If the floor level is based on sensor data or is set to a non-default emulated value, the `y` value of the native origin must be [rounded](#rounding-quantization-and-fuzzing) sufficiently to prevent fingerprinting of lower-order bits; rounding to the nearest 1cm is suggested
 * All `XRPose` and `XRViewerPose` 6DoF pose data computed using a `bounded-floor` reference space must be [limited](#limiting) to a reasonable distance beyond the `boundsGeometry` in all directions; the suggested distance is 1 meter beyond the bounds in all directions
 
 If these requirements are not met, the promise returned from `XRSession.requestReferenceSpace()` must be rejected.
@@ -312,7 +331,7 @@ function onSessionCreated(session) {
 In response, the UA must ensure that: 
 * `local-floor` reference spaces are allowed to be created based on the restrictions above
 * Any group of `local`, `local-floor`, and `bounded-floor` reference spaces that are capable of being related to one another must share a common native origin; this restriction does not apply when `unbounded` reference spaces are also permitted to be created
-* If the floor level is based on sensor data or is set to a non-default emulated value, the `y` value of the native origin must be [rounded](#rounding) sufficiently to prevent fingerprinting of lower-order bits; rounding to the nearest 1cm is suggested
+* If the floor level is based on sensor data or is set to a non-default emulated value, the `y` value of the native origin must be [rounded](#rounding-quantization-and-fuzzing) sufficiently to prevent fingerprinting of lower-order bits; rounding to the nearest 1cm is suggested
 * All `XRPose` and `XRViewerPose` 6DoF pose data computed using a `local-floor` reference space is [limited](#limiting) to a reasonable distance from the reference space's native origin; the suggested default distance is 15 meters in each direction
 
 If these requirements are not met, the promise returned from `XRSession.requestReferenceSpace()` must be rejected.
