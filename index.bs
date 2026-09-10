@@ -536,6 +536,7 @@ Values given in the feature lists are considered a valid <dfn>feature descriptor
  - The string "<dfn for="feature descriptor">tracked-sources</dfn>"
  - The string "<dfn for="feature descriptor">inline-stereo</dfn>"
  - The string "<dfn for="feature descriptor">secondary-views</dfn>"
+ - The string "<dfn for="feature descriptor">html-in-canvas</dfn>"
 
 Future iterations of this specification and additional modules may expand the list of accepted [=feature descriptors=].
 
@@ -606,6 +607,14 @@ Note: {{XRReferenceSpaceType/"local"}} is always included in the [=requested fea
 The [=feature descriptor/inline-stereo=] feature descriptor requests that an [=inline session=] expose stereo [=primary views=] for inline presentation. If enabled, the [=XRSession/list of views=] MUST contain two [=primary views=], one whose [=view/eye=] is {{XREye/"left"}} and one whose [=view/eye=] is {{XREye/"right"}}.
 
 The [=feature descriptor/inline-stereo=] feature descriptor only applies to {{XRSessionMode/"inline"}} sessions. It MUST NOT be granted to [=immersive sessions=].
+
+<div class="unstable">
+
+The [=feature descriptor/html-in-canvas=] feature descriptor requests that an [=immersive session=] route target ray input to eligible <a href="https://github.com/WICG/html-in-canvas/">HTML-in-Canvas</a> content. It only applies to [=immersive sessions=]. It MUST NOT be granted to [=inline sessions=].
+
+An [=/XR device=] is [=capable of supporting=] the [=feature descriptor/html-in-canvas=] feature when the user agent implements HTML-in-Canvas and can perform the [[#html-in-canvas-input|HTML-in-Canvas input processing]] defined by this specification.
+
+</div>
 
 [=Requested features=] can only be enabled for a session if the [=XRSession/XR device=] is <dfn>capable of supporting</dfn> the feature, which means that the feature is known to be supported by the [=XRSession/XR device=] in some configurations, even if the current configuration has not yet been verified as supporting the feature. The user agent MAY apply more rigorous constraints if desired in order to yield a more consistent user experience.
 
@@ -692,6 +701,8 @@ A number of different circumstances may <dfn>shut down the session</dfn>, which 
 
 When an {{XRSession}} |session| is shut down the following steps are run:
 
+  1. For each [=XR input source=] in a copy of the keys of |session|'s [=XRSession/HTML-in-Canvas pointer state map=], [=retire the HTML-in-Canvas pointer=] for that source in |session|.
+  1. Empty |session|'s [=XRSession/HTML-in-Canvas routed action set=].
   1. Set |session|'s [=XRSession/ended=] value to `true`.
   1. If the [=active immersive session=] is equal to |session|, set the [=active immersive session=] to `null`.
   1. Remove |session| from the [=list of inline sessions=].
@@ -801,6 +812,9 @@ When requested, the {{XRSession}} |session| MUST <dfn>apply the pending render s
   1. Let |oldLayers| be |activeState|'s {{XRRenderState/layers}}.
   1. [=Queue a task=] to perform the following steps:
     1. Set |activeState| to |newState|.
+    1. If |oldBaseLayer| is not equal to |activeState|'s {{XRRenderState/baseLayer}}, run the following steps:
+      1. For each [=XR input source=] in a copy of the keys of |session|'s [=XRSession/HTML-in-Canvas pointer state map=], [=retire the HTML-in-Canvas pointer=] for that source in |session|.
+      1. Set |session|'s [=XRSession/presented HTML-in-Canvas snapshot=] to `null`.
     1. If |oldBaseLayer| is not equal to |activeState|'s {{XRRenderState/baseLayer}}, |oldLayers| is not equal to |activeState|'s {{XRRenderState/layers}}, or the dimensions of any of the layers have changed, [=update the viewports=] for |session|.
     1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is less than |session|'s [=minimum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=minimum inline field of view=].
     1. If |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} is greater than |session|'s [=maximum inline field of view=] set |activeState|'s {{XRRenderState/inlineVerticalFieldOfView}} to |session|'s [=maximum inline field of view=].
@@ -895,6 +909,9 @@ When any previously added <dfn for="XRSession" lt="remove input source">[=XR inp
                 Add |inputSource| to |removed tracked sources|.
         </dl>
   1. [=Queue a task=] to perform the following steps:
+    1. For each |inputSource| in |removed primary sources|, run the following steps:
+      1. [=Retire the HTML-in-Canvas pointer=] for |inputSource| in |session|.
+      1. Remove |inputSource| from |session|'s [=XRSession/HTML-in-Canvas routed action set=].
     1. [=list/Remove=] each {{XRInputSource}} in |removed primary sources| from |session|'s [=list of active XR input sources=].
     1. If |removed primary sources| is not empty, fire an {{XRInputSourcesChangeEvent}} named {{inputsourceschange!!event}} on |session| with {{XRInputSourcesChangeEvent/removed}} set to |removed primary sources|.
     1. [=list/Remove=] each {{XRInputSource}} in |removed tracked sources| from |session|'s [=list of active XR tracked sources=].
@@ -933,6 +950,9 @@ When the <dfn for="XRSession" export lt="change input source">{{XRInputSource/ha
                 Add |newInputSource| to |added tracked sources|.
         </dl>
   1. [=Queue a task=] to perform the following steps:
+    1. For each |inputSource| in |removed primary sources|, run the following steps:
+      1. [=Retire the HTML-in-Canvas pointer=] for |inputSource| in |session|.
+      1. Remove |inputSource| from |session|'s [=XRSession/HTML-in-Canvas routed action set=].
     1. [=list/Remove=] each {{XRInputSource}} in |removed primary sources| from |session|'s [=list of active XR input sources=].
     1. [=list/Extend=] |session|'s [=list of active XR input sources=] with |added primary sources|.
     1. If |added primary sources| or |removed primary sources| are not empty, fire an {{XRInputSourcesChangeEvent}} named {{inputsourceschange!!event}} on |session| with{{XRInputSourcesChangeEvent/added}} set to |added primary sources| and {{XRInputSourcesChangeEvent/removed}} set to |removed primary sources|.
@@ -953,6 +973,8 @@ Each {{XRSession}} has a <dfn for="XRSession">visibility state</dfn> value, whic
 The <dfn attribute for="XRSession">visibilityState</dfn> attribute returns the {{XRSession}}'s [=visibility state=]. The <dfn attribute for="XRSession">onvisibilitychange</dfn> attribute is an [=Event handler IDL attribute=] for the {{visibilitychange}} event type.
 
 The [=visibility state=] MAY be changed by the user agent at any time other than during the processing of an [=XR animation frame=], and the user agent SHOULD monitor the XR platform when possible to observe when session visibility has been affected external to the user agent and update the [=visibility state=] accordingly.
+
+Before an [=immersive session=] |session|'s [=XRSession/visibility state=] changes from {{XRVisibilityState/"visible"}} to another value, the user agent MUST [=retire the HTML-in-Canvas pointer=] for every source in a copy of the keys of |session|'s [=XRSession/HTML-in-Canvas pointer state map=]. This does not remove a source from |session|'s [=XRSession/HTML-in-Canvas routed action set=]; the matching primary-action end or cancellation remains owned by HTML-in-Canvas and removes it.
 
 Note: The {{XRSession}}'s [=visibility state=] does not necessarily imply the visibility of the HTML document. Depending on the system configuration the page may continue to be visible while an [=immersive session=] is active. (For example, a headset connected to a PC may continue to display the page on the monitor while the headset is viewing content from an [=immersive session=].) Developers should continue to rely on the [Page Visibility](https://html.spec.whatwg.org/multipage/interaction.html#page-visibility) to determine page visibility.
 
@@ -1140,6 +1162,8 @@ When an {{XRSession}} |session| receives updated [=viewer=] state for timestamp 
         1. Set |session|'s [=list of animation frame callbacks=] to the empty list.
         1. Set |frame|'s [=XRFrame/active=] boolean to `true`.
         1. [=XRFrame/Apply frame updates=] for |frame|.
+        1. If [=feature descriptor/html-in-canvas=] is included in |session|'s [=XRSession/set of granted features=], record for |frame| the current [=HTML-in-Canvas rendering snapshot=] of the [=XR presentation canvas=] for |session|, or `null` if no snapshot exists.
+        1. If [=feature descriptor/html-in-canvas=] is included in |session|'s [=XRSession/set of granted features=], for each [=XR input source=] in |session|'s [=list of active XR input sources=] whose target ray pose changed since the previous [=XR animation frame=], [=process HTML-in-Canvas pointer movement=] for |session|, that source, and |frameTime|, unless that pose update was already processed as part of a [=primary action=] transition.
         1. For each |entry| in |session|'s [=list of currently running animation frame callbacks=], in order:
           1. If the |entry|'s [=cancelled=] boolean is `true`, continue to the next entry.
           1. [=Invoke the Web IDL callback function|Invoke=] |entry| with « |now|, |frame| » and "`report`".
@@ -1998,7 +2022,10 @@ Note: An example of a [=tracked input source=] would be tracking attachments for
 When an [=XR input source=] |source| for {{XRSession}} |session| begins its [=primary action=] the UA MUST run the following steps:
 
   1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
-  1. [=Queue a task=] to [=fire an input source event=] with name {{XRSession/selectstart!!event}}, frame |frame|, and source |source|.
+  1. [=Queue a task=] to perform the following steps:
+    1. Let |htmlRouted| be the result of [=process an HTML-in-Canvas primary action|processing an HTML-in-Canvas primary action=] with |session|, |source|, |frame|'s [=XRFrame/time=], and phase `"start"`.
+    1. If |htmlRouted| is `true` and |session|'s [=XRSession/ended=] value is `true`, abort these steps.
+    1. [=Fire an input source event=] with name {{XRSession/selectstart!!event}}, frame |frame|, and source |source|.
 
 </div>
 
@@ -2009,6 +2036,9 @@ When an [=XR input source=] |source| for {{XRSession}} |session| ends its [=prim
   1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
   1. [=Queue a task=] to perform the following steps:
     1. [=Fire an input source event=] with name {{select!!event}}, frame |frame|, and source |source|.
+    1. Let |htmlRouted| be `false`.
+    1. If |session|'s [=XRSession/ended=] value is `false`, set |htmlRouted| to the result of [=process an HTML-in-Canvas primary action|processing an HTML-in-Canvas primary action=] with |session|, |source|, |frame|'s [=XRFrame/time=], and phase `"end"`.
+    1. If |htmlRouted| is `true` and |session|'s [=XRSession/ended=] value is `true`, abort these steps.
     1. [=Fire an input source event=] with name {{selectend!!event}}, frame |frame|, and source |source|.
 
 </div>
@@ -2042,7 +2072,9 @@ Sometimes platform-specific behavior can result in a [=primary action=] or [=pri
 When an [=XR input source=] |source| for {{XRSession}} |session| has its [=primary action=] cancelled the UA MUST run the following steps:
 
   1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| with [=XRFrame/time=] being the time the action occurred.
-  1. [=Queue a task=] to [=fire an input source event=] an {{XRInputSourceEvent}} with name {{selectend!!event}}, frame |frame|, and source |source|.
+  1. [=Queue a task=] to perform the following steps:
+    1. [=Fire an input source event=] an {{XRInputSourceEvent}} with name {{selectend!!event}}, frame |frame|, and source |source|.
+    1. If |session|'s [=XRSession/ended=] value is `false`, [=process an HTML-in-Canvas primary action=] with |session|, |source|, |frame|'s [=XRFrame/time=], and phase `"cancel"`.
 
 </div>
 
@@ -2074,7 +2106,10 @@ When a [=transient input source=] |source| for {{XRSession}} |session| begins it
 
   1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| for the time the action occurred.
   1. [=Queue a task=] to perform the following steps:
-    1. Fire any `"pointerdown"` events produced by the [=XR input source=]'s action, if necessary.
+    1. Let |htmlRouted| be `false`.
+    1. If the [=transient action=] is a [=primary action=], set |htmlRouted| to the result of [=process an HTML-in-Canvas primary action|processing an HTML-in-Canvas primary action=] with |session|, |source|, |frame|'s [=XRFrame/time=], and phase `"start"`.
+    1. If |htmlRouted| is `false`, fire any `"pointerdown"` events produced by the [=XR input source=]'s action, if necessary.
+    1. If |htmlRouted| is `true` and |session|'s [=XRSession/ended=] value is `true`, abort these steps.
     1. [=add input source|Add the XR input source=] to the [=list of active XR input sources=].
     1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{XRSession/selectstart!!event}}, frame |frame|, and source |source|.
 
@@ -2086,11 +2121,15 @@ When a [=transient input source=] |source| for {{XRSession}} |session| ends its 
 
   1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| for the time the action occurred.
   1. [=Queue a task=] to perform the following steps:
+    1. Let |htmlRouted| be whether the [=transient action=] is a [=primary action=] and |session|'s [=XRSession/HTML-in-Canvas routed action set=] contains |source|.
     1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{select!!event}}, frame |frame|, and source |source|.
-    1. Fire any `"click"` events produced by the [=XR input source=]'s action, if necessary.
+    1. If |htmlRouted| is `true` and |session|'s [=XRSession/ended=] value is `false`, [=process an HTML-in-Canvas primary action=] with |session|, |source|, |frame|'s [=XRFrame/time=], and phase `"end"`.
+    1. If |htmlRouted| is `false`, fire any `"click"` events produced by the [=XR input source=]'s action, if necessary.
+    1. If |htmlRouted| is `true` and |session|'s [=XRSession/ended=] value is `true`, abort these steps.
     1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{selectend!!event}}, frame |frame|, and source |source|.
     1. [=remove input source|Remove the XR input source=] from the [=list of active XR input sources=].
-    1. Fire any `"pointerup"` events produced by the [=XR input source=]'s action, if necessary.
+    1. If |htmlRouted| is `false`, fire any `"pointerup"` events produced by the [=XR input source=]'s action, if necessary.
+    1. [=Retire the HTML-in-Canvas pointer=] for |source| in |session|.
 
 </div>
 
@@ -2100,9 +2139,193 @@ When a [=transient input source=] |source| for {{XRSession}} |session| has its [
 
   1. Let |frame| be a [=new=] {{XRFrame}} in the [=relevant realm=] of |session| with {{XRFrame/session}} |session| for the time the action occurred.
   1. [=Queue a task=] to perform the following steps:
+    1. Let |htmlRouted| be whether the [=transient action=] is a [=primary action=] and |session|'s [=XRSession/HTML-in-Canvas routed action set=] contains |source|.
     1. If the [=transient action=] is a [=primary action=], [=fire an input source event=] with name {{selectend!!event}}, frame |frame|, and source |source|.
+    1. If |htmlRouted| is `true` and |session|'s [=XRSession/ended=] value is `false`, [=process an HTML-in-Canvas primary action=] with |session|, |source|, |frame|'s [=XRFrame/time=], and phase `"cancel"`.
     1. [=remove input source|Remove the XR input source=] from the [=list of active XR input sources=].
-    1. Fire any `"pointerup"` events produced by the [=XR input source=]'s action, if necessary.
+    1. If |htmlRouted| is `false`, fire any `"pointerup"` events produced by the [=XR input source=]'s action, if necessary.
+    1. [=Retire the HTML-in-Canvas pointer=] for |source| in |session|.
+
+</div>
+
+HTML-in-Canvas input {#html-in-canvas-input}
+--------------------
+
+<div class="unstable">
+
+The [=feature descriptor/html-in-canvas=] feature allows an [=immersive session=] to route an [=XR input source=]'s target ray input to content rendered into the session using <a href="https://github.com/WICG/html-in-canvas/">HTML-in-Canvas</a>.
+
+An {{HTMLCanvasElement}} |canvas| is an <dfn>XR presentation canvas</dfn> for an {{XRSession}} |session| when |session|'s [=active render state=]'s {{XRRenderState/baseLayer}} is an {{XRWebGLLayer}} whose {{XRWebGLLayer/context}}'s {{WebGLRenderingContext|canvas}} is |canvas|.
+
+An <dfn>HTML-in-Canvas rendering snapshot</dfn> is the snapshot of a canvas's rendered descendants defined by HTML-in-Canvas. Snapshot creation, rendering-update timing, and dispatch of the HTML-in-Canvas <code>paint</code> event are defined by HTML-in-Canvas and are not changed by this specification.
+
+Each {{XRSession}} |session| has a <dfn for="XRSession">presented HTML-in-Canvas snapshot</dfn>, initially `null`. Immediately before running the callbacks for an [=XR animation frame=], the user agent MUST record the current [=HTML-in-Canvas rendering snapshot=] of the [=XR presentation canvas=], if one exists. When the frame's [=opaque framebuffer=] is presented to the [=immersive XR device=], the recorded snapshot becomes |session|'s [=XRSession/presented HTML-in-Canvas snapshot=]. A snapshot recorded for a frame that is not presented MUST NOT become the presented snapshot.
+
+HTML-in-Canvas input processing MUST use only |session|'s [=XRSession/presented HTML-in-Canvas snapshot=]. Pending DOM, style, layout, or HTML-in-Canvas snapshot changes MUST NOT affect input until a frame associated with those changes has been presented. Authors remain responsible for rendering the HTML-in-Canvas content represented by that snapshot at the placement described below; the user agent is not required to inspect application rendering commands to verify that correspondence.
+
+An {{Element}} |root| is an <dfn>XR canvas hit-test root</dfn> for an {{XRSession}} |session| when all of the following are true:
+
+  - [=feature descriptor/html-in-canvas=] is included in |session|'s [=XRSession/set of granted features=].
+  - |session|'s [=XRSession/presented HTML-in-Canvas snapshot=] is not `null`.
+  - |root| was a direct child of an [=XR presentation canvas=] |canvas| for |session| in the rendering update that produced the presented snapshot.
+  - |canvas| had the <a href="https://github.com/WICG/html-in-canvas/#1-the-layoutsubtree-attribute"><code>layoutsubtree</code> attribute</a> enabled in that rendering update.
+  - |root| is included in the presented snapshot and had a generated border box in that rendering update.
+  - |root| participated in pointer hit testing according to the CSS and DOM state recorded by the presented snapshot.
+
+For the purposes of HTML-in-Canvas input, an {{XRSession}}'s <dfn>session local coordinate system</dfn> is the coordinate system of the common [=native origin=] shared by the session's {{XRReferenceSpaceType/"local"}} reference spaces.
+
+Each [=XR canvas hit-test root=] has an <dfn>XR hit-test transform</dfn>, which is its used CSS <code>transform</code>, including the effect of its used <code>transform-origin</code>, recorded by the [=XRSession/presented HTML-in-Canvas snapshot=]. The user agent MUST interpret the [=XR hit-test transform=] as a [=/matrix=] that maps the root's local border-box coordinates into the [=session local coordinate system=] as follows:
+
+  - The root's untransformed border box lies in the plane `z = 0`, with its top-left corner at `(0, 0, 0)`.
+  - Input `x` and `y` coordinates are measured in CSS pixels. Output `x`, `y`, and `z` coordinates are measured in meters.
+  - The root's front face is the side whose untransformed normal points along the positive `z` axis.
+  - The root's normal CSS layout position, the canvas's CSS transform, and any view or projection transform do not contribute to the [=XR hit-test transform=].
+  - Percentages and <code>transform-origin</code> are resolved against the root's border box recorded by the same [=HTML-in-Canvas rendering snapshot=].
+  - The independent CSS <code>translate</code>, <code>rotate</code>, and <code>scale</code> properties and CSS motion paths do not contribute to the [=XR hit-test transform=].
+
+An [=XR canvas hit-test root=] whose [=XR hit-test transform=] is not finite, invertible, and affine MUST be excluded from HTML-in-Canvas hit testing.
+
+Note: The [=XR hit-test transform=] is the model transform for the rectangle on which the HTML content is rendered. Its scale converts CSS pixels to meters. For example, rendering a 400 CSS pixel wide element as a one meter wide rectangle requires a horizontal scale of `1 / 400`.
+
+No additional WebXR object registration is required. The [=XR presentation canvas=], <code>layoutsubtree</code> attribute, and [=XR hit-test transform=] together associate the element with the session and describe its interactive placement.
+
+An <dfn>HTML-in-Canvas hit test result</dfn> is a tuple containing an [=XR canvas hit-test root=], a DOM target, a root-local point, and the distance in meters from the target ray's origin to the intersection in the [=session local coordinate system=]. These items are referred to as the result's root, target, point, and distance, respectively.
+
+For integration with this specification, HTML-in-Canvas provides a <dfn>snapshot hit test</dfn> operation that accepts an [=HTML-in-Canvas rendering snapshot=], a rendered canvas child, and a point in that child's local border-box coordinates. The operation returns the topmost {{Element}} selected by normal DOM hit testing using the CSS and DOM state recorded by the snapshot, or `null`.
+
+To <dfn>hit test HTML-in-Canvas content</dfn> for an [=XR input source=] |source| in an {{XRSession}} |session| at a time |time|, the user agent MUST run the following steps:
+
+  1. If [=feature descriptor/html-in-canvas=] is not included in |session|'s [=XRSession/set of granted features=], return `null`.
+  1. Let |snapshot| be |session|'s [=XRSession/presented HTML-in-Canvas snapshot=]. If |snapshot| is `null`, return `null`.
+  1. Query the [=XRSession/XR device=]'s tracking system for the pose of |source|'s {{XRInputSource/targetRaySpace}} in |session|'s [=session local coordinate system=] at |time|. If a pose is not available, return `null`.
+  1. Let |ray| be a ray whose origin is the position of that pose and whose direction follows the negative `z` axis of that pose.
+  1. Let |results| be an empty [=/list=].
+  1. For each [=XR canvas hit-test root=] |root| for |session|, perform the following steps:
+    1. Transform |ray| by the inverse of |root|'s [=XR hit-test transform=].
+    1. If the transformed ray does not intersect |root|'s `z = 0` plane at a non-negative distance while approaching |root|'s front face, continue.
+    1. Let |point| be the intersection point.
+    1. If |point| is outside |root|'s border box, continue.
+    1. Let |target| be the result of performing a [=snapshot hit test=] with |snapshot|, |root|, and |point|.
+    1. If |target| is `null`, continue.
+    1. Let |sessionPoint| be |point| transformed by |root|'s [=XR hit-test transform=].
+    1. Let |distance| be the Euclidean distance in meters between |ray|'s origin and |sessionPoint|, both expressed in the [=session local coordinate system=].
+    1. If |sessionPoint| or |distance| is not finite, continue.
+    1. [=list/Append=] an [=HTML-in-Canvas hit test result=] with root |root|, target |target|, point |point|, and distance |distance| to |results|.
+  1. If |results| is [=list/empty=], return `null`.
+  1. Return the tuple in |results| with the shortest intersection distance. If multiple tuples have the same distance, return the tuple whose root is painted last in the CSS painting order recorded by |snapshot|.
+
+To <dfn>get HTML-in-Canvas event coordinates</dfn> from an [=HTML-in-Canvas hit test result=] |result|, the user agent MUST map |result|'s root-local point into the document's ordinary viewport coordinate system using the root's border-box position recorded by the [=XRSession/presented HTML-in-Canvas snapshot=], but without applying the root's [=XR hit-test transform=]. The resulting viewport coordinates are used as <code>clientX</code> and <code>clientY</code>. The user agent MUST initialize all other event coordinate attributes from that viewport point and the event's dispatch target as specified by <a href="https://drafts.csswg.org/cssom-view/#extensions-to-the-mouseevent-interface">CSSOM View</a>. Return the resulting event coordinate data.
+
+Each {{XRSession}} has an <dfn for="XRSession">HTML-in-Canvas pointer state map</dfn>, initially empty, which associates an [=XR input source=] with a pointer governed by <a href="https://www.w3.org/TR/pointerevents/">Pointer Events</a>, its coordinate root, and its last event coordinates. Each {{XRSession}} also has an <dfn for="XRSession">HTML-in-Canvas routed action set</dfn>, initially empty. The set contains each source whose current [=primary action=] began while routed to HTML-in-Canvas, until that action ends or is cancelled.
+
+Except where this section supplies an XR-derived target, coordinate root, or event coordinates, the user agent MUST process an HTML-in-Canvas pointer as an ordinary hovering pointer according to Pointer Events. In particular:
+
+  - When this section says to process an update with a target and coordinates, the user agent MUST behave as though its normal hit testing for that pointer produced those values, and then apply the Pointer Events processing model.
+  - Pointer Events defines pointer identity, the primary pointer, active buttons state, pointer capture and implicit release, boundary events, <code>pointermove</code>, <code>pointerdown</code>, <code>pointerup</code>, <code>pointercancel</code>, <code>click</code>, and compatibility mouse events.
+  - Pointer events are fired using Pointer Events' <a href="https://www.w3.org/TR/pointerevents/#dfn-fire-a-pointer-event">fire a pointer event</a> algorithm. Their event paths, capture and bubbling phases, composed-tree retargeting, and listener invocation are determined by <a href="https://dom.spec.whatwg.org/#concept-event-dispatch">DOM event dispatch</a>.
+  - Focus, activation behavior, and other default actions are determined by <a href="https://html.spec.whatwg.org/multipage/interaction.html">HTML</a> and <a href="https://www.w3.org/TR/uievents/">UI Events</a>.
+
+ISSUE: Pointer Events does not currently define a single normative hook that accepts an XR-derived target, coordinate root, and event coordinates and then runs the full pointer update, boundary-event, capture, click, compatibility mouse event, focus, and default-action processing model. This section should either define such a hook in coordination with Pointer Events, or expand these steps locally.
+
+The user agent creates the pointer association when a source first targets an [=XR canvas hit-test root=]. Its <code>pointerId</code>, <code>pointerType</code>, and <code>isPrimary</code> values MUST satisfy Pointer Events and remain stable until the association is retired. A <code>pointerId</code> MUST NOT be shared with another concurrently active pointer. Each source has independent hover, button, click, and pointer-capture state. The [=primary action=] is the pointer's primary button; its event properties, including <code>button</code>, <code>buttons</code>, and <code>pressure</code>, are determined by Pointer Events.
+
+ISSUE: The pointer association needs a precise state model. At minimum this section needs to define how an [=XR input source=] maps to a Pointer Events pointer, what state is stored for current target, active buttons, pointer capture, last coordinates, and down target, and how that state is updated or cleared by each algorithm.
+
+ISSUE: The mapping from WebXR [=primary action=] to Pointer Events fields needs to be explicit. Pointer Events defines the fields, but this specification still needs to define the WebXR values for <code>button</code>, <code>buttons</code>, <code>pressure</code>, and related pointer properties for hover, press, release, and cancel transitions.
+
+Input handled by [=trusted UI=] or by an active <a href="https://immersive-web.github.io/dom-overlays/">DOM overlay</a> takes precedence over HTML-in-Canvas input. When such a destination begins handling an input source, the user agent MUST [=cancel an HTML-in-Canvas pointer|cancel that source's HTML-in-Canvas pointer=] before suppressing further HTML-in-Canvas DOM events. This precedence applies even while the pointer has capture. It does not suppress the source's WebXR input events.
+
+To <dfn>process HTML-in-Canvas pointer movement</dfn> for an {{XRSession}} |session|, an [=XR input source=] |source|, and time |time|, the user agent MUST run the following steps:
+
+  1. If |session| has ended or [=feature descriptor/html-in-canvas=] is not included in |session|'s [=XRSession/set of granted features=], return `null`.
+  1. If |session|'s [=XRSession/visibility state=] is not {{XRVisibilityState/"visible"}}, return `null`.
+  1. If a higher-priority input destination is handling |source|, [=retire the HTML-in-Canvas pointer=] for |source| in |session| and return `null`.
+  1. Let |state| be |source|'s entry in |session|'s [=XRSession/HTML-in-Canvas pointer state map=], if one exists.
+  1. If |state| exists, <a href="https://www.w3.org/TR/pointerevents/#process-pending-pointer-capture">process pending pointer capture</a> for its associated pointer. If |source|'s entry in |session|'s [=XRSession/HTML-in-Canvas pointer state map=] is no longer |state|, return `null`.
+  1. Let |captureTarget| be the pointer capture target override for |state|'s associated pointer, if |state| exists and it has one.
+  1. Let |result| be `null`.
+  1. If |captureTarget| exists, run the following steps:
+    1. Let |root| be |state|'s coordinate root.
+    1. Intersect |source|'s target ray at |time| with |root|'s plane using the [=XR hit-test transform=] from the [=XRSession/presented HTML-in-Canvas snapshot=]. Do not reject an intersection outside |root|'s border box.
+    1. If the pose, root, transform, or intersection is unavailable, [=cancel an HTML-in-Canvas pointer|cancel |source|'s HTML-in-Canvas pointer=] and return `null`.
+    1. Set |result| to an [=HTML-in-Canvas hit test result=] whose root is |root|, target is |captureTarget|, point is the root-local intersection point, and distance is the distance to that intersection.
+  1. Otherwise, set |result| to the result of [=hit test HTML-in-Canvas content|hit testing HTML-in-Canvas content=] for |source| in |session| at |time|.
+  1. If |result| is `null`, run the following steps:
+    1. If |state| exists, process this pose update according to Pointer Events with no hit-test target and using |state|'s last event coordinates. This dispatches any required boundary events as the pointer leaves its previous target.
+    1. Return `null`.
+  1. If |result|'s target is not connected, [=cancel an HTML-in-Canvas pointer|cancel |source|'s HTML-in-Canvas pointer=] and return `null`.
+  1. If |captureTarget| does not exist and |result|'s target is neither |result|'s root nor a descendant of that root, [=cancel an HTML-in-Canvas pointer|cancel |source|'s HTML-in-Canvas pointer=] and return `null`.
+  1. Let |coordinates| be the result of [=get HTML-in-Canvas event coordinates|getting HTML-in-Canvas event coordinates=] from |result|.
+  1. If |state| does not exist, create a pointer association, set |state| to it, and add it to |session|'s [=XRSession/HTML-in-Canvas pointer state map=].
+  1. Let |originalState| be |state|.
+  1. Set |state|'s coordinate root and last event coordinates to |result|'s root and |coordinates|, respectively.
+  1. Process this pose update according to Pointer Events, taking |result|'s target as the pointer target and using |coordinates|. This dispatches any required boundary and <code>pointermove</code> events.
+  1. If |session| has ended or its [=XRSession/visibility state=] is not {{XRVisibilityState/"visible"}}, return `null`.
+  1. Set |state| to |source|'s entry in |session|'s [=XRSession/HTML-in-Canvas pointer state map=], if one exists.
+  1. If |state| is not |originalState|, return `null`.
+  1. Return |result|.
+
+ISSUE: Decide whether a stale or out-of-root hit-test target should cancel the pointer stream or be treated as a normal pointer leave with no target. The observable result differs for <code>pointercancel</code>, boundary events, click generation, and capture cleanup.
+
+A [=primary action=] transition processes pointer movement in the action's task before dispatching its pointer action event. The [=XR animation frame=] processing steps handle other target ray pose changes and MUST NOT process the same pose update a second time.
+
+A pointer-capture override MAY target an element outside the pointer state's coordinate root. While capture is active, the coordinate root remains the surface used to intersect the target ray and determine <code>clientX</code> and <code>clientY</code>, and the capture target is used as the dispatch target when [=get HTML-in-Canvas event coordinates|getting HTML-in-Canvas event coordinates=]. Releasing capture causes subsequent updates to use normal HTML-in-Canvas hit testing again.
+
+ISSUE: The pointer-capture integration needs a precise reference to the Pointer Events capture override and pending capture algorithms, including when pending capture is processed relative to XR pose updates and primary-action transitions.
+
+To <dfn>process an HTML-in-Canvas primary action</dfn> for an {{XRSession}} |session|, an [=XR input source=] |source|, time |time|, and phase |phase|, the user agent MUST run the following steps:
+
+  1. If |session| has ended or [=feature descriptor/html-in-canvas=] is not included in |session|'s [=XRSession/set of granted features=], return `false`.
+  1. If |phase| is `"cancel"`, run the following steps:
+    1. If |session|'s [=XRSession/HTML-in-Canvas routed action set=] does not contain |source|, return `false`.
+    1. Remove |source| from |session|'s [=XRSession/HTML-in-Canvas routed action set=].
+    1. [=Cancel an HTML-in-Canvas pointer=] for |source| in |session|.
+    1. Return `true`.
+  1. If |phase| is `"start"`, remove |source| from |session|'s [=XRSession/HTML-in-Canvas routed action set=].
+  1. Let |result| be the result of [=process HTML-in-Canvas pointer movement|processing HTML-in-Canvas pointer movement=] for |session|, |source|, and |time|.
+  1. If |phase| is `"start"`, run the following steps:
+    1. If |result| is `null`, return `false`.
+    1. Add |source| to |session|'s [=XRSession/HTML-in-Canvas routed action set=].
+    1. Let |coordinates| be the result of [=get HTML-in-Canvas event coordinates|getting HTML-in-Canvas event coordinates=] from |result|.
+    1. Process a primary-button press for the associated pointer according to Pointer Events, using |result|'s target and |coordinates|. This dispatches <code>pointerdown</code> and performs any applicable implicit pointer capture, compatibility mouse event, focus, and default-action processing.
+    1. Return `true`.
+  1. If |phase| is `"end"`, run the following steps:
+    1. If |session|'s [=XRSession/HTML-in-Canvas routed action set=] does not contain |source|, return `false`.
+    1. Remove |source| from |session|'s [=XRSession/HTML-in-Canvas routed action set=].
+    1. If |source| has no associated pointer whose primary button is active, return `true`.
+    1. If |result| is `null`, [=cancel an HTML-in-Canvas pointer|cancel |source|'s HTML-in-Canvas pointer=] and return `true`.
+    1. Let |coordinates| be the result of [=get HTML-in-Canvas event coordinates|getting HTML-in-Canvas event coordinates=] from |result|.
+    1. Process a primary-button release for the associated pointer according to Pointer Events, using |result|'s target and |coordinates|. This dispatches <code>pointerup</code>, performs implicit pointer-capture release, and generates any resulting <code>click</code> and compatibility mouse events with their normal targets and default actions.
+    1. Return `true`.
+  1. Return `false`.
+
+ISSUE: The primary-action algorithm needs to normatively define how the press target, release target, click target, implicit pointer capture, compatibility mouse events, default actions, and WebXR <code>select*</code> ordering interact when event dispatch mutates the session or DOM.
+
+To <dfn>cancel an HTML-in-Canvas pointer</dfn> for an [=XR input source=] |source| in an {{XRSession}} |session|, the user agent MUST run the following steps:
+
+  1. Let |state| be |source|'s entry in |session|'s [=XRSession/HTML-in-Canvas pointer state map=]. If none exists, return.
+  1. Cancel the associated pointer stream as specified by <a href="https://www.w3.org/TR/pointerevents/#the-pointercancel-event">Pointer Events</a>, using |state|'s last event coordinates. This includes dispatching <code>pointercancel</code> when the pointer has active buttons, releasing pointer capture, and dispatching the required boundary events as the pointer leaves its current target.
+  1. If |source|'s entry in |session|'s [=XRSession/HTML-in-Canvas pointer state map=] is still |state|, clear its coordinate root and last event coordinates.
+
+ISSUE: Cancellation and retirement need enough locally defined state to guarantee idempotence, the <code>pointercancel</code> target, capture release, boundary cleanup, and cleanup when dispatch ends the session or replaces the pointer association.
+
+To <dfn>retire the HTML-in-Canvas pointer</dfn> for an [=XR input source=] |source| in an {{XRSession}} |session|, the user agent MUST run the following steps:
+
+  1. Let |state| be |source|'s entry in |session|'s [=XRSession/HTML-in-Canvas pointer state map=]. If none exists, return.
+  1. [=Cancel an HTML-in-Canvas pointer=] for |source| in |session|.
+  1. If |source|'s entry in |session|'s [=XRSession/HTML-in-Canvas pointer state map=] is |state|, remove that entry.
+
+Cancellation and retirement MUST be idempotent, and MUST dispatch <code>pointercancel</code> at most once for an active-button sequence.
+
+If an {{XRSession}} |session|'s active [=XR presentation canvas=] changes, or trusted UI or a DOM overlay begins taking precedence for |session|, the user agent MUST [=retire the HTML-in-Canvas pointer=] for every source in a copy of the keys of |session|'s [=XRSession/HTML-in-Canvas pointer state map=] before routing input to the new destination. Retirement does not remove the source from |session|'s [=XRSession/HTML-in-Canvas routed action set=]. When an [=XR input source=] is removed or replaced, or its session ends, the user agent MUST retire that source's pointer state and remove it from the routed action set.
+
+For a successfully routed [=primary action=], <code>pointerdown</code> is dispatched before {{XRSession/selectstart}}, {{XRSession/select}} is dispatched before <code>pointerup</code>, and Pointer Events dispatches any resulting <code>click</code> before {{XRSession/selectend}}. Routing to HTML-in-Canvas does not otherwise suppress or replace the source's WebXR input events.
+
+When the action causes HTML to recognize an <a href="https://html.spec.whatwg.org/multipage/interaction.html#activation-triggering-input-event">activation-triggering input event</a>, the user agent MUST run HTML's <a href="https://html.spec.whatwg.org/multipage/interaction.html#user-activation-processing-model">user activation processing</a> exactly once for the underlying action. The DOM and WebXR events derived from that action share the resulting activation. Hover movement, loss of pose, cancellation, and pointer cleanup do not create user activation.
+
+Only the placement described by an element's [=XR hit-test transform=] participates in hit testing. Drawing the same HTML-in-Canvas snapshot at additional locations does not create additional interactive placements.
+
+The user agent is not required to inspect application-rendered color or depth buffers to determine whether an object occludes an [=XR canvas hit-test root=]. Authors are responsible for keeping the root's transform and hit-test eligibility consistent with the content they render. For example, an author can set <code>pointer-events: none</code> while a root should not receive input.
 
 </div>
 
@@ -2292,6 +2515,8 @@ When an {{XRWebGLLayer}} is set as an [=immersive session=]'s {{XRRenderState/ba
 
   - The [=immersive session=]'s {{XRRenderState/baseLayer}} was changed.
   - {{clear}}, {{drawArrays}}, {{drawElements}}, or any other rendering operation which similarly affects the framebuffer's color values has been called while the [=opaque framebuffer=] is the currently bound framebuffer of the {{WebGLRenderingContext}} associated with the {{XRWebGLLayer}}.
+
+When that presentation occurs and [=feature descriptor/html-in-canvas=] is enabled, the [=HTML-in-Canvas rendering snapshot=] recorded for the completed frame becomes the session's [=XRSession/presented HTML-in-Canvas snapshot=]. If it differs from the previously presented snapshot, the user agent MUST [=queue a task=] to [=process HTML-in-Canvas pointer movement=] for each active [=XR input source=] using the target ray pose associated with the completed frame, so that stationary pointers receive any required boundary events after the new content becomes visible.
 
 Before the [=opaque framebuffer=] is presented to the [=immersive XR device=] the user agent shall ensure that all rendering operations have been flushed to the [=opaque framebuffer=].
 
@@ -3112,6 +3337,7 @@ Changes from the <a href="https://www.w3.org/TR/2022/CR-webxr-20220331/">Candida
 - Transient intent addition (<a href="https://github.com/immersive-web/webxr/pull/1343">GitHub #1343</a>)
 - First draft for adding a property to XRInputSource to say it's visible elsewhere (<a href="https://github.com/immersive-web/webxr/pull/1353">GitHub #1353</a>)
 - Clarify rgb vs srgb behavior (<a href="https://github.com/immersive-web/webxr/pull/1359">GitHub #1359</a>)
+- Add HTML-in-Canvas target ray hit testing, including snapshot lifecycle and pointer event routing
 
 
 <h3 id="changes-from-20200724" class="no-num">
