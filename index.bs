@@ -760,7 +760,6 @@ When this method is invoked, the user agent MUST run the following steps:
     1. The [=XR Compositor=] MAY use |rate| to calculate a new [=display frame rate=] and/or [=nominal frame rate=].
     1. Let |newrate| be the new [=nominal frame rate=].
     1. [=Queue a task=] to perform the following steps:
-        1. Await until the {{XRSystem}}'s actions to update the [=nominal frame rate=] to |newrate| have taken effect.
         1. [=Apply the nominal frame rate=] with |newrate| and |session|.
     1. [=/Resolve=] |promise|.
   1. Return |promise|.
