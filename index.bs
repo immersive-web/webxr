@@ -536,6 +536,7 @@ Values given in the feature lists are considered a valid <dfn>feature descriptor
  - The string "<dfn for="feature descriptor">tracked-sources</dfn>"
  - The string "<dfn for="feature descriptor">inline-stereo</dfn>"
  - The string "<dfn for="feature descriptor">secondary-views</dfn>"
+ - The string "<dfn for="feature descriptor">browser-overlay</dfn>"
 
 Future iterations of this specification and additional modules may expand the list of accepted [=feature descriptors=].
 
@@ -607,6 +608,8 @@ The [=feature descriptor/inline-stereo=] feature descriptor requests that an [=i
 
 The [=feature descriptor/inline-stereo=] feature descriptor only applies to {{XRSessionMode/"inline"}} sessions. It MUST NOT be granted to [=immersive sessions=].
 
+The [=feature descriptor/browser-overlay=] feature descriptor requests that an [=immersive session=] can call {{XRSession/toggleOverlay()}} to show browser UI without ending the session. It only applies to [=immersive sessions=]. It MUST NOT be granted to [=inline sessions=].
+
 [=Requested features=] can only be enabled for a session if the [=XRSession/XR device=] is <dfn>capable of supporting</dfn> the feature, which means that the feature is known to be supported by the [=XRSession/XR device=] in some configurations, even if the current configuration has not yet been verified as supporting the feature. The user agent MAY apply more rigorous constraints if desired in order to yield a more consistent user experience.
 
 Note: For example, several VR devices support either configuring a safe boundary for the user to move around within or skipping boundary configuration and operating in a mode where the user is expected to stand in place. Such a device can be considered to be [=capable of supporting=] {{"bounded-floor"}} {{XRReferenceSpace}}s even if they are currently not configured with safety boundaries, because it's expected that the user could configure the device appropriately if the experience required it. This is to allow user agents to avoid fully initializing the [=XRSession/XR device=] or waiting for the user's environment to be recognized prior to [=resolve the requested features|resolving the requested features=] if desired. If, however, the user agent knows the boundary state at the time the session is requested without additional initialization it may choose to reject the {{"bounded-floor"}} feature if the safety boundary is not already configured.
@@ -643,6 +646,7 @@ enum XRVisibilityState {
   undefined updateRenderState(optional XRRenderStateInit state = {});
   Promise&lt;undefined&gt; updateTargetFrameRate(float rate);
   [NewObject] Promise&lt;XRReferenceSpace&gt; requestReferenceSpace(XRReferenceSpaceType type);
+  undefined toggleOverlay();
 
   unsigned long requestAnimationFrame(XRFrameRequestCallback callback);
   undefined cancelAnimationFrame(unsigned long handle);
@@ -669,9 +673,50 @@ Each {{XRSession}} has an <dfn for=XRSession>animation frame</dfn>, which is an 
 
 Each {{XRSession}} has a <dfn for=XRSession>set of granted features</dfn>, which is a [=/set=] of {{DOMString}}s corresponding to the [=feature descriptors=] that have been granted to the {{XRSession}}.
 
+Each {{XRSession}} has a <dfn for="XRSession">browser overlay active</dfn> boolean, initially `false`, that indicates if a prior successful invocation of {{XRSession/toggleOverlay()}} is showing browser UI while the session is {{XRVisibilityState/"visible-blurred"}} or {{XRVisibilityState/"hidden"}}.
+
 The <dfn attribute for="XRSession">enabledFeatures</dfn> attribute returns the features in the [=XRSession/set of granted features=] as a new array of {{DOMString}}s.
 
 The <dfn attribute for="XRSession">isSystemKeyboardSupported</dfn> attribute indicates that the {{XRSystem}} has the ability to display the system keyboard while the {{XRSession}} is active. If {{XRSession/isSystemKeyboardSupported}} is <code>true</code>, Web APIs that would trigger the overlay keyboard (such as [=focus=]) will show the system keyboard. The {{XRSession}} MUST set the [=visibility state=] of the {{XRSession}} to {{XRVisibilityState/"visible-blurred"}} while the keyboard is shown.
+
+A <dfn>browser overlay</dfn> is user agent UI that displays the non-immersive browser interface over an [=immersive session=]. The user agent controls the size, position, appearance, and available controls of the [=browser overlay=].
+
+Note: A [=browser overlay=] can display cross-origin content, which is not possible when using the HTML-in-Canvas API.
+
+<div class="algorithm" data-algorithm="toggle-overlay">
+
+The <dfn method for="XRSession">toggleOverlay()</dfn> method requests that the user agent toggle whether a [=browser overlay=] is shown over an [=immersive session=]. When invoked, it MUST run the following steps:
+
+  1. Let |session| be [=this=].
+  1. If |session|'s [=XRSession/ended=] value is `true`, throw an "{{InvalidStateError}}" {{DOMException}} and abort these steps.
+  1. If |session| is not an [=immersive session=], throw a "{{NotSupportedError}}" {{DOMException}} and abort these steps.
+  1. If [=feature descriptor/browser-overlay=] is not included in |session|'s [=XRSession/set of granted features=], throw a "{{NotSupportedError}}" {{DOMException}} and abort these steps.
+  1. Let |global object| be the [=relevant Global object=] for the {{XRSession}} on which this method was invoked.
+  1. If |global object| does not have [=transient activation=], throw a "{{SecurityError}}" {{DOMException}} and abort these steps.
+  1. If |session|'s [=XRSession/browser overlay active=] boolean is `true`, run the following steps:
+    1. If |session|'s [=XRSession/visibility state=] is {{XRVisibilityState/"hidden"}}, run the following steps:
+      1. The user agent MAY request the user's permission to resume |session|.
+      1. If permission is denied, [=Shut down the session|shut down=] |session| and abort these steps.
+      1. Perform the necessary platform-specific steps to resume |session|.
+      1. Set |session|'s [=XRSession/browser overlay active=] boolean to `false`.
+      1. Set |session|'s [=XRSession/visibility state=] to {{XRVisibilityState/"visible"}}.
+      1. Abort these steps.
+    1. Hide the [=browser overlay=] shown over |session|.
+    1. Set |session|'s [=XRSession/browser overlay active=] boolean to `false`.
+    1. Set |session|'s [=XRSession/visibility state=] to {{XRVisibilityState/"visible"}}.
+    1. Abort these steps.
+  1. If the user agent can show a [=browser overlay=] over |session| while preserving the [=immersive session=], run the following steps:
+    1. Show a [=browser overlay=] over |session|.
+    1. Set |session|'s [=XRSession/browser overlay active=] boolean to `true`.
+    1. Set |session|'s [=XRSession/visibility state=] to {{XRVisibilityState/"visible-blurred"}}.
+    1. Abort these steps.
+  1. Perform the necessary platform-specific steps to suspend |session| and show browser UI.
+  1. Set |session|'s [=XRSession/browser overlay active=] boolean to `true`.
+  1. Set |session|'s [=XRSession/visibility state=] to {{XRVisibilityState/"hidden"}}.
+
+Note: If the user agent is unable to show a [=browser overlay=] over an [=immersive session=], calling {{XRSession/toggleOverlay()}} can suspend the session and return the user to the non-immersive browser interface. While the session is suspended its [=XRSession/visibility state=] is {{XRVisibilityState/"hidden"}}, so its {{XRSession/requestAnimationFrame()}} callbacks will not be processed. Suspending and resuming the session this way does not end the session or create a new session, so no event indicating that the session ended or started is fired. Calling {{XRSession/toggleOverlay()}} again can resume the session. If the user agent requests permission to resume the session and permission is denied, the session will be [=shut down the session|shut down=].
+
+</div>
 
 <div class="algorithm" data-algorithm="initialize-session">
 
@@ -2873,6 +2918,7 @@ Broadly speaking, there are two options for user agents who wish to support [=tr
 <div class="note">
 Note: Examples of [=trusted UI=] include:
   - The default 2D mode browser shown when not in immersive mode
+  - A [=browser overlay=] shown in response to {{XRSession/toggleOverlay()}}
   - A prompt shown within immersive mode which can only be interacted with via a reserved hardware button to prevent spoofing
   - Pausing the immersive session and showing some form of native system environment in which a prompt can be shown
 
@@ -3112,6 +3158,7 @@ Changes from the <a href="https://www.w3.org/TR/2022/CR-webxr-20220331/">Candida
 - Transient intent addition (<a href="https://github.com/immersive-web/webxr/pull/1343">GitHub #1343</a>)
 - First draft for adding a property to XRInputSource to say it's visible elsewhere (<a href="https://github.com/immersive-web/webxr/pull/1353">GitHub #1353</a>)
 - Clarify rgb vs srgb behavior (<a href="https://github.com/immersive-web/webxr/pull/1359">GitHub #1359</a>)
+- Add XRSession.toggleOverlay() and the browser-overlay feature descriptor
 
 
 <h3 id="changes-from-20200724" class="no-num">
