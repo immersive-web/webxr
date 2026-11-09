@@ -7,6 +7,7 @@ on:
     paths:
       - 'images/**'
       - 'index.bs'
+      - 'privacy-security-explainer.bs'
 
 jobs:
   main:
@@ -24,6 +25,21 @@ jobs:
           W3C_WG_DECISION_URL: https://lists.w3.org/Archives/Public/public-immersive-web-wg/2021Sep/0004.html
           W3C_BUILD_OVERRIDE: |
             status: CRD
+  privacy-security-explainer:
+    name: Build and Deploy - privacy-security-explainer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: w3c/spec-prod@v2
+        with:
+          TOOLCHAIN: bikeshed
+          SOURCE: privacy-security-explainer.bs
+          DESTINATION: privacy-security-explainer.html
+          GH_PAGES_BRANCH: gh-pages
+#          W3C_ECHIDNA_TOKEN: ${{ secrets.W3C_TR_TOKEN }}
+#          W3C_WG_DECISION_URL: https://lists.w3.org/Archives/Public/public-immersive-web-wg/2021Sep/0004.html
+#          W3C_BUILD_OVERRIDE: |
+#            status: DNOTE
 
 # not set 'warning' to BUILD_FAIL_ON (not to cause error by bikeshed warning?)
 
